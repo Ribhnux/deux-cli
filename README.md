@@ -2,7 +2,7 @@
 A component-based WordPress Starter Theme.
 
 ## Requirements
-Deux is command line tools built with javascript, to able works with deux you must install NodeJS environments. At least you must have NodeJS and NPM with current versions:
+Deux is command line tool built with javascript, in order to work with deux, you must install NodeJS environments. At least you must have NodeJS and NPM with these versions:
 
 > NodeJS >= 6.x  
 > NPM >= 3.x
@@ -18,4 +18,4 @@ Run this command, and the installation wizard will guides you.
 > deux init
 
 ## Getting Started
-Confused? Please read full documentation at [http://deux.ribhnux.tech](http://deux.ribhnux.tech)
+Are you confused? Please read full documentations and tutorial at [http://deux.ribhnux.tech](http://deux.ribhnux.tech)
