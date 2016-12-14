@@ -15,7 +15,7 @@ After NodeJS has been installed to your computer, you should install ``deux`` gl
 ## Install New Theme
 Run this command, and the installation wizard will guides you.
 
-> cd /path/to/wordpress
+> cd /path/to/wordpress  
 > deux init
 
 ## Getting Started
