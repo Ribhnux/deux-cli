@@ -19,4 +19,4 @@ Run this command, and the installation wizard will guides you.
 > deux init
 
 ## Getting Started
-Are you confused? Please read full documentations and tutorial at [http://deux.ribhnux.tech](http://deux.ribhnux.tech)
+With deux, you'll develop and easy to mantains your WordPress project faster than before. Please watch video tutorial and more documentation at [http://deux.ribhnux.tech](http://deux.ribhnux.tech)
