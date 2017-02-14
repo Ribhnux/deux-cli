@@ -1,0 +1,28 @@
+{
+  "name": "deux-cli",
+  "version": "0.1.0",
+  "description": "Simple CLI for scaffolding component-based WordPress starter theme",
+  "main": "index.js",
+  "bin": {
+    "deux": "bin/deux",
+    "deux-init": "bin/deux-init"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ribhnux/deux.git"
+  },
+  "keywords": [
+    "cli",
+    "wordpress",
+    "starter-theme"
+  ],
+  "author": "Ribhararnus Pracutian <pracutian@ribnux.tech> (https://www.oknoorap.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Ribhnux/deux/issues"
+  },
+  "homepage": "https://github.com/Ribhnux/deux#readme",
+  "dependencies": {
+    "commander": "^2.9.0"
+  }
+}

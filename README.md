@@ -1,5 +1,5 @@
 # Deux
-A component-based WordPress Starter Theme.
+Simple CLI for scaffolding component-based WordPress starter theme.
 
 ## Requirements
 Deux is command line tool built with javascript, in order to work with deux, you must install NodeJS environments. At least you must have NodeJS and NPM with these versions:
