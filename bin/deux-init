@@ -1,3 +1,65 @@
 #!/usr/bin/env node
 
-console.log('initial')
+const fs = require('fs')
+const path = require('path')
+const inquirer = require('inquirer')
+const faker = require('faker')
+const deux = require('../lib')
+
+// Add padding
+console.log()
+process.on('exit', function () {
+  console.log()
+})
+
+const isWpFolder = fs.existsSync(path.name(__dirname, 'wp-config.php'))
+if (!isWpFolder) {
+  deux.logger.error(deux.messages.ERROR_NOT_WP_FOLDER)
+}
+
+const questions = [
+  {
+    type: 'input',
+    name: 'themeName',
+    default: faker.lorem.words()
+  },
+  {
+    type: 'input',
+    name: 'themeUri'
+  },
+  {
+    type: 'input',
+    name: 'author'
+  },
+  {
+    type: 'input',
+    name: 'authorUri'
+  },
+  {
+    type: 'input',
+    name: 'description'
+  },
+  {
+    type: 'input',
+    name: 'version',
+    default: '1.0.0'
+  },
+  {
+    type: 'input',
+    name: 'license',
+    default: 'GNU General Public License v2 or later'
+  },
+  {
+    type: 'input',
+    name: 'licenseUri',
+    default: 'http://www.gnu.org/licenses/gpl-2.0.html'
+  },
+  {
+    type: 'input',
+    name: 'tags'
+  }
+]
+
+inquirer.prompt(questions, answers => {
+  console.log(answers)
+})
