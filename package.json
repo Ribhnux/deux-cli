@@ -1,6 +1,6 @@
 {
   "name": "deux-cli",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Simple CLI for scaffolding component-based WordPress starter theme",
   "main": "index.js",
   "bin": {
