@@ -1,0 +1,23 @@
+/*
+Theme Name: {{themeName}}
+Theme URI: {{themeUri}}
+Author: {{author}}
+Author URI: {{authorUri}}
+Description: {{description}}
+Version: {{version}}
+License: {{license}}
+License URI: {{licenseUri}}
+Text Domain: {{textDomain}}
+Tags: {{tags}}
+*/
+
+/*
+This file is just used to identify the theme in WordPress.
+The compiled CSS output can be found in /assets/css/theme.css
+The SCSS sources for it can be found in /assets/scss
+The JS assets can be found in /assets/js
+
+Notes:
+All assets information can be found in .deuxconfig in root theme directory.
+For rapid development please install deux-cli
+*/
