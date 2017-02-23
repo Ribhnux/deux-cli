@@ -1,65 +1,32 @@
 #!/usr/bin/env node
 
-const fs = require('fs')
-const path = require('path')
-const inquirer = require('inquirer')
-const faker = require('faker')
 const deux = require('../lib')
 
 // Add padding
-console.log()
+console.log('')
 process.on('exit', function () {
-  console.log()
+  console.log('')
 })
 
-const isWpFolder = fs.existsSync(path.name(__dirname, 'wp-config.php'))
-if (!isWpFolder) {
+if (!deux.const.WP_CONFIG_PATH) {
   deux.logger.error(deux.messages.ERROR_NOT_WP_FOLDER)
 }
 
-const questions = [
-  {
-    type: 'input',
-    name: 'themeName',
-    default: faker.lorem.words()
-  },
-  {
-    type: 'input',
-    name: 'themeUri'
-  },
-  {
-    type: 'input',
-    name: 'author'
-  },
-  {
-    type: 'input',
-    name: 'authorUri'
-  },
-  {
-    type: 'input',
-    name: 'description'
-  },
-  {
-    type: 'input',
-    name: 'version',
-    default: '1.0.0'
-  },
-  {
-    type: 'input',
-    name: 'license',
-    default: 'GNU General Public License v2 or later'
-  },
-  {
-    type: 'input',
-    name: 'licenseUri',
-    default: 'http://www.gnu.org/licenses/gpl-2.0.html'
-  },
-  {
-    type: 'input',
-    name: 'tags'
+deux.prompts.preinit().then(({init}) => {
+  if (init === deux.const.PROJECT_STATUS_NEW) {
+    deux.prompts.init(init)
+      .then(() => {
+        deux.logger.done(deux.messages.DONE_FINISH)
+      })
+  } else {
+    deux.prompts.chooseProject()
+      .then(project => {
+        deux.prompts.init(init, project.selected.themeSlug).then(() => {
+          deux.logger.done(deux.messages.DONE_UPDATED)
+        })
+      })
+      .catch(err => {
+        deux.logger.error(err)
+      })
   }
-]
-
-inquirer.prompt(questions, answers => {
-  console.log(answers)
 })
