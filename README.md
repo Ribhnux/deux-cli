@@ -1,14 +1,15 @@
 # Deux
-Simple CLI for scaffolding component-based WordPress starter theme.
+Simple CLI for scaffolding component-based WordPress.
 
 ## Requirements
-Deux is command line tool built with javascript, in order to work with deux, you must install NodeJS environments. At least you must have NodeJS and NPM with these versions:
+Deux is command line tool built with javascript, if you want to work with deux, you must install NodeJS environments.  
+At least your NodeJS and NPM using current version:
 
 > NodeJS >= 6.x  
 > NPM >= 3.x
 
 ## Install Deux
-After NodeJS has been installed to your computer, you should install ``deux`` globally.
+After NodeJS has been installed to your computer, you should install ``deux-cli`` globally.
 
 > npm install deux -g
 
