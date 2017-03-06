@@ -1,0 +1,4 @@
+#!/usr/bin/env node
+
+const task = require('../lib/task')
+task.run('test')
