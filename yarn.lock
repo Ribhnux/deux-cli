@@ -2526,6 +2526,10 @@ jsesc@~0.5.0:
   version "0.5.0"
   resolved "https://registry.yarnpkg.com/jsesc/-/jsesc-0.5.0.tgz#e7dee66e35d6fc16f710fe91d5cf69f70f08911d"
 
+json-realtime@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/json-realtime/-/json-realtime-1.2.0.tgz#c886e7194a424115fe55df014e77951331a4390f"
+
 json-schema@0.2.3:
   version "0.2.3"
   resolved "https://registry.yarnpkg.com/json-schema/-/json-schema-0.2.3.tgz#b480c892e59a2f05954ce727bd3f2a4e882f9e13"
@@ -4348,6 +4352,12 @@ wordwrap@~0.0.2:
 wordwrap@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/wordwrap/-/wordwrap-1.0.0.tgz#27584810891456a4171c8d0226441ade90cbcaeb"
+
+wp-get-file-header@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/wp-get-file-header/-/wp-get-file-header-0.2.0.tgz#54de5505d22b8d1f219fd0e229fe6d03da8afec9"
+  dependencies:
+    string "^3.3.3"
 
 wrappy@1:
   version "1.0.2"
