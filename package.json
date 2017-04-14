@@ -38,6 +38,7 @@
     "wp-get-file-header": "^0.2.0"
   },
   "devDependencies": {
+    "@ava/babel-preset-stage-4": "^1.0.0",
     "ava": "^0.18.2",
     "babel-core": "^6.24.1",
     "babel-eslint": "^7.2.1",
