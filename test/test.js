@@ -1,23 +1,11 @@
-import test from 'ava'
-import path from 'path'
 import fs from 'fs'
+import path from 'path'
+import test from 'ava'
 
-const BASENAME = 'deux'
-const filePrefix = `bin/${BASENAME}`
+const baseName = 'deux'
 const root = path.resolve(__dirname, '..')
 const binPath = path.join(root, 'bin')
-const checkExists = filename => {
-  let basename = BASENAME
-  let filepath = filePrefix
-  if (filename) {
-    basename += `-${filename}`
-    filepath += `-${filename}`
-  }
 
-  test(`${filepath} should be exists`, t => {
-    t.truthy(fs.existsSync(path.join(binPath, basename)))
-  })
-}
-
-checkExists()
-checkExists('init')
+test('deux should be exists', t => {
+  t.truthy(fs.existsSync(path.join(binPath, baseName)))
+})
