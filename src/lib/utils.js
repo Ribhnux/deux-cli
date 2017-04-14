@@ -1,5 +1,7 @@
 import path from 'path'
-import {readdirSync, statSync} from 'fs'
+import {readdirSync, statSync, writeFileSync, readFileSync} from 'fs'
+import handlebars from 'handlebars'
+import mkdirp from 'mkdirp'
 
 export const isJSON = str => {
   try {
@@ -25,6 +27,37 @@ export const filelist = dir => {
     .filter(item => {
       return statSync(path.join(dir, item)).isFile()
     })
+}
+
+export const compileFile = ({srcPath, dstPath, syntax}) => {
+  const fileStr = readFileSync(srcPath, 'ascii')
+  const compiler = handlebars.compile(fileStr)
+  const output = compiler(syntax)
+  writeFileSync(dstPath, output, 'utf-8')
+}
+
+export const compileFiles = ({srcDir, dstDir, syntax}) => {
+  const templateDir = scanDir(srcDir).filter(
+    item => item !== '_partials'
+  )
+
+  templateDir.forEach(filename => {
+    const srcPath = path.join(srcDir, filename)
+    const dstPath = path.join(dstDir, filename)
+
+    if (statSync(srcPath).isFile()) {
+      compileFile({srcPath, dstPath, syntax})
+    }
+
+    if (statSync(srcPath).isDirectory()) {
+      mkdirp.sync(dstPath)
+      compileFiles({
+        srcDir: srcPath,
+        dstDir: dstPath,
+        syntax
+      })
+    }
+  })
 }
 
 export default {}
