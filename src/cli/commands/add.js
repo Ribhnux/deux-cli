@@ -1,6 +1,5 @@
 import inquirer from 'inquirer'
-import chalk from 'chalk'
-import { error, colorlog } from '../../lib/logger'
+import {error, colorlog} from '../../lib/logger'
 import * as message from '../../lib/messages'
 import * as constant from '../../lib/const'
 
@@ -27,7 +26,7 @@ const addPlugin = options => {
       type: 'text',
       name: 'search',
       message: 'Search Slug',
-      when ({ location }) {
+      when: ({location}) => {
         return location === 'wordpress'
       }
     },
@@ -36,10 +35,10 @@ const addPlugin = options => {
       name: 'url',
       message: 'Plugin URL',
       hint: '.zip extension',
-      when ({ location }) {
-        return location == 'private'
+      when: ({location}) => {
+        return location === 'private'
       },
-      validate (value) {
+      validate: value => {
         if (value.substr(value.length, -4) !== '.zip') {
           return message.ERROR_REPOSITORY_URL_NOT_ZIP
         }
@@ -74,11 +73,14 @@ const addComponent = () => {
 }
 
 const addHook = name => {
-  colorlog('Add {hook function}')
+  colorlog(`Add {${name} function}`)
 }
 
 export default args => {
-  if (args.length && args.length > 1 || !Object.values(constant.validAddCommand).includes(args[0])) {
+  const hasLength = args.length && args.length > 1
+  const validCommand = Object.values(constant.validAddCommand).includes(args[0])
+
+  if (hasLength || !validCommand) {
     error({
       err: message.ERROR_INVALID_COMMAND
     })
@@ -103,10 +105,6 @@ export default args => {
       addSCSS()
       break
 
-    case constant.validAddCommand.PLUGIN:
-      addPlugin()
-      break
-
     case constant.validAddCommand.TEMPLATE:
       addTemplate()
       break
@@ -122,6 +120,9 @@ export default args => {
     case constant.validAddCommand.ACTION:
     case constant.validAddCommand.FILTER:
       addHook(command)
+      break
+
+    default:
       break
   }
 }

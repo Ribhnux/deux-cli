@@ -1,7 +1,9 @@
 export const isJSON = str => {
   try {
     return JSON.parse(str)
-  } catch (e) {
+  } catch (err) {
     return false
   }
 }
+
+export default {}

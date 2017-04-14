@@ -1,3 +1,3 @@
-export default dev => {
+export default () => {
   console.log('dev mode')
 }

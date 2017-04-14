@@ -1,31 +1,44 @@
 import chalk from 'chalk'
-import { format } from 'util'
 
 const prefix = 'deux'
 const sep = '>'
+const msgRegx = /\{(.[^{]*)\}/g
 
-export const error = ({ err, exit = true }) => {
-  if (err instanceof Error) {
-    err = err.message.trim()
+export const stdlog = options => {
+  const {message, exit, color, paddingTop, paddingBottom} = Object.assign({
+    message: '',
+    color: 'red',
+    exit: false,
+    paddingTop: false,
+    paddingBottom: false
+  }, options)
+
+  const colored = chalk[color](prefix)
+
+  if (paddingTop) {
+    console.log('')
   }
 
-  if (err.join) {
-    err = err.join(' ')
-  }
+  console.log(`${colored} ${sep} ${message}`)
 
-  console.error(chalk.red(prefix), sep, err)
+  if (paddingBottom) {
+    console.log('')
+  }
 
   if (exit) {
-    process.exit(0)
+    throw new Error(undefined)
   }
 }
 
-export const done = function () {
-  const message = format.apply(format, arguments)
-  console.log(chalk.green(prefix), sep, message)
+export const error = options => {
+  stdlog(options)
+}
+
+export const done = options => {
+  stdlog(Object.assign({color: 'green'}, options))
 }
 
 export const colorlog = message => {
-  message = message.replace(/\{(.[^{]*)\}/g, `${chalk.bold.magenta('$1')}`)
+  message = message.replace(msgRegx, `${chalk.bold.magenta('$1')}`)
   console.log(`\n${message}\n`)
 }

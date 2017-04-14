@@ -1,17 +1,17 @@
+import path from 'path'
+import {existsSync} from 'fs'
 import inquirer from 'inquirer'
 import faker from 'faker'
-import S from 'string'
+import _s from 'string'
 import Listr from 'listr'
-import path from 'path'
 import mkdirp from 'mkdirp'
-import { existsSync } from 'fs'
-import { validTags, wpThemeDir } from '../../lib/const'
-import { error, colorlog } from '../../lib/logger'
 import * as message from '../../lib/messages'
+import {validTags, wpThemeDir} from '../../lib/const'
+import {error, colorlog} from '../../lib/logger'
 
 export default () => {
   colorlog(`Add new {theme}`)
-  const currentProject = {}
+  // E const currentProject = {}
 
   const prompts = [
     {
@@ -65,7 +65,7 @@ export default () => {
         ...validTags.map(value => {
           return {
             value,
-            name: S(value).humanize().s
+            name: _s(value).humanize().s
           }
         })
       ],
@@ -95,7 +95,7 @@ export default () => {
     {
       type: 'confirm',
       name: 'confirm',
-      message: 'Are you sure?',
+      message: 'Are you sure?'
     }
   ]
 
@@ -104,12 +104,14 @@ export default () => {
     .then(answers => {
       if (!answers.confirm) {
         console.log('')
-        error({ err: 'Theme creation was canceled.' })
+        error({
+          err: message.ERROR_THEME_CREATION_CANCELED
+        })
       }
 
       const themeNameLower = answers.themeName.toLowerCase()
-      const themeSlug = S(themeNameLower).slugify().s
-      const textDomain = S(themeNameLower).underscore().s
+      const themeSlug = _s(themeNameLower).slugify().s
+      const textDomain = _s(themeNameLower).underscore().s
       const themePath = path.join(wpThemeDir, themeSlug)
 
       console.log('')
@@ -118,13 +120,15 @@ export default () => {
       const task = new Listr([
         {
           title: `Make directory ${themePath}`,
-          task: () => new Promise((resolve, reject) => {
+          task: () => new Promise(resolve => {
             if (existsSync(themePath)) {
               throw new Error(message.ERROR_THEME_ALREADY_EXISTS)
             }
 
             mkdirp(themePath, err => {
-              if (err) throw err
+              if (err) {
+                throw err
+              }
               resolve()
             })
           })
@@ -135,7 +139,10 @@ export default () => {
           task: () => new Listr([
             {
               title: 'Copy important templates',
-              task: () => true
+              task: () => {
+                console.log(textDomain)
+                return true
+              }
             },
 
             {
@@ -172,13 +179,15 @@ export default () => {
           task: () => {
             return true
           }
-        },
+        }
       ])
 
       task.run()
         .catch(err => {
           console.log('')
-          error({ err })
+          error({
+            err
+          })
           console.log('')
         })
     })
