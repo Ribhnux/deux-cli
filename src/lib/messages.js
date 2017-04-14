@@ -16,5 +16,5 @@ export const ERROR_PROJECT_FILE_NOT_EXISTS = '.deuxproject File not exists'
 export const ERROR_PROJECT_FILE_INVALID_JSON = 'Invalid format'
 export const ERROR_REPOSITORY_URL_NOT_ZIP = 'Repository URL does not contains .zip extension.'
 export const ERROR_CANCELED = 'Canceled'
-export const ERROR_THEME_ALREADY_EXISTS = `Theme already exists. type: ${chalk.bgCyan('deux reset')} or ${chalk.bgCyan('deux remove theme')} to modify / remove existing theme.`
+export const ERROR_THEME_ALREADY_EXISTS = `Theme already exists. type: ${chalk.bgCyan(' deux remove theme ')} to remove existing theme.`
 export const ERROR_THEME_CREATION_CANCELED = 'Theme creation was canceled.'
