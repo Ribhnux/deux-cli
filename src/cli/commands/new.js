@@ -103,9 +103,10 @@ export default () => {
     .prompt(prompts)
     .then(answers => {
       if (!answers.confirm) {
-        console.log('')
         error({
-          err: message.ERROR_THEME_CREATION_CANCELED
+          message: message.ERROR_THEME_CREATION_CANCELED,
+          paddingTop: true,
+          exit: true
         })
       }
 
@@ -122,13 +123,22 @@ export default () => {
           title: `Make directory ${themePath}`,
           task: () => new Promise(resolve => {
             if (existsSync(themePath)) {
-              throw new Error(message.ERROR_THEME_ALREADY_EXISTS)
+              error({
+                message: message.ERROR_THEME_ALREADY_EXISTS,
+                padding: true,
+                exit: true
+              })
             }
 
             mkdirp(themePath, err => {
               if (err) {
-                throw err
+                error({
+                  message: err.message,
+                  padding: true,
+                  exit: true
+                })
               }
+
               resolve()
             })
           })
