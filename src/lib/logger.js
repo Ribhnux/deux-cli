@@ -5,23 +5,38 @@ const sep = '>'
 const msgRegx = /\{(.[^{]*)\}/g
 
 export const stdlog = options => {
-  const {message, exit, color, paddingTop, paddingBottom} = Object.assign({
+  const {
+    message,
+    exit,
+    color,
+    padding,
+    paddingTop,
+    paddingBottom
+  } = Object.assign({
     message: '',
     color: 'red',
     exit: false,
+    padding: false,
     paddingTop: false,
     paddingBottom: false
   }, options)
 
   const colored = chalk[color](prefix)
 
-  if (paddingTop) {
+  let padTop = paddingTop
+  let padBtm = paddingBottom
+  if (padding) {
+    padTop = true
+    padBtm = true
+  }
+
+  if (padTop) {
     console.log('')
   }
 
   console.log(`${colored} ${sep} ${message}`)
 
-  if (paddingBottom) {
+  if (padBtm) {
     console.log('')
   }
 
