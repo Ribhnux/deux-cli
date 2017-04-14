@@ -2,9 +2,9 @@
 Theme Name: {{themeName}}
 Theme URI: {{themeUri}}
 Author: {{author}}
-Author URI: {{authorUri}}
-{% if isChild %}Template: {{parentTheme}}{% endif %}
-Description: {{description}}
+Author URI: {{authorUri}}{{#if isChild}}
+Template: {{parentTheme}}
+{{/if}}Description: {{description}}
 Version: {{version}}
 License: GNU General Public License v2.0
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
