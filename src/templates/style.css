@@ -3,6 +3,7 @@ Theme Name: {{themeName}}
 Theme URI: {{themeUri}}
 Author: {{author}}
 Author URI: {{authorUri}}
+{% if isChild %}Template: {{parentTheme}}{% endif %}
 Description: {{description}}
 Version: {{version}}
 License: GNU General Public License v2.0
