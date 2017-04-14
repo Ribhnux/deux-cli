@@ -40,11 +40,15 @@ export default options => {
 
       // Check if .deuxproject is valid JSON format
       if (!deux) {
-        throw new Error(message.ERROR_PROJECT_FILE_INVALID_JSON)
+        error({
+          message: message.ERROR_PROJECT_FILE_INVALID_JSON,
+          padding: true,
+          exit: true
+        })
       }
 
       // Check if .deuxproject is not empty / {}
-      if (!deux.list && !deux.current) {
+      if (deux.current === '') {
         if (options === 'new') {
           resolve()
           return
