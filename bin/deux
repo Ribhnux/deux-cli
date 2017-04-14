@@ -1,7 +1,16 @@
 #!/usr/bin/env node
 
+const roadrunner = require('roadrunner')
 require('commander')
   .version(require('../package').version)
   .usage('<command> [options]')
-  .command('init', 'generate a new project')
+  .command('new', 'generate a new theme')
+  .command('status', 'display current theme status')
+  .command('reset', 'reset current theme with initial files')
+  .command('switch [theme]', 'switch to another theme')
+  .command('add [option]', 'add dependencies, page template, action, and filter')
+  .command('remove [option]', 'remove dependencies, page template, action, and filter')
+  .command('list [option]', 'list of all things')
+  .command('dev', 'development mode')
+  .command('release', 'release theme to repository')
   .parse(process.argv)

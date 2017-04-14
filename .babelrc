@@ -1,5 +1,9 @@
 {
   "presets": [
-    "@ava/stage-4"
+    "es2017"
+  ],
+  "plugins": [
+    "transform-runtime",
+    "add-module-exports"
   ]
 }
