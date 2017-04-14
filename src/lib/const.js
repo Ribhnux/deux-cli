@@ -1,17 +1,29 @@
-const path = require('path')
-const wpDir = process.cwd()
-const configFileName = '.deuxconfig'
-const projectFileName = '.deuxproject'
+import path from 'path'
 
-exports.CONFIG_FILENAME = configFileName
-exports.PROJECT_FILENAME = projectFileName
-exports.WP_DIR = wpDir
-exports.WP_CONFIG_PATH = path.join(wpDir, 'wp-config.php')
-exports.WP_THEME_DIR = path.join(wpDir, 'wp-content', 'themes')
-exports.PROJECT_FILE_PATH = path.join(wpDir, projectFileName)
-exports.PROJECT_STATUS_NEW = 'new'
-exports.PROJECT_STATUS_EXISTING = 'existing'
-exports.THEME_VALID_TAGS = [
+export const wordpressDir = process.cwd()
+export const deuxConfig = '.deuxconfig'
+export const deuxProject = '.deuxproject'
+export const projectPath = path.join(wordpressDir, deuxProject)
+export const wpConfigPath = path.join(wordpressDir, 'wp-config.php')
+export const wpThemeDir = path.join(wordpressDir, 'wp-content', 'themes')
+export const projectStatus = {
+  NEW: 'new',
+  EXISTING: 'existing'
+}
+
+export const validAddCommand = {
+  PLUGIN: 'plugin',
+  CSS: 'css',
+  JS: 'js',
+  SCSS: 'scss',
+  TEMPLATE: 'template',
+  COMPONENT: 'component',
+  LOOP_TEMPLATE: 'loop-template',
+  ACTION: 'action',
+  FILTER: 'filter'
+}
+
+export const validTags = [
   'one-column',
   'two-columns',
   'three-columns',
