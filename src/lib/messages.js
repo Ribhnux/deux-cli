@@ -19,3 +19,4 @@ export const ERROR_CANCELED = 'Canceled'
 export const ERROR_THEME_ALREADY_EXISTS = `Theme already exists. type: ${chalk.bgCyan(' deux remove theme ')} to remove existing theme.`
 export const ERROR_THEME_CREATION_CANCELED = 'Theme creation was canceled.'
 export const ERROR_GIT_INIT = 'There is something wrong when initializing git.'
+export const ERROR_GIT_REMOTE_ADD = 'There is something wrong when add remote url to git.'
