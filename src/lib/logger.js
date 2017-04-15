@@ -53,8 +53,8 @@ export const done = options => {
   stdlog(Object.assign({color: 'green'}, options))
 }
 
-export const colorlog = (message, padding = true) => {
-  let finalMsg = message.replace(msgRegx, `${chalk.bold.magenta('$1')}`)
+export const colorlog = (message, padding = true, color = 'magenta') => {
+  let finalMsg = message.replace(msgRegx, `${chalk.bold[color]('$1')}`)
   if (padding) {
     finalMsg = `\n${finalMsg}\n`
   }
