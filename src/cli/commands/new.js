@@ -1,24 +1,78 @@
 import path from 'path'
-import {existsSync} from 'fs'
+import {existsSync, writeFile} from 'fs'
 import inquirer from 'inquirer'
 import faker from 'faker'
 import _s from 'string'
 import Listr from 'listr'
 import mkdirp from 'mkdirp'
+import rimraf from 'rimraf'
+import execa from 'execa'
+import wpFileHeader from 'wp-get-file-header'
+import jsonr from 'json-realtime'
 import * as message from '../../lib/messages'
-import {validTags, wpThemeDir} from '../../lib/const'
+import {deuxConfig, projectPath, validTags, wpThemeDir, templateDir} from '../../lib/const'
 import {error, colorlog} from '../../lib/logger'
+import {dirlist, compileFiles} from '../../lib/utils'
 
 export default () => {
   colorlog(`Add new {theme}`)
-  // E const currentProject = {}
 
   const prompts = [
+    {
+      type: 'confirm',
+      name: 'isChild',
+      message: 'Is Child Theme?',
+      default: false
+    },
+
     {
       type: 'input',
       name: 'themeName',
       message: 'Theme Name',
       default: 'Deux Theme'
+    },
+
+    {
+      type: 'list',
+      name: 'parentTheme',
+      message: 'Parent Theme',
+      choices: answers => {
+        const themes = dirlist(wpThemeDir).map(themeDir => {
+          const themeStyle = path.join(wpThemeDir, themeDir, 'style.css')
+
+          return new Promise(resolve => {
+            // Check if theme has style.css, since WP themes should have this file
+            if (existsSync(themeStyle) === true) {
+              wpFileHeader(themeStyle).then(info => {
+                const {themeName, textDomain, template} = info
+                let resolveValue
+
+                // Pick themes that not a child theme
+                if (themeName && textDomain && !template) {
+                  resolveValue = {
+                    name: themeName,
+                    value: textDomain
+                  }
+                }
+
+                resolve(resolveValue)
+              })
+            } else {
+              resolve()
+            }
+          }).then(info => info)
+        })
+
+        return new Promise(resolve => {
+          Promise.all(themes).then(themeResult => {
+            const validThemes = themeResult.filter(theme => {
+              return theme && theme.name !== answers.themeName
+            })
+            resolve(validThemes)
+          })
+        })
+      },
+      when: ({isChild}) => isChild
     },
 
     {
@@ -69,8 +123,8 @@ export default () => {
           }
         })
       ],
-      validate: answer => {
-        if (answer.length < 1) {
+      validate: value => {
+        if (value.length < 1) {
           return 'Please select at least one tag.'
         }
 
@@ -79,17 +133,28 @@ export default () => {
     },
 
     {
-      type: 'confirm',
-      name: 'isChild',
-      message: 'Child theme',
-      default: false
+      type: 'input',
+      name: 'gitUri',
+      message: 'Git Repository',
+      default: 'https://github.com/example/my-theme.git',
+      validate: value => {
+        if (value.length < 1 || /https?:\/\//.test(value) === false) {
+          return 'Git repository is important for modern developer.'
+        }
+
+        return true
+      }
     },
 
     {
-      type: 'input',
-      name: 'repo',
-      message: 'Repository',
-      default: 'https://github.com/'
+      type: 'confirm',
+      name: 'overwrite',
+      message: 'Theme already exists. Overwrite?',
+      default: false,
+      when: answers => {
+        const themePath = path.join(wpThemeDir, _s(answers.themeName).slugify().s)
+        return existsSync(themePath)
+      }
     },
 
     {
@@ -110,19 +175,32 @@ export default () => {
         })
       }
 
-      const themeNameLower = answers.themeName.toLowerCase()
-      const themeSlug = _s(themeNameLower).slugify().s
-      const textDomain = _s(themeNameLower).underscore().s
-      const themePath = path.join(wpThemeDir, themeSlug)
+      const {
+        themeName,
+        themeUri,
+        author,
+        authorUri,
+        isChild,
+        parentTheme,
+        description,
+        version,
+        tags,
+        gitUri,
+        overwrite
+      } = answers
 
-      console.log('')
-      colorlog(`Initialize {${answers.themeName}}`)
+      const themeNameLower = themeName.toLowerCase()
+      const textDomain = _s(themeNameLower).slugify().s
+      const themePath = path.join(wpThemeDir, textDomain)
+      const gitPath = path.join(themePath, '.git')
+      const deuxConfigPath = path.join(themePath, deuxConfig)
 
+      colorlog(`Initialize {${themeName}}`)
       const task = new Listr([
         {
-          title: `Make directory ${themePath}`,
+          title: 'Make theme directory',
           task: () => new Promise(resolve => {
-            if (existsSync(themePath)) {
+            if (existsSync(themePath) && overwrite === false) {
               error({
                 message: message.ERROR_THEME_ALREADY_EXISTS,
                 padding: true,
@@ -145,60 +223,160 @@ export default () => {
         },
 
         {
+          title: 'Overwrite theme directory',
+          enabled: () => overwrite,
+          task: () => new Promise(resolve => {
+            rimraf(path.join(themePath, '*'), err => {
+              if (err) {
+                error({
+                  message: err.message,
+                  padding: true,
+                  exit: true
+                })
+              }
+
+              rimraf(path.join(themePath, '.git'), err => {
+                if (err) {
+                  error({
+                    message: err.message,
+                    padding: true,
+                    exit: true
+                  })
+                }
+                resolve()
+              })
+            })
+          })
+        },
+
+        {
           title: 'Init WordPress Theme',
           task: () => new Listr([
             {
-              title: 'Copy important templates',
+              title: 'Setup theme structures',
               task: () => {
-                console.log(textDomain)
-                return true
+                return new Promise(resolve => {
+                  compileFiles({
+                    srcDir: templateDir,
+                    dstDir: themePath,
+                    syntax: {
+                      themeName,
+                      themeUri,
+                      author,
+                      authorUri,
+                      isChild,
+                      parentTheme,
+                      description,
+                      version,
+                      textDomain,
+                      tags: tags.join(', ')
+                    }
+                  })
+                  resolve()
+                })
               }
             },
 
             {
-              title: 'Setup theme structures',
-              task: () => true
+              title: 'Copy main templates',
+              task: () => {
+                console.log(textDomain)
+                return true
+              }
             }
           ])
         },
 
         {
-          title: 'Git Repository',
+          title: 'Init Git',
           task: () => new Listr([
             {
               title: 'Init repository',
-              task: () => true
+              task: () => execa.stdout('git', [`--git-dir=${gitPath}`, `--work-tree=${gitPath}`, 'init', '-q'])
             },
 
             {
-              title: `Add remote url \`${answers.repo}\``,
-              task: () => true
+              title: `Add remote url \`${gitUri}\``,
+              task: () => execa.stdout('git', [`--git-dir=${gitPath}`, 'remote', 'add', 'origin', gitUri])
+            },
+
+            {
+              title: `Validate remote url \`${gitUri}\``,
+              task: () => execa.stdout('git', [`--git-dir=${gitPath}`, 'pull', 'origin', 'master'])
+            },
+
+            {
+              title: `Download git objects and refs from \`${gitUri}\``,
+              task: () => execa.stdout('git', [`--git-dir=${gitPath}`, 'fetch'])
             }
           ])
         },
 
         {
-          title: 'Save config [.deuxconfig]',
-          task: () => {
-            return true
-          }
+          title: `Init config [${deuxConfig}]`,
+          task: () => new Listr([
+            {
+              title: `Create ${deuxConfig} file`,
+              task: () => new Promise((resolve, reject) => {
+                writeFile(deuxConfigPath, '{}', err => {
+                  if (err) {
+                    reject(err)
+                  }
+                  resolve()
+                })
+              })
+            },
+
+            {
+              title: 'Save default config',
+              task: () => new Promise(resolve => {
+                const deuxTheme = jsonr(deuxConfigPath)
+                deuxTheme.plugins = {}
+                deuxTheme.assets = {
+                  css: {},
+                  js: {},
+                  fonts: {}
+                }
+                deuxTheme.watch = [
+                  '*.php',
+                  'assets/js/*',
+                  'assets/scss/*',
+                  'components/*',
+                  'loop-templates/*',
+                  'page-templates/*',
+                  'plugins/*'
+                ]
+                resolve()
+              })
+            }
+          ])
         },
 
         {
-          title: `Save ${answers.themeName} to project [.deuxproject]`,
-          task: () => {
-            return true
-          }
+          title: `Save ${themeName} to project [.deuxproject]`,
+          task: () => new Promise(resolve => {
+            const deuxProject = jsonr(projectPath)
+            deuxProject.current = textDomain
+            deuxProject.list[textDomain] = {
+              name: themeName,
+              version: version,
+              git: gitUri
+            }
+            resolve()
+          })
         }
       ])
 
-      task.run()
-        .catch(err => {
-          console.log('')
-          error({
-            err
-          })
-          console.log('')
+      task.run().catch(() => {
+        rimraf(themePath, err => {
+          if (err) {
+            error({
+              message: err.message,
+              padding: true,
+              exit: true
+            })
+          }
         })
+      })
     })
 }
