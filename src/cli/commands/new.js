@@ -358,8 +358,8 @@ export default () => {
             const deuxProject = jsonr(projectPath)
             deuxProject.current = textDomain
             deuxProject.list[textDomain] = {
-              name: themeName,
-              version: version,
+              themeName,
+              version,
               git: gitUri
             }
             resolve()

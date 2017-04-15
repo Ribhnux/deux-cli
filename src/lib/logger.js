@@ -54,10 +54,9 @@ export const done = options => {
 }
 
 export const colorlog = (message, padding = true) => {
+  let finalMsg = message.replace(msgRegx, `${chalk.bold.magenta('$1')}`)
   if (padding) {
-    console.log('')
+    finalMsg = `\n${finalMsg}\n`
   }
-
-  message = message.replace(msgRegx, `${chalk.bold.magenta('$1')}`)
-  console.log(`\n${message}\n`)
+  console.log(finalMsg)
 }
