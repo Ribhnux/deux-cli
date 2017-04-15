@@ -18,3 +18,4 @@ export const ERROR_REPOSITORY_URL_NOT_ZIP = 'Repository URL does not contains .z
 export const ERROR_CANCELED = 'Canceled'
 export const ERROR_THEME_ALREADY_EXISTS = `Theme already exists. type: ${chalk.bgCyan(' deux remove theme ')} to remove existing theme.`
 export const ERROR_THEME_CREATION_CANCELED = 'Theme creation was canceled.'
+export const ERROR_GIT_INIT = 'There is something wrong when initializing git.'
