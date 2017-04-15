@@ -6,6 +6,10 @@ const cli = require('../src/cli')
 
 program.parse(process.argv)
 
-cli('new').then(command => {
-  command.new()
-})
+cli('new')
+  .then(command => {
+    command.new()
+  })
+  .catch(() => {
+    process.exit(0)
+  })

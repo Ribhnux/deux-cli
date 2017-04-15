@@ -3,6 +3,8 @@ import path from 'path'
 export const wordpressDir = process.cwd()
 export const deuxConfig = '.deuxconfig'
 export const deuxProject = '.deuxproject'
+export const srcDir = path.join(path.resolve(__dirname, '..', '..'), 'src')
+export const templateDir = path.join(srcDir, 'templates')
 export const projectPath = path.join(wordpressDir, deuxProject)
 export const wpConfigPath = path.join(wordpressDir, 'wp-config.php')
 export const wpThemeDir = path.join(wordpressDir, 'wp-content', 'themes')

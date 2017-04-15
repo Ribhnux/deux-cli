@@ -1,52 +1,68 @@
-import { existsSync, writeFile, readFileSync } from 'fs'
+import {existsSync, writeFileSync, readFileSync} from 'fs'
 import * as message from '../lib/messages'
-import { wpConfigPath, projectPath } from '../lib/const'
-import { isJSON } from '../lib/utils'
-import { error, done } from '../lib/logger'
+import {wpConfigPath, projectPath} from '../lib/const'
+import {isJSON} from '../lib/utils'
+import {error, done} from '../lib/logger'
 
 export default options => {
-  return new Promise((resolve, reject) => {
+  return new Promise(resolve => {
     if (!existsSync(wpConfigPath)) {
       throw new Error(message.ERROR_NOT_WP_FOLDER)
     }
 
-    // check if .deuxproject exists
-    if (!existsSync(projectPath)) {
-      console.log('')
+    // Check if .deuxproject exists
+    if (existsSync(projectPath) === false) {
       error({
-        err: message.ERROR_PROJECT_FILE_NOT_EXISTS,
-        exit: false
+        message: message.ERROR_PROJECT_FILE_NOT_EXISTS,
+        paddingTop: true
       })
 
-      writeFile(projectPath, `{}`, err => {
-        if (err) throw new Error(err)
-        done(message.INIT_PROJECT)
-        done(message.SUCCEED_INITIALIZED)
-        done(message.CREATE_NEW_THEME)
-        reject()
+      writeFileSync(projectPath, JSON.stringify({
+        list: {},
+        current: '',
+        env: {}
+      }, null, 2))
+
+      error({
+        message: message.INIT_PROJECT
+      })
+      done({
+        message: message.SUCCEED_INITIALIZED
+      })
+      done({
+        message: message.CREATE_NEW_THEME,
+        paddingBottom: true,
+        exit: true
       })
     } else {
       const json = readFileSync(projectPath, 'ascii')
       const deux = isJSON(json)
 
-      // check if .deuxproject is valid JSON format
+      // Check if .deuxproject is valid JSON format
       if (!deux) {
-        throw new Error(message.ERROR_PROJECT_FILE_INVALID_JSON)
+        error({
+          message: message.ERROR_PROJECT_FILE_INVALID_JSON,
+          padding: true,
+          exit: true
+        })
       }
 
-      // check if .deuxproject is not empty / {}
-      if (!deux.list && !deux.current) {
+      // Check if .deuxproject is not empty / {}
+      if (deux.current === '') {
         if (options === 'new') {
           resolve()
           return
         }
-        console.log('')
+
         error({
-          err: message.ERROR_NO_THEME,
-          exit: false
+          message: message.ERROR_NO_THEME,
+          paddingTop: true
         })
-        done(message.CREATE_NEW_THEME)
-        reject()
+        done({
+          message: message.CREATE_NEW_THEME,
+          exit: true,
+          paddingBottom: true
+        })
       }
     }
 
