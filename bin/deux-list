@@ -1,1 +1,15 @@
 #!/usr/bin/env node
+
+require('babel-register')
+const program = require('commander')
+const cli = require('../src/cli')
+
+program.parse(process.argv)
+
+cli()
+  .then(command => {
+    command.list(program.args)
+  })
+  .catch(() => {
+    process.exit(0)
+  })
