@@ -33,6 +33,7 @@
     "lodash": "^4.17.4",
     "mkdirp": "^0.5.1",
     "ora": "^1.2.0",
+    "rimraf": "^2.6.1",
     "roadrunner": "^1.1.0",
     "string": "^3.3.3",
     "wp-get-file-header": "^0.2.0"
