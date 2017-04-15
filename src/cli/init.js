@@ -21,7 +21,7 @@ export default options => {
         list: {},
         current: '',
         env: {}
-      }))
+      }, null, 2))
 
       error({
         message: message.INIT_PROJECT
