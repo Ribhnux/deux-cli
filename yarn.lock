@@ -2521,9 +2521,9 @@ jsesc@~0.5.0:
   version "0.5.0"
   resolved "https://registry.yarnpkg.com/jsesc/-/jsesc-0.5.0.tgz#e7dee66e35d6fc16f710fe91d5cf69f70f08911d"
 
-json-realtime@^1.3.1:
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/json-realtime/-/json-realtime-1.3.1.tgz#d16dccb94c1b49270aebd7077a88e2c12fe617de"
+json-realtime@^1.3.3:
+  version "1.3.3"
+  resolved "https://registry.yarnpkg.com/json-realtime/-/json-realtime-1.3.3.tgz#b53542114f3c373dc322f7ecb0ef378e9252101f"
 
 json-schema@0.2.3:
   version "0.2.3"
