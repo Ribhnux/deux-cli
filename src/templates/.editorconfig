@@ -1,0 +1,20 @@
+root = tf
+
+[*]
+end_of_line = lf
+insert_final_newline = true
+
+[*.{js,css,php}]
+charset = utf-8
+
+[*.js]
+indent_style = tab
+indent_size = 4
+
+[*.php]
+indent_style = tab
+indent_size = 4
+
+[{.deuxconfig,.travis.yml}]
+indent_style = space
+indent_size = 2
