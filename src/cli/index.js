@@ -8,7 +8,8 @@ export default options => {
         dev: require('./commands/dev'),
         add: require('./commands/add'),
         status: require('./commands/status'),
-        switch: require('./commands/switch')
+        switch: require('./commands/switch'),
+        list: require('./commands/list')
       })
     })
   })
