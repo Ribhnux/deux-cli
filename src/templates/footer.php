@@ -2,12 +2,12 @@
 /**
  * The template for displaying the footer
  *
- * Contains footer content and the closing of the .site-main and #page div elements.
+ * Contains footer content and the closing of the #page div elements.
  *
- * @package {{textDomain}}
+ * @package {{themeName}}
  */
 ?>
-    </div><!-- .site-main -->
+	</div><!-- #main-wrapper -->
   </div><!-- #page -->
 
   <?php wp_footer(); ?>
