@@ -5,7 +5,7 @@
  * @package {{themeName}}
  */
 
-require_once get_template_directory() . '/includes/lib/class-tgm-plugin-activation.php';
+require_once get_template_directory() . '/includes/class/class-tgm-plugin-activation.php';
 add_action( 'tgmpa_register', '{{themeFnPrefix}}_tgmpa_register' );
 
 function {{themeFnPrefix}}_tgmpa_register() {
