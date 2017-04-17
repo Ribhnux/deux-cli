@@ -330,6 +330,21 @@ export default () => {
             {
               title: 'Save default config',
               task: () => new Promise(resolve => {
+                const phpRegx = /\.php$/g
+                const notHiddenFile = item => item && item !== '.gitkeep'
+
+                const components = filelist(path.join(templateDir, 'components'))
+                  .map(item => item.replace(phpRegx, ''))
+                  .filter(notHiddenFile)
+
+                const loopTemplates = filelist(path.join(templateDir, 'loop-templates'))
+                  .map(item => item.replace(phpRegx, ''))
+                  .filter(notHiddenFile)
+
+                const pageTemplates = filelist(path.join(templateDir, 'page-templates'))
+                  .map(item => item.replace(phpRegx, ''))
+                  .filter(notHiddenFile)
+
                 const deuxTheme = jsonr(deuxConfigPath)
                 deuxTheme.plugins = {}
                 deuxTheme.assets = {
