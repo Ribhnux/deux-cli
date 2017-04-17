@@ -383,15 +383,17 @@ export default () => {
       ])
 
       task.run().catch(() => {
-        rimraf(themePath, err => {
-          if (err) {
-            error({
-              message: err.message,
-              padding: true,
-              exit: true
-            })
-          }
-        })
+        setTimeout(() => {
+          rimraf(themePath, err => {
+            if (err) {
+              error({
+                message: err.message,
+                padding: true,
+                exit: true
+              })
+            }
+          })
+        }, 1500)
       })
     })
 }
