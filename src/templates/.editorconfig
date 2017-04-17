@@ -4,17 +4,17 @@ root = true
 end_of_line = lf
 insert_final_newline = true
 
-[*.{js,css,php}]
+[*.{js,css,scss,php}]
 charset = utf-8
 
-[*.js]
-indent_style = tab
-indent_size = 4
-
-[*.php]
-indent_style = tab
-indent_size = 4
+[*.{js,scss}]
+indent_style = space
+indent_size = 2
 
 [{.deuxconfig,.travis.yml}]
 indent_style = space
 indent_size = 2
+
+[*.php]
+indent_style = tab
+indent_size = 4
