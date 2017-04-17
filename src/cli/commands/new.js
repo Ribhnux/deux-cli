@@ -200,8 +200,9 @@ export default () => {
       const task = new Listr([
         {
           title: 'Make theme directory',
+          enabled: () => overwrite === false,
           task: () => new Promise(resolve => {
-            if (existsSync(themePath) && overwrite === false) {
+            if (existsSync(themePath)) {
               error({
                 message: message.ERROR_THEME_ALREADY_EXISTS,
                 padding: true,
