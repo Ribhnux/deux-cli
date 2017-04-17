@@ -269,7 +269,8 @@ export default () => {
                       description,
                       version,
                       textDomain,
-                      tags: tags.join(', ')
+                      tags: tags.join(', '),
+                      themeFnPrefix
                     }
                   })
                   resolve()
