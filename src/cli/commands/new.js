@@ -276,14 +276,6 @@ export default () => {
                   resolve()
                 })
               }
-            },
-
-            {
-              title: 'Copy main templates',
-              task: () => {
-                console.log(textDomain)
-                return true
-              }
             }
           ])
         },
