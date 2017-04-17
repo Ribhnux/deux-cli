@@ -191,6 +191,7 @@ export default () => {
 
       const themeNameLower = themeName.toLowerCase()
       const textDomain = _s(themeNameLower).slugify().s
+      const themeFnPrefix = _s(themeNameLower).underscore().s
       const themePath = path.join(wpThemeDir, textDomain)
       const gitPath = path.join(themePath, '.git')
       const deuxConfigPath = path.join(themePath, deuxConfig)
