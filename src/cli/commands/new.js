@@ -352,6 +352,9 @@ export default () => {
                   js: {},
                   fonts: {}
                 }
+                deuxTheme.components = components
+                deuxTheme.loopTemplates = loopTemplates
+                deuxTheme.pageTemplates = pageTemplates
                 deuxTheme.watch = [
                   '*.php',
                   'assets/js/*',
