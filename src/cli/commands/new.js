@@ -12,7 +12,7 @@ import jsonr from 'json-realtime'
 import * as message from '../../lib/messages'
 import {deuxConfig, projectPath, validTags, wpThemeDir, templateDir} from '../../lib/const'
 import {error, colorlog} from '../../lib/logger'
-import {dirlist, compileFiles} from '../../lib/utils'
+import {dirlist, filelist, compileFiles} from '../../lib/utils'
 
 export default () => {
   colorlog(`Add new {theme}`)
