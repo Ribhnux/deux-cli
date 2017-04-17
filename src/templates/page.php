@@ -13,7 +13,7 @@
 get_header();
 ?>
 
-<div class="site__wrapper--page">
+<div id="content-wrapper" class="site__wrapper--page">
 	<div id="content" class="content__wrapper" tabindex="-1">
 		<main id="main" class="site__main">
 
@@ -33,6 +33,6 @@ get_header();
 	</div><!-- #content -->
 
 	<?php get_sidebar(); // load the sidebar ?>
-</div>
+</div><!-- #content-wrapper -->
 
 <?php get_footer(); ?>

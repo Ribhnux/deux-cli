@@ -21,7 +21,7 @@ $author_url = $current_author->user_url;
 $author_desc = $current_author->user_description;
 ?>
 
-<div class="site__wrapper--author">
+<div id="content-wrapper" class="site__wrapper--author">
 	<div id="content" class="content__wrapper" tabindex="-1">
 		<main id="main" class="site__main">
 			<header id="page-header" class="page__header--author">
@@ -54,7 +54,7 @@ $author_desc = $current_author->user_description;
 				<?php while ( have_posts() ) : the_post(); ?>
 					<li>
 						<a rel="bookmark" href="<?php the_permalink() ?>" title="Permanent Link: <?php the_title(); ?>"> <?php the_title(); ?></a>,
-						<?php include get_template_directory() . '/components/posted-on.php'; ?>
+						<?php {{themeFnPrefix}}_posted_on(); ?>
 						<?php esc_html_e( 'in', '{{textDomain}}' ); ?> <?php the_category( '&' ); ?>
 					</li>
 				<?php endwhile; // end of the loops ?>
@@ -70,11 +70,11 @@ $author_desc = $current_author->user_description;
 		</main><!-- #main -->
 
 		<!-- The pagination component -->
-		<?php include get_template_directory() . '/components/pagination.php'; ?>
+		<?php {{themeFnPrefix}}_pagination(); ?>
 
 	</div><!-- #content -->
 
 	<?php get_sidebar(); // load the sidebar ?>
-</div>
+</div><!-- #content-wrapper -->
 
 <?php get_footer(); ?>

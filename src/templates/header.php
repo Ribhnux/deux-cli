@@ -30,8 +30,4 @@
 <body <?php body_class(); ?>>
 	<div id="page" class="site">
 		<div id="main-wrapper" class="site__wrapper">
-
-			<?php
-				// Display navigation bar component
-				include get_template_directory() . '/components/nav-bar.php';
-			?>
+			<?php {{themeFnPrefix}}_navbar(); // Display navigation bar component ?>
