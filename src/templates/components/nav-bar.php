@@ -1,14 +1,15 @@
 <?php
 /**
  * Component Name: Navigation Bar
- * Description: Navigation bar based on WordPress Menu
+ * Description: Display Navigation bar based on WordPress Menu
  *
  * @package {{themeName}}
  */
-?>
 
-<nav class="navbar">
-	<?php wp_nav_menu(
+if ( ! function_exists( '{{themeFnPrefix_navbar}}' ) ):
+function {{themeFnPrefix}}_navbar() {
+	echo '<nav class="navbar">';
+	wp_nav_menu(
 		array(
 			'theme_location'  => 'primary',
 			'container_class' => 'navbar__container',
@@ -17,5 +18,7 @@
 			'fallback_cb'     => '',
 			'menu_id'         => 'navbar__main-menu'
 		)
-	); ?>
-</nav>
+	);
+	echo '</nav>';
+}
+endif;

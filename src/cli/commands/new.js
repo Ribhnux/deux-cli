@@ -12,7 +12,7 @@ import jsonr from 'json-realtime'
 import * as message from '../../lib/messages'
 import {deuxConfig, projectPath, validTags, wpThemeDir, templateDir} from '../../lib/const'
 import {error, colorlog} from '../../lib/logger'
-import {dirlist, compileFiles} from '../../lib/utils'
+import {dirlist, filelist, compileFiles} from '../../lib/utils'
 
 export default () => {
   colorlog(`Add new {theme}`)
@@ -191,6 +191,7 @@ export default () => {
 
       const themeNameLower = themeName.toLowerCase()
       const textDomain = _s(themeNameLower).slugify().s
+      const themeFnPrefix = _s(themeNameLower).underscore().s
       const themePath = path.join(wpThemeDir, textDomain)
       const gitPath = path.join(themePath, '.git')
       const deuxConfigPath = path.join(themePath, deuxConfig)
@@ -199,8 +200,9 @@ export default () => {
       const task = new Listr([
         {
           title: 'Make theme directory',
+          enabled: () => overwrite === false,
           task: () => new Promise(resolve => {
-            if (existsSync(themePath) && overwrite === false) {
+            if (existsSync(themePath)) {
               error({
                 message: message.ERROR_THEME_ALREADY_EXISTS,
                 padding: true,
@@ -269,19 +271,12 @@ export default () => {
                       description,
                       version,
                       textDomain,
-                      tags: tags.join(', ')
+                      tags: tags.join(', '),
+                      themeFnPrefix
                     }
                   })
                   resolve()
                 })
-              }
-            },
-
-            {
-              title: 'Copy main templates',
-              task: () => {
-                console.log(textDomain)
-                return true
               }
             }
           ])
@@ -330,6 +325,21 @@ export default () => {
             {
               title: 'Save default config',
               task: () => new Promise(resolve => {
+                const phpRegx = /\.php$/g
+                const notHiddenFile = item => item && item !== '.gitkeep'
+
+                const components = filelist(path.join(templateDir, 'components'))
+                  .map(item => item.replace(phpRegx, ''))
+                  .filter(notHiddenFile)
+
+                const loopTemplates = filelist(path.join(templateDir, 'loop-templates'))
+                  .map(item => item.replace(phpRegx, ''))
+                  .filter(notHiddenFile)
+
+                const pageTemplates = filelist(path.join(templateDir, 'page-templates'))
+                  .map(item => item.replace(phpRegx, ''))
+                  .filter(notHiddenFile)
+
                 const deuxTheme = jsonr(deuxConfigPath)
                 deuxTheme.plugins = {}
                 deuxTheme.assets = {
@@ -337,6 +347,9 @@ export default () => {
                   js: {},
                   fonts: {}
                 }
+                deuxTheme.components = components
+                deuxTheme.loopTemplates = loopTemplates
+                deuxTheme.pageTemplates = pageTemplates
                 deuxTheme.watch = [
                   '*.php',
                   'assets/js/*',
@@ -368,15 +381,17 @@ export default () => {
       ])
 
       task.run().catch(() => {
-        rimraf(themePath, err => {
-          if (err) {
-            error({
-              message: err.message,
-              padding: true,
-              exit: true
-            })
-          }
-        })
+        setTimeout(() => {
+          rimraf(themePath, err => {
+            if (err) {
+              error({
+                message: err.message,
+                padding: true,
+                exit: true
+              })
+            }
+          })
+        }, 1500)
       })
     })
 }

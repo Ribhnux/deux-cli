@@ -5,14 +5,18 @@
  *
  * @package {{themeName}}
  */
+if ( ! function_exists( '{{themeFnPrefix}}_pagination' ) ) :
+function {{themeFnPrefix}}_pagination() {
+	global $wp_query;
 
-// Only for non-singular page or and page has at least 2
-if ( ! is_singular() || $wp_query->max_num_pages > 1 ) :
+	if ( is_singular() && $wp_query->max_num_pages <= 1 ) {
+		return;
+	}
 
 	$paged = get_query_var( 'paged' ) ? absint( get_query_var( 'paged' ) ) : 1;
 	$max   = intval( $wp_query->max_num_pages );
 
-	// Listing links to array
+	// Add current page to the array
 	if ( $paged >= 1 ) {
 		$links[] = $paged;
 	}
@@ -22,84 +26,50 @@ if ( ! is_singular() || $wp_query->max_num_pages > 1 ) :
 		$links[] = $paged - 1;
 		$links[] = $paged - 2;
 	}
-
 	if ( ( $paged + 2 ) <= $max ) {
 		$links[] = $paged + 2;
 		$links[] = $paged + 1;
 	}
+	echo '<nav aria-label="Page navigation"><ul class="pagination ">' . "\n";
 
-	?>
+	// Link to first page, plus ellipses if necessary
+	if ( ! in_array( 1, $links ) ) {
+		$class = 1 == $paged ? ' class="active page-item"' : ' class="page-item"';
+		printf( '<li %s><a class="page-link" href="%s"><i class="fa fa-step-backward" aria-hidden="true"></i></a></li>' . "\n",
+		$class, esc_url( get_pagenum_link( 1 ) ), '1' );
+		/**    Previous Post Link */
+		if ( get_previous_posts_link() ) {
+			printf( '<li class="page-item"><span class="page-link">%1$s</span></li> ' . "\n",
+			get_previous_posts_link( '<span aria-hidden="true">&laquo;</span><span class="sr-only">Previous page</span>' ) );
+		}
+		if ( ! in_array( 2, $links ) ) {
+			echo '<li class="page-item"></li>';
+		}
+	}
 
-	<nav aria-label="Page navigation">
-		<ul class="pagination ">
-		<?php
-		// Link to first page, plus ellipses if necessary
-		if ( ! in_array( 1, $links ) ) :
-			$class_name = ( 1 == $paged ) ? 'active page-item' : 'page-item'; ?>
-			<li class="<?php echo $class_name; ?>">
-				<a class="page-link" href="<?php echo esc_url( get_pagenum_link( 1 ) ); ?>">
-					<i class="fa fa-step-backward" aria-hidden="true"></i>
-				</a>
-			</li>
-			<?php
+	// Link to current page, plus 2 pages in either direction if necessary.
+	sort( $links );
+	foreach ( (array) $links as $link ) {
+		$class = $paged == $link ? ' class="active page-item"' : ' class="page-item"';
+		printf( '<li %s><a href="%s" class="page-link">%s</a></li>' . "\n", $class,
+			esc_url( get_pagenum_link( $link ) ), $link );
+	}
 
-			// Previous Post Link
-			if ( get_previous_posts_link() ) : ?>
-			<li class="page-item">
-				<span class="page-link">
-					<?php echo get_previous_posts_link( '<span aria-hidden="true">&laquo;</span><span class="sr-only">Previous page</span>' ); ?>
-				</span>
-			</li>
-			<?php endif;
+	// Next Post Link.
+	if ( get_next_posts_link() ) {
+		printf( '<li class="page-item"><span class="page-link">%s</span></li>' . "\n",
+			get_next_posts_link( '<span aria-hidden="true">&raquo;</span><span class="sr-only">Next page</span>' ) );
+	}
 
-			if ( ! in_array( 2, $links ) ) : ?>
-			<li class="page-item"></li>
-			<?php endif;
-		endif;
-
-		// Link to current page, plus 2 pages in either direction if necessary.
-		sort( $links );
-		foreach ( (array) $links as $link ) :
-			$class_name = ( $paged == $link ) ? 'active page-item' : 'page-item';
-			?>
-			<li class="<?php echo $class_name; ?>">
-				<a href="<?php echo esc_url( get_pagenum_link( $link ) ); ?>" class="page-link">
-					<?php echo $link; ?>
-				</a>
-			</li>
-		<?php endforeach;
-
-		// Next Post Link.
-		if ( get_next_posts_link() ) : ?>
-			<li class="page-item">
-				<span class="page-link">
-					<?php
-						echo get_next_posts_link( '<span aria-hidden="true">&raquo;</span><span class="sr-only">Next page</span>' );
-					?>
-				</span>
-			</li>
-		<?php endif;
-
-		// Link to last page, plus ellipses if necessary.
-		if ( ! in_array( $max, $links ) ) :
-
-			$class_name = ( $paged == $max ) ? 'active' : 'page-item';
-			$href = esc_url( get_pagenum_link( esc_html( $max ) ) );
-
-			if ( ! in_array( $max - 1, $links ) ) : ?>
-				<li class="page-item"></li>
-			<?php endif; ?>
-
-			<li class="<?php echo $class_name; ?>">
-				<a class="page-link" href="<?php echo $href; ?>" aria-label="Next">
-					<span aria-hidden="true">
-						<i class="fa fa-step-forward" aria-hidden="true"></i>
-					</span>
-					<span class="sr-only"><?php echo esc_html( $max ); ?></span>
-				</a>
-			</li>
-		<?php endif; ?>
-		</ul>
-	</nav>
-	<?php
+	// Link to last page, plus ellipses if necessary.
+	if ( ! in_array( $max, $links ) ) {
+		if ( ! in_array( $max - 1, $links ) ) {
+			echo '<li class="page-item"></li>' . "\n";
+		}
+		$class = $paged == $max ? ' class="active "' : ' class="page-item"';
+		printf( '<li %s><a class="page-link" href="%s" aria-label="Next"><span aria-hidden="true"><i class="fa fa-step-forward" aria-hidden="true"></i></span><span class="sr-only">%s</span></a></li>' . "\n",
+		$class . '', esc_url( get_pagenum_link( esc_html( $max ) ) ), esc_html( $max ) );
+	}
+	echo '</ul></nav>' . "\n";
+}
 endif;

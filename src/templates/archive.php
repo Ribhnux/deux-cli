@@ -9,20 +9,15 @@
 get_header();
 ?>
 
-<div class="site__wrapper--archive">
+<div id="content-wrapper" class="site__wrapper--archive">
 	<div id="content" class="content__wrapper" tabindex="-1">
 		<main id="main" class="site__main">
 			<?php if ( have_posts() ) : ?>
 
 				<?php while ( have_posts() ) : the_post(); ?>
 					<?php
-						// Load loop-templates for page
-						get_template_part( 'loop-templates/content', 'page' );
-
-						// Load the comment template when comments are open and at leas has 1 comment.
-						if ( comments_open() || get_comments_number() ) :
-							comments_template();
-						endif;
+						// Load loop-templates for archive
+						get_template_part( 'loop-templates/content', get_post_format() );
 					?>
 				<?php endwhile; // end of the loops ?>
 
@@ -37,11 +32,11 @@ get_header();
 		</main><!-- #main -->
 
 		<!-- The pagination component -->
-		<?php include get_template_directory() . '/components/pagination.php'; ?>
+		<?php {{themeFnPrefix}}_pagination(); ?>
 
 	</div><!-- #content -->
 
 	<?php get_sidebar(); // load the sidebar ?>
-</div>
+</div><!-- #content-wrapper -->
 
 <?php get_footer(); ?>

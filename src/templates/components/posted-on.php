@@ -1,37 +1,31 @@
 <?php
 /**
  * Component Name: Posted-on
- * Description: Display post date and post author.
+ * Description: Display meta information for the current post-date/time and author.
  *
  * @package {{themeName}}
  */
 
-$date_time = get_the_date( 'c' );
-$the_date = get_the_date();
-$modified_date = get_the_modified_date();
-$modified_date_format = get_the_modified_date( 'c' );
-$author_id = get_the_author_meta( 'ID' );
-?>
-
-<span class="posted-on">
-	<span class="posted-date">
-		<?php echo esc_html_x( 'Posted on', 'post date', '{{textDomain}}' ); ?>
-		<a href="<?php echo esc_url( get_permalink() ) ; ?>" rel="bookmark">
-			<?php if ( get_the_time( 'U' ) !== get_the_modified_time( 'U' ) ) : ?>
-				<time class="entry-date published" datetime="<?php echo $date_time; ?>"><?php echo $the_date; ?></time>
-				<time class="updated" datetime="<?php echo $modified_date_format; ?>"><?php echo $modified_date; ?></time>
-			<?php else: ?>
-				<time class="entry-date published updated" datetime="<?php echo $date_time; ?>"><?php echo $the_date; ?></time>
-			<?php endif; ?>
-		</a>
-	</span>
-
-	<span class="byline">
-		<?php echo esc_html_x( 'by', 'post author', '{{textDomain}}' ); ?>
-		<span class="author vcard">
-			<a class="url fn n" href="<?php echo esc_url( get_author_posts_url( $author_id ) ); ?>">
-				<?php echo esc_html( get_the_author() ); ?>
-			</a>
-		</span>
-	</span>
-</span>
+if ( ! function_exists( '{{themeFnPrefix}}_posted_on' ) ) :
+function {{themeFnPrefix}}_posted_on() {
+	$time_string = '<time class="entry-date published updated" datetime="%1$s">%2$s</time>';
+	if ( get_the_time( 'U' ) !== get_the_modified_time( 'U' ) ) {
+		$time_string = '<time class="entry-date published" datetime="%1$s">%2$s</time><time class="updated" datetime="%3$s">%4$s</time>';
+	}
+	$time_string = sprintf( $time_string,
+		esc_attr( get_the_date( 'c' ) ),
+		esc_html( get_the_date() ),
+		esc_attr( get_the_modified_date( 'c' ) ),
+		esc_html( get_the_modified_date() )
+	);
+	$posted_on = sprintf(
+		esc_html_x( 'Posted on %s', 'post date', '{{textDomain}}' ),
+		'<a href="' . esc_url( get_permalink() ) . '" rel="bookmark">' . $time_string . '</a>'
+	);
+	$byline = sprintf(
+		esc_html_x( 'by %s', 'post author', '{{textDomain}}' ),
+		'<span class="author vcard"><a class="url fn n" href="' . esc_url( get_author_posts_url( get_the_author_meta( 'ID' ) ) ) . '">' . esc_html( get_the_author() ) . '</a></span>'
+	);
+	echo '<span class="posted-on">' . $posted_on . '</span><span class="byline"> ' . $byline . '</span>'; // WPCS: XSS OK.
+}
+endif;
