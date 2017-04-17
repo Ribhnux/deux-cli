@@ -6,8 +6,8 @@
  */
 
 require_once get_template_directory() . '/includes/class/class-tgm-plugin-activation.php';
-add_action( 'tgmpa_register', '{{themeFnPrefix}}_tgmpa_register' );
 
+if ( ! function_exists( '{{themeFnPrefix}}_tgmpa_register' ) ) :
 function {{themeFnPrefix}}_tgmpa_register() {
 	/**
 	 * Read plugins from config
@@ -32,3 +32,5 @@ function {{themeFnPrefix}}_tgmpa_register() {
 
 	tgmpa( $plugins, $config );
 }
+endif;
+add_action( 'tgmpa_register', '{{themeFnPrefix}}_tgmpa_register' );
