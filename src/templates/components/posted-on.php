@@ -4,6 +4,7 @@
  * Description: Display meta information for the current post-date/time and author.
  *
  * @package {{themeName}}
+ * @since {{version}}
  */
 
 if ( ! function_exists( '{{themeFnPrefix}}_posted_on' ) ) :

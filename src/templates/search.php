@@ -3,6 +3,7 @@
  * The template for displaying the search pages.
  *
  * @package {{themeName}}
+ * @since {{version}}
  */
 
 get_header();

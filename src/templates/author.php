@@ -4,6 +4,7 @@
  * Learn more: https://codex.wordpress.org/Author_Templates
  *
  * @package {{themeName}}
+ * @since {{version}}
  */
 
 get_header();

@@ -6,6 +6,7 @@
  * and the comment form.
  *
  * @package {{themeName}}
+ * @since {{version}}
  */
 
 /*
