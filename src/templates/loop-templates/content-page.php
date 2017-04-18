@@ -3,6 +3,7 @@
  * Page template for page.php.
  *
  * @package {{themeName}}
+ * @since {{version}}
  */
 ?>
 <article <?php post_class(); ?> id="post-<?php the_ID(); ?>">

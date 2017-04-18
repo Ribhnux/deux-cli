@@ -3,6 +3,7 @@
  * The template for displaying all single posts.
  *
  * @package {{themeName}}
+ * @since {{version}}
  */
 
 get_header();

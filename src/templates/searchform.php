@@ -3,6 +3,7 @@
  * The template for displaying search forms
  *
  * @package {{themeName}}
+ * @since {{version}}
  */
 ?>
 <form class="search-form" method="get" id="searchform" action="<?php echo esc_url( home_url( '/' ) ); ?>" role="search">

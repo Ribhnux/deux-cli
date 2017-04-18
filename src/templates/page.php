@@ -8,6 +8,7 @@
  * different template.
  *
  * @package {{themeName}}
+ * @since {{version}}
  */
 
 get_header();

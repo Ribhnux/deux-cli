@@ -4,6 +4,7 @@
  * Description: Display meta information for the categories, tags and comments.
  *
  * @package {{themeName}}
+ * @since {{version}}
  */
 
 if ( ! function_exists( '{{themeFnPrefix}}_post_meta' ) ) :

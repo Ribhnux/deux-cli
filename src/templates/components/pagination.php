@@ -4,6 +4,7 @@
  * Description: Pagination used for archive, author, and all pages that have page partials.
  *
  * @package {{themeName}}
+ * @since {{version}}
  */
 if ( ! function_exists( '{{themeFnPrefix}}_pagination' ) ) :
 function {{themeFnPrefix}}_pagination() {

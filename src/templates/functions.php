@@ -3,6 +3,7 @@
  * {{themeName}} functions, hooks, and init
  *
  * @package {{themeName}}
+ * @since {{version}}
  */
 
 function {{themeFnPrefix}}_read_config() {

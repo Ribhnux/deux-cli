@@ -4,6 +4,7 @@
  * Description: Display Navigation bar based on WordPress Menu
  *
  * @package {{themeName}}
+ * @since {{version}}
  */
 
 if ( ! function_exists( '{{themeFnPrefix_navbar}}' ) ):
