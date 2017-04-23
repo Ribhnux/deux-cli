@@ -23,14 +23,13 @@ export const validAddCommand = {
 }
 
 export const validListCommand = {
-  ACTION: 'action',
-  ASSETS: 'assets',
-  FILTER: 'filter',
+  HOOK: 'hook',
+  ASSET: 'asset',
   PLUGIN: 'plugin',
-  PROJECT: 'project',
+  FEATURE: 'feature',
   TEMPLATE: 'template',
   COMPONENT: 'component',
-  LOOP_TEMPLATE: 'loop-template'
+  PROJECT: 'project'
 }
 
 export const validTags = [
