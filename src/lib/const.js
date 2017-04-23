@@ -14,15 +14,12 @@ export const projectStatus = {
 }
 
 export const validAddCommand = {
-  JS: 'js',
-  CSS: 'css',
-  SCSS: 'scss',
-  ACTION: 'action',
-  FILTER: 'filter',
+  HOOK: 'hook',
+  ASSET: 'asset',
   PLUGIN: 'plugin',
-  COMPONENT: 'component',
+  FEATURE: 'feature',
   TEMPLATE: 'template',
-  LOOP_TEMPLATE: 'loop-template'
+  COMPONENT: 'component'
 }
 
 export const validListCommand = {
