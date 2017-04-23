@@ -1,128 +1,86 @@
 import inquirer from 'inquirer'
-import {error, colorlog} from '../../lib/logger'
 import * as message from '../../lib/messages'
-import * as constant from '../../lib/const'
+import {error, colorlog} from '../../lib/logger'
+import {validAddCommand} from '../../lib/const'
+import {capitalize} from '../../lib/utils'
+import addHook from './add-hook'
+import addAsset from './add-asset'
+import addPlugin from './add-plugin'
+import addFeature from './add-feature'
+import addTemplate from './add-template'
+import addComponent from './add-component'
 
-const addPlugin = options => {
-  colorlog('Add {plugin} dependencies')
+const displayPrompt = cmd => {
+  switch (cmd) {
+    case validAddCommand.HOOK:
+      addHook()
+      break
 
-  const prompts = [
-    {
-      type: 'list',
-      name: 'location',
-      message: 'Plugin source',
-      choices: [
-        {
-          name: 'WordPress.org',
-          value: 'wordpress'
-        },
-        {
-          name: 'Private Repo',
-          value: 'private'
-        }
-      ]
-    },
-    {
-      type: 'text',
-      name: 'search',
-      message: 'Search Slug',
-      when: ({location}) => {
-        return location === 'wordpress'
-      }
-    },
-    {
-      type: 'text',
-      name: 'url',
-      message: 'Plugin URL',
-      hint: '.zip extension',
-      when: ({location}) => {
-        return location === 'private'
-      },
-      validate: value => {
-        if (value.substr(value.length, -4) !== '.zip') {
-          return message.ERROR_REPOSITORY_URL_NOT_ZIP
-        }
-        return true
-      }
-    }
-  ]
+    case validAddCommand.ASSET:
+      addAsset()
+      break
 
-  return inquirer
-    .prompt(prompts)
-    .then(answers => Object.assign({}, options, answers))
-}
-
-const addAsset = ext => {
-  colorlog(`Add {${ext}} asset`)
-}
-
-const addSCSS = () => {
-  colorlog('Add new {SCSS}')
-}
-
-const addTemplate = () => {
-  colorlog('Add {page template}')
-}
-
-const addLoopTemplate = () => {
-  colorlog('Add {loop template}')
-}
-
-const addComponent = () => {
-  colorlog('Add {component template}')
-}
-
-const addHook = name => {
-  colorlog(`Add {${name} function}`)
-}
-
-export default args => {
-  const hasLength = args.length && args.length > 1
-  const validCommand = Object.values(constant.validAddCommand).includes(args[0])
-
-  if (hasLength || !validCommand) {
-    error({
-      err: message.ERROR_INVALID_COMMAND
-    })
-  }
-
-  const command = args[0]
-
-  switch (command) {
-    case constant.validAddCommand.PLUGIN:
+    case validAddCommand.PLUGIN:
       addPlugin()
-        .then(answers => {
-          console.log(answers)
-        })
       break
 
-    case constant.validAddCommand.JS:
-    case constant.validAddCommand.CSS:
-      addAsset(command)
+    case validAddCommand.FEATURE:
+      addFeature()
       break
 
-    case constant.validAddCommand.SCSS:
-      addSCSS()
-      break
-
-    case constant.validAddCommand.TEMPLATE:
+    case validAddCommand.TEMPLATE:
       addTemplate()
       break
 
-    case constant.validAddCommand.LOOP_TEMPLATE:
-      addLoopTemplate()
-      break
-
-    case constant.validAddCommand.COMPONENT:
+    case validAddCommand.COMPONENT:
       addComponent()
       break
 
-    case constant.validAddCommand.ACTION:
-    case constant.validAddCommand.FILTER:
-      addHook(command)
+    default:
+      // Noop
+      break
+  }
+}
+
+export default args => {
+  const prompts = [
+    {
+      type: 'list',
+      name: 'command',
+      message: 'Available Options',
+      choices: () => new Promise(resolve => {
+        const list = []
+        Object.keys(validAddCommand).forEach(key => {
+          const value = validAddCommand[key]
+          const name = capitalize(value)
+          list.push({
+            value,
+            name
+          })
+        })
+        resolve(list)
+      })
+    }
+  ]
+
+  switch (args.length) {
+    case 0:
+      colorlog('Select what you want to add to {your theme}')
+      inquirer.prompt(prompts).then(({command}) => {
+        displayPrompt(command)
+      })
+      break
+
+    case 1:
+      displayPrompt(args[0])
       break
 
     default:
+      error({
+        message: message.ERROR_INVALID_COMMAND,
+        exit: true,
+        paddingTop: true
+      })
       break
   }
 }
