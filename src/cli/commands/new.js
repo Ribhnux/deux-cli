@@ -341,23 +341,36 @@ export default () => {
                   .filter(notHiddenFile)
 
                 const deuxTheme = jsonr(deuxConfigPath)
-                deuxTheme.plugins = {}
                 deuxTheme.assets = {
                   css: {},
                   js: {},
                   fonts: {}
                 }
+                deuxTheme.plugins = {}
+                deuxTheme.scss = {}
                 deuxTheme.components = components
-                deuxTheme.loopTemplates = loopTemplates
-                deuxTheme.pageTemplates = pageTemplates
+                deuxTheme.templates = {
+                  page: pageTemplates,
+                  loop: loopTemplates
+                }
+                deuxTheme.hooks = {
+                  filter: [],
+                  action: []
+                }
+                deuxTheme.utils = []
+                deuxTheme.features = []
                 deuxTheme.watch = [
                   '*.php',
+                  'assets/css/*',
                   'assets/js/*',
                   'assets/scss/*',
                   'components/*',
                   'loop-templates/*',
                   'page-templates/*',
-                  'plugins/*'
+                  'plugins/*',
+                  'includes/filters/*',
+                  'includes/actions/*',
+                  'includes/utils/*'
                 ]
                 resolve()
               })
