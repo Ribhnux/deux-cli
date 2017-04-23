@@ -60,4 +60,13 @@ export const compileFiles = ({srcDir, dstDir, syntax}) => {
   })
 }
 
+export const capitalize = str => {
+  return str
+    .split(' ')
+    .map(item => {
+      return item.charAt(0).toUpperCase() + item.split('').slice(1, item.length).join('')
+    })
+    .join(' ')
+}
+
 export default {}
