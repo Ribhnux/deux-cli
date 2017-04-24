@@ -23,8 +23,8 @@ get_header();
 
 				<?php while ( have_posts() ) : the_post(); ?>
 					<?php
-						// Load loop-templates for page
-						get_template_part( 'loop-templates/content', get_post_format() );
+						// Load partial-templates for page
+						get_template_part( 'partial-templates/content', get_post_format() );
 
 						// Load the comment template when comments are open and at leas has 1 comment.
 						if ( comments_open() || get_comments_number() ) :
@@ -36,8 +36,8 @@ get_header();
 			<?php else : ?>
 
 				<?php
-					// Load loop-templates for empty content
-					get_template_part( 'loop-templates/content', 'none' );
+					// Load partial-templates for empty content
+					get_template_part( 'partial-templates/content', 'none' );
 				?>
 
 			<?php endif; ?>

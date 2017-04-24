@@ -20,8 +20,8 @@ get_header();
 
 			<?php while ( have_posts() ) : the_post(); ?>
 				<?php
-					// Load loop-templates for page
-					get_template_part( 'loop-templates/content', 'page' );
+					// Load partial-templates for page
+					get_template_part( 'partial-templates/content', 'page' );
 
 					// Load the comment template when comments are open and at leas has 1 comment.
 					if ( comments_open() || get_comments_number() ) :

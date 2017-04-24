@@ -63,8 +63,8 @@ $author_desc = $current_author->user_description;
 			<?php else : ?>
 
 				<?php
-					// Load loop-templates for empty content
-					get_template_part( 'loop-templates/content', 'none' );
+					// Load partial-templates for empty content
+					get_template_part( 'partial-templates/content', 'none' );
 				?>
 
 			<?php endif; ?>

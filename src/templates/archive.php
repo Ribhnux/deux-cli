@@ -17,16 +17,16 @@ get_header();
 
 				<?php while ( have_posts() ) : the_post(); ?>
 					<?php
-						// Load loop-templates for archive
-						get_template_part( 'loop-templates/content', get_post_format() );
+						// Load partial-templates for archive
+						get_template_part( 'partial-templates/content', get_post_format() );
 					?>
 				<?php endwhile; // end of the loops ?>
 
 			<?php else : ?>
 
 				<?php
-					// Load loop-templates for empty content
-					get_template_part( 'loop-templates/content', 'none' );
+					// Load partial-templates for empty content
+					get_template_part( 'partial-templates/content', 'none' );
 				?>
 
 			<?php endif; ?>
