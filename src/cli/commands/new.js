@@ -332,7 +332,7 @@ export default () => {
                   .map(item => item.replace(phpRegx, ''))
                   .filter(notHiddenFile)
 
-                const loopTemplates = filelist(path.join(templateDir, 'loop-templates'))
+                const partialTemplates = filelist(path.join(templateDir, 'partial-templates'))
                   .map(item => item.replace(phpRegx, ''))
                   .filter(notHiddenFile)
 
@@ -351,7 +351,7 @@ export default () => {
                 deuxTheme.components = components
                 deuxTheme.templates = {
                   page: pageTemplates,
-                  loop: loopTemplates
+                  partial: partialTemplates
                 }
                 deuxTheme.hooks = {
                   filter: [],
@@ -365,7 +365,7 @@ export default () => {
                   'assets/js/*',
                   'assets/scss/*',
                   'components/*',
-                  'loop-templates/*',
+                  'partial-templates/*',
                   'page-templates/*',
                   'plugins/*',
                   'includes/filters/*',
