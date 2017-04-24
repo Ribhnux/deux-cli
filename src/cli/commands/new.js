@@ -358,7 +358,14 @@ export default () => {
                   action: []
                 }
                 deuxTheme.utils = []
-                deuxTheme.features = []
+                deuxTheme.features = {
+                  'html5': [
+                    'comment-form',
+                    'comment-list',
+                    'gallery',
+                    'caption'
+                  ]
+                }
                 deuxTheme.watch = [
                   '*.php',
                   'assets/css/*',
