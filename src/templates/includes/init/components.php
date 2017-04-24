@@ -6,5 +6,8 @@
  */
 
 foreach ( $deux_config['components'] as $component ) {
-	require get_template_directory() . '/components/' . $component . '.php';
+	$component_path = get_template_directory() . '/components/' . $component . '.php';
+	if ( file_exists( $component_path )) {
+		require $component_path;
+	}
 }
