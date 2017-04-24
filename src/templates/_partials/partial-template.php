@@ -1,8 +1,9 @@
 <?php
 /**
- * Template Name: {{templateName}}
- * Post Type: {{postType}}
+ * {{description}}
  *
  * @package {{themeName}}
  * @since {{version}}
  */
+?>
+<!-- Your partial template here -->
