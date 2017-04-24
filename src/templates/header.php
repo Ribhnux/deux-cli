@@ -29,4 +29,7 @@
 <body <?php body_class(); ?>>
 	<div id="page" class="site">
 		<div id="main-wrapper" class="site__wrapper">
-			<?php {{themeFnPrefix}}_navbar(); // Display navigation bar component ?>
+			<?php
+				// Display navigation bar
+				get_template_part( 'partial-templates/header', 'navbar' );
+			?>
