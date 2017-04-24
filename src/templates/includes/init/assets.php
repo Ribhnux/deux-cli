@@ -28,6 +28,11 @@ function {{themeFnPrefix}}_enqueue_scripts() {
 	// Main script
 	wp_enqueue_script( '{{textDomain}}', $assets_path . 'js/site.js', array(), null, true );
 	wp_enqueue_script( '{{textDomain}}-fallback', $assets_path . 'js/fallback.js', array(), null, true );
+
+	// Enable nested comments reply
+	if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
+		wp_enqueue_script( 'comment-reply' );
+	}
 }
 endif;
 add_action( 'wp_enqueue_scripts', '{{themeFnPrefix}}_enqueue_scripts' );
