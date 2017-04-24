@@ -27,11 +27,6 @@ $deux_config = {{themeFnPrefix}}_read_config();
 require get_template_directory() . '/includes/init/theme.php';
 
 /**
- * Init theme features supports.
- */
-require get_template_directory() . '/includes/init/theme-features.php';
-
-/**
  * Plugin dependencies init.
  */
 require get_template_directory() . '/includes/init/plugins.php';
