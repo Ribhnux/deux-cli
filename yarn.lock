@@ -2560,6 +2560,10 @@ jsprim@^1.2.2:
     json-schema "0.2.3"
     verror "1.3.6"
 
+jssr@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/jssr/-/jssr-1.0.2.tgz#44d2f885852e1b7311024d7d7c23d21ef90e82c5"
+
 kind-of@^3.0.2:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/kind-of/-/kind-of-3.1.0.tgz#475d698a5e49ff5e53d14e3e732429dc8bf4cf47"
@@ -4335,6 +4339,13 @@ wp-get-file-header@^0.2.0:
   resolved "https://registry.yarnpkg.com/wp-get-file-header/-/wp-get-file-header-0.2.0.tgz#54de5505d22b8d1f219fd0e229fe6d03da8afec9"
   dependencies:
     string "^3.3.3"
+
+wp-plugin-search@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/wp-plugin-search/-/wp-plugin-search-1.1.0.tgz#83bb43f4d92fd60f946e863c1f9131198d6531b1"
+  dependencies:
+    jssr "^1.0.2"
+    request "^2.81.0"
 
 wrappy@1:
   version "1.0.2"
