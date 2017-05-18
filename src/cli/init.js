@@ -1,6 +1,6 @@
 import {existsSync, writeFileSync, readFileSync} from 'fs'
 import * as message from '../lib/messages'
-import {wpConfigPath, projectPath} from '../lib/const'
+import {wpConfigPath, dbPath} from '../lib/const'
 import {isJSON} from '../lib/utils'
 import {error, done} from '../lib/logger'
 
