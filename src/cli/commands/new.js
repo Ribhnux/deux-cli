@@ -1,5 +1,5 @@
 import path from 'path'
-import {existsSync, writeFile} from 'fs'
+import {existsSync} from 'fs'
 import inquirer from 'inquirer'
 import faker from 'faker'
 import _s from 'string'
@@ -8,13 +8,13 @@ import mkdirp from 'mkdirp'
 import rimraf from 'rimraf'
 import execa from 'execa'
 import wpFileHeader from 'wp-get-file-header'
-import jsonr from 'json-realtime'
+import jsonar from 'jsonar'
 import * as message from '../../lib/messages'
-import {deuxConfig, projectPath, validTags, wpThemeDir, templateDir} from '../../lib/const'
+import {validTags, wpThemeDir, templateDir} from '../../lib/const'
 import {error, colorlog} from '../../lib/logger'
 import {dirlist, filelist, compileFiles} from '../../lib/utils'
 
-export default () => {
+export default db => {
   colorlog(`Add new {theme}`)
 
   const prompts = [
@@ -194,13 +194,12 @@ export default () => {
       const themeFnPrefix = _s(themeNameLower).underscore().s
       const themePath = path.join(wpThemeDir, textDomain)
       const gitPath = path.join(themePath, '.git')
-      const deuxConfigPath = path.join(themePath, deuxConfig)
 
       colorlog(`Initialize {${themeName}}`)
       const task = new Listr([
         {
           title: 'Make theme directory',
-          enabled: () => overwrite === false,
+          enabled: () => overwrite === false || overwrite === undefined,
           task: () => new Promise(resolve => {
             if (existsSync(themePath)) {
               error({
@@ -252,34 +251,111 @@ export default () => {
         },
 
         {
-          title: 'Init WordPress Theme',
-          task: () => new Listr([
-            {
-              title: 'Setup theme structures',
-              task: () => {
-                return new Promise(resolve => {
-                  compileFiles({
-                    srcDir: templateDir,
-                    dstDir: themePath,
-                    syntax: {
-                      themeName,
-                      themeUri,
-                      author,
-                      authorUri,
-                      isChild,
-                      parentTheme,
-                      description,
-                      version,
-                      textDomain,
-                      tags: tags.join(', '),
-                      themeFnPrefix
-                    }
-                  })
-                  resolve()
-                })
+          title: `Init config`,
+          task: () => new Promise((resolve, reject) => {
+            const phpRegx = /\.php$/g
+            const notHiddenFile = item => item && item !== '.gitkeep'
+
+            const components = filelist(path.join(templateDir, 'components'))
+              .map(item => item.replace(phpRegx, ''))
+              .filter(notHiddenFile)
+
+            const partialTemplates = filelist(path.join(templateDir, 'partial-templates'))
+              .map(item => item.replace(phpRegx, ''))
+              .filter(notHiddenFile)
+
+            const pageTemplates = filelist(path.join(templateDir, 'page-templates'))
+              .map(item => item.replace(phpRegx, ''))
+              .filter(notHiddenFile)
+
+            db.upsert(`theme.${textDomain}`, doc => {
+              doc.version = version
+
+              doc.assets = {
+                css: {},
+                js: {},
+                fonts: {}
               }
-            }
-          ])
+
+              doc.plugins = {}
+
+              doc.scss = {}
+
+              doc.components = components
+
+              doc.templates = {
+                page: pageTemplates,
+                partial: partialTemplates
+              }
+
+              doc.hooks = {
+                filter: [],
+                action: []
+              }
+
+              doc.utils = []
+
+              doc.features = {
+                html5: [
+                  'comment-form',
+                  'comment-list',
+                  'gallery',
+                  'caption'
+                ]
+              }
+
+              doc.watch = [
+                '*.php',
+                'assets/css/*',
+                'assets/js/*',
+                'assets/scss/*',
+                'components/*',
+                'partial-templates/*',
+                'page-templates/*',
+                'plugins/*',
+                'includes/filters/*',
+                'includes/actions/*',
+                'includes/utils/*'
+              ]
+
+              return doc
+            }).then(() => {
+              resolve()
+            }).catch(err => {
+              reject(err)
+            })
+          })
+        },
+
+        {
+          title: `Init WordPress Theme`,
+          task: () => new Promise(resolve => {
+            db.get(`theme.${textDomain}`).then(doc => {
+              delete doc._id
+              delete doc._rev
+
+              const themeConfig = jsonar(doc, true)
+              compileFiles({
+                srcDir: templateDir,
+                dstDir: themePath,
+                syntax: {
+                  themeName,
+                  themeUri,
+                  themeConfig,
+                  author,
+                  authorUri,
+                  isChild,
+                  parentTheme,
+                  description,
+                  version,
+                  textDomain,
+                  tags: tags.join(', '),
+                  themeFnPrefix
+                }
+              })
+              resolve()
+            })
+          })
         },
 
         {
@@ -308,99 +384,27 @@ export default () => {
         },
 
         {
-          title: `Init config [${deuxConfig}]`,
-          task: () => new Listr([
-            {
-              title: `Create ${deuxConfig} file`,
-              task: () => new Promise((resolve, reject) => {
-                writeFile(deuxConfigPath, '{}', err => {
-                  if (err) {
-                    reject(err)
-                  }
-                  resolve()
-                })
-              })
-            },
-
-            {
-              title: 'Save default config',
-              task: () => new Promise(resolve => {
-                const phpRegx = /\.php$/g
-                const notHiddenFile = item => item && item !== '.gitkeep'
-
-                const components = filelist(path.join(templateDir, 'components'))
-                  .map(item => item.replace(phpRegx, ''))
-                  .filter(notHiddenFile)
-
-                const partialTemplates = filelist(path.join(templateDir, 'partial-templates'))
-                  .map(item => item.replace(phpRegx, ''))
-                  .filter(notHiddenFile)
-
-                const pageTemplates = filelist(path.join(templateDir, 'page-templates'))
-                  .map(item => item.replace(phpRegx, ''))
-                  .filter(notHiddenFile)
-
-                const deuxTheme = jsonr(deuxConfigPath)
-                deuxTheme.assets = {
-                  css: {},
-                  js: {},
-                  fonts: {}
-                }
-                deuxTheme.plugins = {}
-                deuxTheme.scss = {}
-                deuxTheme.components = components
-                deuxTheme.templates = {
-                  page: pageTemplates,
-                  partial: partialTemplates
-                }
-                deuxTheme.hooks = {
-                  filter: [],
-                  action: []
-                }
-                deuxTheme.utils = []
-                deuxTheme.features = {
-                  html5: [
-                    'comment-form',
-                    'comment-list',
-                    'gallery',
-                    'caption'
-                  ]
-                }
-                deuxTheme.watch = [
-                  '*.php',
-                  'assets/css/*',
-                  'assets/js/*',
-                  'assets/scss/*',
-                  'components/*',
-                  'partial-templates/*',
-                  'page-templates/*',
-                  'plugins/*',
-                  'includes/filters/*',
-                  'includes/actions/*',
-                  'includes/utils/*'
-                ]
-                resolve()
-              })
-            }
-          ])
-        },
-
-        {
-          title: `Save ${themeName} to project [.deuxproject]`,
+          title: `Save ${themeName} to project`,
           task: () => new Promise(resolve => {
-            const deuxProject = jsonr(projectPath)
-            deuxProject.current = textDomain
-            deuxProject.list[textDomain] = {
-              themeName,
-              version,
-              git: gitUri
-            }
-            resolve()
+            db.upsert('deux.current', doc => {
+              doc.themeName = themeName
+              doc.version = version
+              return doc
+            }).then(() => {
+              resolve()
+            }).catch(err => {
+              error({
+                message: err.message,
+                padding: true,
+                exit: true
+              })
+            })
           })
         }
       ])
 
-      task.run().catch(() => {
+      task.run().catch(err => {
+        console.log('bbaaba', err)
         setTimeout(() => {
           rimraf(themePath, err => {
             if (err) {
