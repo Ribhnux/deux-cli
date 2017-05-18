@@ -359,7 +359,7 @@ export default () => {
                 }
                 deuxTheme.utils = []
                 deuxTheme.features = {
-                  'html5': [
+                  html5: [
                     'comment-form',
                     'comment-list',
                     'gallery',
