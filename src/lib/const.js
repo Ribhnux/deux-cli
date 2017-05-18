@@ -12,6 +12,10 @@ export const projectStatus = {
   EXISTING: 'existing'
 }
 
+export const status = {
+  MISSING: 404
+}
+
 export const validAddCommand = {
   HOOK: 'hook',
   ASSET: 'asset',
