@@ -6,20 +6,7 @@
  * @since {{version}}
  */
 
-function {{themeFnPrefix}}_read_config() {
-	global $wp_filesystem;
-
-	if ( empty( $wp_filesystem ) ) {
-		require_once ABSPATH . '/wp-admin/includes/file.php';
-		WP_Filesystem();
-	}
-
-	$config = $wp_filesystem->get_contents( get_template_directory() . '/.deuxconfig' );
-	$config = json_decode( $config, true );
-	return $config;
-}
-
-$deux_config = {{themeFnPrefix}}_read_config();
+require get_template_directory() . '/config.php';
 
 /**
  * Theme setup.
