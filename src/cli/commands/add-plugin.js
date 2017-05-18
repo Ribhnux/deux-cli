@@ -140,6 +140,7 @@ export default () => {
         })
       }
 
+      /* eslint-disable camelcase */
       let {
         name,
         slug,
@@ -164,7 +165,6 @@ export default () => {
       const themePath = path.join(wpThemeDir, deuxProject.current)
       const themeConfig = jsonr(path.join(themePath, deuxConfig))
 
-      /* eslint-disable camelcase */
       const pluginObject = {
         name,
         source,
