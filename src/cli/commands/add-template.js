@@ -6,7 +6,7 @@ import * as message from '../../lib/messages'
 import {error, done, colorlog} from '../../lib/logger'
 import {wpThemeDir, templateType, templateDir} from '../../lib/const'
 import {compileFile} from '../../lib/utils'
-import {dbErrorHandler, getCurrentTheme} from '../../lib/db-utils'
+import {dbErrorHandler, getCurrentTheme, saveConfig} from '../../lib/db-utils'
 
 export default db => {
   colorlog('Add a {New Template}')
@@ -153,10 +153,12 @@ export default db => {
             })
             return doc
           }).then(() => {
-            done({
-              message: message.SUCCEED_PARTIAL_TEMPLATE_ADDED,
-              padding: true,
-              exit: true
+            saveConfig(db, docId).then(() => {
+              done({
+                message: message.SUCCEED_PARTIAL_TEMPLATE_ADDED,
+                padding: true,
+                exit: true
+              })
             })
           }).catch(dbErrorHandler)
           break
@@ -185,10 +187,12 @@ export default db => {
 
             return doc
           }).then(() => {
-            done({
-              message: message.SUCCEED_PAGE_TEMPLATE_ADDED,
-              padding: true,
-              exit: true
+            saveConfig(db, docId).then(() => {
+              done({
+                message: message.SUCCEED_PAGE_TEMPLATE_ADDED,
+                padding: true,
+                exit: true
+              })
             })
           }).catch(dbErrorHandler)
           break

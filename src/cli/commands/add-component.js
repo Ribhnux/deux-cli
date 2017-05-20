@@ -6,7 +6,7 @@ import _s from 'string'
 import {error, done, colorlog} from '../../lib/logger'
 import {templateDir, wpThemeDir} from '../../lib/const'
 import {compileFile} from '../../lib/utils'
-import {dbErrorHandler, getCurrentTheme} from '../../lib/db-utils'
+import {dbErrorHandler, getCurrentTheme, saveConfig} from '../../lib/db-utils'
 import * as message from '../../lib/messages'
 
 export default db => {
@@ -46,6 +46,7 @@ export default db => {
       const {componentName, componentDesc} = answers
       const componentSlug = _s(componentName).slugify().s
       const themePath = path.join(wpThemeDir, textDomain)
+      const themeConfigPath = path.join(themePath, 'config.php')
       const componentPath = path.join(themePath, 'components', `${componentSlug}.php`)
 
       if (existsSync(componentPath)) {
@@ -76,10 +77,12 @@ export default db => {
         })
         return doc
       }).then(() => {
-        done({
-          message: message.SUCCEED_COMPONENT_ADDED,
-          paddingTop: true,
-          exit: true
+        saveConfig(db, docId).then(() => {
+          done({
+            message: message.SUCCEED_COMPONENT_ADDED,
+            paddingTop: true,
+            exit: true
+          })
         })
       }).catch(dbErrorHandler)
     })
