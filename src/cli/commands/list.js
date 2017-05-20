@@ -49,41 +49,41 @@ const getLoopTemplates = () => {
   colorlog(`Loop-Template list in {${currentProject}}. You have a total of {0} custom loop-template.`)
 }
 
-export default args => {
-  const hasLength = args.length && args.length > 1
-  const validCommand = Object.values(validListCommand).includes(args[0])
+export default (db, args) => {
+  // const hasLength = args.length && args.length > 1
+  // const validCommand = Object.values(validListCommand).includes(args[0])
 
-  if (hasLength || !validCommand) {
-    error({
-      err: message.ERROR_INVALID_COMMAND
-    })
-  }
+  // if (hasLength || !validCommand) {
+  //   error({
+  //     err: message.ERROR_INVALID_COMMAND
+  //   })
+  // }
 
-  switch (args[0]) {
-    case validListCommand.ACTION:
-      getActions()
-      break
-    case validListCommand.ASSETS:
-      getAssets()
-      break
-    case validListCommand.FILTER:
-      getFilters()
-      break
-    case validListCommand.PLUGIN:
-      getPlugins()
-      break
-    case validListCommand.PROJECT:
-      getProjects()
-      break
-    case validListCommand.TEMPLATE:
-      getTemplates()
-      break
-    case validListCommand.COMPONENT:
-      getComponents()
-      break
-    case validListCommand.LOOP_TEMPLATE:
-      getLoopTemplates()
-      break
-    default: break
-  }
+  // switch (args[0]) {
+  //   case validListCommand.ACTION:
+  //     getActions()
+  //     break
+  //   case validListCommand.ASSETS:
+  //     getAssets()
+  //     break
+  //   case validListCommand.FILTER:
+  //     getFilters()
+  //     break
+  //   case validListCommand.PLUGIN:
+  //     getPlugins()
+  //     break
+  //   case validListCommand.PROJECT:
+  //     getProjects()
+  //     break
+  //   case validListCommand.TEMPLATE:
+  //     getTemplates()
+  //     break
+  //   case validListCommand.COMPONENT:
+  //     getComponents()
+  //     break
+  //   case validListCommand.LOOP_TEMPLATE:
+  //     getLoopTemplates()
+  //     break
+  //   default: break
+  // }
 }
