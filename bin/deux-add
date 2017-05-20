@@ -7,7 +7,7 @@ const cli = require('../src/cli')
 program.parse(process.argv)
 
 cli()
-  .then({db, $add} => {
+  .then(({db, $add}) => {
     $add(db, program.args)
   })
   .catch(() => {
