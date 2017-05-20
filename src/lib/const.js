@@ -7,6 +7,12 @@ export const dbFilename = '.deuxproject'
 export const dbPath = path.join(wordpressDir, dbFilename)
 export const wpConfigPath = path.join(wordpressDir, 'wp-config.php')
 export const wpThemeDir = path.join(wordpressDir, 'wp-content', 'themes')
+
+export const templateType = {
+  PARTIAL: 'partial',
+  PAGE: 'page'
+}
+
 export const projectStatus = {
   NEW: 'new',
   EXISTING: 'existing'
