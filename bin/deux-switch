@@ -7,8 +7,8 @@ const cli = require('../src/cli')
 program.parse(process.argv)
 
 cli()
-  .then(command => {
-    command.switch(program.args)
+  .then(({db, $switch}) => {
+    $switch(db, program.args)
   })
   .catch(() => {
     process.exit(0)

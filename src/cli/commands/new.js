@@ -13,6 +13,7 @@ import * as message from '../../lib/messages'
 import {validTags, wpThemeDir, templateDir} from '../../lib/const'
 import {error, colorlog} from '../../lib/logger'
 import {dirlist, filelist, compileFiles} from '../../lib/utils'
+import {setCurrentTheme, dbErrorHandler} from '../../lib/db-utils'
 
 export default db => {
   colorlog(`Add new {theme}`)
@@ -134,7 +135,7 @@ export default db => {
 
     {
       type: 'input',
-      name: 'gitUri',
+      name: 'repoUrl',
       message: 'Git Repository',
       default: 'https://github.com/example/my-theme.git',
       validate: value => {
@@ -185,7 +186,7 @@ export default db => {
         description,
         version,
         tags,
-        gitUri,
+        repoUrl,
         overwrite
       } = answers
 
@@ -269,56 +270,50 @@ export default db => {
               .filter(notHiddenFile)
 
             db.upsert(`theme.${textDomain}`, doc => {
-              doc.version = version
-
-              doc.assets = {
-                css: {},
-                js: {},
-                fonts: {}
-              }
-
-              doc.plugins = {}
-
-              doc.scss = {}
-
-              doc.components = components
-
-              doc.templates = {
-                page: pageTemplates,
-                partial: partialTemplates
-              }
-
-              doc.hooks = {
-                filter: [],
-                action: []
-              }
-
-              doc.utils = []
-
-              doc.features = {
-                html5: [
-                  'comment-form',
-                  'comment-list',
-                  'gallery',
-                  'caption'
+              return Object.assign(doc, {
+                textDomain,
+                themeName,
+                version,
+                repoUrl,
+                assets: {
+                  css: {},
+                  js: {},
+                  fonts: {}
+                },
+                plugins: {},
+                scss: {},
+                components,
+                templates: {
+                  page: pageTemplates,
+                  partial: partialTemplates
+                },
+                hooks: {
+                  filter: [],
+                  action: []
+                },
+                utils: [],
+                features: {
+                  html5: [
+                    'comment-form',
+                    'comment-list',
+                    'gallery',
+                    'caption'
+                  ]
+                },
+                watch: [
+                  '*.php',
+                  'assets/css/*',
+                  'assets/js/*',
+                  'assets/scss/*',
+                  'components/*',
+                  'partial-templates/*',
+                  'page-templates/*',
+                  'plugins/*',
+                  'includes/filters/*',
+                  'includes/actions/*',
+                  'includes/utils/*'
                 ]
-              }
-
-              doc.watch = [
-                '*.php',
-                'assets/css/*',
-                'assets/js/*',
-                'assets/scss/*',
-                'components/*',
-                'partial-templates/*',
-                'page-templates/*',
-                'plugins/*',
-                'includes/filters/*',
-                'includes/actions/*',
-                'includes/utils/*'
-              ]
-
-              return doc
+              })
             }).then(() => {
               resolve()
             }).catch(err => {
@@ -333,6 +328,9 @@ export default db => {
             db.get(`theme.${textDomain}`).then(doc => {
               delete doc._id
               delete doc._rev
+              delete doc.themeName
+              delete doc.textDomain
+              delete doc.repoUrl
 
               const themeConfig = jsonar(doc, true)
               compileFiles({
@@ -367,17 +365,17 @@ export default db => {
             },
 
             {
-              title: `Add remote url \`${gitUri}\``,
-              task: () => execa.stdout('git', [`--git-dir=${gitPath}`, 'remote', 'add', 'origin', gitUri])
+              title: `Add remote url \`${repoUrl}\``,
+              task: () => execa.stdout('git', [`--git-dir=${gitPath}`, 'remote', 'add', 'origin', repoUrl])
             },
 
             {
-              title: `Validate remote url \`${gitUri}\``,
+              title: `Validate remote url \`${repoUrl}\``,
               task: () => execa.stdout('git', [`--git-dir=${gitPath}`, 'pull', 'origin', 'master'])
             },
 
             {
-              title: `Download git objects and refs from \`${gitUri}\``,
+              title: `Download git objects and refs from \`${repoUrl}\``,
               task: () => execa.stdout('git', [`--git-dir=${gitPath}`, 'fetch'])
             }
           ])
@@ -386,25 +384,18 @@ export default db => {
         {
           title: `Save ${themeName} to project`,
           task: () => new Promise(resolve => {
-            db.upsert('deux.current', doc => {
-              doc.themeName = themeName
-              doc.version = version
-              return doc
+            setCurrentTheme(db, {
+              themeName,
+              textDomain,
+              version
             }).then(() => {
               resolve()
-            }).catch(err => {
-              error({
-                message: err.message,
-                padding: true,
-                exit: true
-              })
-            })
+            }).catch(dbErrorHandler)
           })
         }
       ])
 
-      task.run().catch(err => {
-        console.log('bbaaba', err)
+      task.run().catch(() => {
         setTimeout(() => {
           rimraf(themePath, err => {
             if (err) {

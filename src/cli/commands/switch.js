@@ -1,33 +1,28 @@
-import chalk from 'chalk'
 import inquirer from 'inquirer'
-import jsonr from 'json-realtime'
 import * as message from '../../lib/messages'
-import {projectPath} from '../../lib/const'
 import {error, done, colorlog} from '../../lib/logger'
+import {setCurrentTheme, dbErrorHandler} from '../../lib/db-utils'
 
-const deuxProject = jsonr(projectPath)
-const succeedMsg = theme => {
-  return `Your project have been switched to ${chalk.bold.magenta(`${theme}`)}`
-}
-
-const displayPrompt = () => {
+const displayPrompt = db => {
   colorlog(`Switch to another {project}`)
   const prompts = [
     {
       type: 'list',
-      name: 'currentTheme',
+      name: 'themelist',
       message: 'Select project',
       choices: () => new Promise(resolve => {
-        const choices = []
-        for (const value in deuxProject.list) {
-          if (Object.prototype.hasOwnProperty.call(deuxProject.list, value)) {
-            choices.push({
-              value,
-              name: deuxProject.list[value].themeName
-            })
-          }
-        }
-        resolve(choices)
+        db.find({
+          selector: {_id: {$regex: 'theme.*'}},
+          fields: ['_id', 'themeName', 'textDomain', 'version']
+        }).then(result => {
+          const choices = result.docs.map(value => {
+            const {themeName, version} = value
+            const name = `${themeName} v${version}`
+            return {name, value}
+          })
+
+          resolve(choices)
+        }).catch(dbErrorHandler)
       })
     },
 
@@ -40,57 +35,80 @@ const displayPrompt = () => {
 
   inquirer.prompt(prompts).then(answers => {
     if (answers.confirm) {
-      if (answers.currentTheme === deuxProject.current) {
-        done({
-          message: message.SUCCEED_ALREADY_IN_CURRENT_PROJECT,
-          exit: true,
-          paddingTop: true
-        })
-      }
+      db.get('deux.current').then(result => {
+        const {_id: docId, themeName, textDomain, version} = answers.themelist
+        if (result.docId === docId) {
+          done({
+            message: message.SUCCEED_ALREADY_IN_CURRENT_PROJECT,
+            paddingTop: true,
+            exit: true
+          })
+        }
 
-      deuxProject.current = answers.currentTheme
-      done({
-        message: succeedMsg(deuxProject.list[answers.currentTheme].themeName),
-        exit: true,
-        paddingTop: true
-      })
+        setCurrentTheme(db, {
+          themeName,
+          textDomain,
+          version
+        }).then(() => {
+          done({
+            message: message.SUCCEED_THEME_SWITCHED,
+            paddingTop: true,
+            exit: true
+          })
+        }).catch(dbErrorHandler)
+      }).catch(dbErrorHandler)
     }
   })
 }
 
-const setDirectly = currentTheme => {
-  if (!(currentTheme in deuxProject.list)) {
-    error({
-      message: message.ERROR_THEME_NOT_IN_LIST,
-      exit: true,
-      paddingTop: true
-    })
-  }
+const setDirectly = (db, textDomain) => {
+  const docId = `theme.${textDomain}`
 
-  if (deuxProject.current === currentTheme) {
-    done({
-      message: message.SUCCEED_ALREADY_IN_CURRENT_PROJECT,
-      exit: true,
-      paddingTop: true
-    })
-  }
+  db.get('deux.current').then(result => {
+    if (result.docId === docId) {
+      done({
+        message: message.SUCCEED_ALREADY_IN_CURRENT_PROJECT,
+        paddingTop: true,
+        exit: true
+      })
+    }
 
-  deuxProject.current = currentTheme
-  done({
-    message: succeedMsg(deuxProject.list[currentTheme].themeName),
-    exit: true,
-    paddingTop: true
-  })
+    db.find({
+      selector: {_id: {$eq: docId}},
+      fields: ['themeName', 'version']
+    }).then(result => {
+      if (result.docs.length === 0) {
+        error({
+          message: message.ERROR_NO_THEME_FOUND,
+          paddingTop: true,
+          exit: true
+        })
+      }
+
+      const {themeName, version} = result.docs
+      setCurrentTheme(db, {
+        themeName,
+        textDomain,
+        version
+      }).then(() => {
+        done({
+          message: message.SUCCEED_THEME_SWITCHED,
+          paddingTop: true,
+          exit: true
+        })
+      }).catch(dbErrorHandler)
+    }).catch(dbErrorHandler)
+  }).catch(dbErrorHandler)
 }
 
-export default args => {
+export default (db, args) => {
   switch (args.length) {
     case 0:
-      displayPrompt()
+      displayPrompt(db)
       break
 
     case 1:
-      setDirectly(args[0])
+      setDirectly(db, args[0])
       break
 
     default:
