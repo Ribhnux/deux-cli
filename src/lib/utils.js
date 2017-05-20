@@ -1,5 +1,5 @@
 import path from 'path'
-import {readdirSync, statSync, writeFileSync, readFileSync} from 'fs'
+import {readdirSync, statSync, existsSync, writeFileSync, readFileSync} from 'fs'
 import handlebars from 'handlebars'
 import mkdirp from 'mkdirp'
 
@@ -45,11 +45,11 @@ export const compileFiles = ({srcDir, dstDir, syntax}) => {
     const srcPath = path.join(srcDir, filename)
     const dstPath = path.join(dstDir, filename)
 
-    if (statSync(srcPath).isFile()) {
+    if (existsSync(srcPath) && statSync(srcPath).isFile()) {
       compileFile({srcPath, dstPath, syntax})
     }
 
-    if (statSync(srcPath).isDirectory()) {
+    if (existsSync(srcPath) && statSync(srcPath).isDirectory()) {
       mkdirp.sync(dstPath)
       compileFiles({
         srcDir: srcPath,

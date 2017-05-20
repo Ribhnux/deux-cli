@@ -10,30 +10,30 @@ import addFeature from './add-feature'
 import addTemplate from './add-template'
 import addComponent from './add-component'
 
-const displayPrompt = cmd => {
+const displayPrompt = (db, cmd) => {
   switch (cmd) {
     case validAddCommand.HOOK:
-      addHook()
+      addHook(db)
       break
 
     case validAddCommand.ASSET:
-      addAsset()
+      addAsset(db)
       break
 
     case validAddCommand.PLUGIN:
-      addPlugin()
+      addPlugin(db)
       break
 
     case validAddCommand.FEATURE:
-      addFeature()
+      addFeature(db)
       break
 
     case validAddCommand.TEMPLATE:
-      addTemplate()
+      addTemplate(db)
       break
 
     case validAddCommand.COMPONENT:
-      addComponent()
+      addComponent(db)
       break
 
     default:
@@ -42,7 +42,7 @@ const displayPrompt = cmd => {
   }
 }
 
-export default args => {
+export default (db, args) => {
   const prompts = [
     {
       type: 'list',
@@ -65,14 +65,14 @@ export default args => {
 
   switch (args.length) {
     case 0:
-      colorlog('Select what you want to add to {your theme}')
+      colorlog('Select what you want to {add} in your theme')
       inquirer.prompt(prompts).then(({command}) => {
-        displayPrompt(command)
+        displayPrompt(db, command)
       })
       break
 
     case 1:
-      displayPrompt(args[0])
+      displayPrompt(db, args[0])
       break
 
     default:

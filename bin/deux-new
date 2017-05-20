@@ -6,10 +6,11 @@ const cli = require('../src/cli')
 
 program.parse(process.argv)
 
-cli('new')
-  .then(command => {
-    command.new()
+// Skip initialize
+cli(true)
+  .then(({db, $new}) => {
+    $new(db)
   })
-  .catch(() => {
+  .catch(err => {
     process.exit(0)
   })

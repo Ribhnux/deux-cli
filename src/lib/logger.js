@@ -30,18 +30,20 @@ export const stdlog = options => {
     padBtm = true
   }
 
-  if (padTop) {
+  if (padTop && message !== '') {
     console.log('')
   }
 
-  console.log(`${colored} ${sep} ${message}`)
+  if (message !== '') {
+    console.log(`${colored} ${sep} ${message}`)
+  }
 
-  if (padBtm) {
+  if (padBtm && message !== '') {
     console.log('')
   }
 
   if (exit) {
-    throw new Error(undefined)
+    throw new Error()
   }
 }
 

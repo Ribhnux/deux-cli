@@ -1,16 +1,19 @@
 import init from './init'
 
-export default options => {
+export default skip => {
   return new Promise(resolve => {
-    init(options).then(() => {
+    init(skip).then(db => {
       resolve({
-        new: require('./commands/new'),
-        dev: require('./commands/dev'),
-        add: require('./commands/add'),
-        status: require('./commands/status'),
-        switch: require('./commands/switch'),
-        list: require('./commands/list')
+        db,
+        $new: require('./commands/new'),
+        $switch: require('./commands/switch'),
+        $status: require('./commands/status'),
+        $add: require('./commands/add')
+        // E dev: require('./commands/dev'),
+        // list: require('./commands/list')
       })
+    }).catch(err => {
+      console.log(err.message())
     })
   })
 }

@@ -1,5 +1,5 @@
 import path from 'path'
-import {existsSync, writeFile} from 'fs'
+import {existsSync} from 'fs'
 import inquirer from 'inquirer'
 import faker from 'faker'
 import _s from 'string'
@@ -8,13 +8,14 @@ import mkdirp from 'mkdirp'
 import rimraf from 'rimraf'
 import execa from 'execa'
 import wpFileHeader from 'wp-get-file-header'
-import jsonr from 'json-realtime'
+import jsonar from 'jsonar'
 import * as message from '../../lib/messages'
-import {deuxConfig, projectPath, validTags, wpThemeDir, templateDir} from '../../lib/const'
+import {validTags, wpThemeDir, templateDir} from '../../lib/const'
 import {error, colorlog} from '../../lib/logger'
 import {dirlist, filelist, compileFiles} from '../../lib/utils'
+import {setCurrentTheme, dbErrorHandler} from '../../lib/db-utils'
 
-export default () => {
+export default db => {
   colorlog(`Add new {theme}`)
 
   const prompts = [
@@ -134,7 +135,7 @@ export default () => {
 
     {
       type: 'input',
-      name: 'gitUri',
+      name: 'repoUrl',
       message: 'Git Repository',
       default: 'https://github.com/example/my-theme.git',
       validate: value => {
@@ -185,7 +186,7 @@ export default () => {
         description,
         version,
         tags,
-        gitUri,
+        repoUrl,
         overwrite
       } = answers
 
@@ -194,13 +195,12 @@ export default () => {
       const themeFnPrefix = _s(themeNameLower).underscore().s
       const themePath = path.join(wpThemeDir, textDomain)
       const gitPath = path.join(themePath, '.git')
-      const deuxConfigPath = path.join(themePath, deuxConfig)
 
       colorlog(`Initialize {${themeName}}`)
       const task = new Listr([
         {
           title: 'Make theme directory',
-          enabled: () => overwrite === false,
+          enabled: () => overwrite === false || overwrite === undefined,
           task: () => new Promise(resolve => {
             if (existsSync(themePath)) {
               error({
@@ -252,121 +252,55 @@ export default () => {
         },
 
         {
-          title: 'Init WordPress Theme',
-          task: () => new Listr([
-            {
-              title: 'Setup theme structures',
-              task: () => {
-                return new Promise(resolve => {
-                  compileFiles({
-                    srcDir: templateDir,
-                    dstDir: themePath,
-                    syntax: {
-                      themeName,
-                      themeUri,
-                      author,
-                      authorUri,
-                      isChild,
-                      parentTheme,
-                      description,
-                      version,
-                      textDomain,
-                      tags: tags.join(', '),
-                      themeFnPrefix
-                    }
-                  })
-                  resolve()
-                })
-              }
-            }
-          ])
-        },
+          title: `Init config`,
+          task: () => new Promise((resolve, reject) => {
+            const phpRegx = /\.php$/g
+            const notHiddenFile = item => item && item !== '.gitkeep'
 
-        {
-          title: 'Init Git',
-          task: () => new Listr([
-            {
-              title: 'Init repository',
-              task: () => execa.stdout('git', [`--git-dir=${gitPath}`, `--work-tree=${gitPath}`, 'init', '-q'])
-            },
+            const components = filelist(path.join(templateDir, 'components'))
+              .map(item => item.replace(phpRegx, ''))
+              .filter(notHiddenFile)
 
-            {
-              title: `Add remote url \`${gitUri}\``,
-              task: () => execa.stdout('git', [`--git-dir=${gitPath}`, 'remote', 'add', 'origin', gitUri])
-            },
+            const partialTemplates = filelist(path.join(templateDir, 'partial-templates'))
+              .map(item => item.replace(phpRegx, ''))
+              .filter(notHiddenFile)
 
-            {
-              title: `Validate remote url \`${gitUri}\``,
-              task: () => execa.stdout('git', [`--git-dir=${gitPath}`, 'pull', 'origin', 'master'])
-            },
+            const pageTemplates = filelist(path.join(templateDir, 'page-templates'))
+              .map(item => item.replace(phpRegx, ''))
+              .filter(notHiddenFile)
 
-            {
-              title: `Download git objects and refs from \`${gitUri}\``,
-              task: () => execa.stdout('git', [`--git-dir=${gitPath}`, 'fetch'])
-            }
-          ])
-        },
-
-        {
-          title: `Init config [${deuxConfig}]`,
-          task: () => new Listr([
-            {
-              title: `Create ${deuxConfig} file`,
-              task: () => new Promise((resolve, reject) => {
-                writeFile(deuxConfigPath, '{}', err => {
-                  if (err) {
-                    reject(err)
-                  }
-                  resolve()
-                })
-              })
-            },
-
-            {
-              title: 'Save default config',
-              task: () => new Promise(resolve => {
-                const phpRegx = /\.php$/g
-                const notHiddenFile = item => item && item !== '.gitkeep'
-
-                const components = filelist(path.join(templateDir, 'components'))
-                  .map(item => item.replace(phpRegx, ''))
-                  .filter(notHiddenFile)
-
-                const partialTemplates = filelist(path.join(templateDir, 'partial-templates'))
-                  .map(item => item.replace(phpRegx, ''))
-                  .filter(notHiddenFile)
-
-                const pageTemplates = filelist(path.join(templateDir, 'page-templates'))
-                  .map(item => item.replace(phpRegx, ''))
-                  .filter(notHiddenFile)
-
-                const deuxTheme = jsonr(deuxConfigPath)
-                deuxTheme.assets = {
+            db.upsert(`theme.${textDomain}`, doc => {
+              return Object.assign(doc, {
+                textDomain,
+                themeName,
+                version,
+                repoUrl,
+                assets: {
                   css: {},
                   js: {},
                   fonts: {}
-                }
-                deuxTheme.plugins = {}
-                deuxTheme.scss = {}
-                deuxTheme.components = components
-                deuxTheme.templates = {
+                },
+                plugins: {},
+                scss: {},
+                components,
+                templates: {
                   page: pageTemplates,
                   partial: partialTemplates
-                }
-                deuxTheme.hooks = {
+                },
+                hooks: {
                   filter: [],
                   action: []
-                }
-                deuxTheme.utils = []
-                deuxTheme.features = {
+                },
+                utils: [],
+                features: {
                   html5: [
                     'comment-form',
                     'comment-list',
                     'gallery',
                     'caption'
                   ]
-                }
-                deuxTheme.watch = [
+                },
+                watch: [
                   '*.php',
                   'assets/css/*',
                   'assets/js/*',
@@ -379,23 +313,84 @@ export default () => {
                   'includes/actions/*',
                   'includes/utils/*'
                 ]
-                resolve()
               })
+            }).then(() => {
+              resolve()
+            }).catch(err => {
+              reject(err)
+            })
+          })
+        },
+
+        {
+          title: `Init WordPress Theme`,
+          task: () => new Promise(resolve => {
+            db.get(`theme.${textDomain}`).then(doc => {
+              delete doc._id
+              delete doc._rev
+              delete doc.themeName
+              delete doc.textDomain
+              delete doc.repoUrl
+
+              const themeConfig = jsonar(doc, true)
+              compileFiles({
+                srcDir: templateDir,
+                dstDir: themePath,
+                syntax: {
+                  themeName,
+                  themeUri,
+                  themeConfig,
+                  author,
+                  authorUri,
+                  isChild,
+                  parentTheme,
+                  description,
+                  version,
+                  textDomain,
+                  tags: tags.join(', '),
+                  themeFnPrefix
+                }
+              })
+              resolve()
+            })
+          })
+        },
+
+        {
+          title: 'Init Git',
+          task: () => new Listr([
+            {
+              title: 'Init repository',
+              task: () => execa.stdout('git', [`--git-dir=${gitPath}`, `--work-tree=${gitPath}`, 'init', '-q'])
+            },
+
+            {
+              title: `Add remote url \`${repoUrl}\``,
+              task: () => execa.stdout('git', [`--git-dir=${gitPath}`, 'remote', 'add', 'origin', repoUrl])
+            },
+
+            {
+              title: `Validate remote url \`${repoUrl}\``,
+              task: () => execa.stdout('git', [`--git-dir=${gitPath}`, 'pull', 'origin', 'master'])
+            },
+
+            {
+              title: `Download git objects and refs from \`${repoUrl}\``,
+              task: () => execa.stdout('git', [`--git-dir=${gitPath}`, 'fetch'])
             }
           ])
         },
 
         {
-          title: `Save ${themeName} to project [.deuxproject]`,
+          title: `Save ${themeName} to project`,
           task: () => new Promise(resolve => {
-            const deuxProject = jsonr(projectPath)
-            deuxProject.current = textDomain
-            deuxProject.list[textDomain] = {
+            setCurrentTheme(db, {
               themeName,
-              version,
-              git: gitUri
-            }
-            resolve()
+              textDomain,
+              version
+            }).then(() => {
+              resolve()
+            }).catch(dbErrorHandler)
           })
         }
       ])
