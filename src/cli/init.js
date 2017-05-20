@@ -5,6 +5,7 @@ import dbFind from 'pouchdb-find'
 import * as message from '../lib/messages'
 import {wpConfigPath, dbPath, status} from '../lib/const'
 import {error, done} from '../lib/logger'
+import {dbErrorHandler} from '../lib/db-utils'
 
 // PouchDB: Config
 // PouchDB.debug.enable('pouchdb:find')
@@ -37,13 +38,7 @@ export default skip => {
           paddingBottom: true,
           exit: true
         })
-      }).catch(err => {
-        error({
-          message: err.message,
-          padding: true,
-          exit: true
-        })
-      })
+      }).catch(dbErrorHandler)
     }
 
     // Get environments
@@ -91,11 +86,7 @@ export default skip => {
 
         initProject()
       } else {
-        error({
-          message: err.message,
-          padding: true,
-          exit: true
-        })
+        dbErrorHandler(err)
       }
     })
   })
