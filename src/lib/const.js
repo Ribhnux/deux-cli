@@ -22,6 +22,11 @@ export const status = {
   MISSING: 404
 }
 
+export const pluginSourceType = {
+  WP: 'wordpress',
+  PRIVATE: 'private'
+}
+
 export const validAddCommand = {
   HOOK: 'hook',
   ASSET: 'asset',
