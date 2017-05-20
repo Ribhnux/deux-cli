@@ -29,6 +29,7 @@ export default db => {
         authorUri
       } = info
 
+      console.log('')
       colorlog(`Your current project is {${themeName}}`, false)
       stats.push(`Theme URI\t\t: {${themeUri}}`)
       stats.push(`Author\t\t\t: {${author}}`)
