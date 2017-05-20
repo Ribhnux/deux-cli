@@ -1,12 +1,17 @@
 import {existsSync} from 'fs'
 import PouchDB from 'pouchdb'
 import dbUpsert from 'pouchdb-upsert'
+import dbFind from 'pouchdb-find'
 import * as message from '../lib/messages'
 import {wpConfigPath, dbPath, status} from '../lib/const'
 import {error, done} from '../lib/logger'
 
-// Add upserter plugin
+// PouchDB: Config
+// PouchDB.debug.enable('pouchdb:find')
+
+// PouchDB: Plugins
 PouchDB.plugin(dbUpsert)
+PouchDB.plugin(dbFind)
 
 export default skip => {
   return new Promise(resolve => {
