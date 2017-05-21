@@ -16,7 +16,7 @@ import {dirlist, filelist, compileFiles} from '../../lib/utils'
 import {setCurrentTheme, dbErrorHandler} from '../../lib/db-utils'
 
 export default db => {
-  colorlog(`Add new {theme}`)
+  colorlog(`Create {New Theme}`)
 
   const prompts = [
     {
