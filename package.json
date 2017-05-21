@@ -27,6 +27,7 @@
     "execa": "^0.6.3",
     "faker": "^4.1.0",
     "handlebars": "^4.0.6",
+    "html-entities": "^1.2.1",
     "inquirer": "^3.0.1",
     "jsonar": "^1.1.0",
     "listr": "^0.11.0",
