@@ -44,7 +44,6 @@ export default db => {
       const {componentName, componentDesc} = answers
       const componentSlug = _s(componentName).slugify().s
       const themePath = path.join(wpThemeDir, textDomain)
-      const themeConfigPath = path.join(themePath, 'config.php')
       const componentPath = path.join(themePath, 'components', `${componentSlug}.php`)
 
       if (existsSync(componentPath)) {
