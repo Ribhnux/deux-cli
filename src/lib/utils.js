@@ -36,14 +36,16 @@ export const compileFile = ({srcPath, dstPath, syntax}) => {
   writeFileSync(dstPath, output, 'utf-8')
 }
 
-export const compileFiles = ({srcDir, dstDir, syntax}) => {
+export const compileFiles = ({srcDir, dstDir, rename = {}, syntax = {}}) => {
   const templateDir = scanDir(srcDir).filter(
     item => item !== '_partials'
   )
 
   templateDir.forEach(filename => {
     const srcPath = path.join(srcDir, filename)
-    const dstPath = path.join(dstDir, filename)
+
+    const newFilename = (filename in rename) ? rename[filename] : filename
+    const dstPath = path.join(dstDir, newFilename)
 
     if (existsSync(srcPath) && statSync(srcPath).isFile()) {
       compileFile({srcPath, dstPath, syntax})

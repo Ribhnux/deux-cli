@@ -329,6 +329,9 @@ export default db => {
               compileFiles({
                 srcDir: templateDir,
                 dstDir: themePath,
+                rename: {
+                  'config.php': `${themeFnPrefix}_config.php`
+                },
                 syntax: {
                   themeName,
                   themeUri,
