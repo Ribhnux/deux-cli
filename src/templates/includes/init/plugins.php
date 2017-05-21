@@ -7,22 +7,35 @@
 
 require_once get_template_directory() . '/includes/class/class-tgm-plugin-activation.php';
 
+foreach ( ${{themeFnPrefix}}_config[ 'plugins' ] as $slug => $plugin ) {
+	if ( $plugin[ 'init' ] ) {
+		require get_template_directory() . '/plugins/' . $slug . '.php';
+	}
+}
+
 if ( ! function_exists( '{{themeFnPrefix}}_tgmpa_register' ) ) :
 function {{themeFnPrefix}}_tgmpa_register() {
+	global ${{themeFnPrefix}}_config;
+
 	/**
 	 * Read plugins from config
 	 * @var array
 	 */
 	$plugins = array();
+	foreach ( ${{themeFnPrefix}}_config[ 'plugins' ] as $slug => $plugin ) {
+		$plugin[ 'slug' ] = $slug;
+		unset( $plugin[ 'init' ] );
+		$plugins[] = $plugin;
+	}
 
 	/**
 	 * TMGPA Config
 	 * @var array
 	 */
 	$config = array(
-		'id'           => 'theme-name',
+		'id'           => '{{textDomain}}',
 		'default_path' => '',
-		'menu'         => 'tgmpa-install-plugins',
+		'menu'         => '{{textDomain}}-install-plugins',
 		'has_notices'  => true,
 		'dismissable'  => true,
 		'dismiss_msg'  => '',
