@@ -52,7 +52,7 @@ export const saveConfig = (db, docId) => new Promise(resolve => {
 
     compileFile({
       srcPath: path.join(templateDir, 'config.php'),
-      dstPath: path.join(wpThemeDir, textDomain, 'config.php'),
+      dstPath: path.join(wpThemeDir, textDomain, `${themeFnPrefix}_config.php`),
       syntax: {
         version,
         themeConfig,

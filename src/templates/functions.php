@@ -6,7 +6,7 @@
  * @since {{version}}
  */
 
-require get_template_directory() . '/config.php';
+require get_template_directory() . '/{{themeFnPrefix}}_config.php';
 
 /**
  * Theme setup.
