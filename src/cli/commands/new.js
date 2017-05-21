@@ -27,7 +27,6 @@ export default db => {
     },
 
     {
-      type: 'input',
       name: 'themeName',
       message: 'Theme Name',
       default: 'Deux Theme'
@@ -77,35 +76,30 @@ export default db => {
     },
 
     {
-      type: 'input',
       name: 'themeUri',
       message: 'Theme URI',
       default: 'http://wordpress.org'
     },
 
     {
-      type: 'input',
       name: 'author',
       message: 'Author',
       default: faker.name.findName()
     },
 
     {
-      type: 'input',
       name: 'authorUri',
       message: 'Author URI',
       default: 'http://wordpress.org'
     },
 
     {
-      type: 'input',
       name: 'description',
       message: 'Description',
       default: faker.lorem.sentence()
     },
 
     {
-      type: 'input',
       name: 'version',
       message: 'Version',
       default: '1.0.0'
@@ -134,7 +128,6 @@ export default db => {
     },
 
     {
-      type: 'input',
       name: 'repoUrl',
       message: 'Git Repository',
       default: 'https://github.com/example/my-theme.git',

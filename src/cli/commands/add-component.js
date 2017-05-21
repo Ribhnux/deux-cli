@@ -13,7 +13,6 @@ export default db => {
   colorlog('Add a {New Component}')
   const prompts = [
     {
-      type: 'input',
       name: 'componentName',
       message: 'Name',
       default: 'New Component',
@@ -27,7 +26,6 @@ export default db => {
     },
 
     {
-      type: 'input',
       name: 'componentDesc',
       message: 'Description',
       default: faker.lorem.sentence(),

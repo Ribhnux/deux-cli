@@ -28,7 +28,6 @@ export default db => {
     },
 
     {
-      type: 'input',
       name: 'templateName',
       message: 'Template Name',
       when: ({templateType}) => templateType === 'page'
@@ -57,7 +56,6 @@ export default db => {
     },
 
     {
-      type: 'input',
       name: 'customPostType',
       message: 'Custom Post Type',
       default: 'post',
@@ -66,7 +64,6 @@ export default db => {
     },
 
     {
-      type: 'input',
       name: 'partialPrefix',
       message: 'Template Prefix',
       when: ({templateType}) => templateType === 'partial',
@@ -79,14 +76,12 @@ export default db => {
     },
 
     {
-      type: 'input',
       name: 'partialName',
       message: 'Template Name [optional]',
       when: ({templateType}) => templateType === 'partial'
     },
 
     {
-      type: 'input',
       name: 'description',
       message: 'Description',
       default: faker.lorem.sentence(),
