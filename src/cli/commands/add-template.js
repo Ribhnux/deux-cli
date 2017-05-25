@@ -1,15 +1,16 @@
 import path from 'path'
 import inquirer from 'inquirer'
-import jsonr from 'json-realtime'
 import faker from 'faker'
 import _s from 'string'
 import * as message from '../../lib/messages'
-import {error, colorlog} from '../../lib/logger'
-import {projectPath, wpThemeDir, templateDir, deuxConfig} from '../../lib/const'
+import validator from '../../lib/validator'
+import {error, done, colorlog} from '../../lib/logger'
+import {wpThemeDir, templateType, templateDir} from '../../lib/const'
 import {compileFile} from '../../lib/utils'
+import {dbErrorHandler, getCurrentTheme, saveConfig} from '../../lib/db-utils'
 
-export default () => {
-  colorlog('Add {template}')
+export default db => {
+  colorlog('Add a {New Template}')
   const prompts = [
     {
       type: 'list',
@@ -28,10 +29,10 @@ export default () => {
     },
 
     {
-      type: 'input',
       name: 'templateName',
       message: 'Template Name',
-      when: ({templateType}) => templateType === 'page'
+      when: ({templateType}) => templateType === 'page',
+      validate: value => validator(value, {minimum: 3, var: `"${value}"`})
     },
 
     {
@@ -57,127 +58,136 @@ export default () => {
     },
 
     {
-      type: 'input',
       name: 'customPostType',
       message: 'Custom Post Type',
+      default: 'post',
       when: answers => answers.templateType === 'page' && !answers.postType,
+      validate: value => validator(value, {minimum: 3, var: `"${value}"`}),
       filter: value => value.toLowerCase()
     },
 
     {
-      type: 'input',
       name: 'partialPrefix',
       message: 'Template Prefix',
       when: ({templateType}) => templateType === 'partial',
-      validate: value => {
-        if (value.length < 1) {
-          return 'Invalid prefix, at least should have 3 letters.'
-        }
-        return true
-      }
+      validate: value => validator(value, {minimum: 3, slug: true, var: `"${value}"`})
     },
 
     {
-      type: 'input',
       name: 'partialName',
       message: 'Template Name [optional]',
       when: ({templateType}) => templateType === 'partial'
     },
 
     {
-      type: 'input',
       name: 'description',
       message: 'Description',
       default: faker.lorem.sentence(),
-      when: ({templateType}) => templateType === 'partial',
-      validate: value => {
-        if (value.split(' ').length <= 2) {
-          return 'Description at least should have 3 words.'
-        }
-
-        return true
-      }
+      validate: value => validator(value, {minimum: 3, word: true, var: `"${value}"`})
     }
   ]
   inquirer.prompt(prompts).then(answers => {
-    const deuxProject = jsonr(projectPath)
-    if (deuxProject.current === '') {
-      error({
-        message: message.ERROR_INVALID_PROJECT,
-        error: true,
-        padding: true
-      })
-    }
+    getCurrentTheme(db).then(result => {
+      const {
+        templateName,
+        postType,
+        customPostType,
+        partialPrefix,
+        partialName,
+        description
+      } = answers
 
-    const {
-      templateType,
-      templateName,
-      postType,
-      customPostType,
-      partialPrefix,
-      partialName,
-      description
-    } = answers
+      const {
+        docId,
+        themeName,
+        version,
+        textDomain,
+        templates
+      } = result
 
-    const {themeName, version} = deuxProject.list[deuxProject.current]
-    const themePath = path.join(wpThemeDir, deuxProject.current)
-    const themeConfig = jsonr(path.join(themePath, deuxConfig))
-    const pageTemplates = themeConfig.templates.page
-    const partialTemplates = themeConfig.templates.partial
+      const defaultSyntax = {
+        themeName,
+        version,
+        description
+      }
 
-    const defaultSyntax = {themeName, version}
-    let templateSlug
-    let realPostType
-    let syntax
+      const themePath = path.join(wpThemeDir, textDomain)
 
-    switch (templateType) {
-      case 'partial':
-        templateSlug = _s(partialPrefix).slugify().s
-        if (partialName.length > 0) {
-          templateSlug += '-' + _s(partialName).slugify().s
-        }
+      let templateSlug
 
-        if (partialTemplates.includes(templateSlug)) {
-          error({
-            message: message.ERROR_TEMPLATE_ALREADY_EXISTS,
-            exit: true,
-            padding: true
-          })
-        }
-        syntax = Object.assign({description}, defaultSyntax)
-        compileFile({
-          srcPath: path.join(templateDir, '_partials', 'partial-template.php'),
-          dstPath: path.join(themePath, 'partial-templates', `${templateSlug}.php`),
-          syntax
-        })
-        partialTemplates.push(templateSlug)
-        themeConfig.templates.partial = partialTemplates
-        break
+      switch (answers.templateType) {
+        case templateType.PARTIAL:
+          templateSlug = _s(partialPrefix).slugify().s
 
-      case 'page':
-        templateSlug = _s(templateName).slugify().s
-        if (pageTemplates.includes(templateSlug)) {
-          error({
-            message: message.ERROR_TEMPLATE_ALREADY_EXISTS,
-            exit: true,
-            padding: true
-          })
-        }
+          if (partialName.length > 0) {
+            templateSlug += `-${_s(partialName).slugify().s}`
+          }
 
-        realPostType = postType === null ? customPostType : postType
-        syntax = Object.assign({templateName, postType: realPostType}, defaultSyntax)
-        compileFile({
-          srcPath: path.join(templateDir, '_partials', 'page-template.php'),
-          dstPath: path.join(themePath, 'page-templates', `${templateSlug}.php`),
-          syntax
-        })
-        pageTemplates.push(templateSlug)
-        themeConfig.templates.page = pageTemplates
-        break
+          if (templates.partial.includes(templateSlug)) {
+            error({
+              message: message.ERROR_TEMPLATE_ALREADY_EXISTS,
+              padding: true,
+              exit: true
+            })
+          }
 
-      default:
-        // Noop
-        break
-    }
+          db.upsert(docId, doc => {
+            doc.templates.partial.push(templateSlug)
+            compileFile({
+              srcPath: path.join(templateDir, '_partials', 'partial-template.php'),
+              dstPath: path.join(themePath, 'partial-templates', `${templateSlug}.php`),
+              syntax: defaultSyntax
+            })
+            return doc
+          }).then(() => {
+            saveConfig(db, docId).then(() => {
+              done({
+                message: message.SUCCEED_PARTIAL_TEMPLATE_ADDED,
+                padding: true,
+                exit: true
+              })
+            })
+          }).catch(dbErrorHandler)
+          break
+
+        case templateType.PAGE:
+          templateSlug = _s(templateName).slugify().s
+
+          if (templates.page.includes(templateSlug)) {
+            error({
+              message: message.ERROR_TEMPLATE_ALREADY_EXISTS,
+              padding: true,
+              exit: true
+            })
+          }
+
+          db.upsert(docId, doc => {
+            doc.templates.page.push(templateSlug)
+            compileFile({
+              srcPath: path.join(templateDir, '_partials', 'page-template.php'),
+              dstPath: path.join(themePath, 'page-templates', `${templateSlug}.php`),
+              syntax: Object.assign(defaultSyntax, {
+                templateName,
+                postType: postType === null ? customPostType : postType
+              })
+            })
+
+            return doc
+          }).then(() => {
+            saveConfig(db, docId).then(() => {
+              done({
+                message: message.SUCCEED_PAGE_TEMPLATE_ADDED,
+                padding: true,
+                exit: true
+              })
+            })
+          }).catch(dbErrorHandler)
+          break
+
+        default:
+          // Noop
+          break
+      }
+    })
   })
 }

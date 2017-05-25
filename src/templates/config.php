@@ -8,4 +8,4 @@
  * @since {{version}}
  */
 
-$theme_config = {{{themeConfig}}}
+${{themeFnPrefix}}_config = {{{themeConfig}}}

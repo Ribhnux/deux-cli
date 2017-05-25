@@ -17,7 +17,7 @@
  */
 if ( ! function_exists( '{{themeFnPrefix}}_setup' ) ):
 function {{themeFnPrefix}}_setup() {
-	global $deux_config;
+	global ${{themeFnPrefix}}_config;
 
 	// Make theme available for translation.
 	load_theme_textdomain( '{{textDomain}}' );
@@ -33,7 +33,7 @@ function {{themeFnPrefix}}_setup() {
 	/*
 	 * Init theme supports.
 	 */
-	foreach ( $deux_config['features'] as $name => $value ) {
+	foreach ( ${{themeFnPrefix}}_config['features'] as $name => $value ) {
 		if ( is_bool ( $value ) ) {
 			add_theme_support( $name );
 		}

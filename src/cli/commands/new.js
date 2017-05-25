@@ -10,13 +10,14 @@ import execa from 'execa'
 import wpFileHeader from 'wp-get-file-header'
 import jsonar from 'jsonar'
 import * as message from '../../lib/messages'
+import validator from '../../lib/validator'
 import {validTags, wpThemeDir, templateDir} from '../../lib/const'
 import {error, colorlog} from '../../lib/logger'
 import {dirlist, filelist, compileFiles} from '../../lib/utils'
 import {setCurrentTheme, dbErrorHandler} from '../../lib/db-utils'
 
 export default db => {
-  colorlog(`Add new {theme}`)
+  colorlog(`Create {New Theme}`)
 
   const prompts = [
     {
@@ -27,10 +28,10 @@ export default db => {
     },
 
     {
-      type: 'input',
       name: 'themeName',
       message: 'Theme Name',
-      default: 'Deux Theme'
+      default: 'Deux Theme',
+      validate: value => validator(value, {minimum: 3, var: `"${value}"`})
     },
 
     {
@@ -77,35 +78,34 @@ export default db => {
     },
 
     {
-      type: 'input',
       name: 'themeUri',
       message: 'Theme URI',
-      default: 'http://wordpress.org'
+      default: 'http://wordpress.org',
+      validate: value => validator(value, {url: true, var: `"${value}"`})
     },
 
     {
-      type: 'input',
       name: 'author',
       message: 'Author',
-      default: faker.name.findName()
+      default: faker.name.findName(),
+      validate: value => validator(value, {minimum: 3, var: `"${value}"`})
     },
 
     {
-      type: 'input',
       name: 'authorUri',
       message: 'Author URI',
-      default: 'http://wordpress.org'
+      default: 'http://wordpress.org',
+      validate: value => validator(value, {url: true, var: `"${value}"`})
     },
 
     {
-      type: 'input',
       name: 'description',
       message: 'Description',
-      default: faker.lorem.sentence()
+      default: faker.lorem.sentence(),
+      validate: value => validator(value, {minimum: 3, word: true, var: `"${value}"`})
     },
 
     {
-      type: 'input',
       name: 'version',
       message: 'Version',
       default: '1.0.0'
@@ -116,7 +116,7 @@ export default db => {
       message: 'Tags',
       name: 'tags',
       choices: [
-        new inquirer.Separator('Tag List'),
+        new inquirer.Separator(),
         ...validTags.map(value => {
           return {
             value,
@@ -124,27 +124,14 @@ export default db => {
           }
         })
       ],
-      validate: value => {
-        if (value.length < 1) {
-          return 'Please select at least one tag.'
-        }
-
-        return true
-      }
+      validate: value => validator(value, {minimum: 2, array: true, var: 'Tags'})
     },
 
     {
-      type: 'input',
       name: 'repoUrl',
       message: 'Git Repository',
       default: 'https://github.com/example/my-theme.git',
-      validate: value => {
-        if (value.length < 1 || /https?:\/\//.test(value) === false) {
-          return 'Git repository is important for modern developer.'
-        }
-
-        return true
-      }
+      validate: value => validator(value, {url: 2, git: true, var: `"${value}"`})
     },
 
     {
@@ -271,17 +258,17 @@ export default db => {
 
             db.upsert(`theme.${textDomain}`, doc => {
               return Object.assign(doc, {
+                develop: false,
                 textDomain,
                 themeName,
                 version,
                 repoUrl,
                 assets: {
-                  css: {},
-                  js: {},
+                  lib: {},
+                  scss: {},
                   fonts: {}
                 },
                 plugins: {},
-                scss: {},
                 components,
                 templates: {
                   page: pageTemplates,
@@ -292,6 +279,8 @@ export default db => {
                   action: []
                 },
                 utils: [],
+                menus: {},
+                widgets: {},
                 features: {
                   html5: [
                     'comment-form',
@@ -299,20 +288,7 @@ export default db => {
                     'gallery',
                     'caption'
                   ]
-                },
-                watch: [
-                  '*.php',
-                  'assets/css/*',
-                  'assets/js/*',
-                  'assets/scss/*',
-                  'components/*',
-                  'partial-templates/*',
-                  'page-templates/*',
-                  'plugins/*',
-                  'includes/filters/*',
-                  'includes/actions/*',
-                  'includes/utils/*'
-                ]
+                }
               })
             }).then(() => {
               resolve()
@@ -336,6 +312,9 @@ export default db => {
               compileFiles({
                 srcDir: templateDir,
                 dstDir: themePath,
+                rename: {
+                  'config.php': `${themeFnPrefix}_config.php`
+                },
                 syntax: {
                   themeName,
                   themeUri,

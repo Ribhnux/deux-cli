@@ -1,58 +1,61 @@
+/* eslint-disable camelcase */
 import path from 'path'
 import inquirer from 'inquirer'
-import jsonr from 'json-realtime'
+import _s from 'string'
+import {AllHtmlEntities as HTMLEntities} from 'html-entities'
 import searchPlugin from 'wp-plugin-search'
 import * as message from '../../lib/messages'
-import {error, colorlog} from '../../lib/logger'
-import {projectPath, wpThemeDir, deuxConfig} from '../../lib/const'
+import validator from '../../lib/validator'
+import {colorlog, done} from '../../lib/logger'
+import {wpThemeDir, templateDir, pluginSourceType} from '../../lib/const'
+import {compileFile} from '../../lib/utils'
+import {dbErrorHandler, getCurrentTheme, saveConfig} from '../../lib/db-utils'
 
-export default () => {
-  colorlog('Add {plugin} dependencies')
+const entities = new HTMLEntities()
+export default db => {
+  colorlog('Add a {New Plugin} Dependencies')
 
   const prompts = [
     {
       type: 'list',
-      name: 'source',
+      name: 'pluginSource',
       message: 'Plugin Source',
       choices: [
         {
           name: 'WordPress.org',
-          value: 'wordpress'
+          value: pluginSourceType.WP
         },
         {
           name: 'Private Repo',
-          value: 'private'
+          value: pluginSourceType.PRIVATE
         }
       ]
     },
+
     {
-      type: 'text',
       name: 'search',
       message: 'Search Plugin',
-      validate: value => {
-        if (value.length < 2) {
-          return 'Search Query should be at least 2 letters.'
-        }
-
-        return true
-      },
-      when: ({source}) => source === 'wordpress'
+      validate: value => validator(value, {minimum: 3, var: `"${value}"`}),
+      when: ({pluginSource}) => pluginSource === pluginSourceType.WP
     },
+
     {
       type: 'list',
       name: 'plugin',
       message: 'Select Plugin',
-      when: ({source}) => source === 'wordpress',
+      when: ({pluginSource}) => pluginSource === pluginSourceType.WP,
       choices: ({search}) => new Promise(resolve => {
         searchPlugin(search).then(result => {
           if (result.total > 0) {
             const list = result.items.map(item => {
-              const {name, slug, versions} = item
+              const {slug, versions, short_description} = item
+              const name = entities.decode(item.name)
               return {
                 name: `${name}`,
                 value: {
                   name,
                   slug,
+                  short_description,
                   versions
                 }
               }
@@ -63,11 +66,12 @@ export default () => {
         })
       })
     },
+
     {
       type: 'list',
       name: 'version',
       message: 'Choose Version',
-      when: ({source, plugin}) => source === 'wordpress' && plugin.slug,
+      when: ({pluginSource, plugin}) => pluginSource === pluginSourceType.WP && plugin.slug,
       choices: ({plugin}) => new Promise(resolve => {
         const list = []
         for (const value in plugin.versions) {
@@ -82,99 +86,176 @@ export default () => {
             })
           }
         }
+
+        list.push({
+          value: -1,
+          name: 'Latest'
+        })
         const filteredList = list.filter(item => item.name !== 'trunk').reverse()
         filteredList.splice(0, 0, new inquirer.Separator())
         resolve(filteredList)
       })
     },
+
     {
-      type: 'text',
-      name: 'url',
-      message: 'Plugin URL',
-      hint: '.zip extension',
-      when: ({source}) => {
-        return source === 'private'
-      },
-      validate: value => {
-        if (value.substr(value.length, -4) !== '.zip') {
-          return message.ERROR_REPOSITORY_URL_NOT_ZIP
-        }
-        return true
-      }
+      name: 'name',
+      message: 'Plugin Name',
+      when: ({pluginSource}) => pluginSource === pluginSourceType.PRIVATE,
+      validate: value => validator(value, {minimum: 3, var: `"${value}"`})
     },
+
+    {
+      name: 'source',
+      message: 'Plugin URL',
+      when: ({pluginSource}) => pluginSource === pluginSourceType.PRIVATE,
+      validate: value => validator(value, {url: true, ext: 'zip', var: `"${value}"`})
+    },
+
+    {
+      name: 'slug',
+      message: 'Plugin Slug',
+      default: ({name}) => _s(name).slugify().s,
+      when: ({pluginSource}) => pluginSource === pluginSourceType.PRIVATE,
+      validate: value => validator(value, {minimum: 3, slug: true, var: 'Plugin slug'})
+    },
+
+    {
+      name: 'version',
+      message: 'Plugin Version',
+      default: '1.0.0',
+      when: ({pluginSource}) => pluginSource === pluginSourceType.PRIVATE,
+      validate: value => validator(value, {semver: true, var: `"${value}"`})
+    },
+
+    {
+      name: 'desc',
+      message: 'Description',
+      when: ({pluginSource}) => pluginSource === pluginSourceType.PRIVATE,
+      validate: value => validator(value, {minimum: 3, word: true, var: `"${value}"`})
+    },
+
+    {
+      name: 'external_url',
+      message: 'Homepage',
+      when: ({pluginSource}) => pluginSource === pluginSourceType.PRIVATE,
+      validate: value => validator(value, {url: true, var: `"${value}"`})
+    },
+
     {
       type: 'confirm',
       name: 'required',
       message: 'Is this plugin required?',
       default: true
     },
+
     {
       type: 'confirm',
-      name: 'forceActivation',
+      name: 'force_activation',
       message: 'Force to activate this plugin when installing theme?',
       default: true
     },
+
     {
       type: 'confirm',
-      name: 'forceDeactivation',
+      name: 'force_deactivation',
       message: 'Force to de-activate this plugin when uninstalling theme?',
       default: false
     },
+
     {
       type: 'confirm',
       name: 'init',
-      message: 'Need an initialization to load this plugin?',
+      message: 'Need a custom hook / initialization?',
       default: false
     }
   ]
 
-  return inquirer
-    .prompt(prompts)
-    .then(answers => {
-      const deuxProject = jsonr(projectPath)
-      if (deuxProject.current === '') {
-        error({
-          message: message.ERROR_INVALID_PROJECT,
-          error: true,
-          padding: true
-        })
-      }
-
-      /* eslint-disable camelcase */
-      let {
+  return inquirer.prompt(prompts).then(answers => {
+    getCurrentTheme(db).then(result => {
+      const {
+        init,
         name,
         slug,
-        plugin,
-        version,
-        required,
-        url: source,
-        source: pluginSrc,
-        forceActivation: force_activation,
-        forceDeactivation: force_deactivation,
-        extUrl: external_url
-      } = answers
-
-      if (pluginSrc === 'wordpress') {
-        name = plugin.name
-        slug = plugin.slug
-        source = version.source
-        version = version.value
-        external_url = `https://wordpress.org/plugins/${slug}/`
-      }
-
-      const themePath = path.join(wpThemeDir, deuxProject.current)
-      const themeConfig = jsonr(path.join(themePath, deuxConfig))
-
-      const pluginObject = {
-        name,
+        desc,
         source,
         version,
         required,
+        external_url,
+        pluginSource,
         force_activation,
-        force_deactivation,
-        external_url
+        force_deactivation
+      } = answers
+
+      let {
+        plugin
+      } = answers
+
+      const {
+        docId,
+        themeName,
+        textDomain,
+        version: themeVersion
+      } = result
+
+      const pluginData = {
+        init,
+        name,
+        source,
+        required,
+        force_activation,
+        force_deactivation
       }
 
-      themeConfig.plugins[slug] = pluginObject
+      switch (pluginSource) {
+        case pluginSourceType.WP:
+          pluginData.name = plugin.name
+
+          if (version.value !== -1) {
+            pluginData.source = version.source
+            pluginData.version = version.value
+            pluginData.external_url = `https://wordpress.org/plugins/${plugin.slug}/`
+          }
+          break
+
+        case pluginSourceType.PRIVATE:
+          plugin = {
+            name,
+            slug: slug || _s(name).slugify().s,
+            short_description: desc
+          }
+          pluginData.version = version
+          pluginData.external_url = external_url
+          break
+
+        default:
+          // Noop
+          break
+      }
+
+      db.upsert(docId, doc => {
+        doc.plugins[plugin.slug] = pluginData
+        compileFile({
+          srcPath: path.join(templateDir, '_partials', 'plugin.php'),
+          dstPath: path.join(wpThemeDir, textDomain, 'plugins', `${plugin.slug}.php`),
+          syntax: {
+            init,
+            themeName,
+            version: themeVersion,
+            pluginName: plugin.name,
+            pluginDesc: plugin.short_description,
+            pluginLink: pluginData.external_url
+          }
+        })
+        return doc
+      }).then(() => {
+        saveConfig(db, docId).then(() => {
+          done({
+            message: message.SUCCEED_PLUGIN_ADDED,
+            paddingTop: true,
+            exit: true
+          })
+        })
+      }).catch(dbErrorHandler)
     })
+  })
 }

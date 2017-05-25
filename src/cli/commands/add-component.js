@@ -3,86 +3,74 @@ import {existsSync} from 'fs'
 import inquirer from 'inquirer'
 import faker from 'faker'
 import _s from 'string'
-import jsonr from 'json-realtime'
-import {error, colorlog} from '../../lib/logger'
+import validator from '../../lib/validator'
+import {error, done, colorlog} from '../../lib/logger'
+import {templateDir, wpThemeDir} from '../../lib/const'
 import {compileFile} from '../../lib/utils'
-import {projectPath, templateDir, wpThemeDir, deuxConfig} from '../../lib/const'
+import {dbErrorHandler, getCurrentTheme, saveConfig} from '../../lib/db-utils'
 import * as message from '../../lib/messages'
 
-export default () => {
-  colorlog('Add {component} template')
+export default db => {
+  colorlog('Add a {New Component}')
   const prompts = [
     {
-      type: 'input',
       name: 'componentName',
       message: 'Name',
       default: 'New Component',
-      validate: value => {
-        if (value.length <= 2) {
-          return 'Name should have at least 3 letters.'
-        }
-
-        return true
-      }
+      validate: value => validator(value, {minimum: 3, var: `"${value}"`})
     },
 
     {
-      type: 'input',
       name: 'componentDesc',
       message: 'Description',
       default: faker.lorem.sentence(),
-      validate: value => {
-        if (value.split(' ').length <= 2) {
-          return 'Description should have at least 3 words.'
-        }
-
-        return true
-      }
+      validate: value => validator(value, {minimum: 3, word: true, var: `"${value}"`})
     }
   ]
   inquirer.prompt(prompts).then(answers => {
-    const deuxProject = jsonr(projectPath)
-    if (deuxProject.current === '') {
-      error({
-        message: message.ERROR_INVALID_PROJECT,
-        error: true,
-        padding: true
-      })
-    }
+    getCurrentTheme(db).then(result => {
+      const {docId, textDomain, themeName, version} = result
+      const {componentName, componentDesc} = answers
+      const componentSlug = _s(componentName).slugify().s
+      const themePath = path.join(wpThemeDir, textDomain)
+      const componentPath = path.join(themePath, 'components', `${componentSlug}.php`)
 
-    const {componentName, componentDesc} = answers
-    const componentSlug = _s(componentName).slugify().s
-    const themePath = path.join(wpThemeDir, deuxProject.current)
-    const componentPath = path.join(themePath, 'components', `${componentSlug}.php`)
-    if (existsSync(componentPath)) {
-      error({
-        message: message.ERROR_COMPONENT_ALREADY_EXISTS,
-        error: true,
-        padding: true
-      })
-    }
+      if (existsSync(componentPath)) {
+        error({
+          message: message.ERROR_COMPONENT_ALREADY_EXISTS,
+          padding: true,
+          exit: true
+        })
+      }
 
-    const {themeName, version} = deuxProject.list[deuxProject.current]
-    const themeFnPrefix = _s(themeName).underscore().s
-    const componentFn = _s(componentName).underscore().s
-    const syntax = {
-      version,
-      themeName,
-      themeFnPrefix,
-      componentName,
-      componentDesc,
-      componentFn
-    }
+      const themeFnPrefix = _s(themeName).underscore().s
+      const componentFn = _s(componentName).underscore().s
+      const syntax = {
+        version,
+        themeName,
+        themeFnPrefix,
+        componentName,
+        componentDesc,
+        componentFn
+      }
 
-    compileFile({
-      srcPath: path.join(templateDir, '_partials', 'component.php'),
-      dstPath: componentPath,
-      syntax
+      db.upsert(docId, doc => {
+        doc.components.push(componentSlug)
+        compileFile({
+          srcPath: path.join(templateDir, '_partials', 'component.php'),
+          dstPath: componentPath,
+          syntax
+        })
+        return doc
+      }).then(() => {
+        saveConfig(db, docId).then(() => {
+          done({
+            message: message.SUCCEED_COMPONENT_ADDED,
+            paddingTop: true,
+            exit: true
+          })
+        })
+      }).catch(dbErrorHandler)
     })
-
-    const themeConfig = jsonr(path.join(themePath, deuxConfig))
-    const {components} = themeConfig
-    components.push(componentSlug)
-    themeConfig.components = components
   })
 }

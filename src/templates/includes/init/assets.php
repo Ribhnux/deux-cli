@@ -7,7 +7,7 @@
 
 if ( ! function_exists( '{{themeFnPrefix}}_enqueue_scripts' ) ) :
 function {{themeFnPrefix}}_enqueue_scripts() {
-	global $deux_config;
+	global ${{themeFnPrefix}}_config;
 
 	$assets_path = get_template_directory_uri() . '/assets/';
 
