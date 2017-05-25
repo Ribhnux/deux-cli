@@ -37,7 +37,7 @@ export const getCurrentTheme = db => new Promise(resolve => {
   }).catch(dbErrorHandler)
 })
 
-export const saveConfig = (db, docId) => new Promise(resolve => {
+export const saveConfig = (db, docId, live = false) => new Promise(resolve => {
   db.get(docId).then(doc => {
     const {themeName, textDomain, version} = doc
 
@@ -46,6 +46,7 @@ export const saveConfig = (db, docId) => new Promise(resolve => {
     delete doc.themeName
     delete doc.textDomain
     delete doc.repoUrl
+    doc.live = live
 
     const themeConfig = jsonar(doc, true)
     const themeFnPrefix = _s(themeName).underscore()
