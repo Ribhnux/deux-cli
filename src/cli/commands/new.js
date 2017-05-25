@@ -264,17 +264,17 @@ export default db => {
 
             db.upsert(`theme.${textDomain}`, doc => {
               return Object.assign(doc, {
+                live: false,
                 textDomain,
                 themeName,
                 version,
                 repoUrl,
                 assets: {
-                  css: {},
-                  js: {},
+                  lib: {},
+                  scss: {},
                   fonts: {}
                 },
                 plugins: {},
-                scss: {},
                 components,
                 templates: {
                   page: pageTemplates,
@@ -285,6 +285,8 @@ export default db => {
                   action: []
                 },
                 utils: [],
+                menus: {},
+                widgets: {},
                 features: {
                   html5: [
                     'comment-form',
@@ -292,20 +294,7 @@ export default db => {
                     'gallery',
                     'caption'
                   ]
-                },
-                watch: [
-                  '*.php',
-                  'assets/css/*',
-                  'assets/js/*',
-                  'assets/scss/*',
-                  'components/*',
-                  'partial-templates/*',
-                  'page-templates/*',
-                  'plugins/*',
-                  'includes/filters/*',
-                  'includes/actions/*',
-                  'includes/utils/*'
-                ]
+                }
               })
             }).then(() => {
               resolve()
