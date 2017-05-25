@@ -16,8 +16,7 @@ export default db => {
       templates,
       components,
       plugins,
-      assets,
-      scss
+      assets
     } = result
 
     const themePath = path.join(wpThemeDir, textDomain)
@@ -41,11 +40,11 @@ export default db => {
       stats.push(`Partial Templates\t: {${templates.partial.length}} Templates`)
       stats.push(`Components\t\t: {${components.length}} Installed`)
       stats.push(`Plugins\t\t\t: {${Object.keys(plugins).length}} Dependencies`)
-      stats.push(`Javascript\t\t: {${Object.keys(assets.js).length}} Dependencies`)
-      stats.push(`CSS\t\t\t: {${Object.keys(assets.css).length}} Dependencies`)
-      stats.push(`SASS\t\t\t: {${Object.keys(scss).length}} Files`)
+      stats.push(`CSS / JS Libraries\t: {${Object.keys(assets.lib).length}} Dependencies`)
+      stats.push(`SASS\t\t\t: {${Object.keys(assets.scss).length}} Files`)
+      stats.push(`Web Fonts\t\t: {${Object.keys(assets.fonts).length}} Fonts`)
       colorlog(stats.join('\n'))
-      colorlog(`type ${chalk.bold.cyan('deux switch')} to change with another project.\ntype ${chalk.bold.cyan('deux list')} to view list of project.`, false)
+      colorlog(`type ${chalk.bold.cyan('deux switch')} to change with another project.`, false)
     })
   })
 }
