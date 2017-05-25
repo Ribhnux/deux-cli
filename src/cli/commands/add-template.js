@@ -3,6 +3,7 @@ import inquirer from 'inquirer'
 import faker from 'faker'
 import _s from 'string'
 import * as message from '../../lib/messages'
+import validator from '../../lib/validator'
 import {error, done, colorlog} from '../../lib/logger'
 import {wpThemeDir, templateType, templateDir} from '../../lib/const'
 import {compileFile} from '../../lib/utils'
@@ -30,7 +31,8 @@ export default db => {
     {
       name: 'templateName',
       message: 'Template Name',
-      when: ({templateType}) => templateType === 'page'
+      when: ({templateType}) => templateType === 'page',
+      validate: value => validator(value, {minimum: 3, var: `"${value}"`})
     },
 
     {
@@ -60,6 +62,7 @@ export default db => {
       message: 'Custom Post Type',
       default: 'post',
       when: answers => answers.templateType === 'page' && !answers.postType,
+      validate: value => validator(value, {minimum: 3, var: `"${value}"`}),
       filter: value => value.toLowerCase()
     },
 
@@ -67,12 +70,7 @@ export default db => {
       name: 'partialPrefix',
       message: 'Template Prefix',
       when: ({templateType}) => templateType === 'partial',
-      validate: value => {
-        if (value.length < 1) {
-          return 'Invalid prefix, at least should have 3 letters.'
-        }
-        return true
-      }
+      validate: value => validator(value, {minimum: 3, slug: true, var: `"${value}"`})
     },
 
     {
@@ -85,13 +83,7 @@ export default db => {
       name: 'description',
       message: 'Description',
       default: faker.lorem.sentence(),
-      validate: value => {
-        if (value.split(' ').length <= 2) {
-          return 'Description at least should have 3 words.'
-        }
-
-        return true
-      }
+      validate: value => validator(value, {minimum: 3, word: true, var: `"${value}"`})
     }
   ]
   inquirer.prompt(prompts).then(answers => {

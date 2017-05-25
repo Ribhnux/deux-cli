@@ -3,6 +3,7 @@ import {existsSync} from 'fs'
 import inquirer from 'inquirer'
 import faker from 'faker'
 import _s from 'string'
+import validator from '../../lib/validator'
 import {error, done, colorlog} from '../../lib/logger'
 import {templateDir, wpThemeDir} from '../../lib/const'
 import {compileFile} from '../../lib/utils'
@@ -16,26 +17,14 @@ export default db => {
       name: 'componentName',
       message: 'Name',
       default: 'New Component',
-      validate: value => {
-        if (value.length <= 2) {
-          return 'Name should have at least 3 letters.'
-        }
-
-        return true
-      }
+      validate: value => validator(value, {minimum: 3, var: `"${value}"`})
     },
 
     {
       name: 'componentDesc',
       message: 'Description',
       default: faker.lorem.sentence(),
-      validate: value => {
-        if (value.split(' ').length <= 2) {
-          return 'Description should have at least 3 words.'
-        }
-
-        return true
-      }
+      validate: value => validator(value, {minimum: 3, word: true, var: `"${value}"`})
     }
   ]
   inquirer.prompt(prompts).then(answers => {

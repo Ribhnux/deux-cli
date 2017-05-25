@@ -1,11 +1,11 @@
 /* eslint-disable camelcase */
 import path from 'path'
 import inquirer from 'inquirer'
-import semver from 'semver'
 import _s from 'string'
 import {AllHtmlEntities as HTMLEntities} from 'html-entities'
 import searchPlugin from 'wp-plugin-search'
 import * as message from '../../lib/messages'
+import validator from '../../lib/validator'
 import {colorlog, done} from '../../lib/logger'
 import {wpThemeDir, templateDir, pluginSourceType} from '../../lib/const'
 import {compileFile} from '../../lib/utils'
@@ -35,13 +35,7 @@ export default db => {
     {
       name: 'search',
       message: 'Search Plugin',
-      validate: value => {
-        if (value.length < 2) {
-          return 'Search Query should be at least 2 letters.'
-        }
-
-        return true
-      },
+      validate: value => validator(value, {minimum: 3, var: `"${value}"`}),
       when: ({pluginSource}) => pluginSource === pluginSourceType.WP
     },
 
@@ -107,36 +101,22 @@ export default db => {
       name: 'name',
       message: 'Plugin Name',
       when: ({pluginSource}) => pluginSource === pluginSourceType.PRIVATE,
-      validate: value => {
-        if (value.length < 2) {
-          return 'Plugin Name should be at least 2 letters.'
-        }
-
-        return true
-      }
+      validate: value => validator(value, {minimum: 3, var: `"${value}"`})
     },
 
     {
       name: 'source',
       message: 'Plugin URL',
       when: ({pluginSource}) => pluginSource === pluginSourceType.PRIVATE,
-      validate: value => {
-        if (/https?:\/\//.test(value) === false) {
-          return message.ERROR_INVALID_URL
-        }
-
-        if (value.substr(value.length - 4) !== '.zip') {
-          return message.ERROR_REPOSITORY_URL_NOT_ZIP
-        }
-        return true
-      }
+      validate: value => validator(value, {url: true, ext: 'zip', var: `"${value}"`})
     },
 
     {
       name: 'slug',
       message: 'Plugin Slug',
       default: ({name}) => _s(name).slugify().s,
-      when: ({pluginSource}) => pluginSource === pluginSourceType.PRIVATE
+      when: ({pluginSource}) => pluginSource === pluginSourceType.PRIVATE,
+      validate: value => validator(value, {minimum: 3, slug: true, var: 'Plugin slug'})
     },
 
     {
@@ -144,39 +124,21 @@ export default db => {
       message: 'Plugin Version',
       default: '1.0.0',
       when: ({pluginSource}) => pluginSource === pluginSourceType.PRIVATE,
-      validate: value => {
-        if (semver.valid(value) === null) {
-          return message.ERROR_INVALID_VERSION
-        }
-
-        return true
-      }
+      validate: value => validator(value, {semver: true, var: `"${value}"`})
     },
 
     {
       name: 'desc',
       message: 'Description',
       when: ({pluginSource}) => pluginSource === pluginSourceType.PRIVATE,
-      validate: value => {
-        if (value.length < 2) {
-          return 'Plugin Description should be at least 2 letters.'
-        }
-
-        return true
-      }
+      validate: value => validator(value, {minimum: 3, word: true, var: `"${value}"`})
     },
 
     {
       name: 'external_url',
       message: 'Homepage',
       when: ({pluginSource}) => pluginSource === pluginSourceType.PRIVATE,
-      validate: value => {
-        if (/https?:\/\//.test(value) === false) {
-          return message.ERROR_INVALID_URL
-        }
-
-        return true
-      }
+      validate: value => validator(value, {url: true, var: `"${value}"`})
     },
 
     {
