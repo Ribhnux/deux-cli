@@ -70,212 +70,212 @@ export const registeredScript = [
   {
     name: 'jQuery Form',
     handle: 'jquery-form',
-    dependencies: 'jquery'
+    deps: ['jquery']
   },
   {
     name: 'jQuery Color',
     handle: 'jquery-color',
-    dependencies: 'jquery'
+    deps: ['jquery']
   },
   {
     name: 'jQuery Masonry',
     handle: 'jquery-masonry',
-    dependencies: 'jquery'
+    deps: ['jquery']
   },
   {
     name: 'Masonry',
     handle: 'masonry',
-    dependencies: 'imagesloaded'
+    deps: ['imagesloaded']
   },
   {
     name: 'jQuery UI Core',
     handle: 'jquery-ui-core',
-    dependencies: 'jquery'
+    deps: ['jquery']
   },
   {
     name: 'jQuery UI Widget',
     handle: 'jquery-ui-widget',
-    dependencies: 'jquery'
+    deps: ['jquery']
   },
   {
     name: 'jQuery UI Accordion',
     handle: 'jquery-ui-accordion',
-    dependencies: 'jquery'
+    deps: ['jquery']
   },
   {
     name: 'jQuery UI Autocomplete',
     handle: 'jquery-ui-autocomplete',
-    dependencies: 'jquery'
+    deps: ['jquery']
   },
   {
     name: 'jQuery UI Button',
     handle: 'jquery-ui-button',
-    dependencies: 'jquery'
+    deps: ['jquery']
   },
   {
     name: 'jQuery UI Datepicker',
     handle: 'jquery-ui-datepicker',
-    dependencies: 'jquery'
+    deps: ['jquery']
   },
   {
     name: 'jQuery UI Dialog',
     handle: 'jquery-ui-dialog',
-    dependencies: 'jquery'
+    deps: ['jquery']
   },
   {
     name: 'jQuery UI Draggable',
     handle: 'jquery-ui-draggable',
-    dependencies: 'jquery'
+    deps: ['jquery']
   },
   {
     name: 'jQuery UI Droppable',
     handle: 'jquery-ui-droppable',
-    dependencies: 'jquery'
+    deps: ['jquery']
   },
   {
     name: 'jQuery UI Menu',
     handle: 'jquery-ui-menu',
-    dependencies: 'jquery'
+    deps: ['jquery']
   },
   {
     name: 'jQuery UI Mouse',
     handle: 'jquery-ui-mouse',
-    dependencies: 'jquery'
+    deps: ['jquery']
   },
   {
     name: 'jQuery UI Position',
     handle: 'jquery-ui-position',
-    dependencies: 'jquery'
+    deps: ['jquery']
   },
   {
     name: 'jQuery UI Progressbar',
     handle: 'jquery-ui-progressbar',
-    dependencies: 'jquery'
+    deps: ['jquery']
   },
   {
     name: 'jQuery UI Selectable',
     handle: 'jquery-ui-selectable',
-    dependencies: 'jquery'
+    deps: ['jquery']
   },
   {
     name: 'jQuery UI Resizable',
     handle: 'jquery-ui-resizable',
-    dependencies: 'jquery'
+    deps: ['jquery']
   },
   {
     name: 'jQuery UI Selectmenu',
     handle: 'jquery-ui-selectmenu',
-    dependencies: 'jquery'
+    deps: ['jquery']
   },
   {
     name: 'jQuery UI Sortable',
     handle: 'jquery-ui-sortable',
-    dependencies: 'jquery'
+    deps: ['jquery']
   },
   {
     name: 'jQuery UI Slider',
     handle: 'jquery-ui-slider',
-    dependencies: 'jquery'
+    deps: ['jquery']
   },
   {
     name: 'jQuery UI Spinner',
     handle: 'jquery-ui-spinner',
-    dependencies: 'jquery'
+    deps: ['jquery']
   },
   {
     name: 'jQuery UI Tooltips',
     handle: 'jquery-ui-tooltip',
-    dependencies: 'jquery'
+    deps: ['jquery']
   },
   {
     name: 'jQuery UI Tabs',
     handle: 'jquery-ui-tabs',
-    dependencies: 'jquery'
+    deps: ['jquery']
   },
   {
     name: 'jQuery UI Effects',
     handle: 'jquery-effects-core',
-    dependencies: 'jquery'
+    deps: ['jquery']
   },
   {
     name: 'jQuery UI Effects – Blind',
     handle: 'jquery-effects-blind',
-    dependencies: 'jquery-effects-core'
+    deps: ['jquery-effects-core']
   },
   {
     name: 'jQuery UI Effects – Bounce',
     handle: 'jquery-effects-bounce',
-    dependencies: 'jquery-effects-core'
+    deps: ['jquery-effects-core']
   },
   {
     name: 'jQuery UI Effects – Clip',
     handle: 'jquery-effects-clip',
-    dependencies: 'jquery-effects-core'
+    deps: ['jquery-effects-core']
   },
   {
     name: 'jQuery UI Effects – Drop',
     handle: 'jquery-effects-drop',
-    dependencies: 'jquery-effects-core'
+    deps: ['jquery-effects-core']
   },
   {
     name: 'jQuery UI Effects – Explode',
     handle: 'jquery-effects-explode',
-    dependencies: 'jquery-effects-core'
+    deps: ['jquery-effects-core']
   },
   {
     name: 'jQuery UI Effects – Fade',
     handle: 'jquery-effects-fade',
-    dependencies: 'jquery-effects-core'
+    deps: ['jquery-effects-core']
   },
   {
     name: 'jQuery UI Effects – Fold',
     handle: 'jquery-effects-fold',
-    dependencies: 'jquery-effects-core'
+    deps: ['jquery-effects-core']
   },
   {
     name: 'jQuery UI Effects – Highlight',
     handle: 'jquery-effects-highlight',
-    dependencies: 'jquery-effects-core'
+    deps: ['jquery-effects-core']
   },
   {
     name: 'jQuery UI Effects – Pulsate',
     handle: 'jquery-effects-pulsate',
-    dependencies: 'jquery-effects-core'
+    deps: ['jquery-effects-core']
   },
   {
     name: 'jQuery UI Effects – Scale',
     handle: 'jquery-effects-scale',
-    dependencies: 'jquery-effects-core'
+    deps: ['jquery-effects-core']
   },
   {
     name: 'jQuery UI Effects – Shake',
     handle: 'jquery-effects-shake',
-    dependencies: 'jquery-effects-core'
+    deps: ['jquery-effects-core']
   },
   {
     name: 'jQuery UI Effects – Slide',
     handle: 'jquery-effects-slide',
-    dependencies: 'jquery-effects-core'
+    deps: ['jquery-effects-core']
   },
   {
     name: 'jQuery UI Effects – Transfer',
     handle: 'jquery-effects-transfer',
-    dependencies: 'jquery-effects-core'
+    deps: ['jquery-effects-core']
   },
   {
     name: 'WP Media Element',
     handle: 'wp-mediaelement',
-    dependencies: 'jquery'
+    deps: ['jquery']
   },
   {
     name: 'jQuery Schedule',
     handle: 'schedule',
-    dependencies: 'jquery'
+    deps: ['jquery']
   },
   {
     name: 'jQuery Suggest',
     handle: 'suggest',
-    dependencies: 'jquery'
+    deps: ['jquery']
   },
   {
     name: 'ThickBox',
@@ -284,12 +284,12 @@ export const registeredScript = [
   {
     name: 'jQuery Hover Intent',
     handle: 'hoverIntent',
-    dependencies: 'jquery'
+    deps: ['jquery']
   },
   {
     name: 'jQuery Hotkeys',
     handle: 'jquery-hotkeys',
-    dependencies: 'jquery'
+    deps: ['jquery']
   },
   {
     name: 'Simple AJAX Code-Kit',
@@ -302,7 +302,7 @@ export const registeredScript = [
   {
     name: 'Iris (Colour picker)',
     handle: 'iris',
-    dependencies: 'jquery'
+    deps: ['jquery']
   },
   {
     name: 'Tiny MCE',
