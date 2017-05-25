@@ -3,10 +3,10 @@ import * as message from '../../lib/messages'
 import {error, colorlog} from '../../lib/logger'
 import {validAddCommand} from '../../lib/const'
 import {capitalize} from '../../lib/utils'
-import addHook from './add-hook'
+// import addHook from './add-hook'
 import addAsset from './add-asset'
 import addPlugin from './add-plugin'
-import addFeature from './add-feature'
+// import addFeature from './add-feature'
 import addTemplate from './add-template'
 import addComponent from './add-component'
 
@@ -37,7 +37,11 @@ const displayPrompt = (db, cmd) => {
       break
 
     default:
-      // Noop
+      error({
+        message: message.ERROR_INVALID_COMMAND,
+        padding: true,
+        exit: true
+      })
       break
   }
 }
@@ -65,7 +69,7 @@ export default (db, args) => {
 
   switch (args.length) {
     case 0:
-      colorlog('Select what you want to {add} in your theme')
+      colorlog('What you want to add in your theme?')
       inquirer.prompt(prompts).then(({command}) => {
         displayPrompt(db, command)
       })
@@ -78,8 +82,8 @@ export default (db, args) => {
     default:
       error({
         message: message.ERROR_INVALID_COMMAND,
-        exit: true,
-        paddingTop: true
+        paddingTop: true,
+        exit: true
       })
       break
   }
