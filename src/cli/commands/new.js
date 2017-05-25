@@ -264,7 +264,7 @@ export default db => {
 
             db.upsert(`theme.${textDomain}`, doc => {
               return Object.assign(doc, {
-                live: false,
+                develop: false,
                 textDomain,
                 themeName,
                 version,
