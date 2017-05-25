@@ -65,7 +65,7 @@ export default skip => {
         inquirer.prompt(prompts).then(({devUrl}) => {
           db.put({
             _id: env,
-            devUrl: devUrl
+            devUrl
           }).then(() => {
             done({
               message: message.SUCCEED_INITIALIZED,
