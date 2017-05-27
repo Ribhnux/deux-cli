@@ -38,6 +38,14 @@ export const assetSource = {
   WP: 'wordpress'
 }
 
+export const scssType = {
+  COMPONENT: 'component',
+  LAYOUT: 'layout',
+  PAGE: 'page',
+  THEMES: 'theme',
+  VENDOR: 'vendor'
+}
+
 export const registeredScript = [
   {
     name: 'Jcrop',
