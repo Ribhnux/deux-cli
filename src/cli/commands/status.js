@@ -13,10 +13,10 @@ export default db => {
       themeName,
       textDomain,
       repoUrl,
-      templates,
+      asset,
+      template,
       components,
-      plugins,
-      assets
+      plugins
     } = result
 
     const themePath = path.join(wpThemeDir, textDomain)
@@ -36,13 +36,13 @@ export default db => {
       stats.push(`Version\t\t\t: {${version}}`)
       stats.push(`Path\t\t\t: {${themePath}}`)
       stats.push(`Repository URL\t\t: {${repoUrl}}`)
-      stats.push(`Page Templates\t\t: {${templates.page.length}} Templates`)
-      stats.push(`Partial Templates\t: {${templates.partial.length}} Templates`)
+      stats.push(`Page Templates\t\t: {${template.pages.length}} Templates`)
+      stats.push(`Partial Templates\t: {${template.partials.length}} Templates`)
       stats.push(`Components\t\t: {${components.length}} Installed`)
       stats.push(`Plugins\t\t\t: {${Object.keys(plugins).length}} Dependencies`)
-      stats.push(`CSS / JS Libraries\t: {${Object.keys(assets.lib).length}} Dependencies`)
-      stats.push(`SASS\t\t\t: {${Object.keys(assets.scss).length}} Files`)
-      stats.push(`Web Fonts\t\t: {${Object.keys(assets.fonts).length}} Fonts`)
+      stats.push(`CSS / JS Libraries\t: {${Object.keys(asset.libs).length}} Dependencies`)
+      stats.push(`SASS\t\t\t: {${Object.keys(asset.scss).length}} Files`)
+      stats.push(`Web Fonts\t\t: {${Object.keys(asset.fonts).length}} Fonts`)
       colorlog(stats.join('\n'))
       colorlog(`type ${chalk.bold.cyan('deux switch')} to change with another project.`, false)
     })
