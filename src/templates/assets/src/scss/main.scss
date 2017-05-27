@@ -18,7 +18,11 @@
   'abstracts/functions',
   'abstracts/mixins';
 {{#if scssVendors}}
-@import {{scssVendors}};{{/if}}
+
+@import
+  {{{scssVendors}}};
+{{/if}}
+
 @import
   'base/normalize',
   'base/wordpress',
@@ -26,10 +30,22 @@
   'base/typography',
   'base/helpers';
 {{#if scssLayouts}}
-@import {{scssLayouts}};{{/if}}
+
+@import
+  {{{scssLayouts}}};
+{{/if}}
 {{#if scssComponents}}
-@import {{scssComponents}};{{/if}}
+
+@import
+  {{{scssComponents}}};
+{{/if}}
 {{#if scssPages}}
-@import {{scssPages}};{{/if}}
+
+@import
+  {{{scssPages}}};
+{{/if}}
 {{#if scssThemes}}
-@import {{scssThemes}};{{/if}}
+
+@import
+  {{{scssThemes}}};
+{{/if}}
