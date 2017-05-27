@@ -29,6 +29,7 @@ export const ERROR_CANCELED = 'Canceled'
 export const ERROR_THEME_ALREADY_EXISTS = `Theme already exists, type: ${chalk.bold.cyan('deux remove theme')} to remove existing theme.`
 export const ERROR_COMPONENT_ALREADY_EXISTS = 'Component already exists. Please choose another name.'
 export const ERROR_TEMPLATE_ALREADY_EXISTS = 'Template already exists. Please choose another name.'
+export const ERROR_SASS_FILE_ALREADY_EXISTS = 'SASS file already exists. Please choose another name'
 export const ERROR_THEME_CREATION_CANCELED = 'Theme creation was canceled.'
 export const ERROR_GIT_INIT = 'There is something wrong when initializing git.'
 export const ERROR_GIT_REMOTE_ADD = 'There is something wrong when add remote url to git.'

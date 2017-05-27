@@ -265,7 +265,13 @@ export default db => {
                 repoUrl,
                 asset: {
                   libs: {},
-                  scss: {},
+                  scss: {
+                    components: [],
+                    layouts: [],
+                    pages: [],
+                    themes: [],
+                    vendors: []
+                  },
                   fonts: {}
                 },
                 plugins: {},
