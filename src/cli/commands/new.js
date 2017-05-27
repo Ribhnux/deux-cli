@@ -263,20 +263,20 @@ export default db => {
                 themeName,
                 version,
                 repoUrl,
-                assets: {
-                  lib: {},
+                asset: {
+                  libs: {},
                   scss: {},
                   fonts: {}
                 },
                 plugins: {},
                 components,
-                templates: {
-                  page: pageTemplates,
-                  partial: partialTemplates
+                template: {
+                  pages: pageTemplates,
+                  partials: partialTemplates
                 },
-                hooks: {
-                  filter: [],
-                  action: []
+                hook: {
+                  filters: [],
+                  actiona: []
                 },
                 utils: [],
                 menus: {},

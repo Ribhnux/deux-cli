@@ -102,7 +102,7 @@ export default db => {
         themeName,
         version,
         textDomain,
-        templates
+        template
       } = result
 
       const defaultSyntax = {
@@ -123,7 +123,7 @@ export default db => {
             templateSlug += `-${_s(partialName).slugify().s}`
           }
 
-          if (templates.partial.includes(templateSlug)) {
+          if (template.partials.includes(templateSlug)) {
             error({
               message: message.ERROR_TEMPLATE_ALREADY_EXISTS,
               padding: true,
@@ -132,7 +132,7 @@ export default db => {
           }
 
           db.upsert(docId, doc => {
-            doc.templates.partial.push(templateSlug)
+            doc.template.partials.push(templateSlug)
             compileFile({
               srcPath: path.join(templateDir, '_partials', 'partial-template.php'),
               dstPath: path.join(themePath, 'partial-templates', `${templateSlug}.php`),
@@ -153,7 +153,7 @@ export default db => {
         case templateType.PAGE:
           templateSlug = _s(templateName).slugify().s
 
-          if (templates.page.includes(templateSlug)) {
+          if (template.pages.includes(templateSlug)) {
             error({
               message: message.ERROR_TEMPLATE_ALREADY_EXISTS,
               padding: true,
@@ -162,7 +162,7 @@ export default db => {
           }
 
           db.upsert(docId, doc => {
-            doc.templates.page.push(templateSlug)
+            doc.template.pages.push(templateSlug)
             compileFile({
               srcPath: path.join(templateDir, '_partials', 'page-template.php'),
               dstPath: path.join(themePath, 'page-templates', `${templateSlug}.php`),
