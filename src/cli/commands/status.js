@@ -28,6 +28,13 @@ export default db => {
         authorUri
       } = info
 
+      let scssCount = 0
+      for (const i in asset.scss) {
+        if (Object.prototype.hasOwnProperty.call(asset.scss, i)) {
+          scssCount += asset.scss[i].length
+        }
+      }
+
       console.log('')
       colorlog(`Your current project is {${themeName}}`, false)
       stats.push(`Theme URI\t\t: {${themeUri}}`)
@@ -41,7 +48,7 @@ export default db => {
       stats.push(`Components\t\t: {${components.length}} Installed`)
       stats.push(`Plugins\t\t\t: {${Object.keys(plugins).length}} Dependencies`)
       stats.push(`CSS / JS Libraries\t: {${Object.keys(asset.libs).length}} Dependencies`)
-      stats.push(`SASS\t\t\t: {${Object.keys(asset.scss).length}} Files`)
+      stats.push(`SASS\t\t\t: {${scssCount}} Files`)
       stats.push(`Web Fonts\t\t: {${Object.keys(asset.fonts).length}} Fonts`)
       colorlog(stats.join('\n'))
       colorlog(`type ${chalk.bold.cyan('deux switch')} to change with another project.`, false)
