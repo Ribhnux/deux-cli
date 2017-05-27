@@ -1,4 +1,5 @@
 import chalk from 'chalk'
+import ora from 'ora'
 
 const prefix = 'deux'
 const sep = '>'
@@ -61,4 +62,11 @@ export const colorlog = (message, padding = true, color = 'magenta') => {
     finalMsg = `\n${finalMsg}\n`
   }
   console.log(finalMsg)
+}
+
+export const loader = (message, color = 'cyan') => {
+  const finalMsg = message.replace(msgRegx, `${chalk.bold[color]('$1')}`)
+  const spinner = ora(finalMsg).start()
+  console.log('')
+  return spinner
 }
