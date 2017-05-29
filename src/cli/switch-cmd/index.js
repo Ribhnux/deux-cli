@@ -1,7 +1,7 @@
 import inquirer from 'inquirer'
-import * as message from '../../lib/messages'
-import {error, done, colorlog} from '../../lib/logger'
-import {setCurrentTheme, dbErrorHandler} from '../../lib/db-utils'
+import * as message from '../lib/messages'
+import {error, done, colorlog} from '../lib/logger'
+import {setCurrentTheme, dbErrorHandler} from '../lib/db-utils'
 
 const displayPrompt = db => {
   colorlog(`Switch to another {project}`)

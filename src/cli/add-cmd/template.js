@@ -2,12 +2,12 @@ import path from 'path'
 import inquirer from 'inquirer'
 import faker from 'faker'
 import _s from 'string'
-import * as message from '../../lib/messages'
-import validator from '../../lib/validator'
-import {error, done, colorlog} from '../../lib/logger'
-import {wpThemeDir, templateType, templateDir} from '../../lib/const'
-import {compileFile} from '../../lib/utils'
-import {dbErrorHandler, getCurrentTheme, saveConfig} from '../../lib/db-utils'
+import * as message from '../lib/messages'
+import validator from '../lib/validator'
+import {error, done, colorlog} from '../lib/logger'
+import {wpThemeDir, templateType, templateDir} from '../lib/const'
+import {compileFile} from '../lib/utils'
+import {dbErrorHandler, getCurrentTheme, saveConfig} from '../lib/db-utils'
 
 export default db => {
   colorlog('Add a {New Template}')

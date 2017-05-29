@@ -1970,6 +1970,10 @@ function-bind@^1.0.2:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/function-bind/-/function-bind-1.1.0.tgz#16176714c801798e4e8f2cf7f7529467bb4a5771"
 
+fuse.js@^3.0.3:
+  version "3.0.4"
+  resolved "https://registry.yarnpkg.com/fuse.js/-/fuse.js-3.0.4.tgz#cd4e2ec63ac324e28f5d17fcc3d01584379d3717"
+
 gauge@~1.2.5:
   version "1.2.7"
   resolved "https://registry.yarnpkg.com/gauge/-/gauge-1.2.7.tgz#e9cec5483d3d4ee0ef44b60a7d99e4935e136d93"
@@ -5126,6 +5130,14 @@ vinyl@^0.5.0:
 vuvuzela@1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/vuvuzela/-/vuvuzela-1.0.3.tgz#3be145e58271c73ca55279dd851f12a682114b0b"
+
+weft@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/weft/-/weft-1.1.0.tgz#b26a775b6804ccd7ae36be30aa06ae9f8b448617"
+  dependencies:
+    axios "^0.16.1"
+    fuse.js "^3.0.3"
+    lodash.merge "^4.6.0"
 
 which@1, which@^1.2.12, which@^1.2.8, which@^1.2.9:
   version "1.2.14"

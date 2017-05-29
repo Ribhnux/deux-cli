@@ -1,9 +1,9 @@
 import path from 'path'
 import chalk from 'chalk'
 import wpFileHeader from 'wp-get-file-header'
-import {colorlog} from '../../lib/logger'
-import {wpThemeDir} from '../../lib/const'
-import {getCurrentTheme} from '../../lib/db-utils'
+import {colorlog} from '../lib/logger'
+import {wpThemeDir} from '../lib/const'
+import {getCurrentTheme} from '../lib/db-utils'
 
 export default db => {
   getCurrentTheme(db).then(result => {

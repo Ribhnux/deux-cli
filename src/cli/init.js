@@ -5,10 +5,10 @@ import execa from 'execa'
 import PouchDB from 'pouchdb'
 import dbUpsert from 'pouchdb-upsert'
 import dbFind from 'pouchdb-find'
-import * as message from '../lib/messages'
-import {wpConfigPath, dbPath, status} from '../lib/const'
-import {colorlog, error, done} from '../lib/logger'
-import {dbErrorHandler} from '../lib/db-utils'
+import * as message from './lib/messages'
+import {wpConfigPath, dbPath, status} from './lib/const'
+import {colorlog, error, done} from './lib/logger'
+import {dbErrorHandler} from './lib/db-utils'
 
 // PouchDB: Config
 // PouchDB.debug.enable('pouchdb:find')

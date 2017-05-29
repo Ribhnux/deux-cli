@@ -4,12 +4,12 @@ import inquirer from 'inquirer'
 import _s from 'string'
 import {AllHtmlEntities as HTMLEntities} from 'html-entities'
 import searchPlugin from 'wp-plugin-search'
-import * as message from '../../lib/messages'
-import validator from '../../lib/validator'
-import {colorlog, done} from '../../lib/logger'
-import {wpThemeDir, templateDir, pluginSourceType} from '../../lib/const'
-import {compileFile} from '../../lib/utils'
-import {dbErrorHandler, getCurrentTheme, saveConfig} from '../../lib/db-utils'
+import * as message from '../lib/messages'
+import validator from '../lib/validator'
+import {colorlog, done} from '../lib/logger'
+import {wpThemeDir, templateDir, pluginSourceType} from '../lib/const'
+import {compileFile} from '../lib/utils'
+import {dbErrorHandler, getCurrentTheme, saveConfig} from '../lib/db-utils'
 
 const entities = new HTMLEntities()
 export default db => {

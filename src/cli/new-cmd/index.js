@@ -9,12 +9,12 @@ import rimraf from 'rimraf'
 import execa from 'execa'
 import wpFileHeader from 'wp-get-file-header'
 import jsonar from 'jsonar'
-import * as message from '../../lib/messages'
-import validator from '../../lib/validator'
-import {validTags, wpThemeDir, templateDir} from '../../lib/const'
-import {error, colorlog} from '../../lib/logger'
-import {dirlist, filelist, compileFiles} from '../../lib/utils'
-import {setCurrentTheme, dbErrorHandler} from '../../lib/db-utils'
+import * as message from '../lib/messages'
+import validator from '../lib/validator'
+import {validTags, wpThemeDir, templateDir} from '../lib/const'
+import {error, colorlog} from '../lib/logger'
+import {dirlist, filelist, compileFiles} from '../lib/utils'
+import {setCurrentTheme, dbErrorHandler} from '../lib/db-utils'
 
 export default db => {
   colorlog(`Create {New Theme}`)

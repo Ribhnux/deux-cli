@@ -10,12 +10,12 @@ import mkdirp from 'mkdirp'
 import rimraf from 'rimraf'
 import faker from 'faker'
 import _s from 'string'
-import * as message from '../../lib/messages'
-import validator from '../../lib/validator'
-import {compileFile} from '../../lib/utils'
-import {colorlog, error, done, loader} from '../../lib/logger'
-import {assetType, scssType, assetSource, registeredScript, wpThemeDir, templateDir} from '../../lib/const'
-import {dbErrorHandler, getCurrentTheme, saveConfig} from '../../lib/db-utils'
+import * as message from '../lib/messages'
+import validator from '../lib/validator'
+import {compileFile} from '../lib/utils'
+import {colorlog, error, done, loader} from '../lib/logger'
+import {assetType, scssType, assetSource, registeredScript, wpThemeDir, templateDir} from '../lib/const'
+import {dbErrorHandler, getCurrentTheme, saveConfig} from '../lib/db-utils'
 
 export default db => {
   colorlog(`Add a {New Asset} dependencies`)
