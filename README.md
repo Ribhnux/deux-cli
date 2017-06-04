@@ -8,9 +8,9 @@
     Simple CLI for scaffolding component-based WordPress theme
   </p>
   <p>
-    :computer: <a href="#install"> <strong>Install</strong></a> &middot; 
-    :rocket: <a href="#quick-start"><strong>Quick Start</strong></a> &middot; 
-    :blue_book: <a href="#documentation"><strong>Documentation</strong></a>
+    :computer: <a href="#computer-install"> <strong>Install</strong></a> &middot; 
+    :rocket: <a href="#rocket-quick-start"><strong>Quick Start</strong></a> &middot; 
+    :blue_book: <a href="#blue_book-documentation"><strong>Documentation</strong></a>
   </p>
   <p><br /></p>
   <p>
@@ -68,12 +68,12 @@ Now start [Development Mode](#development-mode), type `deux dev`.
 
 
 ## :blue_book: Documentation
-* [Getting Started](#getting-started)
-* [Component vs Partial Template](#component-vs-partial-template)
-* [Folder Structures](#folder-structures)
-* [Development Mode](#development-mode)
-* [Release Theme](#release-theme)
-* [Command List](#command-list)
+* [Getting Started](#pushpin-getting-started)
+* [Component vs Partial Template](#cat-component-vs-dog-partial-template)
+* [Folder Structures](#file_folder-folder-structures)
+* [Development Mode](#fire-development-mode)
+* [Release Theme](#loudspeaker-release-theme)
+* [Command List](#hammer-command-list)
   * [new](#new)
   * [add](#add)
   * [remove](#remove)
@@ -83,7 +83,7 @@ Now start [Development Mode](#development-mode), type `deux dev`.
   * [dev](#dev)
   * [release](#release)
   * [sync](#sync)
-* [Constributing](#contributing)
+* [Constributing](#beers-contributing)
 
 ### :pushpin: Getting Started
 
