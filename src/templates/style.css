@@ -1,15 +1,15 @@
 /*
-Theme Name: {{themeName}}
-Theme URI: {{themeUri}}
-Author: {{author}}
-Author URI: {{authorUri}}{{#if isChild}}
-Template: {{parentTheme}}{{/if}}
-Description: {{description}}
-Version: {{version}}
+Theme Name: {{theme.name}}
+Theme URI: {{theme.uri}}
+Author: {{theme.author}}
+Author URI: {{theme.authorUri}}{{#if theme.parent}}
+Template: {{theme.parent}}{{/if}}
+Description: {{theme.description}}
+Version: {{theme.version}}
 License: GNU General Public License v2.0
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
-Text Domain: {{textDomain}}
-Tags: {{tags}}
+Text Domain: {{theme.slug}}
+Tags: {{theme.tags}}
 */
 
 /*
@@ -21,5 +21,5 @@ The SCSS version can be found in /assets/scss
 Notes:
 All assets info can be found in .deuxconfig in root theme directory.
 For Heaven-Driven Development please install deux-cli.
-https://github.com/Ribhnux/deux
+https://github.com/Ribhnux/deux-cli
 */

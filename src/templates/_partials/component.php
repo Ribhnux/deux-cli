@@ -1,14 +1,14 @@
 <?php
 /**
- * Component Name: {{componentName}}
- * Description: {{componentDesc}}
+ * Component Name: {{component.name}}
+ * Description: {{component.description}}
  *
- * @package {{themeName}}
- * @since {{version}}
+ * @package {{theme.name}}
+ * @since {{theme.version}}
  */
 
-if ( ! function_exists( '{{themeFnPrefix}}_{{componentFn}}' ) ) :
-function {{themeFnPrefix}}_{{componentFn}}() {
+if ( ! function_exists( '{{theme.slugfn}}_{{component.slugfn}}' ) ) :
+function {{theme.slugfn}}_{{component.slugfn}}() {
 	
 }
 endif;

@@ -2,8 +2,8 @@
 /**
  * Blank content template.
  *
- * @package {{themeName}}
- * @since {{version}}
+ * @package {{theme.name}}
+ * @since {{theme.version}}
  */
 
 the_content();

@@ -2,8 +2,8 @@
 /**
  * The template for displaying the search pages.
  *
- * @package {{themeName}}
- * @since {{version}}
+ * @package {{theme.name}}
+ * @since {{theme.version}}
  */
 
 get_header();
@@ -13,7 +13,7 @@ get_header();
 	<div id="content" class="content__wrapper" tabindex="-1">
 		<main id="main" class="site__main">
 			<header id="page-header" class="page__header--author">
-				<h1 class="page-title"><?php printf( esc_html__( 'Search Results for: %s', '{{textDomain}}' ),
+				<h1 class="page-title"><?php printf( esc_html__( 'Search Results for: %s', '{{theme.slug}}' ),
 								'<span>' . get_search_query() . '</span>' ); ?></h1>
 			</header><!-- #page-header -->
 
@@ -37,7 +37,7 @@ get_header();
 		</main><!-- #main -->
 
 		<!-- The pagination component -->
-		<?php {{themeFnPrefix}}_pagination(); ?>
+		<?php {{theme.slugfn}}_pagination(); ?>
 
 	</div><!-- #content -->
 

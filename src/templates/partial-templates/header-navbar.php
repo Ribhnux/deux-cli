@@ -2,8 +2,8 @@
 /**
  * Display Navigation Bar
  *
- * @package {{themeName}}
- * @since {{version}}
+ * @package {{theme.name}}
+ * @since {{theme.version}}
  */
 ?>
 <nav class="navbar">

@@ -1,9 +1,9 @@
 <?php
 /**
- * Template Name: {{templateName}}
- * Post Type: {{postType}}
- * Description: {{description}}
+ * Template Name: {{template.name}}
+ * Post Type: {{template.posttype}}
+ * Description: {{template.description}}
  * 
- * @package {{themeName}}
- * @since {{version}}
+ * @package {{theme.name}}
+ * @since {{theme.description}}
  */

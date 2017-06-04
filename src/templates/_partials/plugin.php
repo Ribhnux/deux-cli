@@ -1,10 +1,9 @@
 <?php
 /**
- * {{pluginName}}
- * 
- * {{pluginDesc}}
+ * {{plugin.name}}
+ * {{plugin.description}}
  *
- * @link {{pluginLink}}
- * @package {{themeName}}
- * @since {{version}}
+ * @link {{plugin.external_url}}
+ * @package {{theme.name}}
+ * @since {{theme.version}}
  */

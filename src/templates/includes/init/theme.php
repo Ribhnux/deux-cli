@@ -1,11 +1,11 @@
 <?php
 /**
- * {{themeName}} setup
+ * {{theme.name}} setup
  *
  * @link https://developer.wordpress.org/themes/basics/theme-functions/
  *
- * @package {{themeName}}
- * @since {{version}}
+ * @package {{theme.name}}
+ * @since {{theme.version}}
  */
 
 /**
@@ -15,12 +15,12 @@
  * runs before the init hook. The init hook is too late for some features, such
  * as indicating support for post thumbnails.
  */
-if ( ! function_exists( '{{themeFnPrefix}}_setup' ) ):
-function {{themeFnPrefix}}_setup() {
-	global ${{themeFnPrefix}}_config;
+if ( ! function_exists( '{{theme.slugfn}}_setup' ) ):
+function {{theme.slugfn}}_setup() {
+	global ${{theme.slugfn}}_config;
 
 	// Make theme available for translation.
-	load_theme_textdomain( '{{textDomain}}' );
+	load_theme_textdomain( '{{theme.slug}}' );
 
 	/*
 	 * Let WordPress manage the document title.
@@ -33,7 +33,7 @@ function {{themeFnPrefix}}_setup() {
 	/*
 	 * Init theme supports.
 	 */
-	foreach ( ${{themeFnPrefix}}_config['features'] as $name => $value ) {
+	foreach ( ${{theme.slugfn}}_config['features'] as $name => $value ) {
 		if ( is_bool ( $value ) ) {
 			add_theme_support( $name );
 		}
@@ -60,17 +60,17 @@ function {{themeFnPrefix}}_setup() {
 	//  */
 	// add_theme_support( 'post-thumbnails' );
 
-	// add_image_size( '{{textDomain}}-featured-image', 2000, 1200, true );
+	// add_image_size( '{{theme.slug}}-featured-image', 2000, 1200, true );
 
-	// add_image_size( '{{textDomain}}-thumbnail-avatar', 100, 100, true );
+	// add_image_size( '{{theme.slug}}-thumbnail-avatar', 100, 100, true );
 
 	// // Set the default content width.
 	// $GLOBALS['content_width'] = 525;
 
 	// // This theme uses wp_nav_menu() in two locations.
 	// register_nav_menus( array(
-	// 	'top'    => __( 'Top Menu', '{{textDomain}}' ),
-	// 	'social' => __( 'Social Links Menu', '{{textDomain}}' ),
+	// 	'top'    => __( 'Top Menu', '{{theme.slug}}' ),
+	// 	'social' => __( 'Social Links Menu', '{{theme.slug}}' ),
 	// ) );
 
 	// /*
@@ -113,7 +113,7 @@ function {{themeFnPrefix}}_setup() {
 	//  * This theme styles the visual editor to resemble the theme style,
 	//  * specifically font, colors, and column width.
  // 	 */
-	// add_editor_style( array( 'assets/css/editor-style.css', {{themeFnPrefix}}_fonts_url() ) );
+	// add_editor_style( array( 'assets/css/editor-style.css', {{theme.slugfn}}_fonts_url() ) );
 
 	// // Define and register starter content to showcase the theme on new sites.
 	// $starter_content = array(
@@ -157,15 +157,15 @@ function {{themeFnPrefix}}_setup() {
 	// 	// Create the custom image attachments used as post thumbnails for pages.
 	// 	'attachments' => array(
 	// 		'image-espresso' => array(
-	// 			'post_title' => _x( 'Espresso', 'Theme starter content', '{{textDomain}}' ),
+	// 			'post_title' => _x( 'Espresso', 'Theme starter content', '{{theme.slug}}' ),
 	// 			'file' => 'assets/images/espresso.jpg', // URL relative to the template directory.
 	// 		),
 	// 		'image-sandwich' => array(
-	// 			'post_title' => _x( 'Sandwich', 'Theme starter content', '{{textDomain}}' ),
+	// 			'post_title' => _x( 'Sandwich', 'Theme starter content', '{{theme.slug}}' ),
 	// 			'file' => 'assets/images/sandwich.jpg',
 	// 		),
 	// 		'image-coffee' => array(
-	// 			'post_title' => _x( 'Coffee', 'Theme starter content', '{{textDomain}}' ),
+	// 			'post_title' => _x( 'Coffee', 'Theme starter content', '{{theme.slug}}' ),
 	// 			'file' => 'assets/images/coffee.jpg',
 	// 		),
 	// 	),
@@ -189,7 +189,7 @@ function {{themeFnPrefix}}_setup() {
 	// 	'nav_menus' => array(
 	// 		// Assign a menu to the "top" location.
 	// 		'top' => array(
-	// 			'name' => __( 'Top Menu', '{{textDomain}}' ),
+	// 			'name' => __( 'Top Menu', '{{theme.slug}}' ),
 	// 			'items' => array(
 	// 				'link_home', // Note that the core "home" page is actually a link in case a static front page is not used.
 	// 				'page_about',
@@ -200,7 +200,7 @@ function {{themeFnPrefix}}_setup() {
 
 	// 		// Assign a menu to the "social" location.
 	// 		'social' => array(
-	// 			'name' => __( 'Social Links Menu', '{{textDomain}}' ),
+	// 			'name' => __( 'Social Links Menu', '{{theme.slug}}' ),
 	// 			'items' => array(
 	// 				'link_yelp',
 	// 				'link_facebook',
@@ -219,10 +219,10 @@ function {{themeFnPrefix}}_setup() {
 	//  *
 	//  * @param array $starter_content Array of starter content.
 	//  */
-	// $starter_content = apply_filters( '{{themeFnPrefix}}_starter_content', $starter_content );
+	// $starter_content = apply_filters( '{{theme.slugfn}}_starter_content', $starter_content );
 
 	// add_theme_support( 'starter-content', $starter_content );
 }
 endif;
 
-add_action( 'after_setup_theme', '{{themeFnPrefix}}_setup' );
+add_action( 'after_setup_theme', '{{theme.slugfn}}_setup' );

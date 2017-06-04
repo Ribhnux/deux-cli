@@ -3,11 +3,11 @@
  * Component Name: Pagination
  * Description: Pagination used for archive, author, and all pages that have page partials.
  *
- * @package {{themeName}}
- * @since {{version}}
+ * @package {{theme.name}}
+ * @since {{theme.version}}
  */
-if ( ! function_exists( '{{themeFnPrefix}}_pagination' ) ) :
-function {{themeFnPrefix}}_pagination() {
+if ( ! function_exists( '{{theme.slugfn}}_pagination' ) ) :
+function {{theme.slugfn}}_pagination() {
 	global $wp_query;
 
 	if ( is_singular() && $wp_query->max_num_pages <= 1 ) {
