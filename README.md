@@ -12,6 +12,7 @@
     :rocket: <a href="#quick-start"><strong>Quick Start</strong></a> &middot; 
     :blue_book: <a href="#documentation"><strong>Documentation</strong></a>
   </p>
+  <p><br /></p>
   <p>
     <a href="http://travis-ci.org/Ribhnux/deux-cli">
       <img src="https://img.shields.io/travis/Ribhnux/deux-cli/master.svg"/>
@@ -29,6 +30,8 @@
       <img src="http://isitmaintained.com/badge/resolution/Ribhnux/deux-cli.svg"/>
     </a>
   </p>
+  <p><br /></p>
+  <p><br /></p>
 </div>
 
 ## :computer: Install
