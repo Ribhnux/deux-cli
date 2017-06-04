@@ -3,8 +3,8 @@
  * The template for displaying the author pages.
  * Learn more: https://codex.wordpress.org/Author_Templates
  *
- * @package {{themeName}}
- * @since {{version}}
+ * @package {{theme.name}}
+ * @since {{theme.version}}
  */
 
 get_header();
@@ -26,7 +26,7 @@ $author_desc = $current_author->user_description;
 	<div id="content" class="content__wrapper" tabindex="-1">
 		<main id="main" class="site__main">
 			<header id="page-header" class="page__header--author">
-				<h1><?php esc_html_e( 'About:', '{{textDomain}}' ); ?><?php echo esc_html( $author_nickname ); ?></h1>
+				<h1><?php esc_html_e( 'About:', '{{theme.slug}}' ); ?><?php echo esc_html( $author_nickname ); ?></h1>
 
 				<?php if ( ! empty( $author_id ) ) : ?>
 					<?php echo get_avatar( $author_id ); ?>
@@ -34,19 +34,19 @@ $author_desc = $current_author->user_description;
 
 				<dl>
 					<?php if ( ! empty( $author_url ) ) : ?>
-						<dt><?php esc_html_e( 'Website', '{{textDomain}}' ); ?></dt>
+						<dt><?php esc_html_e( 'Website', '{{theme.slug}}' ); ?></dt>
 						<dd>
 							<a href="<?php echo esc_html( $author_url ); ?>"><?php echo esc_html( $author_url ); ?></a>
 						</dd>
 					<?php endif; ?>
 
 					<?php if ( ! empty( $author_desc ) ) : ?>
-						<dt><?php esc_html_e( 'Profile', '{{textDomain}}' ); ?></dt>
+						<dt><?php esc_html_e( 'Profile', '{{theme.slug}}' ); ?></dt>
 						<dd><?php echo esc_html( $author_desc ); ?></dd>
 					<?php endif; ?>
 				</dl>
 
-				<h2><?php esc_html_e( 'Posts by', '{{textDomain}}' ); ?> <?php echo esc_html( $author_nickname ); ?>
+				<h2><?php esc_html_e( 'Posts by', '{{theme.slug}}' ); ?> <?php echo esc_html( $author_nickname ); ?>
 					:</h2>
 			</header><!-- #page-header -->
 
@@ -55,8 +55,8 @@ $author_desc = $current_author->user_description;
 				<?php while ( have_posts() ) : the_post(); ?>
 					<li>
 						<a rel="bookmark" href="<?php the_permalink() ?>" title="Permanent Link: <?php the_title(); ?>"> <?php the_title(); ?></a>,
-						<?php {{themeFnPrefix}}_posted_on(); ?>
-						<?php esc_html_e( 'in', '{{textDomain}}' ); ?> <?php the_category( '&' ); ?>
+						<?php {{theme.slugfn}}_posted_on(); ?>
+						<?php esc_html_e( 'in', '{{theme.slug}}' ); ?> <?php the_category( '&' ); ?>
 					</li>
 				<?php endwhile; // end of the loops ?>
 				</ul>
@@ -71,7 +71,7 @@ $author_desc = $current_author->user_description;
 		</main><!-- #main -->
 
 		<!-- The pagination component -->
-		<?php {{themeFnPrefix}}_pagination(); ?>
+		<?php {{theme.slugfn}}_pagination(); ?>
 
 	</div><!-- #content -->
 

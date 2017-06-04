@@ -1,9 +1,9 @@
 <?php
 /**
- * {{description}}
+ * {{template.description}}
  *
- * @package {{themeName}}
- * @since {{version}}
+ * @package {{theme.name}}
+ * @since {{theme.version}}
  */
 ?>
 <!-- Your partial template here -->

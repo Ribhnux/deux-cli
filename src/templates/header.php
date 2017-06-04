@@ -4,8 +4,8 @@
  *
  * Displays all of the <head> section and everything up till <div id="page">
  *
- * @package {{themeName}}
- * @since {{version}}
+ * @package {{theme.name}}
+ * @since {{theme.version}}
  */
 ?><!DOCTYPE html>
 <!--[if IE 7]>

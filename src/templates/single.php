@@ -2,8 +2,8 @@
 /**
  * The template for displaying all single posts.
  *
- * @package {{themeName}}
- * @since {{version}}
+ * @package {{theme.name}}
+ * @since {{theme.version}}
  */
 
 get_header();

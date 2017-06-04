@@ -2,8 +2,8 @@
 /**
  * Page template for page.php.
  *
- * @package {{themeName}}
- * @since {{version}}
+ * @package {{theme.name}}
+ * @since {{theme.version}}
  */
 ?>
 <article <?php post_class(); ?> id="post-<?php the_ID(); ?>">
@@ -17,13 +17,13 @@
 		<?php
 			the_content();
 			wp_link_pages( array(
-				'before' => '<div class="page-links">' . __( 'Pages:', '{{textDomain}}' ),
+				'before' => '<div class="page-links">' . __( 'Pages:', '{{theme.slug}}' ),
 				'after'  => '</div>',
 			) );
 		?>
 	</div><!-- .entry-content -->
 
 	<footer class="entry-footer">
-		<?php edit_post_link( __( 'Edit', '{{textDomain}}' ), '<span class="edit-link">', '</span>' ); ?>
+		<?php edit_post_link( __( 'Edit', '{{theme.slug}}' ), '<span class="edit-link">', '</span>' ); ?>
 	</footer><!-- .entry-footer -->
 </article><!-- #post-## -->

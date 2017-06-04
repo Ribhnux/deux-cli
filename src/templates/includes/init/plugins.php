@@ -1,28 +1,29 @@
 <?php
 /**
- * {{themeName}} plugin setup
+ * {{theme.name}} plugin setup
  *
- * @package {{themeName}}
+ * @package {{theme.name}}
+ * @since {{theme.version}}
  */
 
 require_once get_template_directory() . '/includes/class/class-tgm-plugin-activation.php';
 
-foreach ( ${{themeFnPrefix}}_config[ 'plugins' ] as $slug => $plugin ) {
+foreach ( ${{theme.slugfn}}_config[ 'plugins' ] as $slug => $plugin ) {
 	if ( $plugin[ 'init' ] ) {
 		require get_template_directory() . '/plugins/' . $slug . '.php';
 	}
 }
 
-if ( ! function_exists( '{{themeFnPrefix}}_tgmpa_register' ) ) :
-function {{themeFnPrefix}}_tgmpa_register() {
-	global ${{themeFnPrefix}}_config;
+if ( ! function_exists( '{{theme.slugfn}}_tgmpa_register' ) ) :
+function {{theme.slugfn}}_tgmpa_register() {
+	global ${{theme.slugfn}}_config;
 
 	/**
 	 * Read plugins from config
 	 * @var array
 	 */
 	$plugins = array();
-	foreach ( ${{themeFnPrefix}}_config[ 'plugins' ] as $slug => $plugin ) {
+	foreach ( ${{theme.slugfn}}_config[ 'plugins' ] as $slug => $plugin ) {
 		$plugin[ 'slug' ] = $slug;
 		unset( $plugin[ 'init' ] );
 		$plugins[] = $plugin;
@@ -33,9 +34,9 @@ function {{themeFnPrefix}}_tgmpa_register() {
 	 * @var array
 	 */
 	$config = array(
-		'id'           => '{{textDomain}}',
+		'id'           => '{{theme.slug}}',
 		'default_path' => '',
-		'menu'         => '{{textDomain}}-install-plugins',
+		'menu'         => '{{theme.slug}}-install-plugins',
 		'has_notices'  => true,
 		'dismissable'  => true,
 		'dismiss_msg'  => '',
@@ -46,4 +47,4 @@ function {{themeFnPrefix}}_tgmpa_register() {
 	tgmpa( $plugins, $config );
 }
 endif;
-add_action( 'tgmpa_register', '{{themeFnPrefix}}_tgmpa_register' );
+add_action( 'tgmpa_register', '{{theme.slugfn}}_tgmpa_register' );

@@ -7,8 +7,8 @@
  * and that other 'pages' on your WordPress site will use a
  * different template.
  *
- * @package {{themeName}}
- * @since {{version}}
+ * @package {{theme.name}}
+ * @since {{theme.version}}
  */
 
 get_header();

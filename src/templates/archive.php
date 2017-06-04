@@ -3,8 +3,8 @@
  * The template for displaying archive pages.
  * Learn more: http://codex.wordpress.org/Template_Hierarchy
  *
- * @package {{themeName}}
- * @since {{version}}
+ * @package {{theme.name}}
+ * @since {{theme.version}}
  */
 
 get_header();
@@ -33,7 +33,7 @@ get_header();
 		</main><!-- #main -->
 
 		<!-- The pagination component -->
-		<?php {{themeFnPrefix}}_pagination(); ?>
+		<?php {{theme.slugfn}}_pagination(); ?>
 
 	</div><!-- #content -->
 

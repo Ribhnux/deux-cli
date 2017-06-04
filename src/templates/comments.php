@@ -5,8 +5,8 @@
  * The area of the page that contains both current comments
  * and the comment form.
  *
- * @package {{themeName}}
- * @since {{version}}
+ * @package {{theme.name}}
+ * @since {{theme.version}}
  */
 
 /*
@@ -30,7 +30,7 @@ if ( post_password_required() ) {
 				if ( 1 === $comments_number ) {
 					printf(
 						/* translators: %s: post title */
-						esc_html_x( 'One thought on &ldquo;%s&rdquo;', 'comments title', '{{textDomain}}' ),
+						esc_html_x( 'One thought on &ldquo;%s&rdquo;', 'comments title', '{{theme.slug}}' ),
 						'<span>' . get_the_title() . '</span>'
 					);
 				} else {
@@ -41,7 +41,7 @@ if ( post_password_required() ) {
 							'%1$s thoughts on &ldquo;%2$s&rdquo;',
 							$comments_number,
 							'comments title',
-							'{{textDomain}}'
+							'{{theme.slug}}'
 						) ),
 						number_format_i18n( $comments_number ),
 						'<span>' . get_the_title() . '</span>'
@@ -52,14 +52,14 @@ if ( post_password_required() ) {
 
 		<?php if ( get_comment_pages_count() > 1 && get_option( 'page_comments' ) ) : // are there comments to navigate through. ?>
 			<nav class="comment-navigation" id="comment-nav-above">
-				<h1 class="screen-reader-text"><?php esc_html_e( 'Comment navigation', '{{textDomain}}' ); ?></h1>
+				<h1 class="screen-reader-text"><?php esc_html_e( 'Comment navigation', '{{theme.slug}}' ); ?></h1>
 				<?php if ( get_previous_comments_link() ) { ?>
 					<div class="nav-previous"><?php previous_comments_link( __( '&larr; Older Comments',
-					'{{textDomain}}' ) ); ?></div>
+					'{{theme.slug}}' ) ); ?></div>
 				<?php }
 if ( get_next_comments_link() ) { ?>
 					<div class="nav-next"><?php next_comments_link( __( 'Newer Comments &rarr;',
-					'{{textDomain}}' ) ); ?></div>
+					'{{theme.slug}}' ) ); ?></div>
 				<?php } ?>
 			</nav><!-- #comment-nav-above -->
 		<?php endif; // check for comment navigation. ?>
@@ -75,14 +75,14 @@ if ( get_next_comments_link() ) { ?>
 
 		<?php if ( get_comment_pages_count() > 1 && get_option( 'page_comments' ) ) : // are there comments to navigate through. ?>
 			<nav class="comment-navigation" id="comment-nav-below">
-				<h1 class="screen-reader-text"><?php esc_html_e( 'Comment navigation', '{{textDomain}}' ); ?></h1>
+				<h1 class="screen-reader-text"><?php esc_html_e( 'Comment navigation', '{{theme.slug}}' ); ?></h1>
 				<?php if ( get_previous_comments_link() ) { ?>
 					<div class="nav-previous"><?php previous_comments_link( __( '&larr; Older Comments',
-					'{{textDomain}}' ) ); ?></div>
+					'{{theme.slug}}' ) ); ?></div>
 				<?php }
 if ( get_next_comments_link() ) { ?>
 					<div class="nav-next"><?php next_comments_link( __( 'Newer Comments &rarr;',
-					'{{textDomain}}' ) ); ?></div>
+					'{{theme.slug}}' ) ); ?></div>
 				<?php } ?>
 			</nav><!-- #comment-nav-below -->
 		<?php endif; // check for comment navigation. ?>
@@ -94,7 +94,7 @@ if ( get_next_comments_link() ) { ?>
 	if ( ! comments_open() && '0' != get_comments_number() && post_type_supports( get_post_type(), 'comments' ) ) :
 		?>
 
-		<p class="no-comments"><?php esc_html_e( 'Comments are closed.', '{{textDomain}}' ); ?></p>
+		<p class="no-comments"><?php esc_html_e( 'Comments are closed.', '{{theme.slug}}' ); ?></p>
 
 	<?php endif; ?>
 

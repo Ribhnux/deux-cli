@@ -4,8 +4,8 @@
  *
  * Contains footer content and the closing of the #page div elements.
  *
- * @package {{themeName}}
- * @since {{version}}
+ * @package {{theme.name}}
+ * @since {{theme.version}}
  */
 ?>
 	</div><!-- #main-wrapper -->

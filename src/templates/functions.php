@@ -1,12 +1,12 @@
 <?php
 /**
- * {{themeName}} functions, hooks, and init
+ * {{theme.name}} functions, hooks, and init
  *
- * @package {{themeName}}
- * @since {{version}}
+ * @package {{theme.name}}
+ * @since {{theme.version}}
  */
 
-require get_template_directory() . '/{{themeFnPrefix}}_config.php';
+require get_template_directory() . '/{{theme.slugfn}}_config.php';
 
 /**
  * Theme setup.
