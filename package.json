@@ -66,5 +66,9 @@
     "esnext": true,
     "space": true,
     "semicolon": false
-  }
+  },
+  "files": [
+    "bin",
+    "src"
+  ]
 }
