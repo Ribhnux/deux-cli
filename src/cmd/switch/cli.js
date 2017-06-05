@@ -1,6 +1,6 @@
 const switchTo = (db, themeName) => {
   const {setCurrentTheme, getCurrentTheme, getTheme, dbErrorHandler} = global.helpers.require('db/utils')
-  const {error, done} = global.helpers.require('logger')
+  const done = global.helpers.require('logger/done')
   const message = global.const.require('messages')
 
   getCurrentTheme(db).then(currentTheme => {
@@ -24,7 +24,6 @@ const switchTo = (db, themeName) => {
     }).catch(dbErrorHandler)
   })
 }
-
 
 const displayPrompt = db => {
   const {dbTypes} = global.helpers.require('db/const')
