@@ -1,13 +1,7 @@
-const path = require('path')
-const jsonar = require('jsonar')
-const merge = require('lodash.merge')
 const {dbTypes} = require('./const')
 
-const error = global.helpers.require('logger/error')
-const compileFile = global.helpers.require('compiler/single')
-const {wpThemeDir} = global.const.require('path')
-
 const errHandler = err => {
+  const error = global.helpers.require('logger/error')
   error({
     message: err.message,
     padding: true,
@@ -21,6 +15,21 @@ exports.setCurrentTheme = (db, info) => new Promise((resolve, reject) => {
   try {
     db[dbTypes.CURRENT] = info
     resolve(db)
+  } catch (err) {
+    reject(err)
+  }
+})
+
+exports.getTheme = (db, themeName) => new Promise((resolve, reject) => {
+  const message = global.const.require('messages')
+
+  try {
+    const themedb = db[dbTypes.THEMES]
+    if (themedb[themeName]) {
+      resolve(themedb[themeName])
+    } else {
+      reject(new Error(message.ERROR_NO_THEME_FOUND))
+    }
   } catch (err) {
     reject(err)
   }
@@ -40,6 +49,13 @@ exports.getCurrentTheme = db => new Promise((resolve, reject) => {
 exports.getEnv = db => db[dbTypes.ENVIRONMENT]
 
 exports.saveConfig = (db, newConfig = {}) => new Promise(resolve => {
+  const path = require('path')
+  const merge = require('lodash.merge')
+  const jsonar = require('jsonar')
+
+  const {wpThemeDir} = global.const.require('path')
+  const compileFile = global.helpers.require('compiler/single')
+
   const current = db[dbTypes.CURRENT]
   const theme = merge(db[dbTypes.THEMES][current.slug], newConfig)
   const config = Object.assign({}, theme)
