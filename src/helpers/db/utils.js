@@ -1,13 +1,7 @@
-const path = require('path')
-const jsonar = require('jsonar')
-const merge = require('lodash.merge')
 const {dbTypes} = require('./const')
 
-const error = global.helpers.require('logger/error')
-const compileFile = global.helpers.require('compiler/single')
-const {wpThemeDir} = global.const.require('path')
-
 const errHandler = err => {
+  const error = global.helpers.require('logger/error')
   error({
     message: err.message,
     padding: true,
@@ -55,6 +49,13 @@ exports.getCurrentTheme = db => new Promise((resolve, reject) => {
 exports.getEnv = db => db[dbTypes.ENVIRONMENT]
 
 exports.saveConfig = (db, newConfig = {}) => new Promise(resolve => {
+  const path = require('path')
+  const merge = require('lodash.merge')
+  const jsonar = require('jsonar')
+
+  const {wpThemeDir} = global.const.require('path')
+  const compileFile = global.helpers.require('compiler/single')
+
   const current = db[dbTypes.CURRENT]
   const theme = merge(db[dbTypes.THEMES][current.slug], newConfig)
   const config = Object.assign({}, theme)
