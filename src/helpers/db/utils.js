@@ -26,6 +26,21 @@ exports.setCurrentTheme = (db, info) => new Promise((resolve, reject) => {
   }
 })
 
+exports.getTheme = (db, themeName) => new Promise((resolve, reject) => {
+  const message = global.const.require('messages')
+
+  try {
+    const themedb = db[dbTypes.THEMES]
+    if (themedb[themeName]) {
+      resolve(themedb[themeName])
+    } else {
+      reject(new Error(message.ERROR_NO_THEME_FOUND))
+    }
+  } catch (err) {
+    reject(err)
+  }
+})
+
 exports.getCurrentTheme = db => new Promise((resolve, reject) => {
   try {
     const current = db[dbTypes.CURRENT]
