@@ -435,14 +435,13 @@ module.exports = db => {
             lib.files = lib.files.map(file => {
               const ext = path.extname(file)
               const basename = path.basename(file, ext).replace(/\./g, '-')
-              const handle = slugify(basename)
-
-              return {
+              const fileObj = {
                 ext: ext.replace('.', ''),
                 path: file,
-                handle,
-                deps
+                deps: (ext === '.js') ? deps : []
               }
+
+              return fileObj
             })
             delete lib.deps
           }
