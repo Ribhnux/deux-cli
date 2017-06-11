@@ -434,7 +434,6 @@ module.exports = db => {
 
             lib.files = lib.files.map(file => {
               const ext = path.extname(file)
-              const basename = path.basename(file, ext).replace(/\./g, '-')
               const fileObj = {
                 ext: ext.replace('.', ''),
                 path: file,
