@@ -10,7 +10,7 @@ require_once get_template_directory() . '/includes/class/class-tgm-plugin-activa
 
 foreach ( ${{theme.slugfn}}_config[ 'plugins' ] as $slug => $plugin ) {
 	if ( $plugin[ 'init' ] ) {
-		require get_template_directory() . '/plugins/' . $slug . '.php';
+		require get_template_directory() . '/includes/plugins/' . $slug . '.php';
 	}
 }
 
