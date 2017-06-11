@@ -1,6 +1,3 @@
-// Font API
-// https://developers.google.com/fonts/docs/developer_api
-
 const path = require('path')
 const {existsSync} = require('fs')
 const inquirer = require('inquirer')
