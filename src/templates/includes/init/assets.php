@@ -16,13 +16,13 @@ function {{theme.slugfn}}_enqueue_scripts() {
 	wp_enqueue_style( '{{theme.slug}}', $assets_path . 'css/site.css' );
 
 	// Stylesheets from config
-	foreach ( $deux_config['assets']['css'] as $key => $value ) {
+	foreach ( ${{theme.slugfn}}_config['assets']['css'] as $key => $value ) {
 		$media = ( isset( $value['media'] ) ) ? $value['media'] : 'all';
 		wp_enqueue_style( '{{theme.slug}}-' . $key, $assets_path . 'css/vendors/' . $key . '-' . $value['version'] . '.css', array(), $value['version'], $media );
 	}
 
 	// Scripts from config
-	foreach ( $deux_config['assets']['js'] as $key => $value ) {
+	foreach ( ${{theme.slugfn}}_config['assets']['js'] as $key => $value ) {
 		wp_enqueue_script( '{{theme.slug}}-' . $key, $assets_path . 'js/vendors/' . $key . '-' . $value['version'] . '.js', array(), $value['version'], true );
 	}
 
