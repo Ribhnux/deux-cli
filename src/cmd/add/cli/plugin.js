@@ -219,7 +219,7 @@ module.exports = db => {
       if (plugin.init) {
         compileFile({
           srcPath: path.join(global.templates.path, '_partials', 'plugin.php'),
-          dstPath: path.join(wpThemeDir, theme.details.slug, 'plugins', `${plugin.slug}.php`),
+          dstPath: path.join(wpThemeDir, theme.details.slug, 'includes', 'plugins', `${plugin.slug}.php`),
           syntax: {
             theme: theme.details,
             plugin
