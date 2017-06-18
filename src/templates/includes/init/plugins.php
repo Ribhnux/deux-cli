@@ -6,7 +6,7 @@
  * @since {{theme.version}}
  */
 
-require_once get_template_directory() . '/includes/class/class-tgm-plugin-activation.php';
+require_once get_template_directory() . '/includes/lib/class-tgm-plugin-activation.php';
 
 foreach ( ${{theme.slugfn}}_config[ 'plugins' ] as $slug => $plugin ) {
 	if ( $plugin[ 'init' ] ) {
