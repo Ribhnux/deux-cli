@@ -24,8 +24,8 @@ const tasklist = [
 module.exports = db => {
   getCurrentTheme(db).then(theme => {
     const themePath = path.join(wpThemeDir, theme.details.slug)
-    const publicPath = path.join(themePath, 'assets', 'public')
-    const srcPath = path.join(themePath, 'assets', 'src')
+    const assetsPath = path.join(themePath, 'assets')
+    const srcPath = path.join(themePath, 'assets-src')
     const sassPath = path.join(srcPath, 'scss')
 
     const compileCSS = () => {
@@ -49,7 +49,7 @@ module.exports = db => {
       const style = compiledCSS
         .pipe(clone())
         .pipe(cssbeautify({indent: '  ', autosemicolon: true}))
-        .pipe(gulp.dest(publicPath))
+        .pipe(gulp.dest(assetsPath))
 
       const minStyle = compiledCSS
         .pipe(clone())
@@ -60,15 +60,15 @@ module.exports = db => {
         )
         .pipe(rename({suffix: '.min'}))
         .pipe(srcmap.write(`./`))
-        .pipe(gulp.dest(publicPath))
+        .pipe(gulp.dest(assetsPath))
 
       return merge(style, minStyle)
     }
 
     gulp.task('start-server', () => {
       const watchFiles = [
-        path.join(publicPath, '*.css'),
-        path.join(publicPath, '*.js'),
+        path.join(assetsPath, '*.css'),
+        path.join(assetsPath, '*.js'),
         path.join(themePath, '**', '*.php')
       ]
 

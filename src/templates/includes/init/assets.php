@@ -10,7 +10,7 @@ if ( ! function_exists( '{{theme.slugfn}}_enqueue_dependencies' ) ) :
 function {{theme.slugfn}}_load_dependencies() {
 	global ${{theme.slugfn}}_config;
 
-	$assets_path = get_template_directory_uri() . '/assets/public/vendors/';
+	$assets_path = get_template_directory_uri() . '/assets/vendors/';
 
 	// Load Fonts
 	foreach ( ${{theme.slugfn}}_config[ 'asset' ][ 'fonts' ] as $name => $font ) {
@@ -42,7 +42,7 @@ if ( ! function_exists( '{{theme.slugfn}}_enqueue_scripts' ) ) :
 function {{theme.slugfn}}_enqueue_scripts() {
 	global ${{theme.slugfn}}_config;
 
-	$assets_path = get_template_directory_uri() . '/assets/public/';
+	$assets_path = get_template_directory_uri() . '/assets/';
 	$style_css = 'style.css';
 	$script_js = 'script.js';
 

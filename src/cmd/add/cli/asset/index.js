@@ -385,7 +385,7 @@ module.exports = db => {
 
   return inquirer.prompt(prompts).then(({asset, lib, scss, font}) => {
     getCurrentTheme(db).then(theme => {
-      const assetPath = path.join(wpThemeDir, theme.details.slug, 'assets', 'src')
+      const assetPath = path.join(wpThemeDir, theme.details.slug, 'assets-src')
       let task = new Promise(resolve => resolve())
 
       // Download Assets
@@ -485,7 +485,7 @@ module.exports = db => {
           })
 
           compileFile({
-            srcPath: path.join(global.templates.path, 'assets', 'src', 'scss', 'main.scss'),
+            srcPath: path.join(global.templates.path, 'assets-src', 'scss', 'main.scss'),
             dstPath: path.join(assetPath, 'scss', 'main.scss'),
             syntax: {
               scss,
