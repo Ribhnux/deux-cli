@@ -1,10 +1,10 @@
 exports.assetTypes = {
   LIB: 'lib',
-  SCSS: 'scss',
+  SASS: 'sass',
   FONT: 'font'
 }
 
-exports.scssTypes = {
+exports.sassTypes = {
   COMPONENT: 'component',
   LAYOUT: 'layout',
   PAGE: 'page',

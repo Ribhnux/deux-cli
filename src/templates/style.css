@@ -14,12 +14,10 @@ Tags: {{theme.tags}}
 
 /*
 This file is just used to identify the theme in WordPress.
-The compiled CSS output can be found in /assets/css/site.css
-The javascript assets can be found in /assets/js
-The SCSS version can be found in /assets/scss
+The compiled CSS output can be found in /assets/
 
 Notes:
-All assets info can be found in .deuxconfig in root theme directory.
+All assets info can be found in {{theme.slugfn}}_config.php in root theme directory.
 For Heaven-Driven Development please install deux-cli.
 https://github.com/Ribhnux/deux-cli
 */

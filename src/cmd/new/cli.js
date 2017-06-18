@@ -256,7 +256,7 @@ module.exports = db => {
               optimize: true,
               asset: {
                 libs: {},
-                scss: {
+                sass: {
                   components: [],
                   layouts: [],
                   pages: [],

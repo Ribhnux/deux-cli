@@ -10,11 +10,11 @@ module.exports = db => {
   getCurrentTheme(db).then(theme => {
     const stats = []
     const themePath = path.join(wpThemeDir, theme.details.slug)
-    let scssCount = 0
+    let sassCount = 0
 
-    for (const i in theme.asset.scss) {
-      if (Object.prototype.hasOwnProperty.call(theme.asset.scss, i)) {
-        scssCount += theme.asset.scss[i].length
+    for (const i in theme.asset.sass) {
+      if (Object.prototype.hasOwnProperty.call(theme.asset.sass, i)) {
+        sassCount += theme.asset.sass[i].length
       }
     }
 
@@ -31,7 +31,7 @@ module.exports = db => {
     stats.push(`Components\t\t: {${theme.components.length}} Installed`)
     stats.push(`Plugins\t\t\t: {${Object.keys(theme.plugins).length}} Dependencies`)
     stats.push(`CSS / JS Libraries\t: {${Object.keys(theme.asset.libs).length}} Dependencies`)
-    stats.push(`SASS\t\t\t: {${scssCount}} Files`)
+    stats.push(`SASS\t\t\t: {${sassCount}} Files`)
     stats.push(`Web Fonts\t\t: {${Object.keys(theme.asset.fonts).length}} Fonts`)
     colorlog(stats.join('\n'))
     colorlog(`type ${chalk.bold.cyan('deux switch')} to change with another project.`, false)

@@ -8,7 +8,7 @@ const rimraf = require('rimraf')
 const slugify = require('node-slugify')
 const faker = require('faker')
 const weft = require('weft')
-const {assetTypes, scssTypes, libSource, registeredScript, fontSource} = require('./const')
+const {assetTypes, sassTypes, libSource, registeredScript, fontSource} = require('./const')
 
 const message = global.const.require('messages')
 const {wpThemeDir} = global.const.require('path')
@@ -34,7 +34,7 @@ module.exports = db => {
 
         {
           name: 'Sassy CSS',
-          value: assetTypes.SCSS
+          value: assetTypes.SASS
         },
 
         {
@@ -188,14 +188,14 @@ module.exports = db => {
 
     {
       type: 'list',
-      name: 'scss.type',
+      name: 'sass.type',
       message: 'Structure Type',
-      when: ({asset}) => asset.type === assetTypes.SCSS,
+      when: ({asset}) => asset.type === assetTypes.SASS,
       choices: () => new Promise(resolve => {
         const list = []
-        for (const i in scssTypes) {
-          if (Object.prototype.hasOwnProperty.call(scssTypes, i)) {
-            const value = scssTypes[i]
+        for (const i in sassTypes) {
+          if (Object.prototype.hasOwnProperty.call(sassTypes, i)) {
+            const value = sassTypes[i]
             list.push({
               name: capitalize(value),
               value
@@ -208,17 +208,17 @@ module.exports = db => {
     },
 
     {
-      name: 'scss.name',
-      message: ({scss}) => `${capitalize(scss.type)} Name`,
-      when: ({asset}) => asset.type === assetTypes.SCSS,
+      name: 'sass.name',
+      message: ({sass}) => `${capitalize(sass.type)} Name`,
+      when: ({asset}) => asset.type === assetTypes.SASS,
       validate: value => validator(value, {minimum: 3, slug: true, var: 'Name'})
     },
 
     {
-      name: 'scss.description',
+      name: 'sass.description',
       default: faker.lorem.sentence(),
-      message: ({scss}) => `${capitalize(scss.type)} Description`,
-      when: ({asset}) => asset.type === assetTypes.SCSS,
+      message: ({sass}) => `${capitalize(sass.type)} Description`,
+      when: ({asset}) => asset.type === assetTypes.SASS,
       validate: value => validator(value, {minimum: 3, word: true, var: `"${value}"`})
     },
 
@@ -383,7 +383,7 @@ module.exports = db => {
     }
   ]
 
-  return inquirer.prompt(prompts).then(({asset, lib, scss, font}) => {
+  return inquirer.prompt(prompts).then(({asset, lib, sass, font}) => {
     getCurrentTheme(db).then(theme => {
       const assetPath = path.join(wpThemeDir, theme.details.slug, 'assets-src')
       let task = new Promise(resolve => resolve())
@@ -455,12 +455,12 @@ module.exports = db => {
           }
         }
 
-        // Save SCSS
-        if (asset.type === assetTypes.SCSS) {
-          const structName = `${scss.type}s`
-          const scssPath = path.join(assetPath, 'scss', structName, `_${scss.name}.scss`)
+        // Save SASS
+        if (asset.type === assetTypes.SASS) {
+          const structName = `${sass.type}s`
+          const sassPath = path.join(assetPath, 'sass', structName, `_${sass.name}.scss`)
 
-          if (existsSync(scssPath)) {
+          if (existsSync(sassPath)) {
             error({
               message: message.ERROR_SASS_FILE_ALREADY_EXISTS,
               padding: true,
@@ -468,34 +468,34 @@ module.exports = db => {
             })
           }
 
-          theme.asset.scss[structName].push(scss.name)
-          scss.components = theme.asset.scss.components.map(item => `'components/${item}'`).join(',\n  ')
-          scss.layouts = theme.asset.scss.layouts.map(item => `'layouts/${item}'`).join(',\n  ')
-          scss.pages = theme.asset.scss.pages.map(item => `'pages/${item}'`).join(',\n  ')
-          scss.themes = theme.asset.scss.themes.map(item => `'themes/${item}'`).join(',\n  ')
-          scss.vendors = theme.asset.scss.vendors.map(item => `'vendors/${item}'`).join(',\n  ')
+          theme.asset.sass[structName].push(sass.name)
+          sass.components = theme.asset.sass.components.map(item => `'components/${item}'`).join(',\n  ')
+          sass.layouts = theme.asset.sass.layouts.map(item => `'layouts/${item}'`).join(',\n  ')
+          sass.pages = theme.asset.sass.pages.map(item => `'pages/${item}'`).join(',\n  ')
+          sass.themes = theme.asset.sass.themes.map(item => `'themes/${item}'`).join(',\n  ')
+          sass.vendors = theme.asset.sass.vendors.map(item => `'vendors/${item}'`).join(',\n  ')
 
           compileFile({
             srcPath: path.join(global.templates.path, '_partials', 'sass.scss'),
-            dstPath: scssPath,
+            dstPath: sassPath,
             syntax: {
-              scss,
+              sass,
               theme
             }
           })
 
           compileFile({
-            srcPath: path.join(global.templates.path, 'assets-src', 'scss', 'main.scss'),
-            dstPath: path.join(assetPath, 'scss', 'main.scss'),
+            srcPath: path.join(global.templates.path, 'assets-src', 'sass', 'main.scss'),
+            dstPath: path.join(assetPath, 'sass', 'main.scss'),
             syntax: {
-              scss,
+              sass,
               theme
             }
           })
 
           config = {
             asset: {
-              scss: theme.asset.scss
+              sass: theme.asset.sass
             }
           }
         }

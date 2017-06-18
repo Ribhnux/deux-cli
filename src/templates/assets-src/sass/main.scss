@@ -17,10 +17,10 @@
   'abstracts/variables',
   'abstracts/functions',
   'abstracts/mixins';
-{{#if scss.vendors}}
+{{#if sass.vendors}}
 
 @import
-  {{{scss.vendors}}};
+  {{{sass.vendors}}};
 {{/if}}
 
 @import
@@ -29,23 +29,23 @@
   'base/fonts',
   'base/typography',
   'base/helpers';
-{{#if scss.layouts}}
+{{#if sass.layouts}}
 
 @import
-  {{{scss.layouts}}};
+  {{{sass.layouts}}};
 {{/if}}
-{{#if scss.components}}
+{{#if sass.components}}
 
 @import
-  {{{scss.components}}};
+  {{{sass.components}}};
 {{/if}}
-{{#if scss.pages}}
+{{#if sass.pages}}
 
 @import
-  {{{scss.pages}}};
+  {{{sass.pages}}};
 {{/if}}
-{{#if scss.themes}}
+{{#if sass.themes}}
 
 @import
-  {{{scss.themes}}};
+  {{{sass.themes}}};
 {{/if}}

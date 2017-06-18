@@ -26,7 +26,7 @@ module.exports = db => {
     const themePath = path.join(wpThemeDir, theme.details.slug)
     const assetsPath = path.join(themePath, 'assets')
     const srcPath = path.join(themePath, 'assets-src')
-    const sassPath = path.join(srcPath, 'scss')
+    const sassPath = path.join(srcPath, 'sass')
 
     const compileCSS = () => {
       const gulpPlumber = plumber({
