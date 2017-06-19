@@ -5,13 +5,12 @@ const sass = require('gulp-sass')
 const plumber = require('gulp-plumber')
 const rename = require('gulp-rename')
 const srcmap = require('gulp-sourcemaps')
-const cssnano = require('gulp-cssnano')
 const cssbeautify = require('gulp-cssbeautify')
-const sequence = require('gulp-sequence')
 const stripComments = require('gulp-strip-css-comments')
 const merge = require('gulp-merge')
 const clone = require('gulp-clone')
 const watch = require('gulp-watch')
+const beautifyComments = require('./gulp-plugin.js')
 
 const {getEnv, getCurrentTheme} = global.helpers.require('db/utils')
 const {wpThemeDir} = global.const.require('path')
@@ -49,10 +48,12 @@ module.exports = db => {
       const style = compiledCSS
         .pipe(clone())
         .pipe(cssbeautify({indent: '  ', autosemicolon: true}))
+        .pipe(beautifyComments())
         .pipe(gulp.dest(assetsPath))
 
       const minStyle = compiledCSS
         .pipe(clone())
+        .pipe(stripComments({preserve: false}))
         .pipe(
           srcmap.init({
             loadMaps: true
@@ -76,6 +77,7 @@ module.exports = db => {
         proxy: getEnv(db).devUrl,
         logLevel: 'info',
         logPrefix: theme.details.name,
+        open: false,
         notify: false
       })
     })
