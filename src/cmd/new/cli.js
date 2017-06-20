@@ -303,7 +303,7 @@ module.exports = db => {
             const themedb = Object.assign({}, db[dbTypes.THEMES][theme.slug])
             delete themedb.details
 
-            const config = jsonar(themedb, true)
+            const config = jsonar.arrify(themedb, true)
             compileFiles({
               srcDir: global.templates.path,
               dstDir: themePath,
