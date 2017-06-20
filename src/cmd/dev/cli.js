@@ -10,7 +10,7 @@ const stripComments = require('gulp-strip-css-comments')
 const merge = require('gulp-merge')
 const clone = require('gulp-clone')
 const watch = require('gulp-watch')
-const beautifyComments = require('./gulp-plugin.js')
+const replacer = require('gulp-replace')
 
 const {getEnv, getCurrentTheme} = global.helpers.require('db/utils')
 const {wpThemeDir} = global.const.require('path')
@@ -48,7 +48,8 @@ module.exports = db => {
       const style = compiledCSS
         .pipe(clone())
         .pipe(cssbeautify({indent: '  ', autosemicolon: true}))
-        .pipe(beautifyComments())
+        .pipe(replacer(/}\/\*!/g, '}\n\n/*!'))
+        .pipe(replacer(/\*\//g, '*/\n'))
         .pipe(gulp.dest(assetsPath))
 
       const minStyle = compiledCSS
