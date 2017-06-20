@@ -2,6 +2,7 @@ exports.validAddCommand = {
   HOOK: 'hook',
   ASSET: 'asset',
   PLUGIN: 'plugin',
+  WIDGET: 'widget',
   FEATURE: 'feature',
   TEMPLATE: 'template',
   COMPONENT: 'component'
