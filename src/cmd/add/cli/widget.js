@@ -39,6 +39,7 @@ module.exports = db => {
         })
       }
 
+      /* eslint-disable camelcase */
       theme.widgets[widgetId] = {
         name: jsonar.literal(`__( '${widget.name}', '${theme.details.slug}' )`),
         description: jsonar.literal(`__( '${widget.description}', '${theme.details.slug}' )`),

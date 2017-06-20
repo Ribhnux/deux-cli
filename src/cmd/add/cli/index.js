@@ -7,41 +7,41 @@ const {capitalize} = global.helpers.require('util/misc')
 
 const displayPrompt = (db, cmd) => {
   switch (cmd) {
-  case validAddCommand.HOOK:
-    global.commands.require('add/cli/hook')(db)
-    break
+    case validAddCommand.HOOK:
+      global.commands.require('add/cli/hook')(db)
+      break
 
-  case validAddCommand.ASSET:
-    global.commands.require('add/cli/asset')(db)
-    break
+    case validAddCommand.ASSET:
+      global.commands.require('add/cli/asset')(db)
+      break
 
-  case validAddCommand.PLUGIN:
-    global.commands.require('add/cli/plugin')(db)
-    break
+    case validAddCommand.PLUGIN:
+      global.commands.require('add/cli/plugin')(db)
+      break
 
-  case validAddCommand.FEATURE:
-    global.commands.require('add/cli/feature')(db)
-    break
+    case validAddCommand.FEATURE:
+      global.commands.require('add/cli/feature')(db)
+      break
 
-  case validAddCommand.TEMPLATE:
-    global.commands.require('add/cli/template')(db)
-    break
+    case validAddCommand.TEMPLATE:
+      global.commands.require('add/cli/template')(db)
+      break
 
-  case validAddCommand.COMPONENT:
-    global.commands.require('add/cli/component')(db)
-    break
+    case validAddCommand.COMPONENT:
+      global.commands.require('add/cli/component')(db)
+      break
 
-  case validAddCommand.WIDGET:
-    global.commands.require('add/cli/widget')(db)
-    break
+    case validAddCommand.WIDGET:
+      global.commands.require('add/cli/widget')(db)
+      break
 
-  default:
-    error({
-      message: message.ERROR_INVALID_COMMAND,
-      paddingTop: true,
-      exit: true
-    })
-    break
+    default:
+      error({
+        message: message.ERROR_INVALID_COMMAND,
+        paddingTop: true,
+        exit: true
+      })
+      break
   }
 }
 
