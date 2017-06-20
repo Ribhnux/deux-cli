@@ -61,7 +61,7 @@ exports.saveConfig = (db, newConfig = {}) => new Promise(resolve => {
   const config = Object.assign({}, theme)
   delete config.details
 
-  const phpconfig = jsonar(config, true)
+  const phpconfig = jsonar.arrify(config, true)
 
   compileFile({
     srcPath: path.join(global.templates.path, 'config.php'),

@@ -14,6 +14,11 @@ require get_template_directory() . '/{{theme.slugfn}}_config.php';
 require get_template_directory() . '/includes/init/theme.php';
 
 /**
+ * Widgets init.
+ */
+require get_template_directory() . '/includes/init/widgets.php';
+
+/**
  * Plugin dependencies init.
  */
 require get_template_directory() . '/includes/init/plugins.php';
