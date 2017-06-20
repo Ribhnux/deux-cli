@@ -24,7 +24,7 @@ const succeed = () => {
 }
 
 const initProject = db => {
-  colorlog(`{Init Project}`)
+  colorlog('{Init Project}')
 
   const task = new Listr([
     {
@@ -74,7 +74,7 @@ const initProject = db => {
   ]
 
   task.run().then(() => {
-    colorlog(`Setup {Environment Config}`)
+    colorlog('Setup {Environment Config}')
     inquirer.prompt(prompts).then(answers => {
       db[dbTypes.ENVIRONMENT] = answers.config
       succeed()
