@@ -1414,6 +1414,12 @@ decamelize@^1.0.0, decamelize@^1.1.1, decamelize@^1.1.2:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/decamelize/-/decamelize-1.2.0.tgz#f6534d15148269b20352e7bee26f501f9a191290"
 
+decompress-response@^3.2.0:
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/decompress-response/-/decompress-response-3.3.0.tgz#80a4dd323748384bfa248083622aedec982adff3"
+  dependencies:
+    mimic-response "^1.0.0"
+
 decompress-tar@^4.0.0, decompress-tar@^4.1.0:
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/decompress-tar/-/decompress-tar-4.1.0.tgz#1f092ab698440558c72fc78e77d246d3ecb453b0"
@@ -1577,19 +1583,19 @@ dot-prop@^4.1.0:
   dependencies:
     is-obj "^1.0.0"
 
-download@^6.2.1:
-  version "6.2.2"
-  resolved "https://registry.yarnpkg.com/download/-/download-6.2.2.tgz#c0a19bfd81855e1a333f8ff4275f004dea6d85bd"
+download@^6.2.3:
+  version "6.2.3"
+  resolved "https://registry.yarnpkg.com/download/-/download-6.2.3.tgz#d8d358cf4854abb1169a447c55be7072c5dc2f90"
   dependencies:
     caw "^2.0.0"
     content-disposition "^0.5.2"
     decompress "^4.0.0"
     filenamify "^2.0.0"
     get-stream "^3.0.0"
-    got "^6.3.0"
+    got "^7.0.0"
     make-dir "^1.0.0"
     p-event "^1.0.0"
-    pify "^2.3.0"
+    pify "^3.0.0"
 
 duplexer2@0.0.2:
   version "0.0.2"
@@ -2547,7 +2553,7 @@ glogg@^1.0.0:
   dependencies:
     sparkles "^1.0.0"
 
-got@^6.3.0, got@^6.7.1:
+got@^6.7.1:
   version "6.7.1"
   resolved "https://registry.yarnpkg.com/got/-/got-6.7.1.tgz#240cd05785a9a18e561dc1b44b41c763ef1e8db0"
   dependencies:
@@ -2561,6 +2567,24 @@ got@^6.3.0, got@^6.7.1:
     safe-buffer "^5.0.1"
     timed-out "^4.0.0"
     unzip-response "^2.0.1"
+    url-parse-lax "^1.0.0"
+
+got@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/got/-/got-7.0.0.tgz#82d439f6763cdb1c8821b7a3aae2784c88c3b8d3"
+  dependencies:
+    decompress-response "^3.2.0"
+    duplexer3 "^0.1.4"
+    get-stream "^3.0.0"
+    is-plain-obj "^1.1.0"
+    is-retry-allowed "^1.0.0"
+    is-stream "^1.0.0"
+    isurl "^1.0.0-alpha5"
+    lowercase-keys "^1.0.0"
+    p-cancelable "^0.2.0"
+    p-timeout "^1.1.1"
+    safe-buffer "^5.0.1"
+    timed-out "^4.0.0"
     url-parse-lax "^1.0.0"
 
 graceful-fs@4.X, graceful-fs@^4.1.10, graceful-fs@^4.1.11, graceful-fs@^4.1.2, graceful-fs@^4.1.6:
@@ -2807,6 +2831,16 @@ has-gulplog@^0.1.0:
   dependencies:
     sparkles "^1.0.0"
 
+has-symbol-support-x@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/has-symbol-support-x/-/has-symbol-support-x-1.2.0.tgz#e624ead5190c35b34e4e299344dff6437db02ce2"
+
+has-to-string-tag-x@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/has-to-string-tag-x/-/has-to-string-tag-x-1.2.0.tgz#c536dc4dbbebe1be9d28f624fd320f793129fd53"
+  dependencies:
+    has-symbol-support-x "^1.2.0"
+
 has-unicode@^2.0.0:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/has-unicode/-/has-unicode-2.0.1.tgz#e0e6fe6a28cf51138855e086d1691e771de2a8b9"
@@ -3007,9 +3041,9 @@ inquirer@^1.0.2:
     strip-ansi "^3.0.0"
     through "^2.3.6"
 
-inquirer@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/inquirer/-/inquirer-3.1.0.tgz#e05400d48b94937c2d3caa7038663ba9189aab01"
+inquirer@^3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/inquirer/-/inquirer-3.1.1.tgz#87621c4fba4072f48a8dd71c9f9df6f100b2d534"
   dependencies:
     ansi-escapes "^2.0.0"
     chalk "^1.0.0"
@@ -3189,6 +3223,10 @@ is-obj@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/is-obj/-/is-obj-1.0.1.tgz#3e4729ac1f5fde025cd7d83a896dab9f4f67db0f"
 
+is-object@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/is-object/-/is-object-1.0.1.tgz#8952688c5ec2ffd6b03ecc85e769e02903083470"
+
 is-observable@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/is-observable/-/is-observable-0.2.0.tgz#b361311d83c6e5d726cabf5e250b0237106f5ae2"
@@ -3211,7 +3249,7 @@ is-path-inside@^1.0.0:
   dependencies:
     path-is-inside "^1.0.1"
 
-is-plain-obj@^1.0.0:
+is-plain-obj@^1.0.0, is-plain-obj@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/is-plain-obj/-/is-plain-obj-1.1.0.tgz#71a50c8429dfca773c92a390a4a03b39fcd51d3e"
 
@@ -3316,6 +3354,13 @@ istextorbinary@1.0.2:
   dependencies:
     binaryextensions "~1.0.0"
     textextensions "~1.0.0"
+
+isurl@^1.0.0-alpha5:
+  version "1.0.0-alpha6"
+  resolved "https://registry.yarnpkg.com/isurl/-/isurl-1.0.0-alpha6.tgz#9df0b8477866aa425d046be8fbb429e64b5b8915"
+  dependencies:
+    has-to-string-tag-x "^1.2.0"
+    is-object "^1.0.1"
 
 jest-diff@19.0.0, jest-diff@^19.0.0:
   version "19.0.0"
@@ -3449,9 +3494,9 @@ json5@^0.5.0, json5@^0.5.1:
   version "0.5.1"
   resolved "https://registry.yarnpkg.com/json5/-/json5-0.5.1.tgz#1eade7acc012034ad84e2396767ead9fa5495821"
 
-jsonar@^1.3.1:
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/jsonar/-/jsonar-1.3.1.tgz#4b5b2ca541ada1be6da8c19863cdb6ab95b0509a"
+jsonar@^1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/jsonar/-/jsonar-1.4.0.tgz#f7d4762e778672500609abba28dd709193039d46"
   dependencies:
     lodash.isplainobject "^4.0.6"
 
@@ -4061,6 +4106,10 @@ mimic-fn@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/mimic-fn/-/mimic-fn-1.1.0.tgz#e667783d92e89dbd342818b5230b9d62a672ad18"
 
+mimic-response@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/mimic-response/-/mimic-response-1.0.0.tgz#df3d3652a73fded6b9b0b24146e6fd052353458e"
+
 minimatch@^2.0.1:
   version "2.0.10"
   resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-2.0.10.tgz#8d087c39c6b38c001b97fca7ce6d0e1e80afbac7"
@@ -4411,9 +4460,9 @@ ora@^0.2.3:
     cli-spinners "^0.1.2"
     object-assign "^4.0.1"
 
-ora@^1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/ora/-/ora-1.2.0.tgz#32fb3183500efe83f5ea89101785f0ee6060fec9"
+ora@^1.3.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/ora/-/ora-1.3.0.tgz#80078dd2b92a934af66a3ad72a5b910694ede51a"
   dependencies:
     chalk "^1.1.1"
     cli-cursor "^2.1.0"
@@ -4456,6 +4505,10 @@ osenv@0, osenv@^0.1.4:
   dependencies:
     os-homedir "^1.0.0"
     os-tmpdir "^1.0.0"
+
+p-cancelable@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/p-cancelable/-/p-cancelable-0.2.0.tgz#3152f4f30be7606b60ebfe8bb93b3fdf69085e46"
 
 p-event@^1.0.0:
   version "1.2.0"
@@ -4635,6 +4688,10 @@ performance-now@^0.2.0:
 pify@^2.0.0, pify@^2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/pify/-/pify-2.3.0.tgz#ed141a6ac043a849ea588498e7dca8b15330e90c"
+
+pify@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/pify/-/pify-3.0.0.tgz#e5a4acd2c101fdf3d9a4d07f0dbc4db49dd28176"
 
 pinkie-promise@^1.0.0:
   version "1.0.0"
