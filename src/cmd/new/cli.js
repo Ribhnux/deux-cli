@@ -22,7 +22,7 @@ const compileFiles = global.helpers.require('compiler/bulk')
 const {setCurrentTheme, errHandler: dbErrorHandler} = global.helpers.require('db/utils')
 
 module.exports = db => {
-  colorlog(`Create {New Theme}`)
+  colorlog('Create {New Theme}')
 
   const prompts = [
     {
@@ -233,7 +233,7 @@ module.exports = db => {
         },
 
         {
-          title: `Init Config`,
+          title: 'Init Config',
           task: () => new Promise((resolve, reject) => {
             const phpRegx = /\.php$/g
             const notHiddenFile = item => item && item !== '.gitkeep'
@@ -298,7 +298,7 @@ module.exports = db => {
         },
 
         {
-          title: `Init WordPress Theme`,
+          title: 'Init WordPress Theme',
           task: () => new Promise(resolve => {
             const themedb = Object.assign({}, db[dbTypes.THEMES][theme.slug])
             delete themedb.details
