@@ -9,6 +9,14 @@
  */
 
 /**
+* Set global content width
+* @link https://developer.wordpress.com/themes/content-width/
+*/
+if ( ! isset( $content_width ) ) {
+	$content_width = 640;
+}
+
+/**
  * Sets up theme defaults and registers support for various WordPress features.
  *
  * Note that this function is hooked into the after_setup_theme hook, which
