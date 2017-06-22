@@ -358,7 +358,9 @@ ul.children {}
 .post {}
 .page {}
 .attachment {}
-.sticky {}
+.sticky {
+  position: relative;
+}
 .hentry {}
 .category {
   &-misc {}
