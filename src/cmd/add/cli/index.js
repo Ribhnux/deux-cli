@@ -35,6 +35,10 @@ const displayPrompt = (db, cmd) => {
       global.commands.require('add/cli/widget')(db)
       break
 
+    case validAddCommand.MENU:
+      global.commands.require('add/cli/menu')(db)
+      break
+
     default:
       error({
         message: message.ERROR_INVALID_COMMAND,
