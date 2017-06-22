@@ -60,6 +60,11 @@ function {{theme.slugfn}}_setup() {
 	add_theme_support( 'automatic-feed-links' );
 	add_theme_support( 'post-thumbnails' );
 	add_theme_support( 'title-tag' );
+
+	/**
+	* Register menus
+	*/
+	register_nav_menus( ${{theme.slugfn}}_config['menus'] );
 }
 endif;
 
