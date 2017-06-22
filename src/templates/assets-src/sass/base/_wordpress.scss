@@ -299,7 +299,18 @@ blockquote {
   .parent {}
   .children {}
   .pingback {}
-  .bypostauthor {}
+  .bypostauthor {
+    .comment-body {
+      &> .comment-meta {
+        &> .comment-author {
+          .avatar {
+            border: 1px solid #333;
+            padding: 2px;
+          }
+        }
+      }
+    }
+  }
   .comment-author {}
   .comment-author-admin {}
   #cancel-comment-reply {
