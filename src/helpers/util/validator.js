@@ -17,10 +17,12 @@ validate.validators.semver = function (value, options) {
 }
 
 const errorMessage = (variable, msg) => (variable.length > 0) ? `^${variable} ${msg}` : msg
+const allowedSlugs = '[a-z0-9-]+'
 
 module.exports = (value, options) => {
   options = Object.assign({
     slug: false,
+    slugPattern: allowedSlugs,
     minimum: 0,
     word: false,
     array: false,
@@ -91,15 +93,20 @@ module.exports = (value, options) => {
   }
 
   if (options.slug) {
+    let slugMessage = 'is slug, only contains lowercase alphabet, number, and -'
+    if (options.slugPattern !== allowedSlugs) {
+      slugMessage = `is slug, only contains ${options.slugPattern}`
+    }
+
     rules.value.format = {
-      pattern: '[a-z0-9-]+',
-      message: errorMessage(options.var, 'is slug, only contain lowercase alphabet, numbers, and -')
+      pattern: options.slugPattern,
+      message: errorMessage(options.var, slugMessage)
     }
   }
 
   if (options.semver) {
     rules.value.semver = {
-      message: errorMessage(options.var, `is not a valid version`)
+      message: errorMessage(options.var, 'is not a valid version')
     }
   }
 
