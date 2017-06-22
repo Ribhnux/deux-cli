@@ -303,12 +303,12 @@ module.exports = db => {
             const themedb = Object.assign({}, db[dbTypes.THEMES][theme.slug])
             delete themedb.details
 
-            const config = jsonar.arrify(themedb, true)
+            const config = jsonar.arrify(themedb, {prettify: true, quote: jsonar.quoteTypes.SINGLE})
             compileFiles({
               srcDir: global.templates.path,
               dstDir: themePath,
               rename: {
-                'config.php': `${theme.slugfn}_config.php`
+                'config.php': `${theme.slug}-config.php`
               },
               syntax: {
                 theme,

@@ -19,28 +19,25 @@ get_header();
 <div id="content-wrapper" class="site__wrapper--home">
 	<div id="content" class="content__wrapper" tabindex="-1">
 		<main id="main" class="site__main">
-			<?php if ( have_posts() ) : ?>
+			<?php if ( have_posts() ) :
+				while ( have_posts() ) : the_post();
 
-				<?php while ( have_posts() ) : the_post(); ?>
-					<?php
-						// Load partial-templates for page
-						get_template_part( 'partial-templates/content', get_post_format() );
+					// Load partial-templates for page.
+					get_template_part( 'partial-templates/content', get_post_format() );
 
-						// Load the comment template when comments are open and at leas has 1 comment.
-						if ( comments_open() || get_comments_number() ) :
-							comments_template();
-						endif;
-					?>
-				<?php endwhile; // end of the loops ?>
+					// Load the comment template when comments are open and at leas has 1 comment.
+					if ( comments_open() || get_comments_number() ) :
+						comments_template();
+					endif;
 
-			<?php else : ?>
+				endwhile; // end of the loops.
 
-				<?php
-					// Load partial-templates for empty content
-					get_template_part( 'partial-templates/content', 'none' );
-				?>
+			else :
 
-			<?php endif; ?>
+				// Load partial-templates for empty content.
+				get_template_part( 'partial-templates/content', 'none' );
+
+			endif; ?>
 		</main><!-- #main -->
 
 		<!-- The pagination component -->
@@ -48,7 +45,7 @@ get_header();
 
 	</div><!-- #content -->
 
-	<?php get_sidebar(); // load the sidebar ?>
+	<?php get_sidebar(); // load the sidebar. ?>
 </div><!-- #content-wrapper -->
 
 <?php get_footer(); ?>

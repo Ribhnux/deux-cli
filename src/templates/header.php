@@ -30,6 +30,6 @@
 	<div id="page" class="site">
 		<div id="main-wrapper" class="site__wrapper">
 			<?php
-				// Display navigation bar
+				// Display navigation bar.
 				get_template_part( 'partial-templates/header', 'navbar' );
 			?>

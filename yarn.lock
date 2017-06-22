@@ -1775,6 +1775,12 @@ escape-html@~1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/escape-html/-/escape-html-1.0.3.tgz#0258eae4d3d0c0974de1c169188ef0051d1d1988"
 
+escape-quotes@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/escape-quotes/-/escape-quotes-1.0.2.tgz#b4896d4a6cf82dd5b33f49b713408c6380f6cd97"
+  dependencies:
+    escape-string-regexp "^1.0.5"
+
 escape-string-regexp@^1.0.0, escape-string-regexp@^1.0.2, escape-string-regexp@^1.0.3, escape-string-regexp@^1.0.4, escape-string-regexp@^1.0.5:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/escape-string-regexp/-/escape-string-regexp-1.0.5.tgz#1b61c0562190a8dff6ae3bb2cf0200ca130b86d4"
@@ -3494,10 +3500,11 @@ json5@^0.5.0, json5@^0.5.1:
   version "0.5.1"
   resolved "https://registry.yarnpkg.com/json5/-/json5-0.5.1.tgz#1eade7acc012034ad84e2396767ead9fa5495821"
 
-jsonar@^1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/jsonar/-/jsonar-1.4.0.tgz#f7d4762e778672500609abba28dd709193039d46"
+jsonar@^1.5.0:
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/jsonar/-/jsonar-1.5.0.tgz#b22ecff965729b8f70422abe108a5834c0bbff59"
   dependencies:
+    escape-quotes "^1.0.2"
     lodash.isplainobject "^4.0.6"
 
 jsonfile@^3.0.0:
