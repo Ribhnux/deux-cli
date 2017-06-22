@@ -39,16 +39,18 @@ module.exports = db => {
         })
       }
 
-      /* eslint-disable camelcase */
+      /* eslint-disable */
+      /* quotes, camelcase */
       theme.widgets[widgetId] = {
         name: jsonar.literal(`__( '${widget.name}', '${theme.details.slug}' )`),
         description: jsonar.literal(`__( '${widget.description}', '${theme.details.slug}' )`),
         class: '',
-        before_widget: '<section id="%1$s" class="widget %2$s">',
-        after_widget: '</section>',
-        before_title: '<h2 class="widget-title">',
-        after_title: '</h2>'
+        before_widget: jsonar.literal(`'<section id="%1$s" class="widget %2$s">'`),
+        after_widget: jsonar.literal(`'</section>'`),
+        before_title: jsonar.literal(`'<h2 class="widget-title">'`),
+        after_title: jsonar.literal(`'</h2>'`)
       }
+      /* eslint-enable */
 
       saveConfig(db, {
         widgets: theme.widgets
