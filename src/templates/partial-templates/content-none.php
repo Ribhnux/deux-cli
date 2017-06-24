@@ -6,6 +6,7 @@
  * @package {{theme.name}}
  * @since {{theme.version}}
  */
+
 ?>
 
 <section class="no-results not-found">
@@ -18,10 +19,13 @@
 			<p><?php
 				printf(
 					wp_kses(
+						/* translators: new post link to wp-admin */
 						__( 'Hey, Wanna publish your first post? <a href="%1$s">Let&rsquo;s Get Started</a>.', '{{theme.slug}}' ),
 						array(
-							'a' => array( 'href' => array() )
-						)
+							'a' => array(
+								'href' => array(),
+							),
+						),
 					),
 					esc_url( admin_url( 'post-new.php' ) )
 				);
@@ -31,10 +35,12 @@
 
 			<p><?php esc_html_e( 'Sorry, but nothing matched your search terms. Please try again with some different keywords.', '{{theme.slug}}' ); ?></p>
 
-		<?php get_search_form(); else : ?>
+		<?php get_search_form(); ?>
+		<?php else : ?>
 
 			<p><?php esc_html_e( 'It seems we can&rsquo;t find what you&rsquo;re looking for. Perhaps searching can help.', '{{theme.slug}}' ); ?></p>
 
-		<?php get_search_form(); endif; ?>
+		<?php get_search_form(); ?>
+		<?php endif; ?>
 	</div><!-- #page-content -->
 </section><!-- .no-results -->

@@ -17,15 +17,15 @@ get_header();
 
 				<?php while ( have_posts() ) : the_post(); ?>
 					<?php
-						// Load partial-templates for archive
+						// Load partial-templates for archive.
 						get_template_part( 'partial-templates/content', get_post_format() );
 					?>
-				<?php endwhile; // end of the loops ?>
+				<?php endwhile; // end of the loops. ?>
 
 			<?php else : ?>
 
 				<?php
-					// Load partial-templates for empty content
+					// Load partial-templates for empty content.
 					get_template_part( 'partial-templates/content', 'none' );
 				?>
 
@@ -37,7 +37,7 @@ get_header();
 
 	</div><!-- #content -->
 
-	<?php get_sidebar(); // load the sidebar ?>
+	<?php get_sidebar(); // load the sidebar. ?>
 </div><!-- #content-wrapper -->
 
 <?php get_footer(); ?>

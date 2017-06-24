@@ -6,34 +6,23 @@
  * @since {{theme.version}}
  */
 
-require get_template_directory() . '/{{theme.slugfn}}_config.php';
+// Read theme config.
+require get_template_directory() . '/{{theme.slug}}-config.php';
 
-/**
- * Theme setup.
- */
+// Theme setup.
 require get_template_directory() . '/includes/init/theme.php';
 
-/**
- * Widgets init.
- */
+// Widgets init.
 require get_template_directory() . '/includes/init/widgets.php';
 
-/**
- * Plugin dependencies init.
- */
+// Plugin dependencies init.
 require get_template_directory() . '/includes/init/plugins.php';
 
-/**
- * Actions and Filters init.
- */
+// Actions and Filters init.
 require get_template_directory() . '/includes/init/hooks.php';
 
-/**
- * Assets (JS, CSS, Fonts) init.
- */
+// Assets (JS, CSS, Fonts) init.
 require get_template_directory() . '/includes/init/assets.php';
 
-/**
- * Components init.
- */
+// Components init.
 require get_template_directory() . '/includes/init/components.php';

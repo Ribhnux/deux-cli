@@ -9,13 +9,15 @@
 
 get_header();
 
-// Get current author
+// Get current author.
 $current_author = get_userdata( intval( $author ) );
+
+// @codingStandardsIgnoreLine
 if ( isset( $_GET['author_name'] ) ) {
 	$current_author = get_user_by( 'slug', $author_name );
 }
 
-// Get current author data
+// Get current author data.
 $author_id = $current_author->ID;
 $author_nickname = $current_author->nickname;
 $author_url = $current_author->user_url;
@@ -58,12 +60,12 @@ $author_desc = $current_author->user_description;
 						<?php {{theme.slugfn}}_posted_on(); ?>
 						<?php esc_html_e( 'in', '{{theme.slug}}' ); ?> <?php the_category( '&' ); ?>
 					</li>
-				<?php endwhile; // end of the loops ?>
+				<?php endwhile; // end of the loops. ?>
 				</ul>
 			<?php else : ?>
 
 				<?php
-					// Load partial-templates for empty content
+					// Load partial-templates for empty content.
 					get_template_part( 'partial-templates/content', 'none' );
 				?>
 
@@ -75,7 +77,7 @@ $author_desc = $current_author->user_description;
 
 	</div><!-- #content -->
 
-	<?php get_sidebar(); // load the sidebar ?>
+	<?php get_sidebar(); // load the sidebar. ?>
 </div><!-- #content-wrapper -->
 
 <?php get_footer(); ?>
