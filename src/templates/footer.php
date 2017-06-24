@@ -7,6 +7,7 @@
  * @package {{theme.name}}
  * @since {{theme.version}}
  */
+
 ?>
 	</div><!-- #main-wrapper -->
 </div><!-- #page -->

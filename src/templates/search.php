@@ -13,23 +13,26 @@ get_header();
 	<div id="content" class="content__wrapper" tabindex="-1">
 		<main id="main" class="site__main">
 			<header id="page-header" class="page__header--author">
-				<h1 class="page-title"><?php printf( esc_html__( 'Search Results for: %s', '{{theme.slug}}' ),
-								'<span>' . get_search_query() . '</span>' ); ?></h1>
+				<h1 class="page-title"><?php printf(
+					/* translators: %s: search query */
+					esc_html__( 'Search Results for: %s', '{{theme.slug}}' ),
+					'<span>' . get_search_query() . '</span>'
+				); ?></h1>
 			</header><!-- #page-header -->
 
 			<?php if ( have_posts() ) : ?>
 
 				<?php while ( have_posts() ) : the_post(); ?>
 					<?php
-						// Load partial-templates for search page
+						// Load partial-templates for search page.
 						get_template_part( 'partial-templates/content', 'search' );
 					?>
-				<?php endwhile; // end of the loops ?>
+				<?php endwhile; // end of the loops. ?>
 
 			<?php else : ?>
 
 				<?php
-					// Load partial-templates for empty content
+					// Load partial-templates for empty content.
 					get_template_part( 'partial-templates/content', 'none' );
 				?>
 
@@ -41,7 +44,7 @@ get_header();
 
 	</div><!-- #content -->
 
-	<?php get_sidebar(); // load the sidebar ?>
+	<?php get_sidebar(); // load the sidebar. ?>
 </div><!-- #content-wrapper -->
 
 <?php get_footer(); ?>

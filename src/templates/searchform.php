@@ -5,6 +5,7 @@
  * @package {{theme.name}}
  * @since {{theme.version}}
  */
+
 ?>
 <form class="search-form" method="get" id="searchform" action="<?php echo esc_url( home_url( '/' ) ); ?>" role="search">
 	<label for="s"><?php esc_html_e( 'Search', '{{theme.slug}}' ); ?></label>

@@ -5,6 +5,7 @@
  * @package {{theme.name}}
  * @since {{theme.version}}
  */
+
 ?>
 <nav class="navbar">
 	<?php
@@ -15,7 +16,7 @@
 				'container_id'    => 'navbar-container',
 				'menu_class'      => 'navbar__menu',
 				'fallback_cb'     => '',
-				'menu_id'         => 'navbar__main-menu'
+				'menu_id'         => 'navbar__main-menu',
 			)
 		);
 	?>

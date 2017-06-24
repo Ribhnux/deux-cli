@@ -5,6 +5,7 @@
  * @package {{theme.name}}
  * @since {{theme.version}}
  */
+
 ?>
 <article <?php post_class(); ?> id="post-<?php the_ID(); ?>">
 	<header class="entry-header">
