@@ -14,7 +14,7 @@ exports.sassTypes = {
 
 exports.libSource = {
   CDN: 'cdn',
-  WP: 'wordpress'
+  WP: 'wp'
 }
 
 exports.fontSource = {

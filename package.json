@@ -46,7 +46,7 @@
     "html-entities": "^1.2.1",
     "inquirer": "^3.1.1",
     "json-realtime": "^1.3.3",
-    "jsonar": "^1.5.0",
+    "jsonar": "^1.6.0",
     "listr": "^0.12.0",
     "lodash.merge": "^4.6.0",
     "log-symbols": "^1.0.2",

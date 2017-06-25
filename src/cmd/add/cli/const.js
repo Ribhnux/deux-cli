@@ -21,6 +21,6 @@ exports.postTypes = {
 }
 
 exports.pluginSrcTypes = {
-  WP: 'wordpress',
+  WP: 'wp',
   PRIVATE: 'private'
 }
