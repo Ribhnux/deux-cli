@@ -24,7 +24,7 @@ if ( ! function_exists( '{{theme.slugfn}}_enqueue_dependencies' ) ) :
 
 		// Load Stylesheet and Javascript.
 		foreach ( ${{theme.slugfn}}_config['asset']['libs'] as $name => $libs ) {
-			if ( strtolower( 'wordpress' ) === $libs['source'] ) {
+			if ( 'wp' === $libs['source'] ) {
 				wp_enqueue_script( $name );
 			} else {
 				foreach ( $libs['files'] as $file ) {
