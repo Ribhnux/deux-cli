@@ -61,11 +61,15 @@ exports.saveConfig = (db, newConfig = {}) => new Promise(resolve => {
   const config = Object.assign({}, theme)
   delete config.details
 
-  const phpconfig = jsonar.arrify(config, true)
+  const phpconfig = jsonar.arrify(config, {
+    prettify: true,
+    quote: jsonar.quoteTypes.SINGLE,
+    trailingComma: true
+  })
 
   compileFile({
     srcPath: path.join(global.templates.path, 'config.php'),
-    dstPath: path.join(wpThemeDir, theme.details.slug, `${theme.details.slugfn}_config.php`),
+    dstPath: path.join(wpThemeDir, theme.details.slug, `${theme.details.slug}-config.php`),
     syntax: {
       theme: theme.details,
       config: phpconfig
