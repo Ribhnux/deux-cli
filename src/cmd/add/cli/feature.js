@@ -378,6 +378,41 @@ module.exports = db => {
       when: ({feature}) => feature.advanced && feature.type === featureTypes.CUSTOM_HEADER && feature.options.video
     },
 
+    // Custom logo options
+    {
+      name: 'feature.options.width',
+      message: 'Logo width in px',
+      default: 250,
+      when: ({feature}) => feature.type === featureTypes.CUSTOM_LOGO,
+      validate: value => validator(value, {number: true, minimum: 1, var: `"${value}"px`}),
+      filter: value => Number(value)
+    },
+
+    {
+      name: 'feature.options.height',
+      message: 'Logo height in px',
+      default: 250,
+      when: ({feature}) => feature.type === featureTypes.CUSTOM_LOGO,
+      validate: value => validator(value, {number: true, minimum: 1, var: `"${value}"px`}),
+      filter: value => Number(value)
+    },
+
+    {
+      type: 'confirm',
+      name: 'feature.options.flexWidth',
+      message: 'Allow flexible width?',
+      default: true,
+      when: ({feature}) => feature.type === featureTypes.CUSTOM_LOGO
+    },
+
+    {
+      type: 'confirm',
+      name: 'feature.options.flexHeight',
+      message: 'Allow flexible height?',
+      default: true,
+      when: ({feature}) => feature.type === featureTypes.CUSTOM_LOGO
+    },
+
     // WordPress wp_head callback for custom background and custom header
     {
       type: 'confirm',
@@ -560,6 +595,18 @@ module.exports = db => {
         } else {
           rimraf.sync(customHeaderCbPath)
         }
+      }
+
+      if (feature.type === featureTypes.CUSTOM_LOGO) {
+        /* eslint-disable quote-props */
+        featureOptions = {
+          'width': feature.options.width,
+          'height': feature.options.height,
+          'flex-width': feature.options.flexWidth,
+          'flex-height': feature.options.flexHeight,
+          'header-text': ''
+        }
+        /* eslint-enable */
       }
 
       theme.features[feature.type] = featureOptions
