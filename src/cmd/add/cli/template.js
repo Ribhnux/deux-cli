@@ -78,7 +78,7 @@ module.exports = db => {
         return template.type === templateTypes.PAGE && template.posttype === postTypes.CUSTOM
       },
       validate: value => validator(value, {minimum: 3, var: `"${value}"`}),
-      filter: value => value.toLowerCase()
+      filter: value => value.split(',').map(item => slugify(item.trim().toLowerCase())).join(', ')
     },
 
     {
