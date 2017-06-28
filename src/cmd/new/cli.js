@@ -278,14 +278,7 @@ module.exports = db => {
               utils: [],
               menus: {},
               widgets: {},
-              features: {
-                html5: [
-                  'comment-form',
-                  'comment-list',
-                  'gallery',
-                  'caption'
-                ]
-              }
+              features: {}
             }
 
             try {

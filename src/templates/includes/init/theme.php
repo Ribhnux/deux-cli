@@ -65,9 +65,8 @@ if ( ! function_exists( '{{theme.slugfn}}_setup' ) ) :
 		}
 
 		// Native theme support.
-		add_theme_support( 'automatic-feed-links' );
-		add_theme_support( 'post-thumbnails' );
 		add_theme_support( 'title-tag' );
+		add_theme_support( 'customize-selective-refresh-widgets' );
 
 		// Register menus.
 		register_nav_menus( ${{theme.slugfn}}_config['menus'] );
