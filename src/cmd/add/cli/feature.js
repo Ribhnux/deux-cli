@@ -443,7 +443,7 @@ module.exports = db => {
 
   return inquirer.prompt(prompts).then(({feature}) => {
     getCurrentTheme(db).then(theme => {
-      if (!feature.overwrite && theme.features[feature.type]) {
+      if (feature.overwrite === false) {
         error({
           message: message.ERROR_FEATURE_ALREADY_EXISTS,
           padding: true,
@@ -455,7 +455,25 @@ module.exports = db => {
       const helperFile = path.join(global.templates.path, '_partials', 'helper.php')
       const helperPath = path.join(themePath, 'includes', 'helpers')
       let featureOptions = feature.options
-      let helper
+
+      const initHelper = (checker, options, key, helper) => {
+        const callbackPath = path.join(helperPath, `${helper.file}.php`)
+        if (checker) {
+          options[key] = `${theme.details.slugfn}_${helper.slugfn}`
+          compileFile({
+            srcPath: helperFile,
+            dstPath: callbackPath,
+            syntax: {
+              theme: theme.details,
+              helper
+            }
+          })
+          theme.helpers = theme.helpers.concat(helper.file)
+        } else {
+          theme.helpers = theme.helpers.filter(item => item !== helper.file)
+          rimraf.sync(callbackPath)
+        }
+      }
 
       if (!feature.options) {
         featureOptions = true
@@ -510,26 +528,12 @@ module.exports = db => {
           'default-attachment': feature.options.attachment
         }
 
-        const customBgCbPath = path.join(helperPath, 'custom-background-callback.php')
-        if (feature.options.wpHeadCallback) {
-          helper = {
-            name: 'Custom Background Callback',
-            slugfn: 'custom_background_callback',
-            description: 'Callback used to write custom background output in wp_head'
-          }
-
-          featureOptions['wp-head-callback'] = `${theme.details.slugfn}_${helper.slugfn}`
-          compileFile({
-            srcPath: helperFile,
-            dstPath: customBgCbPath,
-            syntax: {
-              theme: theme.details,
-              helper
-            }
-          })
-        } else {
-          rimraf.sync(customBgCbPath)
-        }
+        initHelper(feature.options.wpHeadCallback, featureOptions, 'wp-head-callback', {
+          name: 'Custom Background Callback',
+          file: 'custom-background',
+          slugfn: 'custom_background_callback',
+          description: 'Callback used to write custom background output in wp_head'
+        })
       }
 
       if (feature.type === featureTypes.CUSTOM_HEADER) {
@@ -554,47 +558,19 @@ module.exports = db => {
           featureOptions['default-text-color'] = feature.options.textColor
         }
 
-        const videoCallbackFile = path.join(helperPath, 'video-active-callback.php')
-        if (feature.options.videoAlwaysActive === false) {
-          helper = {
-            name: 'Video Active Callback',
-            slugfn: 'video_active_callback',
-            description: 'Callback used to determine whether the video should be shown for the current request.'
-          }
+        initHelper(feature.options.videoAlwaysActive === false, featureOptions, 'video-active-callback', {
+          name: 'Video Active Callback',
+          file: 'custom-header-video',
+          slugfn: 'video_active_callback',
+          description: 'Callback used to determine whether the video should be shown for the current request.'
+        })
 
-          featureOptions['video-active-callback'] = `${theme.details.slugfn}_${helper.slugfn}`
-          compileFile({
-            srcPath: helperFile,
-            dstPath: videoCallbackFile,
-            syntax: {
-              theme: theme.details,
-              helper
-            }
-          })
-        } else {
-          rimraf.sync(videoCallbackFile)
-        }
-
-        const customHeaderCbPath = path.join(helperPath, 'custom-header-callback.php')
-        if (feature.options.wpHeadCallback) {
-          helper = {
-            name: 'Custom Header Callback',
-            slugfn: 'custom_header_callback',
-            description: 'Callback used to write custom header output in wp_head'
-          }
-
-          featureOptions['wp-head-callback'] = `${theme.details.slugfn}_${helper.slugfn}`
-          compileFile({
-            srcPath: helperFile,
-            dstPath: customHeaderCbPath,
-            syntax: {
-              theme: theme.details,
-              helper
-            }
-          })
-        } else {
-          rimraf.sync(customHeaderCbPath)
-        }
+        initHelper(feature.options.wpHeadCallback, featureOptions, 'wp-head-callback', {
+          name: 'Custom Header Callback',
+          file: 'custom-header',
+          slugfn: 'custom_header_callback',
+          description: 'Callback used to write custom header output in wp_head'
+        })
       }
 
       if (feature.type === featureTypes.CUSTOM_LOGO) {
@@ -612,7 +588,8 @@ module.exports = db => {
       theme.features[feature.type] = featureOptions
 
       saveConfig(db, {
-        features: theme.features
+        features: theme.features,
+        helpers: theme.helpers.filter(item => item)
       }).then(() => {
         done({
           message: message.SUCCEED_FEATURE_ADDED,

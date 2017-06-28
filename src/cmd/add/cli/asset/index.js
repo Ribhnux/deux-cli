@@ -33,7 +33,7 @@ module.exports = db => {
         },
 
         {
-          name: 'Sassy CSS',
+          name: 'SASS File',
           value: assetTypes.SASS
         },
 
@@ -163,12 +163,14 @@ module.exports = db => {
       },
       choices: ({lib}) => new Promise((resolve, reject) => {
         cdnjs.files(`${lib.name.handle}@${lib.version}`).then(result => {
-          const choices = result.map(item => {
-            return {
-              name: item,
-              value: item
-            }
-          })
+          const choices = result
+            .filter(item => /(\.min\.(css|js)|\.map)$/.test(item) === false)
+            .map(item => {
+              return {
+                name: item,
+                value: item
+              }
+            })
           choices.splice(0, 0, new inquirer.Separator())
           resolve(choices)
         }).catch(err => {
@@ -181,9 +183,7 @@ module.exports = db => {
     {
       name: 'lib.deps',
       message: 'Dependencies (separate with commas)',
-      when: ({asset, lib}) => {
-        return asset.type === assetTypes.LIB && lib.source === libSource.CDN && lib.name.handle
-      }
+      when: ({asset, lib}) => asset.type === assetTypes.LIB && lib.source === libSource.CDN && lib.name.handle
     },
 
     {
@@ -380,6 +380,24 @@ module.exports = db => {
         resolve(font.selected.subsets)
       }),
       validate: value => validator(value, {minimum: 1, array: true, var: 'Font Subsets'})
+    },
+
+    {
+      type: 'confirm',
+      name: 'sass.overwrite',
+      message: 'SASS File already exists. Continue to overwrite?',
+      default: true,
+      when: ({asset, sass}) => new Promise((resolve, reject) => {
+        if (asset.type !== assetTypes.SASS) {
+          resolve(false)
+          return
+        }
+
+        getCurrentTheme(db).then(theme => {
+          const sassPath = path.join(wpThemeDir, theme.details.slug, 'assets-src', 'sass', `${sass.type}s`, `_${sass.name}.scss`)
+          resolve(existsSync(sassPath))
+        }).catch(reject)
+      })
     }
   ]
 
@@ -457,16 +475,16 @@ module.exports = db => {
 
         // Save SASS
         if (asset.type === assetTypes.SASS) {
-          const structName = `${sass.type}s`
-          const sassPath = path.join(assetPath, 'sass', structName, `_${sass.name}.scss`)
-
-          if (existsSync(sassPath)) {
+          if (sass.overwrite === false) {
             error({
               message: message.ERROR_SASS_FILE_ALREADY_EXISTS,
               padding: true,
               exit: true
             })
           }
+
+          const structName = `${sass.type}s`
+          const sassPath = path.join(assetPath, 'sass', structName, `_${sass.name}.scss`)
 
           theme.asset.sass[structName].push(sass.name)
           sass.components = theme.asset.sass.components.map(item => `'components/${item}'`).join(',\n  ')

@@ -275,7 +275,7 @@ module.exports = db => {
                 filters: [],
                 actions: []
               },
-              utils: [],
+              helpers: [],
               menus: {},
               widgets: {},
               features: {}
