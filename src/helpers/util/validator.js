@@ -2,7 +2,7 @@ const validate = require('validate.js')
 const semver = require('semver')
 const weft = require('weft')
 
-// Validate version
+// Semver Validator
 validate.validators.semver = function (value, options) {
   if (!validate.isDefined(value)) {
     return
@@ -12,6 +12,20 @@ validate.validators.semver = function (value, options) {
   const message = options.message || this.message || 'is not a valid version'
 
   if (semver.valid(value) === null) {
+    return message
+  }
+}
+
+// Color validator
+validate.validators.color = function (value, options) {
+  if (!validate.isDefined(value)) {
+    return
+  }
+
+  options = validate.extend({}, this.options, options)
+  const message = options.message || this.message || 'is not a valid color'
+
+  if (/(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(value) === false) {
     return message
   }
 }
@@ -31,6 +45,7 @@ module.exports = (value, options) => {
     git: false,
     semver: false,
     fontApiKey: false,
+    color: false,
     var: ''
   }, options)
 
@@ -107,6 +122,12 @@ module.exports = (value, options) => {
   if (options.semver) {
     rules.value.semver = {
       message: errorMessage(options.var, 'is not a valid version')
+    }
+  }
+
+  if (options.color) {
+    rules.value.color = {
+      message: errorMessage(options.var, 'is not valid color')
     }
   }
 
