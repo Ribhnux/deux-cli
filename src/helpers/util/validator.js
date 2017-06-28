@@ -46,7 +46,8 @@ module.exports = (value, options) => {
     semver: false,
     fontApiKey: false,
     color: false,
-    var: ''
+    var: '',
+    number: false
   }, options)
 
   const rules = {value: {}}
@@ -62,7 +63,7 @@ module.exports = (value, options) => {
     })
   }
 
-  if (options.minimum > 0) {
+  if (options.minimum > 0 && options.number === false) {
     const lengthRule = {}
     let tokenSuffix = 'characters'
     let tooShort = 'is too short'
@@ -128,6 +129,19 @@ module.exports = (value, options) => {
   if (options.color) {
     rules.value.color = {
       message: errorMessage(options.var, 'is not valid color')
+    }
+  }
+
+  if (options.number) {
+    let numberMessage = 'is not valid number'
+    if (options.minimum > 0) {
+      numberMessage += `, should be greater than ${options.minimum}`
+    }
+
+    rules.value.numericality = {
+      strict: true,
+      greaterThan: options.minimum,
+      message: errorMessage(options.var, numberMessage)
     }
   }
 
