@@ -275,6 +275,9 @@ module.exports = db => {
                 filters: [],
                 actions: []
               },
+              libraries: [
+                'class-tgm-plugin-activation'
+              ],
               helpers: [],
               menus: {},
               widgets: {},

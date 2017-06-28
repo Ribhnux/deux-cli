@@ -12,10 +12,6 @@ foreach ( ${{theme.slugfn}}_config['plugins'] as $slug => $plugin ) {
 	}
 }
 
-if ( ! function_exists( 'tgmpa' ) ) :
-	require_once get_template_directory() . '/includes/lib/class-tgm-plugin-activation.php';
-endif;
-
 if ( ! function_exists( '{{theme.slugfn}}_tgmpa_register' ) ) :
 	/**
 	 * Register plugin dependencies using TGMPA
