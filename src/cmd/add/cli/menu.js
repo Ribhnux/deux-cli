@@ -71,7 +71,7 @@ module.exports = db => {
 
       const walker = {
         name: `${niceName} Nav Walker`,
-        file: `class-${slugify(menu.location)}-nav-walker`,
+        file: `class-${slugify(menu.location)}-menu-nav-walker`,
         description: `${niceName} Menu Navigation Walker Class`,
         className: `${className}_Nav_Walker`
       }
