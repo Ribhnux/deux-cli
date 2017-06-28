@@ -106,32 +106,33 @@ module.exports = db => {
       filter: value => value.split(',').map(item => slugify(item.trim().toLowerCase()))
     },
 
+    // Background custom options
+    {
+      name: 'feature.options.imageUrl',
+      message: 'Background image URL',
+      when: ({feature}) => feature.type === featureTypes.CUSTOM_BACKGROUND
+    },
+
+    {
+      name: 'feature.options.color',
+      message: 'Background color',
+      when: ({feature}) => feature.type === featureTypes.CUSTOM_BACKGROUND,
+      validate: value => validator(value, {color: true, var: `"${value}"`})
+    },
+
     {
       type: 'confirm',
-      name: 'feature.custom',
-      message: 'Change Default Settings?',
+      name: 'feature.advanced',
+      message: 'Set advanced settings?',
       default: true,
       when: ({feature}) => feature.type === featureTypes.CUSTOM_BACKGROUND
     },
 
     {
-      name: 'feature.options.imageUrl',
-      message: 'Background Image URL',
-      when: ({feature}) => feature.custom && feature.type === featureTypes.CUSTOM_BACKGROUND
-    },
-
-    {
-      name: 'feature.options.color',
-      message: 'Background Color',
-      when: ({feature}) => feature.custom && feature.type === featureTypes.CUSTOM_BACKGROUND,
-      validate: value => validator(value, {color: true, var: `"${value}"`})
-    },
-
-    {
       type: 'list',
       name: 'feature.options.preset',
-      message: 'Background Preset',
-      when: ({feature}) => feature.custom && feature.type === featureTypes.CUSTOM_BACKGROUND,
+      message: 'Background preset',
+      when: ({feature}) => feature.advanced && feature.type === featureTypes.CUSTOM_BACKGROUND,
       choices: () => new Promise(resolve => {
         const list = []
         for (const type in bgPresetTypes) {
@@ -150,8 +151,8 @@ module.exports = db => {
     {
       type: 'list',
       name: 'feature.options.position',
-      message: 'Image Position',
-      when: ({feature}) => feature.custom && feature.type === featureTypes.CUSTOM_BACKGROUND && feature.options.preset !== bgPresetTypes.DEFAULT,
+      message: 'Image position',
+      when: ({feature}) => feature.advanced && feature.type === featureTypes.CUSTOM_BACKGROUND && feature.options.preset !== bgPresetTypes.DEFAULT,
       choices: [
         new inquirer.Separator(),
 
@@ -232,8 +233,8 @@ module.exports = db => {
     {
       type: 'list',
       name: 'feature.options.imageSize',
-      message: 'Image Size',
-      when: ({feature}) => feature.custom && feature.type === featureTypes.CUSTOM_BACKGROUND && feature.options.preset === bgPresetTypes.CUSTOM,
+      message: 'Image size',
+      when: ({feature}) => feature.advanced && feature.type === featureTypes.CUSTOM_BACKGROUND && feature.options.preset === bgPresetTypes.CUSTOM,
       choices: [
         {
           value: bgSizeTypes.AUTO,
@@ -255,9 +256,9 @@ module.exports = db => {
     {
       type: 'confirm',
       name: 'feature.options.repeat',
-      message: 'Repeat Background Image?',
+      message: 'Repeat background image?',
       when: ({feature}) => {
-        return feature.custom &&
+        return feature.advanced &&
           feature.type === featureTypes.CUSTOM_BACKGROUND &&
           feature.options.preset !== bgPresetTypes.DEFAULT &&
           feature.options.preset !== bgPresetTypes.FILL &&
@@ -268,9 +269,9 @@ module.exports = db => {
     {
       type: 'list',
       name: 'feature.options.attachment',
-      message: 'Background Attachment',
+      message: 'Background attachment',
       when: ({feature}) => {
-        return feature.custom &&
+        return feature.advanced &&
           feature.type === featureTypes.CUSTOM_BACKGROUND &&
           feature.options.preset !== bgPresetTypes.DEFAULT &&
           feature.options.preset !== bgPresetTypes.FILL &&
@@ -417,9 +418,7 @@ module.exports = db => {
       const helperFile = path.join(global.templates.path, '_partials', 'helper.php')
       const helperPath = path.join(themePath, 'includes', 'helpers')
       let featureOptions = feature.options
-      let customCallbackFilePath
       let helper
-      let uri
 
       if (!feature.options) {
         featureOptions = true
@@ -460,29 +459,8 @@ module.exports = db => {
             break
         }
 
-        customCallbackFilePath = path.join(helperPath, 'custom-background-callback.php')
-        if (feature.options.wpHeadCallback) {
-          helper = {
-            name: 'Custom Background Callback',
-            slugfn: 'custom_background_callback',
-            description: 'Callback to override custom output in wp_head'
-          }
-
-          featureOptions['wp-head-callback'] = `${theme.details.slugfn}_${helper.slugfn}`
-          compileFile({
-            srcPath: helperFile,
-            dstPath: customCallbackFilePath,
-            syntax: {
-              theme: theme.details,
-              helper
-            }
-          })
-        } else {
-          rimraf.sync(customCallbackFilePath)
-        }
-
-        uri = url.parse(feature.options.imageUrl)
-        const bgImageUrl = uri.host && uri.protocol ? feature.options.imageUrl : jsonar.literal(`get_parent_theme_file_uri( '${feature.options.imageUrl}' )`)
+        const bgImageUri = url.parse(feature.options.imageUrl)
+        const bgImageUrl = bgImageUri.host && bgImageUri.protocol ? feature.options.imageUrl : jsonar.literal(`get_parent_theme_file_uri( '${feature.options.imageUrl}' )`)
 
         featureOptions = {
           'default-image': bgImageUrl,
@@ -493,6 +471,92 @@ module.exports = db => {
           'default-size': feature.options.imageSize,
           'default-repeat': feature.options.repeat,
           'default-attachment': feature.options.attachment
+        }
+
+        const customBgCbPath = path.join(helperPath, 'custom-background-callback.php')
+        if (feature.options.wpHeadCallback) {
+          helper = {
+            name: 'Custom Background Callback',
+            slugfn: 'custom_background_callback',
+            description: 'Callback used to write custom background output in wp_head'
+          }
+
+          featureOptions['wp-head-callback'] = `${theme.details.slugfn}_${helper.slugfn}`
+          compileFile({
+            srcPath: helperFile,
+            dstPath: customBgCbPath,
+            syntax: {
+              theme: theme.details,
+              helper
+            }
+          })
+        } else {
+          rimraf.sync(customBgCbPath)
+        }
+      }
+
+      if (feature.type === featureTypes.CUSTOM_HEADER) {
+        const headerImageUri = url.parse(feature.options.imageUrl)
+        const headerImageUrl = headerImageUri.host && headerImageUri.protocol ? feature.options.imageUrl : jsonar.literal(`get_parent_theme_file_uri( '${feature.options.imageUrl}' )`)
+
+        /* eslint-disable quote-props */
+        featureOptions = {
+          'default-image': headerImageUrl,
+          'width': feature.options.width,
+          'height': feature.options.height,
+          'flex-width': feature.options.flexWidth,
+          'flex-height': feature.options.flexHeight,
+          'header-text': feature.options.headerText,
+          'random-default': feature.options.random,
+          'uploads': true,
+          'video': feature.options.video
+        }
+        /* eslint-enable */
+
+        if (feature.options.headerText) {
+          featureOptions['default-text-color'] = feature.options.textColor
+        }
+
+        const videoCallbackFile = path.join(helperPath, 'video-active-callback.php')
+        if (!feature.options.videoAlwaysActive) {
+          helper = {
+            name: 'Video Active Callback',
+            slugfn: 'video_active_callback',
+            description: 'Callback used to determine whether the video should be shown for the current request.'
+          }
+
+          featureOptions['video-active-callback'] = `${theme.details.slugfn}_${helper.slugfn}`
+          compileFile({
+            srcPath: helperFile,
+            dstPath: videoCallbackFile,
+            syntax: {
+              theme: theme.details,
+              helper
+            }
+          })
+        } else {
+          rimraf.sync(videoCallbackFile)
+        }
+
+        const customHeaderCbPath = path.join(helperPath, 'custom-header-callback.php')
+        if (feature.options.wpHeadCallback) {
+          helper = {
+            name: 'Custom Header Callback',
+            slugfn: 'custom_header_callback',
+            description: 'Callback used to write custom header output in wp_head'
+          }
+
+          featureOptions['wp-head-callback'] = `${theme.details.slugfn}_${helper.slugfn}`
+          compileFile({
+            srcPath: helperFile,
+            dstPath: customHeaderCbPath,
+            syntax: {
+              theme: theme.details,
+              helper
+            }
+          })
+        } else {
+          rimraf.sync(customHeaderCbPath)
         }
       }
 
