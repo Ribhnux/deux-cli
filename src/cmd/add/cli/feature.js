@@ -289,12 +289,99 @@ module.exports = db => {
       ]
     },
 
+    // Header custom options
+    {
+      name: 'feature.options.imageUrl',
+      message: 'Header image URL',
+      when: ({feature}) => feature.type === featureTypes.CUSTOM_HEADER
+    },
+
+    {
+      name: 'feature.options.width',
+      message: 'Image width in px',
+      default: 2000,
+      when: ({feature}) => feature.type === featureTypes.CUSTOM_HEADER,
+      validate: value => validator(value, {number: true, minimum: 500, var: `"${value}"px`})
+    },
+
+    {
+      name: 'feature.options.height',
+      message: 'Image height in px',
+      default: 1200,
+      when: ({feature}) => feature.type === featureTypes.CUSTOM_HEADER,
+      validate: value => validator(value, {number: true, minimum: 500, var: `"${value}"px`})
+    },
+
+    {
+      type: 'confirm',
+      name: 'feature.advanced',
+      message: 'Set advanced settings?',
+      default: true,
+      when: ({feature}) => feature.type === featureTypes.CUSTOM_HEADER
+    },
+
+    {
+      type: 'confirm',
+      name: 'feature.options.flexWidth',
+      message: 'Allow flexible width?',
+      default: true,
+      when: ({feature}) => feature.advanced && feature.type === featureTypes.CUSTOM_HEADER
+    },
+
+    {
+      type: 'confirm',
+      name: 'feature.options.flexHeight',
+      message: 'Allow flexible height?',
+      default: true,
+      when: ({feature}) => feature.advanced && feature.type === featureTypes.CUSTOM_HEADER
+    },
+
+    {
+      type: 'confirm',
+      name: 'feature.options.random',
+      message: 'Allow random image rotation?',
+      default: false,
+      when: ({feature}) => feature.advanced && feature.type === featureTypes.CUSTOM_HEADER
+    },
+
+    {
+      type: 'confirm',
+      name: 'feature.options.headerText',
+      message: 'Display default header text?',
+      default: false,
+      when: ({feature}) => feature.advanced && feature.type === featureTypes.CUSTOM_HEADER
+    },
+
+    {
+      name: 'feature.options.textColor',
+      message: 'Header text color?',
+      when: ({feature}) => feature.advanced && feature.type === featureTypes.CUSTOM_HEADER && feature.options.headerText,
+      validate: value => validator(value, {color: true, var: `"${value}"`})
+    },
+
+    {
+      type: 'confirm',
+      name: 'feature.options.video',
+      message: 'Suppot custom video?',
+      default: true,
+      when: ({feature}) => feature.advanced && feature.type === featureTypes.CUSTOM_HEADER
+    },
+
+    {
+      type: 'confirm',
+      name: 'feature.options.videoAlwaysActive',
+      message: 'Is video always active?',
+      default: true,
+      when: ({feature}) => feature.advanced && feature.type === featureTypes.CUSTOM_HEADER && feature.options.video
+    },
+
+    // WordPress wp_head callback for custom background and custom header
     {
       type: 'confirm',
       name: 'feature.options.wpHeadCallback',
       message: 'Custom output in `wp_head`?',
       default: false,
-      when: ({feature}) => feature.custom && feature.type === featureTypes.CUSTOM_BACKGROUND
+      when: ({feature}) => feature.advanced && (feature.type === featureTypes.CUSTOM_BACKGROUND || feature.type === featureTypes.CUSTOM_HEADER)
     },
 
     {
