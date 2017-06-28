@@ -57,7 +57,7 @@ exports.saveConfig = (db, newConfig = {}) => new Promise(resolve => {
   const compileFile = global.helpers.require('compiler/single')
 
   const current = db[dbTypes.CURRENT]
-  const theme = extend(true, db[dbTypes.THEMES][current.slug], newConfig)
+  const theme = extend(db[dbTypes.THEMES][current.slug], newConfig)
   const config = Object.assign({}, theme)
   delete config.details
 
