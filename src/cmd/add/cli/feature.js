@@ -1,0 +1,425 @@
+const path = require('path')
+const url = require('url')
+const inquirer = require('inquirer')
+const slugify = require('node-slugify')
+const jsonar = require('jsonar')
+const rimraf = require('rimraf')
+const {
+  featureTypes,
+  featureLabels,
+  html5markup,
+  postFormats,
+  postTypes,
+  bgPresetTypes,
+  bgPresetLabels,
+  bgPositionTypes,
+  bgSizeTypes,
+  bgRepeatTypes,
+  bgAttachmentTypes
+} = require('./const')
+
+const {wpThemeDir} = global.const.require('path')
+const {getCurrentTheme, saveConfig} = global.helpers.require('db/utils')
+const validator = global.helpers.require('util/validator')
+const message = global.const.require('messages')
+const compileFile = global.helpers.require('compiler/single')
+const {colorlog, done, error} = global.helpers.require('logger')
+
+module.exports = db => {
+  colorlog('Add {Theme Feature}')
+
+  const prompts = [
+    {
+      type: 'list',
+      name: 'feature.type',
+      message: 'Choose Feature',
+      validate: value => validator(value, {minimum: 1, array: true, var: 'Feature'}),
+      choices: () => new Promise(resolve => {
+        const list = []
+        for (const type in featureTypes) {
+          if (Object.prototype.hasOwnProperty.call(featureTypes, type)) {
+            list.push({
+              value: featureTypes[type],
+              name: featureLabels[type]
+            })
+          }
+        }
+
+        resolve(list)
+      })
+    },
+
+    {
+      type: 'checkbox',
+      name: 'feature.options',
+      message: 'Pick Supported Theme Markup',
+      validate: value => validator(value, {minimum: 1, array: true, var: 'Options'}),
+      when: ({feature}) => feature.type === featureTypes.HTML5,
+      choices: [new inquirer.Separator()].concat(html5markup)
+    },
+
+    {
+      type: 'checkbox',
+      name: 'feature.options',
+      message: 'Pick Supported Post Formats',
+      validate: value => validator(value, {minimum: 1, array: true, var: 'Options'}),
+      when: ({feature}) => feature.type === featureTypes.POST_FORMATS,
+      choices: [new inquirer.Separator()].concat(postFormats)
+    },
+
+    {
+      type: 'confirm',
+      name: 'feature.posttype',
+      message: 'Support all Post Types?',
+      default: true,
+      when: ({feature}) => feature.type === featureTypes.POST_THUMBNAILS
+    },
+
+    {
+      type: 'list',
+      name: 'feature.options',
+      message: 'Post Type',
+      when: ({feature}) => !feature.posttype && feature.type === featureTypes.POST_THUMBNAILS,
+      choices: [
+        {
+          value: postTypes.POST,
+          name: 'Post'
+        },
+        {
+          value: postTypes.PAGE,
+          name: 'Page'
+        },
+        new inquirer.Separator(),
+        {
+          value: postTypes.CUSTOM,
+          name: 'Other (specify)'
+        }
+      ]
+    },
+
+    {
+      name: 'feature.options',
+      message: 'Custom Post Type',
+      default: postTypes.POST,
+      when: ({feature}) => !feature.posttype && feature.type === featureTypes.POST_THUMBNAILS && feature.options === postTypes.CUSTOM,
+      validate: value => validator(value, {minimum: 2, var: `"${value}"`}),
+      filter: value => value.split(',').map(item => slugify(item.trim().toLowerCase()))
+    },
+
+    {
+      type: 'confirm',
+      name: 'feature.custom',
+      message: 'Change Default Settings?',
+      default: true,
+      when: ({feature}) => feature.type === featureTypes.CUSTOM_BACKGROUND
+    },
+
+    {
+      name: 'feature.options.imageUrl',
+      message: 'Background Image URL',
+      when: ({feature}) => feature.custom && feature.type === featureTypes.CUSTOM_BACKGROUND
+    },
+
+    {
+      name: 'feature.options.color',
+      message: 'Background Color',
+      when: ({feature}) => feature.custom && feature.type === featureTypes.CUSTOM_BACKGROUND,
+      validate: value => validator(value, {color: true, var: `"${value}"`})
+    },
+
+    {
+      type: 'list',
+      name: 'feature.options.preset',
+      message: 'Background Preset',
+      when: ({feature}) => feature.custom && feature.type === featureTypes.CUSTOM_BACKGROUND,
+      choices: () => new Promise(resolve => {
+        const list = []
+        for (const type in bgPresetTypes) {
+          if (Object.prototype.hasOwnProperty.call(bgPresetTypes, type)) {
+            list.push({
+              value: bgPresetTypes[type],
+              name: bgPresetLabels[type]
+            })
+          }
+        }
+
+        resolve(list)
+      })
+    },
+
+    {
+      type: 'list',
+      name: 'feature.options.position',
+      message: 'Image Position',
+      when: ({feature}) => feature.custom && feature.type === featureTypes.CUSTOM_BACKGROUND && feature.options.preset !== bgPresetTypes.DEFAULT,
+      choices: [
+        new inquirer.Separator(),
+
+        {
+          name: 'Top Left',
+          value: {
+            x: bgPositionTypes.LEFT,
+            y: bgPositionTypes.TOP
+          }
+        },
+
+        {
+          name: 'Top Center',
+          value: {
+            x: bgPositionTypes.CENTER,
+            y: bgPositionTypes.TOP
+          }
+        },
+
+        {
+          name: 'Top Right',
+          value: {
+            x: bgPositionTypes.RIGHT,
+            y: bgPositionTypes.TOP
+          }
+        },
+
+        {
+          name: 'Center Left',
+          value: {
+            x: bgPositionTypes.LEFT,
+            y: bgPositionTypes.CENTER
+          }
+        },
+
+        {
+          name: 'Center Middle',
+          value: {
+            x: bgPositionTypes.CENTER,
+            y: bgPositionTypes.CENTER
+          }
+        },
+
+        {
+          name: 'Center Right',
+          value: {
+            x: bgPositionTypes.RIGHT,
+            y: bgPositionTypes.CENTER
+          }
+        },
+
+        {
+          name: 'Bottom Left',
+          value: {
+            x: bgPositionTypes.LEFT,
+            y: bgPositionTypes.BOTTOM
+          }
+        },
+
+        {
+          name: 'Bottom Center',
+          value: {
+            x: bgPositionTypes.CENTER,
+            y: bgPositionTypes.BOTTOM
+          }
+        },
+
+        {
+          name: 'Bottom Right',
+          value: {
+            x: bgPositionTypes.RIGHT,
+            y: bgPositionTypes.BOTTOM
+          }
+        }
+      ]
+    },
+
+    {
+      type: 'list',
+      name: 'feature.options.imageSize',
+      message: 'Image Size',
+      when: ({feature}) => feature.custom && feature.type === featureTypes.CUSTOM_BACKGROUND && feature.options.preset === bgPresetTypes.CUSTOM,
+      choices: [
+        {
+          value: bgSizeTypes.AUTO,
+          name: 'Original'
+        },
+
+        {
+          value: bgSizeTypes.CONTAIN,
+          name: 'Fit to Screen'
+        },
+
+        {
+          value: bgSizeTypes.COVER,
+          name: 'Fill Screen'
+        }
+      ]
+    },
+
+    {
+      type: 'confirm',
+      name: 'feature.options.repeat',
+      message: 'Repeat Background Image?',
+      when: ({feature}) => {
+        return feature.custom &&
+          feature.type === featureTypes.CUSTOM_BACKGROUND &&
+          feature.options.preset !== bgPresetTypes.DEFAULT &&
+          feature.options.preset !== bgPresetTypes.FILL &&
+          feature.options.preset !== bgPresetTypes.REPEAT
+      }
+    },
+
+    {
+      type: 'list',
+      name: 'feature.options.attachment',
+      message: 'Background Attachment',
+      when: ({feature}) => {
+        return feature.custom &&
+          feature.type === featureTypes.CUSTOM_BACKGROUND &&
+          feature.options.preset !== bgPresetTypes.DEFAULT &&
+          feature.options.preset !== bgPresetTypes.FILL &&
+          feature.options.preset !== bgPresetTypes.FIT
+      },
+      choices: [
+        {
+          value: bgAttachmentTypes.SCROLL,
+          name: 'Scroll with Page'
+        },
+
+        {
+          value: bgAttachmentTypes.FIXED,
+          name: 'Fixed Background'
+        }
+      ]
+    },
+
+    {
+      type: 'confirm',
+      name: 'feature.options.wpHeadCallback',
+      message: 'Custom output in `wp_head`?',
+      default: false,
+      when: ({feature}) => feature.custom && feature.type === featureTypes.CUSTOM_BACKGROUND
+    },
+
+    {
+      type: 'confirm',
+      name: 'feature.overwrite',
+      message: ({feature}) => {
+        for (const type in featureTypes) {
+          if (Object.prototype.hasOwnProperty.call(featureTypes, type) && featureTypes[type] === feature.type) {
+            return `${featureLabels[type]} already used as feature. Continue to overwrite?`
+          }
+        }
+      },
+      default: true,
+      when: ({feature}) => new Promise((resolve, reject) => {
+        getCurrentTheme(db).then(theme => {
+          resolve(theme.features[feature.type] !== undefined)
+        }).catch(reject)
+      })
+    }
+  ]
+
+  return inquirer.prompt(prompts).then(({feature}) => {
+    getCurrentTheme(db).then(theme => {
+      if (!feature.overwrite && theme.features[feature.type]) {
+        error({
+          message: message.ERROR_FEATURE_ALREADY_EXISTS,
+          padding: true,
+          exit: true
+        })
+      }
+
+      const themePath = path.join(wpThemeDir, theme.details.slug)
+      const helperFile = path.join(global.templates.path, '_partials', 'helper.php')
+      const helperPath = path.join(themePath, 'includes', 'helpers')
+      let featureOptions = feature.options
+      let customCallbackFilePath
+      let helper
+      let uri
+
+      if (!feature.options) {
+        featureOptions = true
+      }
+
+      if (feature.type === featureTypes.CUSTOM_BACKGROUND) {
+        feature.options = Object.assign({
+          preset: bgPresetTypes.DEFAULT,
+          repeat: bgRepeatTypes.REPEAT,
+          attachment: bgAttachmentTypes.SCROLL,
+          imageSize: bgSizeTypes.AUTO,
+          imageUrl: '',
+          color: '#ffffff',
+          position: {
+            x: bgPositionTypes.LEFT,
+            y: bgPositionTypes.TOP
+          }
+        }, feature.options)
+
+        switch (feature.options.preset) {
+          case bgPresetTypes.FILL:
+            feature.options.repeat = bgRepeatTypes.NO_REPEAT
+            feature.options.attachment = bgAttachmentTypes.FIXED
+            feature.options.imageSize = bgSizeTypes.COVER
+            break
+
+          case bgPresetTypes.FIT:
+            feature.options.attachment = bgAttachmentTypes.FIXED
+            feature.options.imageSize = bgSizeTypes.CONTAIN
+            break
+
+          case bgPresetTypes.REPEAT:
+            feature.options.repeat = bgRepeatTypes.REPEAT
+            feature.options.imageSize = bgSizeTypes.AUTO
+            break
+
+          default:
+            break
+        }
+
+        customCallbackFilePath = path.join(helperPath, 'custom-background-callback.php')
+        if (feature.options.wpHeadCallback) {
+          helper = {
+            name: 'Custom Background Callback',
+            slugfn: 'custom_background_callback',
+            description: 'Callback to override custom output in wp_head'
+          }
+
+          featureOptions['wp-head-callback'] = `${theme.details.slugfn}_${helper.slugfn}`
+          compileFile({
+            srcPath: helperFile,
+            dstPath: customCallbackFilePath,
+            syntax: {
+              theme: theme.details,
+              helper
+            }
+          })
+        } else {
+          rimraf.sync(customCallbackFilePath)
+        }
+
+        uri = url.parse(feature.options.imageUrl)
+        const bgImageUrl = uri.host && uri.protocol ? feature.options.imageUrl : jsonar.literal(`get_parent_theme_file_uri( '${feature.options.imageUrl}' )`)
+
+        featureOptions = {
+          'default-image': bgImageUrl,
+          'default-color': feature.options.color,
+          'default-preset': feature.options.preset,
+          'default-position-x': feature.options.position.x,
+          'default-position-y': feature.options.position.y,
+          'default-size': feature.options.imageSize,
+          'default-repeat': feature.options.repeat,
+          'default-attachment': feature.options.attachment
+        }
+      }
+
+      theme.features[feature.type] = featureOptions
+
+      saveConfig(db, {
+        features: theme.features
+      }).then(() => {
+        done({
+          message: message.SUCCEED_FEATURE_ADDED,
+          padding: true,
+          exit: true
+        })
+      })
+    })
+  })
+}
