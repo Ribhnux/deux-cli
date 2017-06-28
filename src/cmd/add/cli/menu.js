@@ -16,7 +16,8 @@ module.exports = db => {
       name: 'menu.location',
       message: 'Menu Location',
       default: 'primary',
-      validate: value => validator(value, {slug: true, slugPattern: '[a-z0-9_]+', var: 'Menu Location'})
+      validate: value => validator(value, {slug: true, slugPattern: '[a-z0-9_]+', var: 'Menu Location'}),
+      filter: value => slugify(value)
     },
 
     {
@@ -24,14 +25,24 @@ module.exports = db => {
       message: 'Menu Description',
       default: faker.lorem.sentence(),
       validate: value => validator(value, {minimum: 3, word: true, var: `"${value}"`})
+    },
+
+    {
+      type: 'confirm',
+      name: 'menu.overwrite',
+      message: 'Menu already exists. Continue to overwrite?',
+      default: true,
+      when: ({menu}) => new Promise((resolve, reject) => {
+        getCurrentTheme(db).then(theme => {
+          resolve(theme.menus[menu.location] !== undefined)
+        }).catch(reject)
+      })
     }
   ]
 
   return inquirer.prompt(prompts).then(({menu}) => {
     getCurrentTheme(db).then(theme => {
-      const menuLocation = slugify(menu.location)
-
-      if (theme.menus[menuLocation]) {
+      if (menu.overwrite === false) {
         error({
           message: message.ERROR_MENU_ALREADY_EXISTS,
           padding: true,
@@ -39,7 +50,7 @@ module.exports = db => {
         })
       }
 
-      theme.menus[menuLocation] = jsonar.literal(`__( '${menu.description}', '${theme.details.slug}' )`)
+      theme.menus[menu.location] = jsonar.literal(`__( '${menu.description}', '${theme.details.slug}' )`)
 
       saveConfig(db, {
         menus: theme.menus

@@ -4,6 +4,7 @@ const inquirer = require('inquirer')
 const slugify = require('node-slugify')
 const Entities = require('html-entities').AllHtmlEntities
 const searchPlugin = require('wp-plugin-search')
+const rimraf = require('rimraf')
 const {pluginSrcTypes} = require('./const')
 
 const message = global.const.require('messages')
@@ -48,7 +49,7 @@ module.exports = db => {
       name: 'plugin.item',
       message: 'Select Plugin',
       when: ({plugin}) => plugin.srctype === pluginSrcTypes.WP,
-      choices: ({plugin}) => new Promise(resolve => {
+      choices: ({plugin}) => new Promise((resolve, reject) => {
         const searchLoader = loader(`Searching "${plugin.search}" from WordPress.org`)
 
         searchPlugin(plugin.search).then(result => {
@@ -74,7 +75,7 @@ module.exports = db => {
             list.splice(0, 0, new inquirer.Separator())
             resolve(list)
           }
-        })
+        }).catch(reject)
       })
     },
 
@@ -188,11 +189,31 @@ module.exports = db => {
       name: 'plugin.init',
       message: 'Need a custom hook / initialization?',
       default: false
+    },
+
+    {
+      type: 'confirm',
+      name: 'plugin.overwrite',
+      message: 'Plugin already exists. Continue to overwrite?',
+      default: true,
+      when: ({plugin}) => new Promise((resolve, reject) => {
+        getCurrentTheme(db).then(theme => {
+          resolve(Object.keys(theme.plugins).includes(plugin.slug))
+        }).catch(reject)
+      })
     }
   ]
 
   return inquirer.prompt(prompts).then(({plugin}) => {
     getCurrentTheme(db).then(theme => {
+      if (plugin.overwrite === false) {
+        error({
+          message: message.ERROR_PLUGIN_ALREADY_EXISTS,
+          padding: true,
+          exit: true
+        })
+      }
+
       if (plugin.srctype === pluginSrcTypes.WP) {
         plugin.name = plugin.item.name
         plugin.slug = plugin.item.slug
@@ -205,36 +226,32 @@ module.exports = db => {
         }
       }
 
-      if (Object.keys(theme.plugins).includes(plugin.slug)) {
-        error({
-          message: message.ERROR_PLUGIN_ALREADY_EXISTS,
-          padding: true,
-          exit: true
-        })
-      }
-
       // Safe string
       plugin.name = capitalize(slugify(plugin.name, {replacement: ' '}))
 
+      const initPath = path.join(wpThemeDir, theme.details.slug, 'includes', 'plugins', `${plugin.slug}.php`)
       if (plugin.init) {
         compileFile({
           srcPath: path.join(global.templates.path, '_partials', 'plugin.php'),
-          dstPath: path.join(wpThemeDir, theme.details.slug, 'includes', 'plugins', `${plugin.slug}.php`),
+          dstPath: initPath,
           syntax: {
             theme: theme.details,
             plugin
           }
         })
+
+        delete plugin.item
+        delete plugin.versions
+        delete plugin.search
+        delete plugin.srctype
+        delete plugin.external_url
+
+        theme.plugins[plugin.slug] = plugin
+        delete theme.plugins[plugin.slug].slug
+      } else {
+        delete theme.plugins[plugin.slug]
+        rimraf.sync(initPath)
       }
-
-      delete plugin.item
-      delete plugin.versions
-      delete plugin.search
-      delete plugin.srctype
-      delete plugin.external_url
-
-      theme.plugins[plugin.slug] = plugin
-      delete theme.plugins[plugin.slug].slug
 
       saveConfig(db, {
         plugins: theme.plugins

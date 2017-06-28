@@ -24,14 +24,24 @@ module.exports = db => {
       message: 'Widget Description',
       default: faker.lorem.sentence(),
       validate: value => validator(value, {minimum: 3, word: true, var: `"${value}"`})
+    },
+
+    {
+      type: 'confirm',
+      name: 'widget.overwrite',
+      message: 'Widget already exists. Continue to overwrite?',
+      default: true,
+      when: ({widget}) => new Promise((resolve, reject) => {
+        getCurrentTheme(db).then(theme => {
+          resolve(theme.widgets[slugify(widget.name)] !== undefined)
+        }).catch(reject)
+      })
     }
   ]
 
   return inquirer.prompt(prompts).then(({widget}) => {
     getCurrentTheme(db).then(theme => {
-      const widgetId = slugify(widget.name)
-
-      if (theme.widgets[widgetId]) {
+      if (widget.overwrite === false) {
         error({
           message: message.ERROR_WIDGET_ALREADY_EXISTS,
           padding: true,
@@ -40,7 +50,7 @@ module.exports = db => {
       }
 
       /* eslint-disable camelcase, quotes */
-      theme.widgets[widgetId] = {
+      theme.widgets[slugify(widget.name)] = {
         name: jsonar.literal(`__( '${widget.name}', '${theme.details.slug}' )`),
         description: jsonar.literal(`__( '${widget.description}', '${theme.details.slug}' )`),
         class: '',

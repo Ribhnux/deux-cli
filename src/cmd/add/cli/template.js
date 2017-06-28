@@ -11,6 +11,16 @@ const {getCurrentTheme, saveConfig} = global.helpers.require('db/utils')
 const compileFile = global.helpers.require('compiler/single')
 const validator = global.helpers.require('util/validator')
 
+const slugifyName = (prefix, name) => {
+  let slug = slugify(prefix)
+
+  if (name.length > 0) {
+    slug += '-' + slugify(name)
+  }
+
+  return slug
+}
+
 module.exports = db => {
   colorlog('Add a {New Template}')
 
@@ -89,11 +99,42 @@ module.exports = db => {
       message: 'Description',
       default: faker.lorem.sentence(),
       validate: value => validator(value, {minimum: 3, word: true, var: `"${value}"`})
+    },
+
+    {
+      type: 'confirm',
+      name: 'template.overwrite',
+      message: 'Template already exists. Continue to overwrite?',
+      default: true,
+      when: ({template}) => new Promise((resolve, reject) => {
+        getCurrentTheme(db).then(theme => {
+          let slug
+          let resolver
+
+          if (template.type === templateTypes.PARTIAL) {
+            slug = slugifyName(template.prefix, template.name)
+            resolver = theme.template.partials.includes(slug)
+          } else if (template.type === templateTypes.PAGE) {
+            slug = slugify(template.name)
+            resolver = theme.template.pages.includes(slug)
+          }
+
+          resolve(resolver)
+        }).catch(reject)
+      })
     }
   ]
 
   inquirer.prompt(prompts).then(({template}) => {
     getCurrentTheme(db).then(theme => {
+      if (template.overwrite === false) {
+        error({
+          message: message.ERROR_TEMPLATE_ALREADY_EXISTS,
+          paddingTop: true,
+          exit: true
+        })
+      }
+
       const themePath = path.join(wpThemeDir, theme.details.slug)
       let srcPath
       let dstPath
@@ -101,20 +142,7 @@ module.exports = db => {
       let successMsg
 
       if (template.type === templateTypes.PARTIAL) {
-        template.slug = slugify(template.prefix)
-
-        if (template.name.length > 0) {
-          template.slug += '-' + slugify(template.name)
-        }
-
-        if (theme.template.partials.includes(template.slug)) {
-          error({
-            message: message.ERROR_TEMPLATE_ALREADY_EXISTS,
-            paddingTop: true,
-            exit: true
-          })
-        }
-
+        template.slug = slugifyName(template.prefix, template.name)
         srcPath = path.join(global.templates.path, '_partials', 'partial-template.php')
         dstPath = path.join(themePath, 'partial-templates', `${template.slug}.php`)
         successMsg = message.SUCCEED_PARTIAL_TEMPLATE_ADDED
@@ -127,15 +155,6 @@ module.exports = db => {
 
       if (template.type === templateTypes.PAGE) {
         template.slug = slugify(template.name)
-
-        if (theme.template.pages.includes(template.slug)) {
-          error({
-            message: message.ERROR_TEMPLATE_ALREADY_EXISTS,
-            paddingTop: true,
-            exit: true
-          })
-        }
-
         srcPath = path.join(global.templates.path, '_partials', 'page-template.php')
         dstPath = path.join(themePath, 'page-templates', `${template.slug}.php`)
         successMsg = message.SUCCEED_PAGE_TEMPLATE_ADDED

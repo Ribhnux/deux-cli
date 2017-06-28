@@ -443,7 +443,7 @@ module.exports = db => {
 
   return inquirer.prompt(prompts).then(({feature}) => {
     getCurrentTheme(db).then(theme => {
-      if (!feature.overwrite && theme.features[feature.type]) {
+      if (feature.overwrite === false) {
         error({
           message: message.ERROR_FEATURE_ALREADY_EXISTS,
           padding: true,
