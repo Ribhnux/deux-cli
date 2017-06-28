@@ -9,6 +9,9 @@
 // Read theme config.
 require get_template_directory() . '/{{theme.slug}}-config.php';
 
+// Function helpers.
+require get_template_directory() . '/includes/init/helpers.php';
+
 // Theme setup.
 require get_template_directory() . '/includes/init/theme.php';
 
