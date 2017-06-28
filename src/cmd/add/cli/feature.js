@@ -555,7 +555,7 @@ module.exports = db => {
         }
 
         const videoCallbackFile = path.join(helperPath, 'video-active-callback.php')
-        if (!feature.options.videoAlwaysActive) {
+        if (feature.options.videoAlwaysActive === false) {
           helper = {
             name: 'Video Active Callback',
             slugfn: 'video_active_callback',
