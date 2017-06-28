@@ -12,6 +12,9 @@ require get_template_directory() . '/{{theme.slug}}-config.php';
 // Function helpers.
 require get_template_directory() . '/includes/init/helpers.php';
 
+// Class libraries.
+require get_template_directory() . '/includes/init/libraries.php';
+
 // Theme setup.
 require get_template_directory() . '/includes/init/theme.php';
 
