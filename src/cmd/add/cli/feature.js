@@ -106,7 +106,7 @@ module.exports = db => {
       filter: value => value.split(',').map(item => slugify(item.trim().toLowerCase()))
     },
 
-    // Background custom options
+    // Custom background options
     {
       name: 'feature.options.imageUrl',
       message: 'Background image URL',
@@ -290,7 +290,7 @@ module.exports = db => {
       ]
     },
 
-    // Header custom options
+    // Custom header options
     {
       name: 'feature.options.imageUrl',
       message: 'Header image URL',
@@ -302,7 +302,8 @@ module.exports = db => {
       message: 'Image width in px',
       default: 2000,
       when: ({feature}) => feature.type === featureTypes.CUSTOM_HEADER,
-      validate: value => validator(value, {number: true, minimum: 500, var: `"${value}"px`})
+      validate: value => validator(value, {number: true, minimum: 1, var: `"${value}"px`}),
+      filter: value => Number(value)
     },
 
     {
@@ -310,7 +311,8 @@ module.exports = db => {
       message: 'Image height in px',
       default: 1200,
       when: ({feature}) => feature.type === featureTypes.CUSTOM_HEADER,
-      validate: value => validator(value, {number: true, minimum: 500, var: `"${value}"px`})
+      validate: value => validator(value, {number: true, minimum: 1, var: `"${value}"px`}),
+      filter: value => Number(value)
     },
 
     {
