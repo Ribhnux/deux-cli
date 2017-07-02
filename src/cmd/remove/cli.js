@@ -1,42 +1,42 @@
 const inquirer = require('inquirer')
-const {validAddCommand} = require('./const')
 
 const message = global.const.require('messages')
+const {validAddCommand} = global.commands.require('add/cli/const')
 const {error, colorlog} = global.helpers.require('logger')
 const {capitalize} = global.helpers.require('util/misc')
 
 const displayPrompt = (db, cmd) => {
   switch (cmd) {
     case validAddCommand.HOOK:
-      global.commands.require('add/cli/hook')(db)
+      global.commands.require('remove/hook')(db)
       break
 
     case validAddCommand.ASSET:
-      global.commands.require('add/cli/asset')(db)
+      global.commands.require('remove/asset')(db)
       break
 
     case validAddCommand.PLUGIN:
-      global.commands.require('add/cli/plugin')(db)
+      global.commands.require('remove/plugin')(db)
       break
 
     case validAddCommand.FEATURE:
-      global.commands.require('add/cli/feature')(db)
+      global.commands.require('remove/feature')(db)
       break
 
     case validAddCommand.TEMPLATE:
-      global.commands.require('add/cli/template')(db)
+      global.commands.require('remove/template')(db)
       break
 
     case validAddCommand.COMPONENT:
-      global.commands.require('add/cli/component')(db)
+      global.commands.require('remove/component')(db)
       break
 
     case validAddCommand.WIDGET:
-      global.commands.require('add/cli/widget')(db)
+      global.commands.require('remove/widget')(db)
       break
 
     case validAddCommand.MENU:
-      global.commands.require('add/cli/menu')(db)
+      global.commands.require('remove/menu')(db)
       break
 
     default:
@@ -58,7 +58,7 @@ module.exports = (db, option) => {
       choices: () => new Promise(resolve => {
         const list = Object.keys(validAddCommand).map(key => {
           const value = validAddCommand[key]
-          const name = capitalize(value)
+          const name = capitalize(value) + 's'
           return {value, name}
         })
         resolve([new inquirer.Separator()].concat(list))
@@ -69,7 +69,7 @@ module.exports = (db, option) => {
   if (option) {
     displayPrompt(db, option)
   } else {
-    colorlog('What you want to add in your theme?')
+    colorlog('What you want to remove in your theme?')
     inquirer.prompt(prompts).then(({command}) => {
       displayPrompt(db, command)
     })

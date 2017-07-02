@@ -5,7 +5,7 @@ const availableCmd = Object.keys(validAddCommand).map(item => validAddCommand[it
 
 const action = args => {
   const init = global.helpers.require('db')
-  const cli = global.commands.require('add/cli')
+  const cli = global.commands.require('remove/cli')
 
   init().then(db => {
     cli(db, args.option)
@@ -15,6 +15,6 @@ const action = args => {
 }
 
 program
-.command('add', 'Add Assets, Plugins, Templates, Widgets, Menus, Features and Customizer')
+.command('remove', 'Remove Assets, Plugins, Templates, Widgets, Menus, Features and Customizer')
 .argument('[option]', availableCmd.join(' | '), availableCmd)
 .action(action)

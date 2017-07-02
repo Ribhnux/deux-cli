@@ -1,12 +1,13 @@
 exports.validAddCommand = {
-  HOOK: 'hook',
-  MENU: 'menu',
   ASSET: 'asset',
   PLUGIN: 'plugin',
+  MENU: 'menu',
   WIDGET: 'widget',
   FEATURE: 'feature',
   TEMPLATE: 'template',
-  COMPONENT: 'component'
+  COMPONENT: 'component',
+  CUSTOMIZER: 'customizer',
+  HOOK: 'hook'
 }
 
 exports.templateTypes = {
