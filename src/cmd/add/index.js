@@ -15,6 +15,6 @@ const action = args => {
 }
 
 program
-.command('add', 'Add Plugin dependencies, Assets, Templates, and Hooks')
+.command('add', 'Add Assets, Plugins, Templates, Widgets, Menus, Features and Customizer')
 .argument('[option]', availableCmd.join(' | '), availableCmd)
 .action(action)
