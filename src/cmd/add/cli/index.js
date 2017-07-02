@@ -61,7 +61,7 @@ module.exports = (db, option) => {
           const name = capitalize(value)
           return {value, name}
         })
-        resolve(list)
+        resolve([new inquirer.Separator()].concat(list))
       })
     }
   ]
