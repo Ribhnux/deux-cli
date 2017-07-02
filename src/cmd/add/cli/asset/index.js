@@ -436,8 +436,6 @@ module.exports = db => {
       }
 
       task.then(() => {
-        let config
-
         // Save Library
         if (asset.type === assetTypes.LIB) {
           if (lib.source === libSource.WP) {
@@ -465,12 +463,6 @@ module.exports = db => {
 
           theme.asset.libs[lib.name.handle] = lib
           delete theme.asset.libs[lib.name.handle].name
-
-          config = {
-            asset: {
-              libs: theme.asset.libs
-            }
-          }
         }
 
         // Save SASS
@@ -486,7 +478,6 @@ module.exports = db => {
           const structName = `${sass.type}s`
           const sassPath = path.join(assetPath, 'sass', structName, `_${sass.name}.scss`)
 
-          theme.asset.sass[structName].push(sass.name)
           sass.components = theme.asset.sass.components.map(item => `'components/${item}'`).join(',\n  ')
           sass.layouts = theme.asset.sass.layouts.map(item => `'layouts/${item}'`).join(',\n  ')
           sass.pages = theme.asset.sass.pages.map(item => `'pages/${item}'`).join(',\n  ')
@@ -511,11 +502,7 @@ module.exports = db => {
             }
           })
 
-          config = {
-            asset: {
-              sass: theme.asset.sass
-            }
-          }
+          theme.asset.sass[structName] = theme.asset.sass[structName].concat(sass.name)
         }
 
         // Save webfonts
@@ -530,15 +517,11 @@ module.exports = db => {
             subsets: font.subsets,
             url: weft.embedUrl(safeFontFamily, fontVariants, font.subsets.join(','))
           }
-
-          config = {
-            asset: {
-              fonts: theme.asset.fonts
-            }
-          }
         }
 
-        saveConfig(db, config).then(() => {
+        saveConfig(db, {
+          asset: theme.asset
+        }).then(() => {
           done({
             message: message.SUCCEED_ASSET_ADDED,
             padding: true,
