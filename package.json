@@ -23,10 +23,10 @@
   "homepage": "https://github.com/Ribhnux/deux#readme",
   "dependencies": {
     "browser-sync": "^2.18.12",
-    "caporal": "^0.6.0",
+    "caporal": "^0.7.0",
     "cdnjs-api": "^1.3.0",
-    "chalk": "^1.1.3",
-    "download": "^6.2.3",
+    "chalk": "^2.0.1",
+    "download": "^6.2.5",
     "execa": "^0.7.0",
     "extend": "^3.0.1",
     "faker": "^4.1.0",
@@ -64,7 +64,7 @@
     "wp-plugin-search": "^1.1.0"
   },
   "devDependencies": {
-    "ava": "^0.19.1",
+    "ava": "^0.20.0",
     "xo": "^0.18.2"
   },
   "scripts": {
