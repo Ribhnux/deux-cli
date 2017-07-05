@@ -8,35 +8,35 @@ const {capitalize} = global.helpers.require('util/misc')
 const displayPrompt = (db, cmd) => {
   switch (cmd) {
     case validAddCommand.HOOK:
-      global.commands.require('remove/hook')(db)
+      global.commands.require('remove/hooks')(db)
       break
 
     case validAddCommand.ASSET:
-      global.commands.require('remove/asset')(db)
+      global.commands.require('remove/assets')(db)
       break
 
     case validAddCommand.PLUGIN:
-      global.commands.require('remove/plugin')(db)
+      global.commands.require('remove/plugins')(db)
       break
 
     case validAddCommand.FEATURE:
-      global.commands.require('remove/feature')(db)
+      global.commands.require('remove/features')(db)
       break
 
     case validAddCommand.TEMPLATE:
-      global.commands.require('remove/template')(db)
+      global.commands.require('remove/templates')(db)
       break
 
     case validAddCommand.COMPONENT:
-      global.commands.require('remove/component')(db)
+      global.commands.require('remove/components')(db)
       break
 
     case validAddCommand.WIDGET:
-      global.commands.require('remove/widget')(db)
+      global.commands.require('remove/widgets')(db)
       break
 
     case validAddCommand.MENU:
-      global.commands.require('remove/menu')(db)
+      global.commands.require('remove/menus')(db)
       break
 
     default:

@@ -47,7 +47,8 @@ module.exports = (value, options) => {
     fontApiKey: false,
     color: false,
     var: '',
-    number: false
+    number: false,
+    equal: false
   }, options)
 
   const rules = {value: {}}
@@ -142,6 +143,15 @@ module.exports = (value, options) => {
       strict: true,
       greaterThan: options.minimum,
       message: errorMessage(options.var, numberMessage)
+    }
+  }
+
+  if (options.equal) {
+    const equalMessage = `is not the same with "${options.equal}"`
+    rules.value.equality = {
+      attribute: 'equal',
+      comparator: val => val === options.equal,
+      message: errorMessage(options.var, equalMessage)
     }
   }
 
