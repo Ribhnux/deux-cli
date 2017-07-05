@@ -15,7 +15,7 @@ const happyExit = () => {
   done({
     message: message.DONE_NO_REMOVE,
     padding: true,
-    exit: true,
+    exit: true
   })
 }
 
@@ -169,7 +169,7 @@ module.exports = db => {
       })
 
       saveConfig(db, {
-        asset: theme.asset,
+        asset: theme.asset
       }).then(() => {
         done({
           message: message.SUCCEED_REMOVED_ASSET,
