@@ -1,7 +1,7 @@
 const path = require('path')
 const inquirer = require('inquirer')
 const rimraf = require('rimraf')
-const {happyExit, captchaMaker} = require('./util')
+const {happyExit, captchaMaker, separatorMaker} = require('./util')
 
 const {wpThemeDir} = global.const.require('path')
 const {assetTypes} = global.commands.require('add/cli/asset/const')
@@ -23,9 +23,7 @@ module.exports = db => {
           let list = []
 
           if (Object.keys(theme.asset.libs).length > 0) {
-            list.push(new inquirer.Separator(' '))
-            list.push(new inquirer.Separator('CSS / Javascript'))
-            list.push(new inquirer.Separator())
+            list = list.concat(separatorMaker('CSS / Javascript'))
           }
 
           for (const value in theme.asset.libs) {
@@ -63,11 +61,7 @@ module.exports = db => {
           }
 
           if (sass.length > 0) {
-            sass = [
-              new inquirer.Separator(' '),
-              new inquirer.Separator('SASS Files'),
-              new inquirer.Separator('')
-            ].concat(sass)
+            sass = separatorMaker('SASS Files').concat(sass)
             list = list.concat(sass)
           }
 
@@ -86,11 +80,7 @@ module.exports = db => {
           }
 
           if (fonts.length > 0) {
-            fonts = [
-              new inquirer.Separator(' '),
-              new inquirer.Separator('Web Fonts'),
-              new inquirer.Separator('')
-            ].concat(fonts)
+            fonts = separatorMaker('Web Fonts').concat(fonts)
             list = list.concat(fonts)
           }
 
