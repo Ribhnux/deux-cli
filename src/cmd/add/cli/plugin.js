@@ -198,7 +198,7 @@ module.exports = db => {
       default: true,
       when: ({plugin}) => new Promise((resolve, reject) => {
         getCurrentTheme(db).then(theme => {
-          let slug = plugin.srctype === pluginSrcTypes.PRIVATE ? plugin.slug : plugin.item.slug
+          const slug = plugin.srctype === pluginSrcTypes.PRIVATE ? plugin.slug : plugin.item.slug
           resolve(slug in theme.plugins)
         }).catch(reject)
       })
