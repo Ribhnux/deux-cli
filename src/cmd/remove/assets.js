@@ -107,7 +107,7 @@ module.exports = db => {
         name: 'confirm',
         when: ({assets, captcha}) => assets.length > 0 && captcha,
         default: false,
-        message: () => 'This action will remove files or assets from config, and can\'t be undone. Do you want to continue?'
+        message: () => 'Removing files or assets from config can\'t be undone. Do you want to continue?'
       }
     ]
 
