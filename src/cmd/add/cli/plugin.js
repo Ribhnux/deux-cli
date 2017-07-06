@@ -198,7 +198,8 @@ module.exports = db => {
       default: true,
       when: ({plugin}) => new Promise((resolve, reject) => {
         getCurrentTheme(db).then(theme => {
-          resolve(Object.keys(theme.plugins).includes(plugin.slug))
+          let slug = plugin.srctype === pluginSrcTypes.PRIVATE ? plugin.slug : plugin.item.slug
+          resolve(slug in theme.plugins)
         }).catch(reject)
       })
     }
@@ -239,19 +240,20 @@ module.exports = db => {
             plugin
           }
         })
+      }
 
-        delete plugin.item
-        delete plugin.versions
-        delete plugin.search
-        delete plugin.srctype
-        delete plugin.external_url
-
-        theme.plugins[plugin.slug] = plugin
-        delete theme.plugins[plugin.slug].slug
-      } else {
-        delete theme.plugins[plugin.slug]
+      if (plugin.overwrite && !plugin.init) {
         rimraf.sync(initPath)
       }
+
+      delete plugin.item
+      delete plugin.versions
+      delete plugin.search
+      delete plugin.srctype
+      delete plugin.external_url
+
+      theme.plugins[plugin.slug] = plugin
+      delete theme.plugins[plugin.slug].slug
 
       saveConfig(db, {
         plugins: theme.plugins
