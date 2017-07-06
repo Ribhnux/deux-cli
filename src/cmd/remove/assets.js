@@ -2,6 +2,7 @@ const path = require('path')
 const inquirer = require('inquirer')
 const faker = require('faker')
 const rimraf = require('rimraf')
+const {happyExit} = require('./util')
 
 const {wpThemeDir} = global.const.require('path')
 const {assetTypes} = global.commands.require('add/cli/asset/const')
@@ -10,14 +11,6 @@ const {done, colorlog} = global.helpers.require('logger')
 const {capitalize} = global.helpers.require('util/misc')
 const validator = global.helpers.require('util/validator')
 const message = global.const.require('messages')
-
-const happyExit = () => {
-  done({
-    message: message.DONE_NO_REMOVE,
-    padding: true,
-    exit: true
-  })
-}
 
 module.exports = db => {
   colorlog('Remove {Asset}')
