@@ -20,7 +20,7 @@ module.exports = db => {
     const prompts = [
       {
         type: 'checkbox',
-        name: 'asset',
+        name: 'assets',
         message: 'Select assets you want to remove',
         choices: () => new Promise(resolve => {
           let list = []
@@ -104,14 +104,14 @@ module.exports = db => {
       {
         name: 'captcha',
         message: `Type "${randomCaptcha}" to continue`,
-        when: ({asset}) => asset.length > 0,
+        when: ({assets}) => assets.length > 0,
         validate: value => validator(value, {equal: randomCaptcha, var: `"${value}"`})
       },
 
       {
         type: 'confirm',
         name: 'confirm',
-        when: ({asset, captcha}) => asset.length > 0 && captcha === randomCaptcha,
+        when: ({assets, captcha}) => assets.length > 0 && captcha === randomCaptcha,
         default: false,
         message: () => 'This action will remove files or assets from config, and can\'t be undone. Do you want to continue?'
       }
@@ -131,14 +131,14 @@ module.exports = db => {
       happyExit()
     }
 
-    inquirer.prompt(prompts).then(({asset, confirm}) => {
-      if (asset.length === 0 || !confirm) {
+    inquirer.prompt(prompts).then(({assets, confirm}) => {
+      if (assets.length === 0 || !confirm) {
         happyExit()
       }
 
       const assetPath = path.join(wpThemeDir, theme.details.slug, 'assets-src')
 
-      asset.forEach(item => {
+      assets.forEach(item => {
         switch (item.key) {
           case assetTypes.LIB:
             delete theme.asset.libs[item.value]
