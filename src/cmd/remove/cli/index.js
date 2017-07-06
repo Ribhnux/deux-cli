@@ -12,31 +12,31 @@ const displayPrompt = (db, cmd) => {
       break
 
     case validAddCommand.ASSET:
-      global.commands.require('remove/cli/assets')(db)
+      global.commands.require('remove/cli/asset')(db)
       break
 
     case validAddCommand.PLUGIN:
-      global.commands.require('remove/cli/plugins')(db)
+      global.commands.require('remove/cli/plugin')(db)
       break
 
     case validAddCommand.FEATURE:
-      global.commands.require('remove/cli/features')(db)
+      global.commands.require('remove/cli/feature')(db)
       break
 
     case validAddCommand.TEMPLATE:
-      global.commands.require('remove/cli/templates')(db)
+      global.commands.require('remove/cli/template')(db)
       break
 
     case validAddCommand.COMPONENT:
-      global.commands.require('remove/cli/components')(db)
+      global.commands.require('remove/cli/component')(db)
       break
 
     case validAddCommand.WIDGET:
-      global.commands.require('remove/cli/widgets')(db)
+      global.commands.require('remove/cli/widget')(db)
       break
 
     case validAddCommand.MENU:
-      global.commands.require('remove/cli/menus')(db)
+      global.commands.require('remove/cli/menu')(db)
       break
 
     default:
