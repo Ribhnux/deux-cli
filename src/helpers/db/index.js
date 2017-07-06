@@ -82,7 +82,15 @@ const initProject = db => {
   }).catch(dbErrorHandler)
 }
 
-module.exports = skip => new Promise(resolve => {
+module.exports = skip => new Promise((resolve, reject) => {
+  if (!existsSync(wpConfigPath)) {
+    error({
+      message: message.ERROR_NOT_WP_FOLDER,
+      padding: true,
+      exit: true
+    })
+  }
+
   if (!existsSync(dbPath)) {
     error({
       message: message.ERROR_PROJECT_FILE_NOT_EXISTS,
