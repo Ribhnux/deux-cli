@@ -1,22 +1,19 @@
 const path = require('path')
 const inquirer = require('inquirer')
-const faker = require('faker')
 const rimraf = require('rimraf')
-const {happyExit} = require('./util')
+const {happyExit, captchaMaker} = require('./util')
 
 const {wpThemeDir} = global.const.require('path')
 const {assetTypes} = global.commands.require('add/cli/asset/const')
 const {getCurrentTheme, saveConfig} = global.helpers.require('db/utils')
 const {done, colorlog} = global.helpers.require('logger')
 const {capitalize} = global.helpers.require('util/misc')
-const validator = global.helpers.require('util/validator')
 const message = global.const.require('messages')
 
 module.exports = db => {
   colorlog('Remove {Asset}')
 
   getCurrentTheme(db).then(theme => {
-    const randomCaptcha = faker.lorem.word()
     const prompts = [
       {
         type: 'checkbox',
@@ -101,17 +98,14 @@ module.exports = db => {
         })
       },
 
-      {
-        name: 'captcha',
-        message: `Type "${randomCaptcha}" to continue`,
-        when: ({assets}) => assets.length > 0,
-        validate: value => validator(value, {equal: randomCaptcha, var: `"${value}"`})
-      },
+      Object.assign(captchaMaker(), {
+        when: ({assets}) => assets.length > 0
+      }),
 
       {
         type: 'confirm',
         name: 'confirm',
-        when: ({assets, captcha}) => assets.length > 0 && captcha === randomCaptcha,
+        when: ({assets, captcha}) => assets.length > 0 && captcha,
         default: false,
         message: () => 'This action will remove files or assets from config, and can\'t be undone. Do you want to continue?'
       }
