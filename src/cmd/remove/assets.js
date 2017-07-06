@@ -1,41 +1,29 @@
 const path = require('path')
 const inquirer = require('inquirer')
-const faker = require('faker')
 const rimraf = require('rimraf')
+const {happyExit, captchaMaker, separatorMaker} = require('./util')
 
 const {wpThemeDir} = global.const.require('path')
 const {assetTypes} = global.commands.require('add/cli/asset/const')
 const {getCurrentTheme, saveConfig} = global.helpers.require('db/utils')
 const {done, colorlog} = global.helpers.require('logger')
 const {capitalize} = global.helpers.require('util/misc')
-const validator = global.helpers.require('util/validator')
 const message = global.const.require('messages')
-
-const happyExit = () => {
-  done({
-    message: message.DONE_NO_REMOVE,
-    padding: true,
-    exit: true
-  })
-}
 
 module.exports = db => {
   colorlog('Remove {Asset}')
 
   getCurrentTheme(db).then(theme => {
-    const randomCaptcha = faker.lorem.word()
     const prompts = [
       {
         type: 'checkbox',
-        name: 'asset',
+        name: 'assets',
         message: 'Select assets you want to remove',
         choices: () => new Promise(resolve => {
           let list = []
 
           if (Object.keys(theme.asset.libs).length > 0) {
-            list.push(new inquirer.Separator(' '))
-            list.push(new inquirer.Separator('CSS / Javascript'))
-            list.push(new inquirer.Separator())
+            list = list.concat(separatorMaker('CSS / Javascript'))
           }
 
           for (const value in theme.asset.libs) {
@@ -73,11 +61,7 @@ module.exports = db => {
           }
 
           if (sass.length > 0) {
-            sass = [
-              new inquirer.Separator(' '),
-              new inquirer.Separator('SASS Files'),
-              new inquirer.Separator('')
-            ].concat(sass)
+            sass = separatorMaker('SASS Files').concat(sass)
             list = list.concat(sass)
           }
 
@@ -96,11 +80,7 @@ module.exports = db => {
           }
 
           if (fonts.length > 0) {
-            fonts = [
-              new inquirer.Separator(' '),
-              new inquirer.Separator('Web Fonts'),
-              new inquirer.Separator('')
-            ].concat(fonts)
+            fonts = separatorMaker('Web Fonts').concat(fonts)
             list = list.concat(fonts)
           }
 
@@ -108,19 +88,16 @@ module.exports = db => {
         })
       },
 
-      {
-        name: 'captcha',
-        message: `Type "${randomCaptcha}" to continue`,
-        when: ({asset}) => asset.length > 0,
-        validate: value => validator(value, {equal: randomCaptcha, var: `"${value}"`})
-      },
+      Object.assign(captchaMaker(), {
+        when: ({assets}) => assets.length > 0
+      }),
 
       {
         type: 'confirm',
         name: 'confirm',
-        when: ({asset, captcha}) => asset.length > 0 && captcha === randomCaptcha,
+        when: ({assets, captcha}) => assets.length > 0 && captcha,
         default: false,
-        message: () => 'This action will remove files or assets from config, and can\'t be undone. Do you want to continue?'
+        message: () => 'Removing files or assets from config can\'t be undone. Do you want to continue?'
       }
     ]
 
@@ -138,14 +115,14 @@ module.exports = db => {
       happyExit()
     }
 
-    inquirer.prompt(prompts).then(({asset, confirm}) => {
-      if (asset.length === 0 || !confirm) {
+    inquirer.prompt(prompts).then(({assets, confirm}) => {
+      if (assets.length === 0 || !confirm) {
         happyExit()
       }
 
       const assetPath = path.join(wpThemeDir, theme.details.slug, 'assets-src')
 
-      asset.forEach(item => {
+      assets.forEach(item => {
         switch (item.key) {
           case assetTypes.LIB:
             delete theme.asset.libs[item.value]
