@@ -62,6 +62,8 @@ module.exports = db => {
                 case templateTypes.PARTIAL:
                   partialList = template.items
                   break
+
+                default: break
               }
             })
 

@@ -87,7 +87,7 @@ module.exports = db => {
             walker
           }
         })
-        theme.libraries = theme.libraries
+        theme.libraries.push(walker.file)
       } else {
         theme.libraries = theme.libraries.filter(item => item !== walker.file)
         rimraf.sync(navWalkerPath)
