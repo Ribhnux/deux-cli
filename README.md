@@ -73,7 +73,7 @@ Now start [Development Mode](#development-mode), type `deux dev`.
 
 
 ## :blue_book: Documentation
-After see how `deux-cli` works, you need to shape your skill using this tool. Please read full documentation in [wiki page](https://github.com/Ribhnux/deux-cli/wiki).
+After see how `deux-cli` works, you need to shape your skill using this tool. Please read full documentation in [wiki page](https://github.com/Ribhnux/deux-cli/wiki/Documentation).
 
 ## :beers: Contributing
 Read full [contributing guide](CONTRIBUTING.md) to learn about development process, how to submit bugfixes and improvements, and how to build and test your changes to this repo.
