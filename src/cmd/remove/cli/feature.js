@@ -95,47 +95,52 @@ module.exports = db => {
       }
 
       const helpersPath = path.join(wpThemeDir, theme.details.slug, 'includes', 'helpers')
-      const removedFileName = []
 
-      features.forEach(item => {
-        switch (item) {
-          case featureTypes.CUSTOM_BACKGROUND:
-            if ('wp-head-callback' in theme.features[item]) {
-              removedFileName.push('custom-background')
-            }
-            break
+      Promise.all(features.map(
+        type => new Promise(resolve => {
+          const removeFiles = []
 
-          case featureTypes.CUSTOM_HEADER:
-            if ('wp-head-callback' in theme.features[item]) {
-              removedFileName.push('custom-background')
-            }
+          switch (type) {
+            case featureTypes.CUSTOM_BACKGROUND:
+              if ('wp-head-callback' in theme.features[type]) {
+                removeFiles.push('custom-background')
+              }
+              break
 
-            if ('video-active-callback' in theme.features[item]) {
-              removedFileName.push('custom-header-video')
-            }
-            break
+            case featureTypes.CUSTOM_HEADER:
+              if ('wp-head-callback' in theme.features[type]) {
+                removeFiles.push('custom-header')
+              }
 
-          default: break
-        }
+              if ('video-active-callback' in theme.features[type]) {
+                removeFiles.push('custom-header-video')
+              }
+              break
 
-        if (removedFileName.length > 0) {
-          removedFileName.forEach(filename => {
-            rimraf.sync(path.join(helpersPath, `${filename}.php`))
-            theme.helpers = theme.helpers.filter(item => item !== filename)
+            default: break
+          }
+
+          Promise.all(removeFiles.map(
+            filename => new Promise(resolve => {
+              rimraf.sync(path.join(helpersPath, `${filename}.php`))
+              resolve(filename)
+            })
+          )).then(filenames => {
+            theme.helpers = theme.helpers.filter(item => !filenames.includes(item))
+            delete theme.features[type]
+            resolve()
           })
-        }
-
-        delete theme.features[item]
-      })
-
-      saveConfig(db, {
-        features: theme.features,
-        helpers: theme.helpers
-      }).then(() => {
-        done({
-          message: message.SUCCEED_REMOVED_FEATURE,
-          padding: true,
-          exit: true
+        })
+      )).then(() => {
+        saveConfig(db, {
+          features: theme.features,
+          helpers: theme.helpers
+        }).then(() => {
+          done({
+            message: message.SUCCEED_REMOVED_FEATURE,
+            padding: true,
+            exit: true
+          })
         })
       })
     })
