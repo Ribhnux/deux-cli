@@ -2,6 +2,7 @@ const path = require('path')
 const inquirer = require('inquirer')
 const faker = require('faker')
 const slugify = require('node-slugify')
+const uniq = require('lodash.uniq')
 
 const validator = global.helpers.require('util/validator')
 const {error, done, colorlog} = global.helpers.require('logger')
@@ -70,7 +71,7 @@ module.exports = db => {
         .concat(component.slug)
 
       saveConfig(db, {
-        components: theme.components
+        components: uniq(theme.components)
       }).then(() => {
         done({
           message: message.SUCCEED_COMPONENT_ADDED,

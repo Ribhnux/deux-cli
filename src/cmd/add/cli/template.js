@@ -2,6 +2,7 @@ const path = require('path')
 const inquirer = require('inquirer')
 const faker = require('faker')
 const slugify = require('node-slugify')
+const uniq = require('lodash.uniq')
 const {templateTypes, postTypes} = require('./const')
 
 const message = global.const.require('messages')
@@ -148,7 +149,7 @@ module.exports = db => {
         successMsg = message.SUCCEED_PARTIAL_TEMPLATE_ADDED
         config = {
           template: {
-            partials: theme.template.partials.concat(template.slug)
+            partials: uniq(theme.template.partials.concat(template.slug))
           }
         }
       }
@@ -160,7 +161,7 @@ module.exports = db => {
         successMsg = message.SUCCEED_PAGE_TEMPLATE_ADDED
         config = {
           template: {
-            pages: theme.template.pages.concat(template.slug)
+            pages: uniq(theme.template.pages.concat(template.slug))
           }
         }
       }

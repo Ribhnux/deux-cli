@@ -4,6 +4,7 @@ const inquirer = require('inquirer')
 const slugify = require('node-slugify')
 const jsonar = require('jsonar')
 const rimraf = require('rimraf')
+const uniq = require('lodash.uniq')
 const {
   featureTypes,
   featureLabels,
@@ -589,7 +590,7 @@ module.exports = db => {
 
       saveConfig(db, {
         features: theme.features,
-        helpers: theme.helpers.filter(item => item)
+        helpers: uniq(theme.helpers)
       }).then(() => {
         done({
           message: message.SUCCEED_FEATURE_ADDED,
