@@ -1,5 +1,7 @@
 <?php
 /**
+ * Template Name: 404 Content
+ *
  * 404 post template and all page that cannot be found.
  * Learn more: http://codex.wordpress.org/Template_Hierarchy
  *

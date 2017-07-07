@@ -1,5 +1,7 @@
 <?php
 /**
+ * Template Name: Page Content
+ *
  * Page template for page.php.
  *
  * @package {{theme.name}}
