@@ -1,5 +1,7 @@
 <?php
 /**
+ * Template Name: Single Content
+ *
  * Single post template.
  *
  * @package {{theme.name}}

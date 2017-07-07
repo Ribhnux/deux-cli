@@ -1,5 +1,7 @@
 <?php
 /**
+ * Template Name: Standard Content
+ *
  * Post template to rendering get_template_part.
  *
  * @package {{theme.name}}

@@ -2,8 +2,12 @@
 /**
  * Template Name: {{template.name}}
  * Post Type: {{template.posttype}}
- * Description: {{template.description}}
- * 
+ *
+ * {{template.description}}
+ *
  * @package {{theme.name}}
  * @since {{theme.description}}
  */
+
+?>
+<!-- Your page template here -->

@@ -1,5 +1,7 @@
 <?php
 /**
+ * Template Name: Search Content
+ *
  * Search page template.
  *
  * @package {{theme.name}}
