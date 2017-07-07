@@ -68,35 +68,10 @@ Now start [Development Mode](#development-mode), type `deux dev`.
 
 
 ## :blue_book: Documentation
-* [Getting Started](#pushpin-getting-started)
-* [Component vs Partial Template](#cat-component-vs-dog-partial-template)
-* [Folder Structures](#file_folder-folder-structures)
-* [Development Mode](#fire-development-mode)
-* [Release Theme](#loudspeaker-release-theme)
-* [Command List](#hammer-command-list)
-  * [new](#new)
-  * [add](#add)
-  * [remove](#remove)
-  * [status](#status)
-  * [switch](#switch)
-  * [upgrade](#upgrade)
-  * [dev](#dev)
-  * [release](#release)
-  * [sync](#sync)
-* [Constributing](#beers-contributing)
+After see how `deux-cli` works, you need to shape your skill using this tool. Please read full documentation in [wiki page](https://github.com/Ribhnux/deux-cli/wiki).
 
-### :pushpin: Getting Started
-
-### :cat: Component vs :dog: Partial Template
-
-### :file_folder: Folder Structures
-
-### :fire: Development Mode
-
-### :loudspeaker: Release Theme
-
-### :hammer: Command List
-
-### :beers: Contributing
-
+## :beers: Contributing
 Read full [contributing guide](CONTRIBUTING.md) to learn about development process, how to submit bugfixes and improvements, and how to build and test your changes to this repo.
+
+## License
+MIT © [Ribhnux](https://github.com/Ribhnux)
