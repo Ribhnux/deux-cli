@@ -61,20 +61,23 @@ module.exports = db => {
 
       const pluginPath = path.join(wpThemeDir, theme.details.slug, 'includes', 'plugins')
 
-      plugins.forEach(item => {
-        if (theme.plugins[item].init === true) {
-          rimraf.sync(path.join(pluginPath, `${item}.php`))
-        }
-        delete theme.plugins[item]
-      })
-
-      saveConfig(db, {
-        plugins: theme.plugins
-      }).then(() => {
-        done({
-          message: message.SUCCEED_REMOVED_PLUGIN,
-          padding: true,
-          exit: true
+      Promise.all(plugins.map(
+        item => new Promise(resolve => {
+          if (theme.plugins[item].init === true) {
+            rimraf.sync(path.join(pluginPath, `${item}.php`))
+          }
+          delete theme.plugins[item]
+          resolve()
+        })
+      )).then(() => {
+        saveConfig(db, {
+          plugins: theme.plugins
+        }).then(() => {
+          done({
+            message: message.SUCCEED_REMOVED_PLUGIN,
+            padding: true,
+            exit: true
+          })
         })
       })
     })
