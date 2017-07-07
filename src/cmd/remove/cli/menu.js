@@ -78,7 +78,7 @@ module.exports = db => {
           libraries: uniq(theme.libraries)
         }).then(() => {
           done({
-            message: message.SUCCEED_REMOVED_PLUGIN,
+            message: message.SUCCEED_REMOVED_MENU,
             padding: true,
             exit: true
           })
