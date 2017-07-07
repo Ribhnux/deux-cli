@@ -139,19 +139,17 @@ module.exports = db => {
       const themePath = path.join(wpThemeDir, theme.details.slug)
       let srcPath
       let dstPath
-      let config
       let successMsg
 
       if (template.type === templateTypes.PARTIAL) {
         template.slug = slugifyName(template.prefix, template.name)
+        if (template.name.length === 0) {
+          template.name = template.prefix
+        }
         srcPath = path.join(global.templates.path, '_partials', 'partial-template.php')
         dstPath = path.join(themePath, 'partial-templates', `${template.slug}.php`)
         successMsg = message.SUCCEED_PARTIAL_TEMPLATE_ADDED
-        config = {
-          template: {
-            partials: uniq(theme.template.partials.concat(template.slug))
-          }
-        }
+        theme.template.partials = uniq(theme.template.partials.concat(template.slug))
       }
 
       if (template.type === templateTypes.PAGE) {
@@ -159,11 +157,7 @@ module.exports = db => {
         srcPath = path.join(global.templates.path, '_partials', 'page-template.php')
         dstPath = path.join(themePath, 'page-templates', `${template.slug}.php`)
         successMsg = message.SUCCEED_PAGE_TEMPLATE_ADDED
-        config = {
-          template: {
-            pages: uniq(theme.template.pages.concat(template.slug))
-          }
-        }
+        theme.template.pages = uniq(theme.template.pages.concat(template.slug))
       }
 
       compileFile({
@@ -175,7 +169,9 @@ module.exports = db => {
         }
       })
 
-      saveConfig(db, config).then(() => {
+      saveConfig(db, {
+        template: theme.template
+      }).then(() => {
         done({
           message: successMsg,
           padding: true,
