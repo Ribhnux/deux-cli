@@ -69,7 +69,9 @@ if ( ! function_exists( '{{theme.slugfn}}_setup' ) ) :
 		add_theme_support( 'customize-selective-refresh-widgets' );
 
 		// Register menus.
-		register_nav_menus( ${{theme.slugfn}}_config['menus'] );
+		foreach ( ${{theme.slugfn}}_config['menus'] => $menu ) {
+			register_nav_menus( $menu['item'] );
+		}
 	}
 endif;
 

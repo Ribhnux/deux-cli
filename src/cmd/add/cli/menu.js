@@ -4,6 +4,7 @@ const faker = require('faker')
 const slugify = require('node-slugify')
 const jsonar = require('jsonar')
 const rimraf = require('rimraf')
+const uniq = require('lodash.uniq')
 
 const {wpThemeDir} = global.const.require('path')
 const {getCurrentTheme, saveConfig} = global.helpers.require('db/utils')
@@ -86,17 +87,20 @@ module.exports = db => {
             walker
           }
         })
-        theme.libraries = theme.libraries.concat(walker.file)
+        theme.libraries = theme.libraries
       } else {
         theme.libraries = theme.libraries.filter(item => item !== walker.file)
         rimraf.sync(navWalkerPath)
       }
 
-      theme.menus[menu.location] = jsonar.literal(`__( '${menu.description}', '${theme.details.slug}' )`)
+      theme.menus[menu.location] = {
+        walker: menu.walker,
+        item: jsonar.literal(`__( '${menu.description}', '${theme.details.slug}' )`)
+      }
 
       saveConfig(db, {
         menus: theme.menus,
-        libraries: theme.libraries.filter(item => item)
+        libraries: uniq(theme.libraries)
       }).then(() => {
         done({
           message: message.SUCCEED_MENU_ADDED,
