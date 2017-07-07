@@ -1,6 +1,8 @@
 const path = require('path')
+const {existsSync} = require('fs')
 const inquirer = require('inquirer')
 const rimraf = require('rimraf')
+const wpFileHeader = require('wp-get-file-header')
 const {happyExit, captchaMaker, separatorMaker} = require('./util')
 
 const {getCurrentTheme, saveConfig} = global.helpers.require('db/utils')
@@ -9,67 +11,79 @@ const message = global.const.require('messages')
 const {wpThemeDir} = global.const.require('path')
 
 module.exports = db => {
-  colorlog('Remove {Plugins}')
+  colorlog('Remove {Components}')
 
   getCurrentTheme(db).then(theme => {
+    const componentDirPath = path.join(wpThemeDir, theme.details.slug, 'components')
     const prompts = [
       {
         type: 'checkbox',
-        name: 'plugins',
-        message: 'Select plugins you want to remove',
+        name: 'components',
+        message: 'Select components you want to remove',
         choices: () => new Promise(resolve => {
-          let list = []
+          Promise.all(theme.components.map(
+            value => new Promise(resolve => {
+              const componentPath = path.join(componentDirPath, `${value}.php`)
+              if (existsSync(componentPath)) {
+                wpFileHeader(componentPath).then(info => {
+                  resolve({
+                    name: info.componentName,
+                    value
+                  })
+                })
+              } else {
+                resolve({})
+              }
+            })
+          )).then(components => {
+            components = components.filter(item => item.value)
 
-          for (const value in theme.plugins) {
-            if (Object.prototype.hasOwnProperty.call(theme.plugins, value)) {
-              list.push({
-                name: theme.plugins[value].name,
-                value
-              })
+            if (components.length > 0) {
+              components = separatorMaker('Component List').concat(components)
             }
-          }
 
-          if (list.length > 0) {
-            list = separatorMaker('Plugin List').concat(list)
-          }
-
-          resolve(list)
+            resolve(components)
+          })
         })
       },
 
       Object.assign(captchaMaker(), {
-        when: ({plugins}) => plugins.length > 0
+        when: ({components}) => components.length > 0
       }),
 
       {
         type: 'confirm',
         name: 'confirm',
-        when: ({plugins, captcha}) => plugins.length > 0 && captcha,
+        when: ({components, captcha}) => components.length > 0 && captcha,
         default: false,
-        message: () => 'Removing plugins from config can\'t be undone. Do you want to continue?'
+        message: () => 'Removing components from config can\'t be undone. Do you want to continue?'
       }
     ]
 
-    if (Object.keys(theme.plugins).length === 0) {
+    if (Object.keys(theme.components).length === 0) {
       happyExit()
     }
 
-    inquirer.prompt(prompts).then(({plugins, confirm}) => {
-      if (plugins.length === 0 || !confirm) {
+    inquirer.prompt(prompts).then(({components, confirm}) => {
+      if (components.length === 0 || !confirm) {
         happyExit()
       }
 
-      const pluginPath = path.join(wpThemeDir, theme.details.slug, 'includes', 'plugins')
+      const filterList = []
 
-      plugins.forEach(item => {
-        if (theme.plugins[item].init === true) {
-          rimraf.sync(path.join(pluginPath, `${item}.php`))
+      components.forEach(item => {
+        filterList.push(item)
+
+        const componentPath = path.join(componentDirPath, `${item}.php`)
+        if (existsSync(componentPath)) {
+          rimraf.sync(componentPath)
         }
-        delete theme.plugins[item]
       })
 
+      theme.components = theme.components.filter(item => !item.includes(filterList))
+
       saveConfig(db, {
-        plugins: theme.plugins
+        components: theme.components
       }).then(() => {
         done({
           message: message.SUCCEED_REMOVED_ASSET,
