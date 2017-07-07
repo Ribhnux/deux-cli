@@ -39,12 +39,17 @@ Prerequisite for PHP developers who's never play with other programming language
 
 * Node.js - [Download Latest Version](https://nodejs.org)
 * GIT - [Download Latest Version](https://git-scm.com/downloads)
+* Yarn (optional) - [Install Latest Version](https://yarnpkg.com/en/docs/install)
 
 After Node.js and git already installed on your computer.  
 Run this command in your terminal:
 
 ```bash
+# NPM
 $ npm install deux-cli -g
+
+# Yarn
+$ yarn global add deux-cli
 ```
 
 ## :rocket: Quick Start
