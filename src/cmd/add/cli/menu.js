@@ -92,7 +92,10 @@ module.exports = db => {
         rimraf.sync(navWalkerPath)
       }
 
-      theme.menus[menu.location] = jsonar.literal(`__( '${menu.description}', '${theme.details.slug}' )`)
+      theme.menus[menu.location] = {
+        walker: menu.walker,
+        item: jsonar.literal(`__( '${menu.description}', '${theme.details.slug}' )`)
+      }
 
       saveConfig(db, {
         menus: theme.menus,
