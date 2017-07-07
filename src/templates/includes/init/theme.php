@@ -69,7 +69,7 @@ if ( ! function_exists( '{{theme.slugfn}}_setup' ) ) :
 		add_theme_support( 'customize-selective-refresh-widgets' );
 
 		// Register menus.
-		foreach ( ${{theme.slugfn}}_config['menus'] => $menu ) {
+		foreach ( ${{theme.slugfn}}_config['menus'] as $menu ) {
 			register_nav_menus( $menu['item'] );
 		}
 	}
