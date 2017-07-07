@@ -60,7 +60,7 @@ module.exports = db => {
       }
     ]
 
-    if (Object.keys(theme.components).length === 0) {
+    if (theme.components.length === 0) {
       happyExit()
     }
 
