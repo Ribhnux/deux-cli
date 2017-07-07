@@ -15,6 +15,6 @@ const action = args => {
 }
 
 program
-.command('remove', 'Remove Assets, Plugins, Templates, Widgets, Menus, Features and Customizer')
+.command('remove', 'Remove Theme Functionality')
 .argument('[option]', availableCmd.join(' | '), availableCmd)
 .action(action)

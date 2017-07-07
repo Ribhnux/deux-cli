@@ -10,5 +10,5 @@ const action = () => {
 }
 
 program
-.command('new', 'Create a New Theme')
+.command('new', 'Create New Theme')
 .action(action)
