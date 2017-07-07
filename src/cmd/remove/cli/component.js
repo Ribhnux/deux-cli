@@ -86,7 +86,7 @@ module.exports = db => {
         components: theme.components
       }).then(() => {
         done({
-          message: message.SUCCEED_REMOVED_ASSET,
+          message: message.SUCCEED_REMOVED_COMPONENT,
           padding: true,
           exit: true
         })

@@ -72,7 +72,7 @@ module.exports = db => {
         plugins: theme.plugins
       }).then(() => {
         done({
-          message: message.SUCCEED_REMOVED_ASSET,
+          message: message.SUCCEED_REMOVED_PLUGIN,
           padding: true,
           exit: true
         })
