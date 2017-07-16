@@ -19,11 +19,10 @@ module.exports = db => {
 
   const prompts = [
     {
-      name: 'menu.location',
-      message: 'Menu Location',
-      default: 'primary',
-      validate: value => validator(value, {slug: true, slugPattern: '[a-z0-9_]+', var: 'Menu Location'}),
-      filter: value => slugify(value)
+      name: 'menu.name',
+      message: 'Menu Name',
+      default: 'Primary',
+      validate: value => validator(value, {minimum: 3, var: 'Menu Name'})
     },
 
     {
@@ -63,10 +62,12 @@ module.exports = db => {
         })
       }
 
+      menu.location = slugify(menu.name)
+
       const themePath = path.join(wpThemeDir, theme.details.slug)
       const libPath = path.join(themePath, 'includes', 'libraries')
       const navWalkerFile = path.join(global.templates.path, '_partials', 'nav-walker.php')
-      const slugCapital = slugify(menu.location).split('-').map(item => capitalize(item))
+      const slugCapital = menu.location.split('-').map(item => capitalize(item))
       const niceName = slugCapital.join(' ')
       const className = slugCapital.join('_')
 
@@ -95,6 +96,7 @@ module.exports = db => {
 
       theme.menus[menu.location] = {
         walker: menu.walker,
+        name: menu.name,
         item: jsonar.literal(`__( '${menu.description}', '${theme.details.slug}' )`)
       }
 
