@@ -24,7 +24,7 @@ module.exports = db => {
           for (const value in theme.menus) {
             if (Object.prototype.hasOwnProperty.call(theme.menus, value)) {
               list.push({
-                name: value,
+                name: theme.menus[value].name,
                 value
               })
             }
