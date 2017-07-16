@@ -142,7 +142,11 @@ module.exports = db => {
         return asset.type === assetTypes.LIB && lib.source === libSource.CDN && lib.name.handle
       },
       choices: ({lib}) => new Promise((resolve, reject) => {
+        const versionLoader = loader(`Get "${lib.name.handle}" versions...`)
+
         cdnjs.versions(lib.name.handle).then(result => {
+          versionLoader.succeed(`${lib.name.handle} has ${result.length} versions`)
+
           const choices = result.map(item => {
             return {
               name: `v${item}`,
@@ -150,7 +154,9 @@ module.exports = db => {
             }
           })
           choices.splice(0, 0, new inquirer.Separator())
-          resolve(choices)
+          setTimeout(() => {
+            resolve(choices)
+          }, 500)
         }).catch(err => {
           reject(err)
         })
@@ -165,9 +171,13 @@ module.exports = db => {
         return asset.type === assetTypes.LIB && lib.source === libSource.CDN && lib.name.handle
       },
       choices: ({lib}) => new Promise((resolve, reject) => {
+        const filesLoader = loader(`Fetch "${lib.name.handle}@${lib.version}" files...`)
+
         cdnjs.files(`${lib.name.handle}@${lib.version}`).then(result => {
+          filesLoader.succeed(`Succeed, fetched ${lib.name.handle}@${lib.version} files`)
+
           const choices = result
-            .filter(item => /(\.min\.(css|js)|\.map)$/.test(item) === false)
+            .filter(item => /(\.map)$/.test(item) === false)
             .map(item => {
               return {
                 name: item,
