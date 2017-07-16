@@ -124,7 +124,10 @@ module.exports = db => {
           }
 
           choices.splice(0, 0, new inquirer.Separator())
-          resolve(choices)
+
+          setTimeout(() => {
+            resolve(choices)
+          }, 500)
         }).catch(err => {
           reject(err)
         })
