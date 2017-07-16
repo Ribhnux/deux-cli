@@ -1,6 +1,6 @@
 <?php
 /**
- * {{helper.name}}
+ * Helper Name: {{helper.name}}
  *
  * @package {{theme.name}}
  * @since {{theme.version}}
