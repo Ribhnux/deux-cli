@@ -39,6 +39,10 @@ const displayPrompt = (db, cmd) => {
       global.commands.require('remove/cli/menu')(db)
       break
 
+    case validAddCommand.HELPER:
+      global.commands.require('remove/cli/helper')(db)
+      break
+
     default:
       error({
         message: message.ERROR_INVALID_COMMAND,
