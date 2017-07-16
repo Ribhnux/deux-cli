@@ -25,6 +25,7 @@ exports.SUCCEED_REMOVED_PLUGIN = 'Congrats, you have been removed some plugins f
 exports.SUCCEED_REMOVED_COMPONENT = 'Congrats, you have been removed some components from theme.'
 exports.SUCCEED_REMOVED_HELPER = 'Congrats, you have been removed some helpers from theme.'
 exports.SUCCEED_REMOVED_FEATURE = 'Congrats, you have been removed some features from theme.'
+exports.SUCCEED_REMOVED_WIDGET = 'Congrats, you have been removed some widgets from theme.'
 exports.SUCCEED_REMOVED_MENU = 'Congrats, you have been removed some menus from theme.'
 exports.ERROR_INVALID_COMMAND = 'Invalid Command.'
 exports.ERROR_NOT_WP_FOLDER = 'You are not in WordPress installation directory.'
