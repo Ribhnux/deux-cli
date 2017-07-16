@@ -28,6 +28,8 @@ if ( ! function_exists( '{{theme.slugfn}}_enqueue_dependencies' ) ) :
 				wp_enqueue_script( $name );
 			} else {
 				foreach ( $libs['files'] as $file ) {
+					if ( ! $file['is_active'] ) continue;
+
 					switch ( $file['ext'] ) {
 						case 'css':
 							wp_enqueue_style( $name, $assets_path . $file['path'], $file['deps'], $libs['version'] );
