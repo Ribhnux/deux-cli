@@ -463,11 +463,15 @@ module.exports = db => {
 
             lib.files = lib.files.map(file => {
               const ext = path.extname(file)
+
+              /* eslint-disable camelcase */
               const fileObj = {
                 ext: ext.replace('.', ''),
                 path: file,
+                is_active: true,
                 deps: (ext === '.js') ? deps : []
               }
+              /* eslint-enable */
 
               return fileObj
             })
