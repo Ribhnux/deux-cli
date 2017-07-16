@@ -39,6 +39,10 @@ const displayPrompt = (db, cmd) => {
       global.commands.require('add/cli/menu')(db)
       break
 
+    case validAddCommand.HELPER:
+      global.commands.require('add/cli/helper')(db)
+      break
+
     default:
       error({
         message: message.ERROR_INVALID_COMMAND,
