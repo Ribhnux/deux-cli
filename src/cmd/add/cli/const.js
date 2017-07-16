@@ -7,6 +7,7 @@ exports.validAddCommand = {
   TEMPLATE: 'template',
   COMPONENT: 'component',
   CUSTOMIZER: 'customizer',
+  HELPER: 'helper',
   HOOK: 'hook'
 }
 
