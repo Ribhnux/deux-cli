@@ -1,0 +1,21 @@
+/* SASS Variables
+  ========================================================================== */
+
+/**
+ * Relative or absolute URL where all assets are served from
+ *
+ * @type {String}
+ */
+$base-url: '../../' !default;
+
+/**
+ * Breakpoints map
+ *
+ * @prop {String} keys - Keys are identifiers mapped to a given length
+ * @prop {Map} values - Values are actual breakpoints expressed in pixels
+ */
+$breakpoints: (
+  'small': 320px,
+  'medium': 768px,
+  'large': 1024px,
+) !default;
