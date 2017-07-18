@@ -1,12 +1,9 @@
-const path = require('path')
 const inquirer = require('inquirer')
-const rimraf = require('rimraf')
 const {happyExit, captchaMaker, separatorMaker} = require('./util')
 
 const {getCurrentTheme, saveConfig} = global.helpers.require('db/utils')
 const {colorlog, done} = global.helpers.require('logger')
 const message = global.const.require('messages')
-const {wpThemeDir} = global.const.require('path')
 
 module.exports = db => {
   colorlog('Remove {Widgets}')
