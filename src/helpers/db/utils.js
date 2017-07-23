@@ -59,6 +59,8 @@ exports.saveConfig = (db, newConfig = {}) => new Promise(resolve => {
   const current = db[dbTypes.CURRENT]
   const theme = extend(db[dbTypes.THEMES][current.slug], newConfig)
   const config = Object.assign({}, theme)
+
+  delete config.template
   delete config.details
 
   const phpconfig = jsonar.arrify(config, {
