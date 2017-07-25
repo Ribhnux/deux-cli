@@ -43,13 +43,15 @@ if ( ! function_exists( '{{theme.slugfn}}_setup' ) ) :
 		// Make theme available for translation.
 		load_theme_textdomain( '{{theme.slug}}' );
 
+		// Native theme support.
+		add_theme_support( 'title-tag' );
+		add_theme_support( 'customize-selective-refresh-widgets' );
+
 		// Init theme supports.
 		foreach ( ${{theme.slugfn}}_config['features'] as $name => $value ) {
 			if ( is_bool( $value ) ) {
 				add_theme_support( $name );
-			}
-
-			if ( is_array( $value ) ) {
+			} else if ( is_array( $value ) ) {
 				$features = array();
 				foreach ( $value as $key => $val ) {
 					if ( is_string( $val ) ) {
@@ -64,9 +66,14 @@ if ( ! function_exists( '{{theme.slugfn}}_setup' ) ) :
 			}
 		}
 
-		// Native theme support.
-		add_theme_support( 'title-tag' );
-		add_theme_support( 'customize-selective-refresh-widgets' );
+		// Add image size.
+		foreach ( ${{theme.slugfn}}_config['imgsize'] as $slug => $imgsize ) {
+			$crop = $imgsize['crop'];
+			if ( is_array( $imgsize['crop'] ) ) {
+				$crop = array( $crop['x'], $crop['y'] );
+			}
+			add_image_size( $slug, $imgsize['width'], $imgsize['height'], $crop );
+		}
 
 		// Register menus.
 		foreach ( ${{theme.slugfn}}_config['menus'] as $menu ) {
