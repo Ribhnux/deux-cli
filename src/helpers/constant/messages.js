@@ -1,5 +1,9 @@
 const chalk = require('chalk')
 
+const removehint = (cmd, prefix = 'Please choose another name') => {
+  return `${prefix}, type: ${chalk.bold.cyan(`deux remove ${cmd}`)} to remove from list`
+}
+
 exports.INIT = 'Initializing'
 exports.INIT_PROJECT = 'Init Deux Project'
 exports.SUCCEED_INITIALIZED = 'Deux project has been initialized'
@@ -19,7 +23,8 @@ exports.SUCCEED_ASSET_ADDED = 'Yay, assets has been added in dependencies list.'
 exports.SUCCEED_WIDGET_ADDED = 'Yay, new widget has been registered.'
 exports.SUCCEED_HELPER_ADDED = 'Yay, new helper has been added to `includes/helpers` directory.'
 exports.SUCCEED_MENU_ADDED = 'Yay, new menu has been registered.'
-exports.SUCCEED_FEATURE_ADDED = 'Yay, feature has added on the list.'
+exports.SUCCEED_FEATURE_ADDED = 'Yay, new feature has been added.'
+exports.SUCCEED_IMGSIZE_ADDED = 'Yay, new image size has been registered.'
 exports.SUCCEED_REMOVED_ASSET = 'Congrats, you have been removed some assets from theme.'
 exports.SUCCEED_REMOVED_PLUGIN = 'Congrats, you have been removed some plugins from theme.'
 exports.SUCCEED_REMOVED_COMPONENT = 'Congrats, you have been removed some components from theme.'
@@ -27,6 +32,7 @@ exports.SUCCEED_REMOVED_HELPER = 'Congrats, you have been removed some helpers f
 exports.SUCCEED_REMOVED_FEATURE = 'Congrats, you have been removed some features from theme.'
 exports.SUCCEED_REMOVED_WIDGET = 'Congrats, you have been removed some widgets from theme.'
 exports.SUCCEED_REMOVED_MENU = 'Congrats, you have been removed some menus from theme.'
+exports.SUCCEED_REMOVED_MENU = 'Congrats, you have been removed some image size from theme.'
 exports.ERROR_INVALID_COMMAND = 'Invalid Command.'
 exports.ERROR_NOT_WP_FOLDER = 'You are not in WordPress installation directory.'
 exports.ERROR_NO_THEME = 'You have 0 themes in project.'
@@ -39,15 +45,16 @@ exports.ERROR_INVALID_URL = 'Invalid URL.'
 exports.ERROR_INVALID_VERSION = 'Invalid Version.'
 exports.ERROR_REPOSITORY_URL_NOT_ZIP = 'Repository URL does not contains .zip extension.'
 exports.ERROR_CANCELED = 'Canceled'
-exports.ERROR_THEME_ALREADY_EXISTS = `Theme already exists, type: ${chalk.bold.cyan('deux remove theme')} to remove existing theme.`
-exports.ERROR_COMPONENT_ALREADY_EXISTS = `Component already exists. Please choose another name, type: ${chalk.bold.cyan('deux remove component')} to remove from list.`
-exports.ERROR_PLUGIN_ALREADY_EXISTS = `Plugin already exists. Please add another one, type: ${chalk.bold.cyan('deux remove plugin')} to remove from list.`
-exports.ERROR_TEMPLATE_ALREADY_EXISTS = `Template already exists. Please choose another name, type: ${chalk.bold.cyan('deux remove template')} to remove from list.`
-exports.ERROR_SASS_FILE_ALREADY_EXISTS = `SASS file already exists. Please choose another name, type: ${chalk.bold.cyan('deux remove sass')} to remove from list.`
-exports.ERROR_WIDGET_ALREADY_EXISTS = `Widget already exists. Please choose another name, type: ${chalk.bold.cyan('deux remove widget')} to remove from list.`
-exports.ERROR_HELPER_ALREADY_EXISTS = `Helper already exists. Please choose another name, type: ${chalk.bold.cyan('deux remove helper')} to remove from list.`
-exports.ERROR_MENU_ALREADY_EXISTS = `Menu location already exists. Please choose another name, type: ${chalk.bold.cyan('deux remove menu')} to remove from list.`
-exports.ERROR_FEATURE_ALREADY_EXISTS = `Feature already exists. Please add another feature, type: ${chalk.bold.cyan('deux remove feature')} to remove from list.`
+exports.ERROR_THEME_ALREADY_EXISTS = `Theme already exists. type: ${chalk.bold.cyan('deux remove theme')} to remove existing theme.`
+exports.ERROR_COMPONENT_ALREADY_EXISTS = `Component already exists. ${removehint('component')}`
+exports.ERROR_PLUGIN_ALREADY_EXISTS = `Plugin already exists. ${removehint('component', 'Please add another one')}`
+exports.ERROR_TEMPLATE_ALREADY_EXISTS = `Template already exists. ${removehint('template')}`
+exports.ERROR_SASS_FILE_ALREADY_EXISTS = `SASS file already exists. ${removehint('sass')}`
+exports.ERROR_WIDGET_ALREADY_EXISTS = `Widget already exists. ${removehint('widget')}`
+exports.ERROR_HELPER_ALREADY_EXISTS = `Helper already exists. ${removehint('helper')}`
+exports.ERROR_MENU_ALREADY_EXISTS = `Menu location already exists. ${removehint('menu')}`
+exports.ERROR_FEATURE_ALREADY_EXISTS = `Feature already exists. ${removehint('menu', 'Please add another feature')}`
+exports.ERROR_IMGSIZE_ALREADY_EXISTS = `Image Size already exists. ${removehint('imgsize')}`
 exports.ERROR_THEME_CREATION_CANCELED = 'Theme creation was canceled.'
 exports.ERROR_GIT_INIT = 'There is something wrong when initializing git.'
 exports.ERROR_GIT_REMOTE_ADD = 'There is something wrong when add remote url to git.'

@@ -267,6 +267,7 @@ module.exports = db => {
             components,
             pageTemplates,
             partialTemplates,
+            imgsize: {},
             hook: {
               filters: [],
               actions: []

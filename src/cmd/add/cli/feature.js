@@ -11,9 +11,9 @@ const {
   html5markup,
   postFormats,
   postTypes,
+  positionTypes,
   bgPresetTypes,
   bgPresetLabels,
-  bgPositionTypes,
   bgSizeTypes,
   bgRepeatTypes,
   bgAttachmentTypes
@@ -160,72 +160,72 @@ module.exports = db => {
         {
           name: 'Top Left',
           value: {
-            x: bgPositionTypes.LEFT,
-            y: bgPositionTypes.TOP
+            x: positionTypes.LEFT,
+            y: positionTypes.TOP
           }
         },
 
         {
           name: 'Top Center',
           value: {
-            x: bgPositionTypes.CENTER,
-            y: bgPositionTypes.TOP
+            x: positionTypes.CENTER,
+            y: positionTypes.TOP
           }
         },
 
         {
           name: 'Top Right',
           value: {
-            x: bgPositionTypes.RIGHT,
-            y: bgPositionTypes.TOP
+            x: positionTypes.RIGHT,
+            y: positionTypes.TOP
           }
         },
 
         {
           name: 'Center Left',
           value: {
-            x: bgPositionTypes.LEFT,
-            y: bgPositionTypes.CENTER
+            x: positionTypes.LEFT,
+            y: positionTypes.CENTER
           }
         },
 
         {
           name: 'Center Middle',
           value: {
-            x: bgPositionTypes.CENTER,
-            y: bgPositionTypes.CENTER
+            x: positionTypes.CENTER,
+            y: positionTypes.CENTER
           }
         },
 
         {
           name: 'Center Right',
           value: {
-            x: bgPositionTypes.RIGHT,
-            y: bgPositionTypes.CENTER
+            x: positionTypes.RIGHT,
+            y: positionTypes.CENTER
           }
         },
 
         {
           name: 'Bottom Left',
           value: {
-            x: bgPositionTypes.LEFT,
-            y: bgPositionTypes.BOTTOM
+            x: positionTypes.LEFT,
+            y: positionTypes.BOTTOM
           }
         },
 
         {
           name: 'Bottom Center',
           value: {
-            x: bgPositionTypes.CENTER,
-            y: bgPositionTypes.BOTTOM
+            x: positionTypes.CENTER,
+            y: positionTypes.BOTTOM
           }
         },
 
         {
           name: 'Bottom Right',
           value: {
-            x: bgPositionTypes.RIGHT,
-            y: bgPositionTypes.BOTTOM
+            x: positionTypes.RIGHT,
+            y: positionTypes.BOTTOM
           }
         }
       ]
@@ -489,8 +489,8 @@ module.exports = db => {
           imageUrl: '',
           color: '#ffffff',
           position: {
-            x: bgPositionTypes.LEFT,
-            y: bgPositionTypes.TOP
+            x: positionTypes.LEFT,
+            y: positionTypes.TOP
           }
         }, feature.options)
 
