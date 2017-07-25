@@ -3,6 +3,7 @@ const {existsSync} = require('fs')
 const inquirer = require('inquirer')
 const rimraf = require('rimraf')
 const wpFileHeader = require('wp-get-file-header')
+const uniq = require('lodash.uniq')
 const {happyExit, captchaMaker, separatorMaker} = require('./util')
 
 const {getCurrentTheme, saveConfig} = global.helpers.require('db/utils')
@@ -69,27 +70,26 @@ module.exports = db => {
         happyExit()
       }
 
-      const filterList = []
-
-      components.forEach(item => {
-        filterList.push(item)
-
-        const componentPath = path.join(componentDirPath, `${item}.php`)
-        if (existsSync(componentPath)) {
-          rimraf.sync(componentPath)
-        }
-      })
-
-      theme.components = theme.components.filter(item => !item.includes(filterList))
-
-      saveConfig(db, {
-        components: theme.components
-      }).then(() => {
-        done({
-          message: message.SUCCEED_REMOVED_COMPONENT,
-          padding: true,
-          exit: true
+      Promise.all(components.map(
+        item => new Promise(resolve => {
+          const componentPath = path.join(componentDirPath, `${item}.php`)
+          if (existsSync(componentPath)) {
+            rimraf.sync(componentPath)
+          }
+          resolve(item)
         })
+      )).then(list => {
+        theme.components = theme.components.filter(item => !list.includes(item))
+
+        saveConfig(db, {
+          components: uniq(theme.components)
+        }).then(() => {
+          done({
+            message: message.SUCCEED_REMOVED_COMPONENT,
+            padding: true,
+            exit: true
+          })
+        }).catch(exit)
       }).catch(exit)
     }).catch(exit)
   }).catch(exit)

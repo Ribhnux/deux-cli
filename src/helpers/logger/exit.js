@@ -1,6 +1,6 @@
 const error = require('./error')
 
-module.export = err => {
+module.exports = err => {
   error({
     message: err.message,
     padding: true,
