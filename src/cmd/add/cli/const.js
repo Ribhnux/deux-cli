@@ -83,7 +83,7 @@ exports.bgPresetLabels = {
   CUSTOM: 'Custom'
 }
 
-exports.bgPositionTypes = {
+exports.positionTypes = {
   LEFT: 'left',
   RIGHT: 'right',
   CENTER: 'center',
