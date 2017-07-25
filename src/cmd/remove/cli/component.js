@@ -3,10 +3,11 @@ const {existsSync} = require('fs')
 const inquirer = require('inquirer')
 const rimraf = require('rimraf')
 const wpFileHeader = require('wp-get-file-header')
+const uniq = require('lodash.uniq')
 const {happyExit, captchaMaker, separatorMaker} = require('./util')
 
 const {getCurrentTheme, saveConfig} = global.helpers.require('db/utils')
-const {colorlog, done} = global.helpers.require('logger')
+const {colorlog, done, exit} = global.helpers.require('logger')
 const message = global.const.require('messages')
 const {wpThemeDir} = global.const.require('path')
 
@@ -20,9 +21,9 @@ module.exports = db => {
         type: 'checkbox',
         name: 'components',
         message: 'Select components you want to remove',
-        choices: () => new Promise(resolve => {
+        choices: () => new Promise((resolve, reject) => {
           Promise.all(theme.components.map(
-            value => new Promise(resolve => {
+            value => new Promise((resolve, reject) => {
               const componentPath = path.join(componentDirPath, `${value}.php`)
               if (existsSync(componentPath)) {
                 wpFileHeader(componentPath).then(info => {
@@ -30,7 +31,7 @@ module.exports = db => {
                     name: info.componentName,
                     value
                   })
-                })
+                }).catch(reject)
               } else {
                 resolve({})
               }
@@ -43,7 +44,7 @@ module.exports = db => {
             }
 
             resolve(components)
-          })
+          }).catch(reject)
         })
       },
 
@@ -69,28 +70,27 @@ module.exports = db => {
         happyExit()
       }
 
-      const filterList = []
-
-      components.forEach(item => {
-        filterList.push(item)
-
-        const componentPath = path.join(componentDirPath, `${item}.php`)
-        if (existsSync(componentPath)) {
-          rimraf.sync(componentPath)
-        }
-      })
-
-      theme.components = theme.components.filter(item => !item.includes(filterList))
-
-      saveConfig(db, {
-        components: theme.components
-      }).then(() => {
-        done({
-          message: message.SUCCEED_REMOVED_COMPONENT,
-          padding: true,
-          exit: true
+      Promise.all(components.map(
+        item => new Promise(resolve => {
+          const componentPath = path.join(componentDirPath, `${item}.php`)
+          if (existsSync(componentPath)) {
+            rimraf.sync(componentPath)
+          }
+          resolve(item)
         })
-      })
-    })
-  })
+      )).then(list => {
+        theme.components = theme.components.filter(item => !list.includes(item))
+
+        saveConfig(db, {
+          components: uniq(theme.components)
+        }).then(() => {
+          done({
+            message: message.SUCCEED_REMOVED_COMPONENT,
+            padding: true,
+            exit: true
+          })
+        }).catch(exit)
+      }).catch(exit)
+    }).catch(exit)
+  }).catch(exit)
 }

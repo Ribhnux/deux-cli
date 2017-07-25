@@ -5,7 +5,7 @@ const {happyExit, captchaMaker, separatorMaker} = require('./util')
 
 const {featureTypes, featureLabels} = global.commands.require('add/cli/const')
 const {getCurrentTheme, saveConfig} = global.helpers.require('db/utils')
-const {colorlog, done} = global.helpers.require('logger')
+const {colorlog, done, exit} = global.helpers.require('logger')
 const message = global.const.require('messages')
 const {wpThemeDir} = global.const.require('path')
 
@@ -97,7 +97,7 @@ module.exports = db => {
       const helpersPath = path.join(wpThemeDir, theme.details.slug, 'includes', 'helpers')
 
       Promise.all(features.map(
-        type => new Promise(resolve => {
+        type => new Promise((resolve, reject) => {
           const removeFiles = []
 
           switch (type) {
@@ -129,7 +129,7 @@ module.exports = db => {
             theme.helpers = theme.helpers.filter(item => !filenames.includes(item))
             delete theme.features[type]
             resolve()
-          })
+          }).catch(reject)
         })
       )).then(() => {
         saveConfig(db, {
@@ -141,8 +141,8 @@ module.exports = db => {
             padding: true,
             exit: true
           })
-        })
-      })
-    })
-  })
+        }).catch(exit)
+      }).catch(exit)
+    }).catch(exit)
+  }).catch(exit)
 }

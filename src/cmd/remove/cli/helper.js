@@ -6,7 +6,7 @@ const wpFileHeader = require('wp-get-file-header')
 const {happyExit, captchaMaker, separatorMaker} = require('./util')
 
 const {getCurrentTheme, saveConfig} = global.helpers.require('db/utils')
-const {colorlog, done} = global.helpers.require('logger')
+const {colorlog, done, exit} = global.helpers.require('logger')
 const message = global.const.require('messages')
 const {wpThemeDir} = global.const.require('path')
 
@@ -20,9 +20,9 @@ module.exports = db => {
         type: 'checkbox',
         name: 'helpers',
         message: 'Select helpers you want to remove',
-        choices: () => new Promise(resolve => {
+        choices: () => new Promise((resolve, reject) => {
           Promise.all(theme.helpers.map(
-            value => new Promise(resolve => {
+            value => new Promise((resolve, reject) => {
               const helperPath = path.join(helperDirPath, `${value}.php`)
               if (existsSync(helperPath)) {
                 wpFileHeader(helperPath).then(info => {
@@ -30,7 +30,7 @@ module.exports = db => {
                     name: info.helperName,
                     value
                   })
-                })
+                }).catch(reject)
               } else {
                 resolve({})
               }
@@ -43,7 +43,7 @@ module.exports = db => {
             }
 
             resolve(helpers)
-          })
+          }).catch(reject)
         })
       },
 
@@ -90,7 +90,7 @@ module.exports = db => {
           padding: true,
           exit: true
         })
-      })
-    })
-  })
+      }).catch(exit)
+    }).catch(exit)
+  }).catch(exit)
 }

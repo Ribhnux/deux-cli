@@ -4,11 +4,10 @@ const Listr = require('listr')
 const inquirer = require('inquirer')
 const execa = require('execa')
 const {dbTypes} = require('./const')
-const {errHandler: dbErrorHandler} = require('./utils')
 
 const message = global.const.require('messages')
 const {wpConfigPath, dbPath} = global.const.require('path')
-const {colorlog, error, done} = global.helpers.require('logger')
+const {colorlog, error, done, exit} = global.helpers.require('logger')
 const validator = global.helpers.require('util/validator')
 
 const succeed = () => {
@@ -79,7 +78,7 @@ const initProject = db => {
       db[dbTypes.ENVIRONMENT] = answers.config
       succeed()
     })
-  }).catch(dbErrorHandler)
+  }).catch(exit)
 }
 
 module.exports = skip => new Promise(resolve => {

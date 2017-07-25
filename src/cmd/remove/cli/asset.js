@@ -6,7 +6,7 @@ const {happyExit, captchaMaker, separatorMaker} = require('./util')
 const {wpThemeDir} = global.const.require('path')
 const {assetTypes} = global.commands.require('add/cli/asset/const')
 const {getCurrentTheme, saveConfig} = global.helpers.require('db/utils')
-const {done, colorlog} = global.helpers.require('logger')
+const {done, colorlog, exit} = global.helpers.require('logger')
 const {capitalize} = global.helpers.require('util/misc')
 const message = global.const.require('messages')
 
@@ -153,7 +153,7 @@ module.exports = db => {
           padding: true,
           exit: true
         })
-      })
-    })
-  })
+      }).catch(exit)
+    }).catch(exit)
+  }).catch(exit)
 }

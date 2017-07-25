@@ -7,7 +7,7 @@ const {templateTypes, postTypes} = require('./const')
 
 const message = global.const.require('messages')
 const {wpThemeDir} = global.const.require('path')
-const {error, done, colorlog} = global.helpers.require('logger')
+const {error, done, colorlog, exit} = global.helpers.require('logger')
 const {getCurrentTheme, saveConfig} = global.helpers.require('db/utils')
 const compileFile = global.helpers.require('compiler/single')
 const validator = global.helpers.require('util/validator')
@@ -114,10 +114,10 @@ module.exports = db => {
 
           if (template.type === templateTypes.PARTIAL) {
             slug = slugifyName(template.prefix, template.name)
-            resolver = theme.template.partials.includes(slug)
+            resolver = theme.partialtemplates.includes(slug)
           } else if (template.type === templateTypes.PAGE) {
             slug = slugify(template.name)
-            resolver = theme.template.pages.includes(slug)
+            resolver = theme.pageTemplates.includes(slug)
           }
 
           resolve(resolver)
@@ -149,7 +149,7 @@ module.exports = db => {
         srcPath = path.join(global.templates.path, '_partials', 'partial-template.php')
         dstPath = path.join(themePath, 'partial-templates', `${template.slug}.php`)
         successMsg = message.SUCCEED_PARTIAL_TEMPLATE_ADDED
-        theme.template.partials = uniq(theme.template.partials.concat(template.slug))
+        theme.partialTemplates = uniq(theme.partialTemplates.concat(template.slug))
       }
 
       if (template.type === templateTypes.PAGE) {
@@ -157,7 +157,7 @@ module.exports = db => {
         srcPath = path.join(global.templates.path, '_partials', 'page-template.php')
         dstPath = path.join(themePath, 'page-templates', `${template.slug}.php`)
         successMsg = message.SUCCEED_PAGE_TEMPLATE_ADDED
-        theme.template.pages = uniq(theme.template.pages.concat(template.slug))
+        theme.pageTemplates = uniq(theme.pageTemplates.concat(template.slug))
       }
 
       compileFile({
@@ -170,14 +170,15 @@ module.exports = db => {
       })
 
       saveConfig(db, {
-        template: theme.template
+        pageTemplates: theme.pageTemplates,
+        partialTemplates: theme.partialTemplates
       }).then(() => {
         done({
           message: successMsg,
           padding: true,
           exit: true
         })
-      })
-    })
-  })
+      }).catch(exit)
+    }).catch(exit)
+  }).catch(exit)
 }

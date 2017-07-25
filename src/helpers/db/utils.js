@@ -1,16 +1,5 @@
 const {dbTypes} = require('./const')
 
-const errHandler = err => {
-  const error = global.helpers.require('logger/error')
-  error({
-    message: err.message,
-    padding: true,
-    exit: true
-  })
-}
-
-exports.dbErrorHandler = errHandler
-
 exports.setCurrentTheme = (db, info) => new Promise((resolve, reject) => {
   try {
     db[dbTypes.CURRENT] = info
@@ -60,7 +49,8 @@ exports.saveConfig = (db, newConfig = {}) => new Promise(resolve => {
   const theme = extend(db[dbTypes.THEMES][current.slug], newConfig)
   const config = Object.assign({}, theme)
 
-  delete config.template
+  delete config.pageTemplates
+  delete config.partialTemplates
   delete config.details
 
   const phpconfig = jsonar.arrify(config, {

@@ -2,7 +2,7 @@ const inquirer = require('inquirer')
 
 const message = global.const.require('messages')
 const {validAddCommand} = global.commands.require('add/cli/const')
-const {error, colorlog} = global.helpers.require('logger')
+const {error, colorlog, exit} = global.helpers.require('logger')
 const {capitalize} = global.helpers.require('util/misc')
 
 const displayPrompt = (db, cmd) => {
@@ -76,6 +76,6 @@ module.exports = (db, option) => {
     colorlog('What you want to remove in your theme?')
     inquirer.prompt(prompts).then(({command}) => {
       displayPrompt(db, command)
-    })
+    }).catch(exit)
   }
 }
