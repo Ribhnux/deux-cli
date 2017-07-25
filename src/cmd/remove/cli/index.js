@@ -2,54 +2,23 @@ const inquirer = require('inquirer')
 
 const message = global.const.require('messages')
 const {validAddCommand} = global.commands.require('add/cli/const')
-const {error, colorlog, exit} = global.helpers.require('logger')
+const {colorlog, exit} = global.helpers.require('logger')
 const {capitalize} = global.helpers.require('util/misc')
 
 const displayPrompt = (db, cmd) => {
-  switch (cmd) {
-    case validAddCommand.HOOK:
-      global.commands.require('remove/cli/hooks')(db)
-      break
+  const availableCommand = []
 
-    case validAddCommand.ASSET:
-      global.commands.require('remove/cli/asset')(db)
-      break
+  for (const key in validAddCommand) {
+    if (Object.prototype.hasOwnProperty.call(validAddCommand, key)) {
+      availableCommand.push(validAddCommand[key])
+      if (cmd === validAddCommand[key]) {
+        global.commands.require(`remove/cli/${validAddCommand[key]}`)(db)
+      }
+    }
+  }
 
-    case validAddCommand.PLUGIN:
-      global.commands.require('remove/cli/plugin')(db)
-      break
-
-    case validAddCommand.FEATURE:
-      global.commands.require('remove/cli/feature')(db)
-      break
-
-    case validAddCommand.TEMPLATE:
-      global.commands.require('remove/cli/template')(db)
-      break
-
-    case validAddCommand.COMPONENT:
-      global.commands.require('remove/cli/component')(db)
-      break
-
-    case validAddCommand.WIDGET:
-      global.commands.require('remove/cli/widget')(db)
-      break
-
-    case validAddCommand.MENU:
-      global.commands.require('remove/cli/menu')(db)
-      break
-
-    case validAddCommand.HELPER:
-      global.commands.require('remove/cli/helper')(db)
-      break
-
-    default:
-      error({
-        message: message.ERROR_INVALID_COMMAND,
-        paddingTop: true,
-        exit: true
-      })
-      break
+  if (!availableCommand.includes(cmd)) {
+    exit(new Error(message.ERROR_INVALID_COMMAND))
   }
 }
 
