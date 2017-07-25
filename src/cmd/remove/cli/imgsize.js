@@ -63,7 +63,7 @@ module.exports = db => {
         })
       )).then(() => {
         saveConfig(db, {
-          imgsize: theme.imgsize,
+          imgsize: theme.imgsize
         }).then(() => {
           done({
             message: message.SUCCEED_REMOVED_IMGSIZE,

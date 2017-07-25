@@ -38,7 +38,7 @@ module.exports = db => {
       type: 'confirm',
       name: 'imgsize.crop',
       message: 'Is image size has cropping feature?',
-      default: true,
+      default: true
     },
 
     {
