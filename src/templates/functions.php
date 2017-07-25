@@ -10,25 +10,25 @@
 require get_template_directory() . '/{{theme.slug}}-config.php';
 
 // Function helpers.
-require get_template_directory() . '/includes/init/helpers.php';
+require get_template_directory() . '/includes/loaders/helpers.php';
 
 // Class libraries.
-require get_template_directory() . '/includes/init/libraries.php';
+require get_template_directory() . '/includes/loaders/libraries.php';
 
 // Theme setup.
-require get_template_directory() . '/includes/init/theme.php';
+require get_template_directory() . '/includes/loaders/theme.php';
 
 // Widgets init.
-require get_template_directory() . '/includes/init/widgets.php';
+require get_template_directory() . '/includes/loaders/widgets.php';
 
 // Plugin dependencies init.
-require get_template_directory() . '/includes/init/plugins.php';
+require get_template_directory() . '/includes/loaders/plugins.php';
 
 // Actions and Filters init.
-require get_template_directory() . '/includes/init/hooks.php';
+require get_template_directory() . '/includes/loaders/hooks.php';
 
 // Assets (JS, CSS, Fonts) init.
-require get_template_directory() . '/includes/init/assets.php';
+require get_template_directory() . '/includes/loaders/assets.php';
 
 // Components init.
-require get_template_directory() . '/includes/init/components.php';
+require get_template_directory() . '/includes/loaders/components.php';
