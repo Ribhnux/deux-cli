@@ -19,7 +19,7 @@ const validator = global.helpers.require('util/validator')
 const {capitalize} = global.helpers.require('util/misc')
 
 module.exports = db => {
-  colorlog(`Add a {New Asset} dependencies`)
+  colorlog('Add a {New Asset} dependencies')
 
   const prompts = [
     {
@@ -339,7 +339,7 @@ module.exports = db => {
           variants: true,
           subsets: true
         }
-        const searchLoader = loader(`Load list...`)
+        const searchLoader = loader('Load list...')
 
         weft.apiKey(apiKey)
         weft.list(fields).then(result => {

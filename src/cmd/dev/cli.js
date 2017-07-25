@@ -61,7 +61,7 @@ module.exports = db => {
           })
         )
         .pipe(rename({suffix: '.min'}))
-        .pipe(srcmap.write(`./`))
+        .pipe(srcmap.write('./'))
         .pipe(gulp.dest(assetsPath))
 
       return merge(style, minStyle)

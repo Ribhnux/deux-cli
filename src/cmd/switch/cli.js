@@ -30,7 +30,7 @@ const displayPrompt = db => {
   const inquirer = require('inquirer')
   const colorlog = global.helpers.require('logger/colorlog')
 
-  colorlog(`Switch to another {theme}`)
+  colorlog('Switch to another {theme}')
 
   const prompts = [
     {
