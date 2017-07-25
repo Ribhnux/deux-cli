@@ -8,7 +8,8 @@ exports.validAddCommand = {
   COMPONENT: 'component',
   CUSTOMIZER: 'customizer',
   HELPER: 'helper',
-  HOOK: 'hook'
+  HOOK: 'hook',
+  IMGSIZE: 'imgsize'
 }
 
 exports.templateTypes = {
