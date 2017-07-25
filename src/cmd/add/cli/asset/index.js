@@ -410,13 +410,16 @@ module.exports = db => {
       let task = new Promise(resolve => resolve())
 
       // Download Assets
-      if (asset.type === assetTypes.LIB && asset.source === libSource.CDN) {
-        const libsemver = `${lib.name.handle}@${lib.version}`
+      if (asset.type === assetTypes.LIB && lib.source === libSource.CDN) {
+        let libsemver = lib.name.handle
+        if (lib.version) {
+          libsemver += `@${lib.version}`
+        }
+
         const libpath = path.join(assetPath, 'libs', libsemver)
-        const downloaderMap = filename => download(filename, libpath)
+        const downloadLoader = loader('Downloading assets...')
 
         task = new Promise((resolve, reject) => {
-          const downloadLoader = loader('Downloading assets...')
           rimraf(path.join(libpath, '*'), err => {
             if (err) {
               throw err
@@ -427,7 +430,9 @@ module.exports = db => {
                 throw err
               }
 
-              Promise.all(cdnjs.url(libsemver, lib.files).map(downloaderMap)).then(() => {
+              Promise.all(cdnjs.url(libsemver, lib.files).map(
+                filename => download(filename, libpath)
+              )).then(() => {
                 downloadLoader.succeed(`${lib.files.length} file(s) downloaded.`)
                 resolve()
               }).catch(reject)
