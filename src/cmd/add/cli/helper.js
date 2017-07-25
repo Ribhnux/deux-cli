@@ -8,7 +8,7 @@ const {getCurrentTheme, saveConfig} = global.helpers.require('db/utils')
 const validator = global.helpers.require('util/validator')
 const message = global.const.require('messages')
 const {wpThemeDir} = global.const.require('path')
-const {colorlog, done, error} = global.helpers.require('logger')
+const {colorlog, done, error, exit} = global.helpers.require('logger')
 const compileFile = global.helpers.require('compiler/single')
 
 module.exports = db => {
@@ -76,7 +76,7 @@ module.exports = db => {
           padding: true,
           exit: true
         })
-      })
-    })
-  })
+      }).catch(exit)
+    }).catch(exit)
+  }).catch(exit)
 }

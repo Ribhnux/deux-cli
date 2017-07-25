@@ -11,7 +11,7 @@ const {getCurrentTheme, saveConfig} = global.helpers.require('db/utils')
 const validator = global.helpers.require('util/validator')
 const message = global.const.require('messages')
 const compileFile = global.helpers.require('compiler/single')
-const {colorlog, done, error} = global.helpers.require('logger')
+const {colorlog, done, error, exit} = global.helpers.require('logger')
 const {capitalize} = global.helpers.require('util/misc')
 
 module.exports = db => {
@@ -109,7 +109,7 @@ module.exports = db => {
           padding: true,
           exit: true
         })
-      })
-    })
-  })
+      }).catch(exit)
+    }).catch(exit)
+  }).catch(exit)
 }

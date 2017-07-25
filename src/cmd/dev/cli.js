@@ -14,6 +14,7 @@ const replacer = require('gulp-replace')
 
 const {getEnv, getCurrentTheme} = global.helpers.require('db/utils')
 const {wpThemeDir} = global.const.require('path')
+const exit = global.helpers.require('logger/exit')
 
 const tasklist = [
   'start-server',
@@ -89,5 +90,5 @@ module.exports = db => {
 
     const args = [tasklist]
     gulp.start.apply(gulp, args)
-  })
+  }).catch(exit)
 }

@@ -1,8 +1,8 @@
-const switchTo = (db, themeName) => {
-  const {setCurrentTheme, getCurrentTheme, getTheme, dbErrorHandler} = global.helpers.require('db/utils')
-  const done = global.helpers.require('logger/done')
-  const message = global.const.require('messages')
+const {done, exit} = global.helpers.require('logger')
+const {setCurrentTheme, getCurrentTheme, getTheme} = global.helpers.require('db/utils')
+const message = global.const.require('messages')
 
+const switchTo = (db, themeName) => {
   getCurrentTheme(db).then(currentTheme => {
     if (currentTheme.details.slug === themeName) {
       done({
@@ -20,9 +20,9 @@ const switchTo = (db, themeName) => {
           padding: true,
           exit: true
         })
-      }).catch(dbErrorHandler)
-    }).catch(dbErrorHandler)
-  })
+      }).catch(exit)
+    }).catch(exit)
+  }).catch(exit)
 }
 
 const displayPrompt = db => {
@@ -63,7 +63,7 @@ const displayPrompt = db => {
     if (answers.confirm) {
       switchTo(db, answers.theme)
     }
-  })
+  }).catch(exit)
 }
 
 module.exports = (db, theme) => {

@@ -1,16 +1,5 @@
 const {dbTypes} = require('./const')
 
-const errHandler = err => {
-  const error = global.helpers.require('logger/error')
-  error({
-    message: err.message,
-    padding: true,
-    exit: true
-  })
-}
-
-exports.dbErrorHandler = errHandler
-
 exports.setCurrentTheme = (db, info) => new Promise((resolve, reject) => {
   try {
     db[dbTypes.CURRENT] = info

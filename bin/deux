@@ -3,6 +3,10 @@ const globalPath = require('global-path')
 const updateNotifier = require('update-notifier')
 const pkg = require('../package.json')
 const program = require('caporal')
+const roadrunner = require('roadrunner')
+
+// Load with roadrunner
+roadrunner.load()
 
 // Register global path
 globalPath('helpers', '@/../src/helpers', '')
@@ -22,6 +26,9 @@ global.commands.require('dev')
 // require('../src/cmd/import')
 // require('../src/cmd/release')
 program.parse(process.argv)
+
+// Save roadrunner
+roadrunner.save()
 
 // A .command('new', 'Create a New Theme', {noHelp: true})
 // .command('switch [theme]', 'Switch to another theme')

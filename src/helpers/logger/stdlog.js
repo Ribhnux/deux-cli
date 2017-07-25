@@ -43,6 +43,8 @@ module.exports = options => {
   }
 
   if (exit) {
-    throw new Error()
+    /* eslint-disable unicorn/no-process-exit */
+    process.exit(1)
+    /* eslint-enable */
   }
 }

@@ -13,7 +13,7 @@ const {assetTypes, sassTypes, libSource, registeredScript, fontSource} = require
 const message = global.const.require('messages')
 const {wpThemeDir} = global.const.require('path')
 const compileFile = global.helpers.require('compiler/single')
-const {colorlog, error, done, loader} = global.helpers.require('logger')
+const {colorlog, error, done, loader, exit} = global.helpers.require('logger')
 const {getEnv, getCurrentTheme, saveConfig} = global.helpers.require('db/utils')
 const validator = global.helpers.require('util/validator')
 const {capitalize} = global.helpers.require('util/misc')
@@ -128,9 +128,7 @@ module.exports = db => {
           setTimeout(() => {
             resolve(choices)
           }, 500)
-        }).catch(err => {
-          reject(err)
-        })
+        }).catch(reject)
       })
     },
 
@@ -157,9 +155,7 @@ module.exports = db => {
           setTimeout(() => {
             resolve(choices)
           }, 500)
-        }).catch(err => {
-          reject(err)
-        })
+        }).catch(reject)
       })
     },
 
@@ -186,9 +182,7 @@ module.exports = db => {
             })
           choices.splice(0, 0, new inquirer.Separator())
           resolve(choices)
-        }).catch(err => {
-          reject(err)
-        })
+        }).catch(reject)
       }),
       validate: value => validator(value, {minimum: 1, array: true, var: 'Files'})
     },
@@ -312,9 +306,7 @@ module.exports = db => {
           }
           list.splice(0, 0, new inquirer.Separator())
           resolve(list)
-        }).catch(err => {
-          reject(err)
-        })
+        }).catch(reject)
       })
     },
 
@@ -360,9 +352,7 @@ module.exports = db => {
           }
           list.splice(0, 0, new inquirer.Separator())
           resolve(list)
-        }).catch(err => {
-          reject(err)
-        })
+        }).catch(reject)
       })
     },
 
@@ -440,9 +430,7 @@ module.exports = db => {
               Promise.all(cdnjs.url(libsemver, lib.files).map(downloaderMap)).then(() => {
                 downloadLoader.succeed(`${lib.files.length} file(s) downloaded.`)
                 resolve()
-              }).catch(err => {
-                reject(err)
-              })
+              }).catch(reject)
             })
           })
         })
@@ -544,8 +532,8 @@ module.exports = db => {
             padding: true,
             exit: true
           })
-        })
-      })
-    })
-  })
+        }).catch(exit)
+      }).catch(exit)
+    }).catch(exit)
+  }).catch(exit)
 }

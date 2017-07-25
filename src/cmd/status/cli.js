@@ -1,8 +1,7 @@
 const path = require('path')
 const chalk = require('chalk')
 
-const colorlog = global.helpers.require('logger/colorlog')
-const noop = global.helpers.require('logger/noop')
+const {colorlog, noop, exit} = global.helpers.require('logger')
 const {wpThemeDir} = global.helpers.require('constant/path')
 const {getCurrentTheme} = global.helpers.require('db/utils')
 
@@ -36,5 +35,5 @@ module.exports = db => {
     colorlog(stats.join('\n'))
     colorlog(`type ${chalk.bold.cyan('deux switch')} to change with another project.`, false)
     noop()
-  })
+  }).catch(exit)
 }
