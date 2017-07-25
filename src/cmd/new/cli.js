@@ -267,10 +267,8 @@ module.exports = db => {
               },
               plugins: {},
               components,
-              template: {
-                pages: pageTemplates,
-                partials: partialTemplates
-              },
+              pageTemplates,
+              partialTemplates,
               hook: {
                 filters: [],
                 actions: []
