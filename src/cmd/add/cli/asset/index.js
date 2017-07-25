@@ -411,7 +411,11 @@ module.exports = db => {
 
       // Download Assets
       if (asset.type === assetTypes.LIB && lib.source === libSource.CDN) {
-        const libsemver = `${lib.name.handle}@${lib.version}`
+        let libsemver = lib.name.handle
+        if (lib.version) {
+          libsemver += `@${lib.version}`
+        }
+
         const libpath = path.join(assetPath, 'libs', libsemver)
         const downloadLoader = loader('Downloading assets...')
 

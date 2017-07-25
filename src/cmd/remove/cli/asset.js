@@ -29,7 +29,10 @@ module.exports = db => {
           for (const value in theme.asset.libs) {
             if (Object.prototype.hasOwnProperty.call(theme.asset.libs, value)) {
               let version = ''
+              let semver = value
+
               if (theme.asset.libs[value].version) {
+                semver += `@${theme.asset.libs[value].version}`
                 version = `v${theme.asset.libs[value].version}`
               }
 
@@ -37,6 +40,7 @@ module.exports = db => {
                 name: `${value}${version}`,
                 value: {
                   key: assetTypes.LIB,
+                  semver,
                   value
                 }
               })
@@ -125,6 +129,7 @@ module.exports = db => {
       assets.forEach(item => {
         switch (item.key) {
           case assetTypes.LIB:
+            rimraf.sync(path.join(assetPath, 'libs', item.semver))
             delete theme.asset.libs[item.value]
             break
 
