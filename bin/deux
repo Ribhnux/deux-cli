@@ -14,8 +14,9 @@ globalPath('const', '@/../src/helpers/constant', '')
 globalPath('commands', '@/../src/cmd', '')
 globalPath('templates', '@/../src/templates', '')
 
-process.on('unhandledRejection', err => {
+process.on('unhandledRejection', (err, p) => {
   const exit = global.helpers.require('logger/exit')
+  console.log(p)
   exit(err)
 })
 
