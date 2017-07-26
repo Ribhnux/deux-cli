@@ -7,7 +7,7 @@ const {templateTypes, postTypes} = require('./const')
 
 const message = global.const.require('messages')
 const {wpThemeDir} = global.const.require('path')
-const {error, done, colorlog, exit} = global.helpers.require('logger')
+const {error, colorlog, exit, finish} = global.helpers.require('logger')
 const {getCurrentTheme, saveConfig} = global.helpers.require('db/utils')
 const compileFile = global.helpers.require('compiler/single')
 const validator = global.helpers.require('util/validator')
@@ -172,13 +172,7 @@ module.exports = db => {
       saveConfig(db, {
         pageTemplates: theme.pageTemplates,
         partialTemplates: theme.partialTemplates
-      }).then(() => {
-        done({
-          message: successMsg,
-          padding: true,
-          exit: true
-        })
-      }).catch(exit)
+      }).then(finish(successMsg)).catch(exit)
     }).catch(exit)
   }).catch(exit)
 }

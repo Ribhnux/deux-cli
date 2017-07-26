@@ -1,17 +1,11 @@
 const faker = require('faker')
 const inquirer = require('inquirer')
 
-const done = global.helpers.require('logger/done')
+const finish = global.helpers.require('logger/done')
 const message = global.const.require('messages')
 const validator = global.helpers.require('util/validator')
 
-exports.happyExit = () => {
-  done({
-    message: message.DONE_NO_REMOVE,
-    padding: true,
-    exit: true
-  })
-}
+exports.happyExit = () => finish(message.DONE_NO_REMOVE)
 
 exports.captchaMaker = () => {
   const randomCaptcha = faker.lorem.word()

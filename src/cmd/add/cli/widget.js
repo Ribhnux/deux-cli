@@ -6,7 +6,7 @@ const jsonar = require('jsonar')
 const {getCurrentTheme, saveConfig} = global.helpers.require('db/utils')
 const validator = global.helpers.require('util/validator')
 const message = global.const.require('messages')
-const {colorlog, done, error, exit} = global.helpers.require('logger')
+const {colorlog, error, exit, finish} = global.helpers.require('logger')
 
 module.exports = db => {
   colorlog('Register {New Widget}')
@@ -63,13 +63,7 @@ module.exports = db => {
 
       saveConfig(db, {
         widgets: theme.widgets
-      }).then(() => {
-        done({
-          message: message.SUCCEED_WIDGET_ADDED,
-          padding: true,
-          exit: true
-        })
-      }).catch(exit)
+      }).then(finish(message.SUCCEED_WIDGET_ADDED)).catch(exit)
     }).catch(exit)
   }).catch(exit)
 }

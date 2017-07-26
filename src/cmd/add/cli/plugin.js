@@ -10,7 +10,7 @@ const {pluginSrcTypes} = require('./const')
 const message = global.const.require('messages')
 const {wpThemeDir} = global.const.require('path')
 const validator = global.helpers.require('util/validator')
-const {colorlog, error, done, loader, exit} = global.helpers.require('logger')
+const {colorlog, error, loader, exit, finish} = global.helpers.require('logger')
 const compileFile = global.helpers.require('compiler/single')
 const {getCurrentTheme, saveConfig} = global.helpers.require('db/utils')
 const {capitalize} = global.helpers.require('util/misc')
@@ -257,13 +257,7 @@ module.exports = db => {
 
       saveConfig(db, {
         plugins: theme.plugins
-      }).then(() => {
-        done({
-          message: message.SUCCEED_PLUGIN_ADDED,
-          padding: true,
-          exit: true
-        })
-      }).catch(exit)
+      }).then(finish(message.SUCCEED_PLUGIN_ADDED)).catch(exit)
     }).catch(exit)
   }).catch(exit)
 }

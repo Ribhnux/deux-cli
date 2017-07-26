@@ -7,7 +7,7 @@ const {dbTypes} = require('./const')
 
 const message = global.const.require('messages')
 const {wpConfigPath, dbPath} = global.const.require('path')
-const {colorlog, error, done, exit} = global.helpers.require('logger')
+const {colorlog, error, exit, finish} = global.helpers.require('logger')
 const validator = global.helpers.require('util/validator')
 
 const succeed = () => {
@@ -15,11 +15,7 @@ const succeed = () => {
     message: message.ERROR_NO_THEME,
     paddingTop: true
   })
-  done({
-    message: message.CREATE_NEW_THEME,
-    paddingBottom: true,
-    exit: true
-  })
+  finish(message.CREATE_NEW_THEME)
 }
 
 const initProject = db => {

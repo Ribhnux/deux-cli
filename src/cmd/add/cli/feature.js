@@ -24,7 +24,7 @@ const {getCurrentTheme, saveConfig} = global.helpers.require('db/utils')
 const validator = global.helpers.require('util/validator')
 const message = global.const.require('messages')
 const compileFile = global.helpers.require('compiler/single')
-const {colorlog, done, error, exit} = global.helpers.require('logger')
+const {colorlog, error, exit, finish} = global.helpers.require('logger')
 
 module.exports = db => {
   colorlog('Add {Theme Feature}')
@@ -591,13 +591,7 @@ module.exports = db => {
       saveConfig(db, {
         features: theme.features,
         helpers: uniq(theme.helpers)
-      }).then(() => {
-        done({
-          message: message.SUCCEED_FEATURE_ADDED,
-          padding: true,
-          exit: true
-        })
-      }).catch(exit)
+      }).then(finish(message.SUCCEED_FEATURE_ADDED)).catch(exit)
     }).catch(exit)
   }).catch(exit)
 }

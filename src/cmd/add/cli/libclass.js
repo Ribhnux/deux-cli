@@ -8,7 +8,7 @@ const {getCurrentTheme, saveConfig} = global.helpers.require('db/utils')
 const validator = global.helpers.require('util/validator')
 const message = global.const.require('messages')
 const {wpThemeDir} = global.const.require('path')
-const {colorlog, done, error, exit} = global.helpers.require('logger')
+const {colorlog, error, exit, finish} = global.helpers.require('logger')
 const compileFile = global.helpers.require('compiler/single')
 const {capitalize} = global.helpers.require('util/misc')
 
@@ -72,13 +72,7 @@ module.exports = db => {
 
       saveConfig(db, {
         libraries: uniq(theme.libraries)
-      }).then(() => {
-        done({
-          message: message.SUCCEED_LIBCLASS_ADDED,
-          padding: true,
-          exit: true
-        })
-      }).catch(exit)
+      }).then(finish(message.SUCCEED_LIBCLASS_ADDED)).catch(exit)
     }).catch(exit)
   }).catch(exit)
 }
