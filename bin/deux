@@ -27,27 +27,10 @@ global.commands.require('switch')
 global.commands.require('add')
 global.commands.require('remove')
 global.commands.require('dev')
-// A require('../src/cmd/upgrade')
-// require('../src/cmd/sync')
-// require('../src/cmd/import')
-// require('../src/cmd/release')
 program.parse(process.argv)
 
 // Save roadrunner
 roadrunner.save()
-
-// A .command('new', 'Create a New Theme', {noHelp: true})
-// .command('switch [theme]', 'Switch to another theme')
-// .command('add [option]', 'Add Plugin dependencies, Assets, Templates, and Hooks')
-// .command('remove [option]', 'Remove Plugin dependencies, assets, Templates, and Hooks')
-// .command('upgrade', 'Upgrade Assets / Plugin dependencies, check if there are any newer source')
-// .command('status', 'Display current theme status')
-// .command('sync', 'Synchronize theme config with project\'s database')
-// .command('import [theme]', 'Import existing theme in wp-theme directory to project')
-// .command('config [options]', 'Get and set config / environments')
-// .command('dev', 'Run in development mode')
-// .command('test', 'Run theme check, test, and compatibility')
-// .command('release', 'Release theme to your repository')
 
 // Update notify code.
 updateNotifier({
