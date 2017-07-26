@@ -7,16 +7,16 @@ const mkdirp = require('mkdirp')
 const rimraf = require('rimraf')
 const execa = require('execa')
 const wpFileHeader = require('wp-get-file-header')
-const jsonar = require('jsonar')
 const slugify = require('node-slugify')
+const jsonar = require('jsonar')
 const {validTags} = require('./const')
 
 const CLI = global.deuxcli.require('main')
 const messages = global.deuxcli.require('messages')
 const validator = global.deuxhelpers.require('util/validator')
-const {colorlog, exit} = global.deuxhelpers.require('logger')
-const {filelist} = global.deuxhelpers.require('util/file')
+const {colorlog, exit, finish} = global.deuxhelpers.require('logger')
 const {capitalize} = global.deuxhelpers.require('util/misc')
+const compileFiles = global.deuxhelpers.require('compiler/bulk')
 
 class NewCLI extends CLI {
   constructor() {
@@ -139,10 +139,10 @@ class NewCLI extends CLI {
         name: 'overwrite',
         message: 'Theme already exists. Overwrite?',
         default: false,
-        when: answers => {
-          const themePath = this.themePath(slugify(answers.theme.name))
-          return existsSync(themePath)
-        }
+        when: answers => new Promise(resolve => {
+          const themePath = this.themePath(slugify(answers.theme.name.toLowerCase()))
+          resolve(existsSync(themePath))
+        })
       },
 
       {
@@ -153,9 +153,7 @@ class NewCLI extends CLI {
     ]
   }
 
-  action(answers) {
-    const {theme, overwrite, confirm} = answers
-
+  action({theme, overwrite, confirm}) {
     if (!confirm) {
       exit(messages.ERROR_THEME_CREATION_CANCELED)
     }
@@ -167,7 +165,7 @@ class NewCLI extends CLI {
     const themePath = this.themePath(theme.slug)
     const gitPath = path.join(themePath, '.git')
 
-    colorlog(`Initialize {${theme.name}}`)
+    colorlog(`Initializing {${theme.name}}`)
 
     const task = new Listr([
       {
@@ -213,19 +211,19 @@ class NewCLI extends CLI {
           const phpRegx = /\.php$/g
           const notHiddenFile = item => item && item !== '.gitkeep'
 
-          const components = filelist(path.join(global.templates.path, 'components'))
+          const components = this.templateSourceList('components')
             .map(item => item.replace(phpRegx, ''))
             .filter(notHiddenFile)
 
-          const partialTemplates = filelist(path.join(global.templates.path, 'partial-templates'))
+          const partialTemplates = this.templateSourceList('partial-templates')
             .map(item => item.replace(phpRegx, ''))
             .filter(notHiddenFile)
 
-          const pageTemplates = filelist(path.join(global.templates.path, 'page-templates'))
+          const pageTemplates = this.templateSourceList('page-templates')
             .map(item => item.replace(phpRegx, ''))
             .filter(notHiddenFile)
 
-          const themeInfo = {
+          const info = {
             details: theme,
             develop: false,
             optimize: true,
@@ -259,7 +257,8 @@ class NewCLI extends CLI {
           }
 
           try {
-            this.addTheme(theme.slug, themeInfo)
+            this.addTheme(theme.slug, info)
+            this.setCurrentTheme(theme)
             resolve()
           } catch (err) {
             reject(err)
@@ -270,17 +269,17 @@ class NewCLI extends CLI {
       {
         title: 'Init WordPress Theme',
         task: () => new Promise(resolve => {
-          const themedb = Object.assign({}, db[dbTypes.THEMES][theme.slug])
-          delete themedb.details
+          const themeInfo = this.themeInfo()
+          delete themeInfo.details
 
-          const config = jsonar.arrify(themedb, {
+          const config = jsonar.arrify(themeInfo, {
             prettify: true,
             quote: jsonar.quoteTypes.SINGLE,
             trailingComma: true
           })
 
           compileFiles({
-            srcDir: global.templates.path,
+            srcDir: global.deuxtpl.path,
             dstDir: themePath,
             rename: {
               'config.php': `${theme.slug}-config.php`
@@ -290,6 +289,7 @@ class NewCLI extends CLI {
               config
             }
           })
+
           resolve()
         })
       },
@@ -324,17 +324,14 @@ class NewCLI extends CLI {
             task: () => execa.stdout('git', [`--git-dir=${gitPath}`, 'fetch'])
           }
         ])
-      },
-
-      {
-        title: `Save ${theme.name} to database`,
-        task: () => new Promise((resolve, reject) => {
-          this.setCurrentTheme(theme).then(resolve).catch(reject)
-        })
       }
     ])
 
-    task.run().catch(() => {
+    task.run()
+    .then(() => {
+      finish(messages.SUCCEED_CREATE_NEW_THEME)
+    })
+    .catch(() => {
       setTimeout(() => {
         rimraf(themePath, err => {
           if (err) {

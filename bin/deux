@@ -13,7 +13,7 @@ globalPath('deuxcli', '@/../src/cli', '')
 globalPath('deuxhelpers', '@/../src/helpers', '')
 globalPath('deuxconst', '@/../src/helpers/fixtures', '')
 globalPath('deuxcmd', '@/../src/cmd', '')
-// globalPath('templates', '@/../src/templates', '')
+globalPath('deuxtpl', '@/../src/templates', '')
 
 process.on('unhandledRejection', (err, p) => {
   const exit = global.deuxhelpers.require('logger/exit')

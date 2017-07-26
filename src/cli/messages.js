@@ -14,6 +14,7 @@ exports.DONE_FINISH = 'Finish'
 exports.DONE_UPDATED = 'Updated'
 exports.DONE_NO_REMOVE = 'Good, nothing to remove, keep your config safe.'
 exports.SUCCEED_INIT_DB = 'Success init database.'
+exports.SUCCEED_CREATE_NEW_THEME = 'Congrats, your new theme has been created.'
 exports.SUCCEED_ALREADY_IN_CURRENT_PROJECT = 'Theme already used as current project.'
 exports.SUCCEED_THEME_SWITCHED = `Switched with another theme, type: ${chalk.bold.cyan('deux status')} to view project details.`
 exports.SUCCEED_COMPONENT_ADDED = 'Yay, new component has been added to `components` directory.'

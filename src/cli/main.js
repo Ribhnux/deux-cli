@@ -4,7 +4,7 @@ const {dbTypes} = require('./fixtures')
 const Init = require('./init')
 
 const {colorlog, exit} = global.deuxhelpers.require('logger')
-const {dirlist} = global.deuxhelpers.require('util/file')
+const {dirlist, filelist} = global.deuxhelpers.require('util/file')
 
 const init = new Init()
 
@@ -24,7 +24,9 @@ class CLI {
 
       if (this.prompts.length > 0) {
         colorlog(this.title)
-        inquirer.prompt(this.prompts).then(this.action).catch(exit)
+        inquirer.prompt(this.prompts).then(answers => {
+          this.action(answers)
+        }).catch(exit)
       }
     })
   }
@@ -54,6 +56,64 @@ class CLI {
     }
 
     return this.db[dbTypes.CONFIG][key]
+  }
+
+  /**
+   * Alias of getCurrentTheme
+   */
+  themeInfo() {
+    return this.getCurrentTheme()
+  }
+
+  /**
+   * Get theme details
+   *
+   * @param {String} key
+   */
+  themeDetails(key = '') {
+    const currentTheme = this.getCurrentTheme()
+
+    if (key !== '') {
+      return currentTheme.details[key]
+    }
+
+    return currentTheme.details
+  }
+
+  /**
+   * Save current theme config
+   *
+   * @param {Object} newConfig
+   */
+  setThemeConfig(newConfig = {}) {
+    const extend = require('extend')
+    const path = require('path')
+    const jsonar = require('jsonar')
+
+    const compileFile = global.deuxhelpers.require('compiler/single')
+
+    const themeInfo = extend(this.themeInfo(), newConfig)
+    const themeDetails = this.themeDetails()
+    const config = Object.assign({}, themeInfo)
+
+    delete config.pageTemplates
+    delete config.partialTemplates
+    delete config.details
+
+    const phpconfig = jsonar.arrify(config, {
+      prettify: true,
+      quote: jsonar.quoteTypes.SINGLE,
+      trailingComma: true
+    })
+
+    compileFile({
+      srcPath: path.join(global.deuxtpl.path, 'config.php'),
+      dstPath: path.join(this.themePath(themeDetails.slug), `${themeDetails.slug}-config.php`),
+      syntax: {
+        theme: themeDetails,
+        config: phpconfig
+      }
+    })
   }
 
   /**
@@ -93,6 +153,13 @@ class CLI {
   }
 
   /**
+   * Get current active theme in project
+   */
+  getCurrentTheme() {
+    return this.db[dbTypes.THEMES][this.db[dbTypes.CURRENT].slug]
+  }
+
+  /**
    * Set active theme in project
    *
    * @param {Object} object
@@ -102,40 +169,18 @@ class CLI {
   }
 
   /**
-   * Save current theme config
+   * Get template source index list
    *
-   * @param {Object} newConfig
+   * @param {String} dir
    */
-  saveConfig(newConfig = {}) {
-    const extend = require('extend')
-    const path = require('path')
-    const jsonar = require('jsonar')
+  templateSourceList(dir = '') {
+    let list = [global.deuxtpl.path]
 
-    const {wpThemeDir} = global.const.require('path')
-    const compileFile = global.helpers.require('compiler/single')
+    if (dir !== '') {
+      list = list.concat(dir)
+    }
 
-    const current = this.db[dbTypes.CURRENT]
-    const theme = extend(this.db[dbTypes.THEMES][current.slug], newConfig)
-    const config = Object.assign({}, theme)
-
-    delete config.pageTemplates
-    delete config.partialTemplates
-    delete config.details
-
-    const phpconfig = jsonar.arrify(config, {
-      prettify: true,
-      quote: jsonar.quoteTypes.SINGLE,
-      trailingComma: true
-    })
-
-    compileFile({
-      srcPath: path.join(global.templates.path, 'config.php'),
-      dstPath: path.join(wpThemeDir, theme.details.slug, `${theme.details.slug}-config.php`),
-      syntax: {
-        theme: theme.details,
-        config: phpconfig
-      }
-    })
+    return filelist(path.join(...list))
   }
 }
 
