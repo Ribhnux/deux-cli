@@ -9,7 +9,8 @@ exports.validAddCommand = {
   CUSTOMIZER: 'customizer',
   HELPER: 'helper',
   HOOK: 'hook',
-  IMGSIZE: 'imgsize'
+  IMGSIZE: 'imgsize',
+  LIBCLASS: 'libclass'
 }
 
 exports.templateTypes = {
