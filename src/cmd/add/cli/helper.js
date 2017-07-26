@@ -8,7 +8,7 @@ const {getCurrentTheme, saveConfig} = global.helpers.require('db/utils')
 const validator = global.helpers.require('util/validator')
 const message = global.const.require('messages')
 const {wpThemeDir} = global.const.require('path')
-const {colorlog, done, error, exit} = global.helpers.require('logger')
+const {colorlog, exit, finish} = global.helpers.require('logger')
 const compileFile = global.helpers.require('compiler/single')
 
 module.exports = db => {
@@ -45,11 +45,7 @@ module.exports = db => {
   return inquirer.prompt(prompts).then(({helper}) => {
     getCurrentTheme(db).then(theme => {
       if (helper.overwrite === false) {
-        error({
-          message: message.ERROR_HELPER_ALREADY_EXISTS,
-          padding: true,
-          exit: true
-        })
+        exit(message.ERROR_HELPER_ALREADY_EXISTS)
       }
 
       helper.slugfn = slugify(helper.name, {replacement: '_'})
@@ -70,13 +66,7 @@ module.exports = db => {
 
       saveConfig(db, {
         helpers: uniq(theme.helpers)
-      }).then(() => {
-        done({
-          message: message.SUCCEED_HELPER_ADDED,
-          padding: true,
-          exit: true
-        })
-      }).catch(exit)
+      }).then(finish(message.SUCCEED_HELPER_ADDED)).catch(exit)
     }).catch(exit)
   }).catch(exit)
 }

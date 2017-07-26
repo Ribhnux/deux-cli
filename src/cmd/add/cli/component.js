@@ -5,7 +5,7 @@ const slugify = require('node-slugify')
 const uniq = require('lodash.uniq')
 
 const validator = global.helpers.require('util/validator')
-const {error, done, colorlog, exit} = global.helpers.require('logger')
+const {colorlog, exit, finish} = global.helpers.require('logger')
 const message = global.const.require('messages')
 const {wpThemeDir} = global.const.require('path')
 const compileFile = global.helpers.require('compiler/single')
@@ -44,11 +44,7 @@ module.exports = db => {
   inquirer.prompt(prompts).then(({component}) => {
     getCurrentTheme(db).then(theme => {
       if (component.overwrite === false) {
-        error({
-          message: message.ERROR_COMPONENT_ALREADY_EXISTS,
-          padding: true,
-          exit: true
-        })
+        exit(message.ERROR_COMPONENT_ALREADY_EXISTS)
       }
 
       component.slug = slugify(component.name)
@@ -72,13 +68,7 @@ module.exports = db => {
 
       saveConfig(db, {
         components: uniq(theme.components)
-      }).then(() => {
-        done({
-          message: message.SUCCEED_COMPONENT_ADDED,
-          padding: true,
-          exit: true
-        })
-      }).catch(exit)
+      }).then(finish(message.SUCCEED_COMPONENT_ADDED)).catch(exit)
     }).catch(exit)
   }).catch(exit)
 }

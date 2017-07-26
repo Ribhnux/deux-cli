@@ -31,7 +31,21 @@ module.exports = (db, option) => {
       choices: () => new Promise(resolve => {
         const list = Object.keys(validAddCommand).map(key => {
           const value = validAddCommand[key]
-          const name = capitalize(value) + 's'
+
+          let name
+          switch (value) {
+            case validAddCommand.LIBCLASS:
+              name = 'Libraries'
+              break
+
+            case validAddCommand.IMGSIZE:
+              name = 'Image Sizes'
+              break
+
+            default:
+              name = capitalize(value) + 's'
+              break
+          }
           return {value, name}
         })
         resolve([new inquirer.Separator()].concat(list))

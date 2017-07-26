@@ -1,25 +1,17 @@
-const {done, exit} = global.helpers.require('logger')
+const {finish, exit} = global.helpers.require('logger')
 const {setCurrentTheme, getCurrentTheme, getTheme} = global.helpers.require('db/utils')
 const message = global.const.require('messages')
 
 const switchTo = (db, themeName) => {
   getCurrentTheme(db).then(currentTheme => {
     if (currentTheme.details.slug === themeName) {
-      done({
-        message: message.SUCCEED_ALREADY_IN_CURRENT_PROJECT,
-        paddingTop: true,
-        exit: true
-      })
+      finish(message.SUCCEED_ALREADY_IN_CURRENT_PROJECT)
     }
 
     getTheme(db, themeName).then(({details}) => {
       const {name, slug, version} = details
       setCurrentTheme(db, {name, slug, version}).then(() => {
-        done({
-          message: message.SUCCEED_THEME_SWITCHED,
-          padding: true,
-          exit: true
-        })
+        finish(message.SUCCEED_THEME_SWITCHED)
       }).catch(exit)
     }).catch(exit)
   }).catch(exit)

@@ -2,7 +2,7 @@ const inquirer = require('inquirer')
 const {happyExit, captchaMaker, separatorMaker} = require('./util')
 
 const {getCurrentTheme, saveConfig} = global.helpers.require('db/utils')
-const {colorlog, done, exit} = global.helpers.require('logger')
+const {colorlog, exit, finish} = global.helpers.require('logger')
 const message = global.const.require('messages')
 
 module.exports = db => {
@@ -64,13 +64,7 @@ module.exports = db => {
       )).then(() => {
         saveConfig(db, {
           imgsize: theme.imgsize
-        }).then(() => {
-          done({
-            message: message.SUCCEED_REMOVED_IMGSIZE,
-            padding: true,
-            exit: true
-          })
-        }).catch(exit)
+        }).then(finish(message.SUCCEED_REMOVED_IMGSIZE)).catch(exit)
       }).catch(exit)
     }).catch(exit)
   }).catch(exit)

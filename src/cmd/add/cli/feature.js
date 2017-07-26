@@ -24,7 +24,7 @@ const {getCurrentTheme, saveConfig} = global.helpers.require('db/utils')
 const validator = global.helpers.require('util/validator')
 const message = global.const.require('messages')
 const compileFile = global.helpers.require('compiler/single')
-const {colorlog, done, error, exit} = global.helpers.require('logger')
+const {colorlog, exit, finish} = global.helpers.require('logger')
 
 module.exports = db => {
   colorlog('Add {Theme Feature}')
@@ -445,11 +445,7 @@ module.exports = db => {
   return inquirer.prompt(prompts).then(({feature}) => {
     getCurrentTheme(db).then(theme => {
       if (feature.overwrite === false) {
-        error({
-          message: message.ERROR_FEATURE_ALREADY_EXISTS,
-          padding: true,
-          exit: true
-        })
+        exit(message.ERROR_FEATURE_ALREADY_EXISTS)
       }
 
       const themePath = path.join(wpThemeDir, theme.details.slug)
@@ -591,13 +587,7 @@ module.exports = db => {
       saveConfig(db, {
         features: theme.features,
         helpers: uniq(theme.helpers)
-      }).then(() => {
-        done({
-          message: message.SUCCEED_FEATURE_ADDED,
-          padding: true,
-          exit: true
-        })
-      }).catch(exit)
+      }).then(finish(message.SUCCEED_FEATURE_ADDED)).catch(exit)
     }).catch(exit)
   }).catch(exit)
 }

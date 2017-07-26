@@ -6,7 +6,7 @@ const {happyExit, captchaMaker, separatorMaker} = require('./util')
 const {wpThemeDir} = global.const.require('path')
 const {assetTypes} = global.commands.require('add/cli/asset/const')
 const {getCurrentTheme, saveConfig} = global.helpers.require('db/utils')
-const {done, colorlog, exit} = global.helpers.require('logger')
+const {colorlog, exit, finish} = global.helpers.require('logger')
 const {capitalize} = global.helpers.require('util/misc')
 const message = global.const.require('messages')
 
@@ -152,13 +152,7 @@ module.exports = db => {
 
       saveConfig(db, {
         asset: theme.asset
-      }).then(() => {
-        done({
-          message: message.SUCCEED_REMOVED_ASSET,
-          padding: true,
-          exit: true
-        })
-      }).catch(exit)
+      }).then(finish(message.SUCCEED_REMOVED_ASSET)).catch(exit)
     }).catch(exit)
   }).catch(exit)
 }

@@ -6,7 +6,7 @@ const wpFileHeader = require('wp-get-file-header')
 const {happyExit, captchaMaker, separatorMaker} = require('./util')
 
 const {getCurrentTheme, saveConfig} = global.helpers.require('db/utils')
-const {colorlog, done, exit} = global.helpers.require('logger')
+const {colorlog, exit, finish} = global.helpers.require('logger')
 const message = global.const.require('messages')
 const {wpThemeDir} = global.const.require('path')
 
@@ -69,27 +69,19 @@ module.exports = db => {
         happyExit()
       }
 
-      const filterList = []
-
-      helpers.forEach(item => {
-        filterList.push(item)
-
-        const helperPath = path.join(helperDirPath, `${item}.php`)
-        if (existsSync(helperPath)) {
-          rimraf.sync(helperPath)
-        }
-      })
-
-      theme.helpers = theme.helpers.filter(item => !item.includes(filterList))
-
-      saveConfig(db, {
-        helpers: theme.helpers
-      }).then(() => {
-        done({
-          message: message.SUCCEED_REMOVED_HELPER,
-          padding: true,
-          exit: true
+      Promise.all(helpers.map(
+        item => new Promise(resolve => {
+          const helperPath = path.join(helperDirPath, `${item}.php`)
+          if (existsSync(helperPath)) {
+            rimraf.sync(helperPath)
+          }
+          resolve(item)
         })
+      )).then(helpers => {
+        theme.helpers = theme.helpers.filter(item => !helpers.includes(item))
+        saveConfig(db, {
+          helpers: theme.helpers
+        }).then(finish(message.SUCCEED_REMOVED_HELPER)).catch(exit)
       }).catch(exit)
     }).catch(exit)
   }).catch(exit)
