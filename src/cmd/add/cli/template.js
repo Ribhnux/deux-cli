@@ -7,7 +7,7 @@ const {templateTypes, postTypes} = require('./const')
 
 const message = global.const.require('messages')
 const {wpThemeDir} = global.const.require('path')
-const {error, colorlog, exit, finish} = global.helpers.require('logger')
+const {colorlog, exit, finish} = global.helpers.require('logger')
 const {getCurrentTheme, saveConfig} = global.helpers.require('db/utils')
 const compileFile = global.helpers.require('compiler/single')
 const validator = global.helpers.require('util/validator')
@@ -129,11 +129,7 @@ module.exports = db => {
   inquirer.prompt(prompts).then(({template}) => {
     getCurrentTheme(db).then(theme => {
       if (template.overwrite === false) {
-        error({
-          message: message.ERROR_TEMPLATE_ALREADY_EXISTS,
-          paddingTop: true,
-          exit: true
-        })
+        exit(message.ERROR_TEMPLATE_ALREADY_EXISTS)
       }
 
       const themePath = path.join(wpThemeDir, theme.details.slug)

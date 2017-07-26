@@ -10,7 +10,7 @@ const {pluginSrcTypes} = require('./const')
 const message = global.const.require('messages')
 const {wpThemeDir} = global.const.require('path')
 const validator = global.helpers.require('util/validator')
-const {colorlog, error, loader, exit, finish} = global.helpers.require('logger')
+const {colorlog, loader, exit, finish} = global.helpers.require('logger')
 const compileFile = global.helpers.require('compiler/single')
 const {getCurrentTheme, saveConfig} = global.helpers.require('db/utils')
 const {capitalize} = global.helpers.require('util/misc')
@@ -208,11 +208,7 @@ module.exports = db => {
   return inquirer.prompt(prompts).then(({plugin}) => {
     getCurrentTheme(db).then(theme => {
       if (plugin.overwrite === false) {
-        error({
-          message: message.ERROR_PLUGIN_ALREADY_EXISTS,
-          padding: true,
-          exit: true
-        })
+        exit(message.ERROR_PLUGIN_ALREADY_EXISTS)
       }
 
       if (plugin.srctype === pluginSrcTypes.WP) {

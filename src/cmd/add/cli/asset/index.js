@@ -13,7 +13,7 @@ const {assetTypes, sassTypes, libSource, registeredScript, fontSource} = require
 const message = global.const.require('messages')
 const {wpThemeDir} = global.const.require('path')
 const compileFile = global.helpers.require('compiler/single')
-const {colorlog, error, loader, exit, finish} = global.helpers.require('logger')
+const {colorlog, loader, exit, finish} = global.helpers.require('logger')
 const {getEnv, getCurrentTheme, saveConfig} = global.helpers.require('db/utils')
 const validator = global.helpers.require('util/validator')
 const {capitalize} = global.helpers.require('util/misc')
@@ -270,11 +270,7 @@ module.exports = db => {
         const apiKey = font.api || getEnv(db).fontApiKey
 
         if (!apiKey) {
-          error({
-            message: message.ERROR_INVALID_API_KEY,
-            padding: true,
-            exit: true
-          })
+          exit(message.ERROR_INVALID_API_KEY)
         }
 
         const searchOptions = {
@@ -319,11 +315,7 @@ module.exports = db => {
         const apiKey = font.api || getEnv(db).fontApiKey
 
         if (!apiKey) {
-          error({
-            message: message.ERROR_INVALID_API_KEY,
-            padding: true,
-            exit: true
-          })
+          exit(message.ERROR_INVALID_API_KEY)
         }
 
         const fields = {
@@ -478,11 +470,7 @@ module.exports = db => {
         // Save SASS
         if (asset.type === assetTypes.SASS) {
           if (sass.overwrite === false) {
-            error({
-              message: message.ERROR_SASS_FILE_ALREADY_EXISTS,
-              padding: true,
-              exit: true
-            })
+            exit(message.ERROR_SASS_FILE_ALREADY_EXISTS)
           }
 
           const structName = `${sass.type}s`

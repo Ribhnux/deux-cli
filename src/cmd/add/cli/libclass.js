@@ -8,7 +8,7 @@ const {getCurrentTheme, saveConfig} = global.helpers.require('db/utils')
 const validator = global.helpers.require('util/validator')
 const message = global.const.require('messages')
 const {wpThemeDir} = global.const.require('path')
-const {colorlog, error, exit, finish} = global.helpers.require('logger')
+const {colorlog, exit, finish} = global.helpers.require('logger')
 const compileFile = global.helpers.require('compiler/single')
 const {capitalize} = global.helpers.require('util/misc')
 
@@ -46,11 +46,7 @@ module.exports = db => {
   return inquirer.prompt(prompts).then(({lib}) => {
     getCurrentTheme(db).then(theme => {
       if (lib.overwrite === false) {
-        error({
-          message: message.ERROR_LIBCLASS_ALREADY_EXISTS,
-          padding: true,
-          exit: true
-        })
+        exit(message.ERROR_LIBCLASS_ALREADY_EXISTS)
       }
 
       const slug = slugify(lib.name)

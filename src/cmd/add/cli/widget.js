@@ -6,7 +6,7 @@ const jsonar = require('jsonar')
 const {getCurrentTheme, saveConfig} = global.helpers.require('db/utils')
 const validator = global.helpers.require('util/validator')
 const message = global.const.require('messages')
-const {colorlog, error, exit, finish} = global.helpers.require('logger')
+const {colorlog, exit, finish} = global.helpers.require('logger')
 
 module.exports = db => {
   colorlog('Register {New Widget}')
@@ -42,11 +42,7 @@ module.exports = db => {
   return inquirer.prompt(prompts).then(({widget}) => {
     getCurrentTheme(db).then(theme => {
       if (widget.overwrite === false) {
-        error({
-          message: message.ERROR_WIDGET_ALREADY_EXISTS,
-          padding: true,
-          exit: true
-        })
+        exit(message.ERROR_WIDGET_ALREADY_EXISTS)
       }
 
       /* eslint-disable camelcase, quotes */

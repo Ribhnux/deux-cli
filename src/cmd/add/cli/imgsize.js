@@ -5,7 +5,7 @@ const {positionTypes} = require('./const')
 const {getCurrentTheme, saveConfig} = global.helpers.require('db/utils')
 const validator = global.helpers.require('util/validator')
 const message = global.const.require('messages')
-const {colorlog, error, exit, finish} = global.helpers.require('logger')
+const {colorlog, exit, finish} = global.helpers.require('logger')
 
 module.exports = db => {
   colorlog('Add {Image Size}')
@@ -147,11 +147,7 @@ module.exports = db => {
   return inquirer.prompt(prompts).then(({imgsize}) => {
     getCurrentTheme(db).then(theme => {
       if (imgsize.overwrite === false) {
-        error({
-          message: message.ERROR_IMGSIZE_ALREADY_EXISTS,
-          padding: true,
-          exit: true
-        })
+        exit(message.ERROR_IMGSIZE_ALREADY_EXISTS)
       }
 
       const slug = slugify(imgsize.name)

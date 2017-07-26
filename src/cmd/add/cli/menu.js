@@ -11,7 +11,7 @@ const {getCurrentTheme, saveConfig} = global.helpers.require('db/utils')
 const validator = global.helpers.require('util/validator')
 const message = global.const.require('messages')
 const compileFile = global.helpers.require('compiler/single')
-const {colorlog, error, exit, finish} = global.helpers.require('logger')
+const {colorlog, exit, finish} = global.helpers.require('logger')
 const {capitalize} = global.helpers.require('util/misc')
 
 module.exports = db => {
@@ -55,11 +55,7 @@ module.exports = db => {
   return inquirer.prompt(prompts).then(({menu}) => {
     getCurrentTheme(db).then(theme => {
       if (menu.overwrite === false) {
-        error({
-          message: message.ERROR_MENU_ALREADY_EXISTS,
-          padding: true,
-          exit: true
-        })
+        exit(message.ERROR_MENU_ALREADY_EXISTS)
       }
 
       menu.location = slugify(menu.name)

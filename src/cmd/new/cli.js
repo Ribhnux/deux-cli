@@ -17,7 +17,7 @@ const validator = global.helpers.require('util/validator')
 const {dirlist, filelist} = global.helpers.require('util/file')
 const message = global.const.require('messages')
 const {wpThemeDir} = global.const.require('path')
-const {error, colorlog, exit} = global.helpers.require('logger')
+const {colorlog, exit} = global.helpers.require('logger')
 const compileFiles = global.helpers.require('compiler/bulk')
 const {setCurrentTheme} = global.helpers.require('db/utils')
 
@@ -161,11 +161,7 @@ module.exports = db => {
     const {theme, overwrite, confirm} = answers
 
     if (!confirm) {
-      error({
-        message: message.ERROR_THEME_CREATION_CANCELED,
-        paddingTop: true,
-        exit: true
-      })
+      exit(message.ERROR_THEME_CREATION_CANCELED)
     }
 
     const themeNameLower = theme.name.toLowerCase()
@@ -182,20 +178,12 @@ module.exports = db => {
         enabled: () => overwrite === false || overwrite === undefined,
         task: () => new Promise(resolve => {
           if (existsSync(themePath)) {
-            error({
-              message: message.ERROR_THEME_ALREADY_EXISTS,
-              padding: true,
-              exit: true
-            })
+            exit(message.ERROR_THEME_ALREADY_EXISTS)
           }
 
           mkdirp(themePath, err => {
             if (err) {
-              error({
-                message: err.message,
-                padding: true,
-                exit: true
-              })
+              exit(err)
             }
 
             resolve()
@@ -209,20 +197,12 @@ module.exports = db => {
         task: () => new Promise(resolve => {
           rimraf(path.join(themePath, '*'), err => {
             if (err) {
-              error({
-                message: err.message,
-                padding: true,
-                exit: true
-              })
+              exit(err)
             }
 
             rimraf(path.join(themePath, '.git'), err => {
               if (err) {
-                error({
-                  message: err.message,
-                  padding: true,
-                  exit: true
-                })
+                exit(err)
               }
               resolve()
             })
@@ -361,11 +341,7 @@ module.exports = db => {
       setTimeout(() => {
         rimraf(themePath, err => {
           if (err) {
-            error({
-              message: err.message,
-              padding: true,
-              exit: true
-            })
+            exit(err)
           }
         })
       }, 1500)
