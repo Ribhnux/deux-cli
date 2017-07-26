@@ -1,6 +1,6 @@
 <?php
 /**
- * {{lib.name}}
+ * Class Name: {{lib.name}}
  *
  * @package {{theme.name}}
  * @since {{theme.version}}
