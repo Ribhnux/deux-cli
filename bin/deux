@@ -9,24 +9,30 @@ const roadrunner = require('roadrunner')
 roadrunner.load()
 
 // Register global path
-globalPath('helpers', '@/../src/helpers', '')
-globalPath('const', '@/../src/helpers/constant', '')
-globalPath('commands', '@/../src/cmd', '')
-globalPath('templates', '@/../src/templates', '')
+globalPath('deuxcli', '@/../src/cli', '')
+globalPath('deuxhelpers', '@/../src/helpers', '')
+globalPath('deuxconst', '@/../src/helpers/fixtures', '')
+globalPath('deuxcmd', '@/../src/cmd', '')
+// globalPath('templates', '@/../src/templates', '')
 
 process.on('unhandledRejection', (err, p) => {
-  const exit = global.helpers.require('logger/exit')
+  const exit = global.deuxhelpers.require('logger/exit')
   console.log(p)
   exit(err)
 })
 
 program.version(pkg.version)
-global.commands.require('new')
-global.commands.require('status')
-global.commands.require('switch')
-global.commands.require('add')
-global.commands.require('remove')
-global.commands.require('dev')
+program.action(() => {
+  const Init = global.deuxcli.require('init')
+  const init = new Init()
+  init.check()
+})
+global.deuxcmd.require('new')
+// global.commands.require('status')
+// global.commands.require('switch')
+// global.commands.require('add')
+// global.commands.require('remove')
+// global.commands.require('dev')
 program.parse(process.argv)
 
 // Save roadrunner

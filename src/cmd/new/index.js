@@ -1,14 +1,6 @@
 const program = require('caporal')
-
-const action = () => {
-  const init = global.helpers.require('db')
-  const cli = global.commands.require('new/cli')
-
-  init(true).then(cli).catch(err => {
-    throw err
-  })
-}
+const NewCLI = global.deuxcmd.require('new/cli')
 
 program
-.command('new', 'Create New Theme')
-.action(action)
+  .command('new', 'Create New Theme')
+  .action(() => new NewCLI())
