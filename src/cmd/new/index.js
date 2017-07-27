@@ -1,4 +1,5 @@
 const program = require('caporal')
+
 const NewCLI = global.deuxcmd.require('new/cli')
 
 program

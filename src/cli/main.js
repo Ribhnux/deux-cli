@@ -16,6 +16,9 @@ class CLI {
     this.skipInit = false
   }
 
+  /**
+   * Initializing cli
+   */
   init() {
     this.prepare()
     init.skip = this.skipInit
@@ -60,9 +63,17 @@ class CLI {
 
   /**
    * Alias of getCurrentTheme
+   *
+   * @param {String} key
    */
-  themeInfo() {
-    return this.getCurrentTheme()
+  themeInfo(key = '') {
+    const currentTheme = this.getCurrentTheme()
+
+    if (key !== '') {
+      return currentTheme[key]
+    }
+
+    return currentTheme
   }
 
   /**
@@ -87,7 +98,6 @@ class CLI {
    */
   setThemeConfig(newConfig = {}) {
     const extend = require('extend')
-    const path = require('path')
     const jsonar = require('jsonar')
 
     const compileFile = global.deuxhelpers.require('compiler/single')
@@ -107,8 +117,8 @@ class CLI {
     })
 
     compileFile({
-      srcPath: path.join(global.deuxtpl.path, 'config.php'),
-      dstPath: path.join(this.themePath(themeDetails.slug), `${themeDetails.slug}-config.php`),
+      srcPath: this.templateSourcePath('config.php'),
+      dstPath: this.themePath([themeDetails.slug, `${themeDetails.slug}-config.php`]),
       syntax: {
         theme: themeDetails,
         config: phpconfig
@@ -119,13 +129,14 @@ class CLI {
   /**
    * Get theme path
    *
-   * @param {String} themeName
+   * @param {String|Array} newPath
+   * @param {Boolean} stylePath
    */
-  themePath(themeName = null, stylePath = false) {
+  themePath(newPath = null, stylePath = false) {
     let wpThemePath = [this.getConfig('wpPath'), 'wp-content', 'themes']
 
-    if (themeName) {
-      wpThemePath = wpThemePath.concat(themeName)
+    if (newPath) {
+      wpThemePath = wpThemePath.concat(newPath)
     }
 
     if (stylePath) {
@@ -139,7 +150,7 @@ class CLI {
    * Get theme list from wp-content/themes/
    */
   themeList(stylePath = false) {
-    return dirlist(this.themePath()).map(item => this.themePath(item, stylePath))
+    return dirlist(this.themePath([])).map(item => this.themePath(item, stylePath))
   }
 
   /**
@@ -166,6 +177,21 @@ class CLI {
    */
   setCurrentTheme({name, slug, version}) {
     this.db[dbTypes.CURRENT] = {name, slug, version}
+  }
+
+  /**
+   * Get template path
+   *
+   * @param {String|Array} sourcePath
+   */
+  templateSourcePath(sourcePath = null) {
+    let templatePath = [global.deuxtpl.path]
+
+    if (sourcePath) {
+      templatePath = templatePath.concat(sourcePath)
+    }
+
+    return path.join(...templatePath)
   }
 
   /**
