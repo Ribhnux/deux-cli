@@ -1,74 +1,92 @@
-const path = require('path')
-const inquirer = require('inquirer')
 const faker = require('faker')
 const slugify = require('node-slugify')
 const uniq = require('lodash.uniq')
 
-const {getCurrentTheme, saveConfig} = global.helpers.require('db/utils')
-const validator = global.helpers.require('util/validator')
-const message = global.const.require('messages')
-const {wpThemeDir} = global.const.require('path')
-const {colorlog, exit, finish} = global.helpers.require('logger')
-const compileFile = global.helpers.require('compiler/single')
-const {capitalize} = global.helpers.require('util/misc')
+const CLI = global.deuxcli.require('main')
+const messages = global.deuxcli.require('messages')
+const validator = global.deuxhelpers.require('util/validator')
+const {exit, finish} = global.deuxhelpers.require('logger')
+const compileFile = global.deuxhelpers.require('compiler/single')
+const {capitalize} = global.deuxhelpers.require('util/misc')
 
-module.exports = db => {
-  colorlog('Add PHP Library')
+class AddLibClass extends CLI {
+  constructor() {
+    super()
+    this.init()
+  }
 
-  const prompts = [
-    {
-      name: 'lib.name',
-      message: 'Library name',
-      default: 'New Library',
-      validate: value => validator(value, {minimum: 3, var: `"${value}"`})
-    },
+  /**
+   * Setup add libclass prompts
+   */
+  prepare() {
+    this.title = 'Add {PHP Library}'
+    this.prompts = [
+      {
+        name: 'lib.name',
+        message: 'Library name',
+        default: 'New Library',
+        validate: value => validator(value, {minimum: 3, var: `"${value}"`})
+      },
 
-    {
-      name: 'lib.description',
-      message: 'PHP library description',
-      default: faker.lorem.sentence(),
-      validate: value => validator(value, {minimum: 3, word: true, var: `"${value}"`})
-    },
+      {
+        name: 'lib.description',
+        message: 'Library description',
+        default: faker.lorem.sentence(),
+        validate: value => validator(value, {minimum: 3, word: true, var: `"${value}"`})
+      },
 
-    {
-      type: 'confirm',
-      name: 'lib.overwrite',
-      message: 'PHP library already exists. Continue to overwrite?',
-      default: true,
-      when: ({lib}) => new Promise((resolve, reject) => {
-        getCurrentTheme(db).then(theme => {
-          resolve(theme.libraries.includes(`class-${slugify(lib.name)}`))
-        }).catch(reject)
-      })
-    }
-  ]
-
-  return inquirer.prompt(prompts).then(({lib}) => {
-    getCurrentTheme(db).then(theme => {
-      if (lib.overwrite === false) {
-        exit(message.ERROR_LIBCLASS_ALREADY_EXISTS)
+      {
+        type: 'confirm',
+        name: 'lib.overwrite',
+        message: 'PHP library already exists. Continue to overwrite?',
+        default: true,
+        when: ({lib}) => new Promise(resolve => {
+          resolve(this.themeInfo('libraries').includes(`class-${slugify(lib.name)}`))
+        })
       }
+    ]
+  }
 
-      const slug = slugify(lib.name)
-      lib.slug = `class-${slug}`
-      lib.className = slug.split('-').map(item => capitalize(item)).join('_')
-      theme.libraries = theme.libraries.concat(lib.slug)
+  /**
+   * Compile php library file and config
+   *
+   * @param {Object} {lib}
+   */
+  action({lib}) {
+    if (lib.overwrite === false) {
+      exit(messages.ERROR_LIBCLASS_ALREADY_EXISTS)
+    }
 
-      const themePath = path.join(wpThemeDir, theme.details.slug)
-      const libPath = path.join(themePath, 'includes', 'libraries', `${lib.slug}.php`)
+    const slug = slugify(lib.name)
+    lib.slug = `class-${slug}`
+    lib.className = slug.split('-').map(item => capitalize(item)).join('_')
 
-      compileFile({
-        srcPath: path.join(global.templates.path, '_partials', 'class.php'),
-        dstPath: libPath,
-        syntax: {
-          theme: theme.details,
-          lib
-        }
+    const libraries = this.themeInfo('libraries').concat(lib.slug)
+    const themeDetails = this.themeDetails()
+
+    Promise.all([
+      new Promise(resolve => {
+        compileFile({
+          srcPath: this.templateSourcePath(['_partials', 'class.php']),
+          dstPath: this.themePath([themeDetails.slug, 'includes', 'libraries', `${lib.slug}.php`]),
+          syntax: {
+            theme: themeDetails,
+            lib
+          }
+        })
+        resolve()
+      }),
+
+      new Promise(resolve => {
+        this.setThemeConfig({
+          libraries: uniq(libraries)
+        })
+        resolve()
       })
-
-      saveConfig(db, {
-        libraries: uniq(theme.libraries)
-      }).then(finish(message.SUCCEED_LIBCLASS_ADDED)).catch(exit)
-    }).catch(exit)
-  }).catch(exit)
+    ]).then(
+      finish(messages.SUCCEED_LIBCLASS_ADDED)
+    ).catch(exit)
+  }
 }
+
+module.exports = AddLibClass

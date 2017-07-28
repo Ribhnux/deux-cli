@@ -20,10 +20,10 @@ class CLI {
    * Initializing cli
    */
   init() {
-    this.prepare()
     init.skip = this.skipInit
     init.check().then(db => {
       this.db = db
+      this.prepare()
 
       if (this.prompts.length > 0) {
         colorlog(this.title)
@@ -67,7 +67,7 @@ class CLI {
    * @param {String} key
    */
   themeInfo(key = '') {
-    const currentTheme = this.getCurrentTheme()
+    const currentTheme = Object.assign({}, this.getCurrentTheme())
 
     if (key !== '') {
       return currentTheme[key]
@@ -102,7 +102,7 @@ class CLI {
 
     const compileFile = global.deuxhelpers.require('compiler/single')
 
-    const themeInfo = extend(this.themeInfo(), newConfig)
+    const themeInfo = extend(this.getCurrentTheme(), newConfig)
     const themeDetails = this.themeDetails()
     const config = Object.assign({}, themeInfo)
 

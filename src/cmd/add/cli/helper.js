@@ -15,7 +15,7 @@ class AddHelper extends CLI {
   }
 
   /**
-   * Setup helpers prompts
+   * Setup add helpers prompts
    */
   prepare() {
     this.title = 'Add {Helper} (PHP Function)'
@@ -79,9 +79,9 @@ class AddHelper extends CLI {
         })
         resolve()
       })
-    ]).then(() => {
+    ]).then(
       finish(messages.SUCCEED_HELPER_ADDED)
-    })
+    ).catch(exit)
   }
 }
 
