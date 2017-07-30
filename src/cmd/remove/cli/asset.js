@@ -96,7 +96,7 @@ class RemoveAsset extends CLI {
           for (const value in this.themeAsset.fonts) {
             if (Object.prototype.hasOwnProperty.call(this.themeAsset.fonts, value)) {
               fonts.push({
-                name: `${this.themeAsset.fonts[value].name} Font`,
+                name: this.themeAsset.fonts[value].name,
                 value: {
                   key: assetTypes.FONT,
                   value
