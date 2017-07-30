@@ -258,7 +258,11 @@ class NewCLI extends CLI {
 
           try {
             this.addTheme(theme.slug, info)
-            this.setCurrentTheme(theme)
+
+            if (!this.db.name) {
+              this.setCurrentTheme(theme)
+            }
+
             resolve()
           } catch (err) {
             reject(err)
