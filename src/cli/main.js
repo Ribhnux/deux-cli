@@ -59,11 +59,28 @@ class CLI {
    * @param {String} key
    */
   getConfig(key = '') {
-    if (!(key in this.db[dbTypes.CONFIG])) {
+    const config = this.db[dbTypes.CONFIG]
+
+    if (!(key in config)) {
       return undefined
     }
 
-    return this.db[dbTypes.CONFIG][key]
+    return config[key]
+  }
+
+  /**
+   * Get theme list from database
+   *
+   * @param {String} key
+   */
+  getThemes(key = '') {
+    const themes = this.db[dbTypes.THEMES]
+
+    if (!(key in themes)) {
+      return undefined
+    }
+
+    return themes[key]
   }
 
   /**
