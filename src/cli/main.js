@@ -154,8 +154,15 @@ class CLI {
   /**
    * Get theme list from wp-content/themes/
    */
-  themeList(stylePath = false) {
-    return dirlist(this.themePath([])).map(item => this.themePath(item, stylePath))
+  themeList() {
+    return dirlist(this.themePath([]))
+  }
+
+  /**
+   * Get theme list path from wp-content/themes/
+   */
+  themeListPath(stylePath = false) {
+    return this.themeList().map(item => this.themePath(item, stylePath))
   }
 
   /**
