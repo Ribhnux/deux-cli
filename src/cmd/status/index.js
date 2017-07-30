@@ -1,7 +1,8 @@
 const program = require('caporal')
 
-const StatusCLI = global.deuxcmd.require('status/cli')
-
 program
-.command('status', 'Display current theme status')
-.action(() => new StatusCLI())
+  .command('status', 'Display current theme status')
+  .action(() => {
+    const StatusCLI = global.deuxcmd.require('status/cli')
+    return new StatusCLI()
+  })
