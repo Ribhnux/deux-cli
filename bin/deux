@@ -31,7 +31,7 @@ global.deuxcmd.require('new')
 // global.commands.require('status')
 // global.commands.require('switch')
 global.deuxcmd.require('add')
-// global.commands.require('remove')
+global.deuxcmd.require('remove')
 // global.commands.require('dev')
 program.parse(process.argv)
 

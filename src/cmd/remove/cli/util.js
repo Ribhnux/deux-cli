@@ -1,11 +1,11 @@
 const faker = require('faker')
 const inquirer = require('inquirer')
 
-const finish = global.helpers.require('logger/done')
-const message = global.const.require('messages')
-const validator = global.helpers.require('util/validator')
+const messages = global.deuxcli.require('messages')
+const finish = global.deuxhelpers.require('logger/done')
+const validator = global.deuxhelpers.require('util/validator')
 
-exports.happyExit = () => finish(message.DONE_NO_REMOVE)
+exports.happyExit = () => finish(messages.DONE_NO_REMOVE)
 
 exports.captchaMaker = () => {
   const randomCaptcha = faker.lorem.word()

@@ -1,29 +1,47 @@
-const path = require('path')
 const {existsSync} = require('fs')
-const inquirer = require('inquirer')
 const rimraf = require('rimraf')
 const wpFileHeader = require('wp-get-file-header')
 const {happyExit, captchaMaker, separatorMaker} = require('./util')
 
-const {getCurrentTheme, saveConfig} = global.helpers.require('db/utils')
-const {colorlog, exit, finish} = global.helpers.require('logger')
-const message = global.const.require('messages')
-const {wpThemeDir} = global.const.require('path')
+const CLI = global.deuxcli.require('main')
+const messages = global.deuxcli.require('messages')
+const {exit, finish} = global.deuxhelpers.require('logger')
 
-module.exports = db => {
-  colorlog('Remove {Helpers}')
+class RemoveHelper extends CLI {
+  constructor() {
+    super()
+    this.themeHelpers = undefined
+    this.init()
+  }
 
-  getCurrentTheme(db).then(theme => {
-    const helperDirPath = path.join(wpThemeDir, theme.details.slug, 'includes', 'helpers')
-    const prompts = [
+  /**
+   * Setup remove helper prompts
+   */
+  prepare() {
+    this.themeHelpers = this.themeInfo('helpers')
+
+    if (this.themeHelpers.length === 0) {
+      happyExit()
+    }
+
+    this.title = 'Remove {Helpers}'
+    this.prompts = [
       {
         type: 'checkbox',
         name: 'helpers',
         message: 'Select helpers you want to remove',
         choices: () => new Promise((resolve, reject) => {
-          Promise.all(theme.helpers.map(
+          const helpersException = this.themeHelpers.filter(
+            item => ![
+              'custom-background',
+              'custom-header-video',
+              'custom-header'
+            ].includes(item)
+          )
+
+          Promise.all(helpersException.map(
             value => new Promise((resolve, reject) => {
-              const helperPath = path.join(helperDirPath, `${value}.php`)
+              const helperPath = this.themePath([this.themeDetails('slug'), 'includes', 'helpers', `${value}.php`])
               if (existsSync(helperPath)) {
                 wpFileHeader(helperPath).then(info => {
                   resolve({
@@ -59,30 +77,41 @@ module.exports = db => {
         message: () => 'Removing helpers from config can\'t be undone. Do you want to continue?'
       }
     ]
+  }
 
-    if (theme.helpers.length === 0) {
+  /**
+   * Remove helpers file and config
+   *
+   * @param {Object} {helpers, confirm}
+   */
+  action({helpers, confirm}) {
+    if (helpers.length === 0 || !confirm) {
       happyExit()
     }
 
-    inquirer.prompt(prompts).then(({helpers, confirm}) => {
-      if (helpers.length === 0 || !confirm) {
-        happyExit()
-      }
+    Promise.all(helpers.map(
+      item => new Promise(resolve => {
+        const helperPath = this.themePath([this.themeDetails('slug'), 'includes', 'helpers', `${item}.php`])
+        if (existsSync(helperPath)) {
+          rimraf.sync(helperPath)
+        }
+        resolve(item)
+      })
+    )).then(helpers => {
+      Promise.all([
+        new Promise(resolve => {
+          this.themeHelpers = this.themeHelpers.filter(item => !helpers.includes(item))
+          this.setThemeConfig({
+            helpers: this.themeHelpers
+          })
 
-      Promise.all(helpers.map(
-        item => new Promise(resolve => {
-          const helperPath = path.join(helperDirPath, `${item}.php`)
-          if (existsSync(helperPath)) {
-            rimraf.sync(helperPath)
-          }
-          resolve(item)
+          resolve()
         })
-      )).then(helpers => {
-        theme.helpers = theme.helpers.filter(item => !helpers.includes(item))
-        saveConfig(db, {
-          helpers: theme.helpers
-        }).then(finish(message.SUCCEED_REMOVED_HELPER)).catch(exit)
-      }).catch(exit)
+      ]).then(
+        finish(messages.SUCCEED_REMOVED_HELPER)
+      ).catch(exit)
     }).catch(exit)
-  }).catch(exit)
+  }
 }
+
+module.exports = RemoveHelper

@@ -1,15 +1,28 @@
-const inquirer = require('inquirer')
 const {happyExit, captchaMaker, separatorMaker} = require('./util')
 
-const {getCurrentTheme, saveConfig} = global.helpers.require('db/utils')
-const {colorlog, exit, finish} = global.helpers.require('logger')
-const message = global.const.require('messages')
+const CLI = global.deuxcli.require('main')
+const messages = global.deuxcli.require('messages')
+const {exit, finish} = global.deuxhelpers.require('logger')
 
-module.exports = db => {
-  colorlog('Remove {Widgets}')
+class RemoveWidget extends CLI {
+  constructor() {
+    super()
+    this.themeWidgets = undefined
+    this.init()
+  }
 
-  getCurrentTheme(db).then(theme => {
-    const prompts = [
+  /**
+   * Setup remove widgets prompts
+   */
+  prepare() {
+    this.themeWidgets = this.themeInfo('widgets')
+
+    if (Object.keys(this.themeWidgets).length === 0) {
+      happyExit()
+    }
+
+    this.title = 'Remove {Widgets}'
+    this.prompts = [
       {
         type: 'checkbox',
         name: 'widgets',
@@ -17,9 +30,9 @@ module.exports = db => {
         choices: () => new Promise(resolve => {
           let list = []
 
-          for (const value in theme.widgets) {
-            if (Object.prototype.hasOwnProperty.call(theme.widgets, value)) {
-              let name = theme.widgets[value].name.string.split(',')
+          for (const value in this.themeWidgets) {
+            if (Object.prototype.hasOwnProperty.call(this.themeWidgets, value)) {
+              let name = this.themeWidgets[value].name.string.split(',')
               name = name[0].substr(5, name[0].length - 6)
 
               list.push({
@@ -49,26 +62,35 @@ module.exports = db => {
         message: () => 'Removing widgets from config can\'t be undone. Do you want to continue?'
       }
     ]
+  }
 
-    if (Object.keys(theme.widgets).length === 0) {
+  /**
+   * Remove widgets from config
+   * @param {Object} {widgets, confirm}
+   */
+  action({widgets, confirm}) {
+    if (widgets.length === 0 || !confirm) {
       happyExit()
     }
 
-    inquirer.prompt(prompts).then(({widgets, confirm}) => {
-      if (widgets.length === 0 || !confirm) {
-        happyExit()
-      }
-
-      Promise.all(widgets.map(
-        item => new Promise(resolve => {
-          delete theme.widgets[item]
+    Promise.all(widgets.map(
+      item => new Promise(resolve => {
+        delete this.themeWidgets[item]
+        resolve()
+      })
+    )).then(() => {
+      Promise.all([
+        new Promise(resolve => {
+          this.setThemeConfig({
+            widgets: this.themeWidgets
+          })
           resolve()
         })
-      )).then(() => {
-        saveConfig(db, {
-          widgets: theme.widgets
-        }).then(finish(message.SUCCEED_REMOVED_WIDGET)).catch(exit)
-      }).catch(exit)
+      ]).then(
+        finish(messages.SUCCEED_REMOVED_WIDGET)
+      ).catch(exit)
     }).catch(exit)
-  }).catch(exit)
+  }
 }
+
+module.exports = RemoveWidget

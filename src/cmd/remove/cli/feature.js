@@ -1,19 +1,33 @@
-const path = require('path')
-const inquirer = require('inquirer')
 const rimraf = require('rimraf')
 const {happyExit, captchaMaker, separatorMaker} = require('./util')
 
-const {featureTypes, featureLabels} = global.commands.require('add/cli/const')
-const {getCurrentTheme, saveConfig} = global.helpers.require('db/utils')
-const {colorlog, exit, finish} = global.helpers.require('logger')
-const message = global.const.require('messages')
-const {wpThemeDir} = global.const.require('path')
+const CLI = global.deuxcli.require('main')
+const {featureTypes, featureLabels} = global.deuxcmd.require('add/cli/const')
+const messages = global.deuxcli.require('messages')
+const {exit, finish} = global.deuxhelpers.require('logger')
 
-module.exports = db => {
-  colorlog('Remove {Features}')
+class RemoveFeature extends CLI {
+  constructor() {
+    super()
+    this.themeFeatures = undefined
+    this.themeHelpers = undefined
+    this.init()
+  }
 
-  getCurrentTheme(db).then(theme => {
-    const prompts = [
+  /**
+   * Setup remove assets prompts
+   */
+  prepare() {
+    const themeInfo = this.themeInfo()
+    this.themeFeatures = themeInfo.features
+    this.themeHelpers = themeInfo.helpers
+
+    if (Object.keys(this.themeFeatures).length === 0) {
+      happyExit()
+    }
+
+    this.title = 'Remove {Features}'
+    this.prompts = [
       {
         type: 'checkbox',
         name: 'features',
@@ -21,8 +35,8 @@ module.exports = db => {
         choices: () => new Promise(resolve => {
           let list = []
 
-          for (const value in theme.features) {
-            if (Object.prototype.hasOwnProperty.call(theme.features, value)) {
+          for (const value in this.themeFeatures) {
+            if (Object.prototype.hasOwnProperty.call(this.themeFeatures, value)) {
               let name = ''
 
               switch (value) {
@@ -84,59 +98,67 @@ module.exports = db => {
         message: () => 'Removing features from config can\'t be undone. Do you want to continue?'
       }
     ]
+  }
 
-    if (Object.keys(theme.features).length === 0) {
+  /**
+   * Remove features file and config
+   *
+   * @param {Object} {features, confirm}
+   */
+  action({features, confirm}) {
+    if (features.length === 0 || !confirm) {
       happyExit()
     }
 
-    inquirer.prompt(prompts).then(({features, confirm}) => {
-      if (features.length === 0 || !confirm) {
-        happyExit()
-      }
+    Promise.all(features.map(
+      type => new Promise((resolve, reject) => {
+        const removeFiles = []
 
-      const helpersPath = path.join(wpThemeDir, theme.details.slug, 'includes', 'helpers')
+        switch (type) {
+          case featureTypes.CUSTOM_BACKGROUND:
+            if ('wp-head-callback' in this.themeFeatures[type]) {
+              removeFiles.push('custom-background')
+            }
+            break
 
-      Promise.all(features.map(
-        type => new Promise((resolve, reject) => {
-          const removeFiles = []
+          case featureTypes.CUSTOM_HEADER:
+            if ('wp-head-callback' in this.themeFeatures[type]) {
+              removeFiles.push('custom-header')
+            }
 
-          switch (type) {
-            case featureTypes.CUSTOM_BACKGROUND:
-              if ('wp-head-callback' in theme.features[type]) {
-                removeFiles.push('custom-background')
-              }
-              break
+            if ('video-active-callback' in this.themeFeatures[type]) {
+              removeFiles.push('custom-header-video')
+            }
+            break
 
-            case featureTypes.CUSTOM_HEADER:
-              if ('wp-head-callback' in theme.features[type]) {
-                removeFiles.push('custom-header')
-              }
+          default: break
+        }
 
-              if ('video-active-callback' in theme.features[type]) {
-                removeFiles.push('custom-header-video')
-              }
-              break
-
-            default: break
-          }
-
-          Promise.all(removeFiles.map(
-            filename => new Promise(resolve => {
-              rimraf.sync(path.join(helpersPath, `${filename}.php`))
-              resolve(filename)
-            })
-          )).then(filenames => {
-            theme.helpers = theme.helpers.filter(item => !filenames.includes(item))
-            delete theme.features[type]
-            resolve()
-          }).catch(reject)
+        Promise.all(removeFiles.map(
+          filename => new Promise(resolve => {
+            rimraf.sync(this.themePath([this.themeDetails('slug'), 'includes', 'helpers', `${filename}.php`]))
+            resolve(filename)
+          })
+        )).then(filenames => {
+          this.themeHelpers = this.themeHelpers.filter(item => !filenames.includes(item))
+          delete this.themeFeatures[type]
+          resolve()
+        }).catch(reject)
+      })
+    )).then(() => {
+      Promise.all([
+        new Promise(resolve => {
+          this.setThemeConfig({
+            features: this.themeFatures,
+            helpers: this.themeHelpers
+          })
+          resolve()
         })
-      )).then(() => {
-        saveConfig(db, {
-          features: theme.features,
-          helpers: theme.helpers
-        }).then(finish(message.SUCCEED_REMOVED_FEATURE)).catch(exit)
-      }).catch(exit)
+      ]).then(
+        finish(messages.SUCCEED_REMOVED_FEATURE)
+      ).catch(exit)
     }).catch(exit)
-  }).catch(exit)
+  }
 }
+
+module.exports = RemoveFeature

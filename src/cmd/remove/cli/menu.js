@@ -1,19 +1,33 @@
-const path = require('path')
-const inquirer = require('inquirer')
 const rimraf = require('rimraf')
 const uniq = require('lodash.uniq')
 const {happyExit, captchaMaker, separatorMaker} = require('./util')
 
-const {getCurrentTheme, saveConfig} = global.helpers.require('db/utils')
-const {colorlog, exit, finish} = global.helpers.require('logger')
-const message = global.const.require('messages')
-const {wpThemeDir} = global.const.require('path')
+const CLI = global.deuxcli.require('main')
+const messages = global.deuxcli.require('messages')
+const {exit, finish} = global.deuxhelpers.require('logger')
 
-module.exports = db => {
-  colorlog('Remove {Menus}')
+class RemoveMenu extends CLI {
+  constructor() {
+    super()
+    this.themeMenus = undefined
+    this.themeLibraries = undefined
+    this.init()
+  }
 
-  getCurrentTheme(db).then(theme => {
-    const prompts = [
+  /**
+   * Setup remove menu prompts
+   */
+  prepare() {
+    const themeInfo = this.themeInfo()
+    this.themeMenus = themeInfo.menus
+    this.themeLibraries = themeInfo.libraries
+
+    if (Object.keys(this.themeMenus).length === 0) {
+      happyExit()
+    }
+
+    this.title = 'Remove {Menus}'
+    this.prompts = [
       {
         type: 'checkbox',
         name: 'menus',
@@ -21,10 +35,10 @@ module.exports = db => {
         choices: () => new Promise(resolve => {
           let list = []
 
-          for (const value in theme.menus) {
-            if (Object.prototype.hasOwnProperty.call(theme.menus, value)) {
+          for (const value in this.themeMenus) {
+            if (Object.prototype.hasOwnProperty.call(this.themeMenus, value)) {
               list.push({
-                name: theme.menus[value].name,
+                name: this.themeMenus[value].name,
                 value
               })
             }
@@ -50,34 +64,42 @@ module.exports = db => {
         message: () => 'Removing menus from config can\'t be undone. Do you want to continue?'
       }
     ]
+  }
 
-    if (Object.keys(theme.menus).length === 0) {
+  /**
+   * Remove menus walker file and config
+   *
+   * @param {Object} {menus, confirm}
+   */
+  action({menus, confirm}) {
+    if (menus.length === 0 || !confirm) {
       happyExit()
     }
 
-    inquirer.prompt(prompts).then(({menus, confirm}) => {
-      if (menus.length === 0 || !confirm) {
-        happyExit()
-      }
-
-      const libsPath = path.join(wpThemeDir, theme.details.slug, 'includes', 'libraries')
-
-      Promise.all(menus.map(
-        item => new Promise(resolve => {
-          if (theme.menus[item].walker === true) {
-            const libFileName = `class-${item}-menu-nav-walker`
-            rimraf.sync(path.join(libsPath, `${libFileName}.php`))
-            theme.libraries = theme.libraries.filter(item => item !== libFileName)
-          }
-          delete theme.menus[item]
+    Promise.all(menus.map(
+      item => new Promise(resolve => {
+        if (this.themeMenus[item].walker === true) {
+          const libFileName = `class-${item}-menu-nav-walker`
+          rimraf.sync(this.themePath([this.themeDetails('slug'), 'includes', 'libraries', `${libFileName}.php`]))
+          this.themeLibraries = this.themeLibraries.filter(item => item !== libFileName)
+        }
+        delete this.themeMenus[item]
+        resolve()
+      })
+    )).then(() => {
+      Promise.all([
+        new Promise(resolve => {
+          this.setThemeConfig({
+            menus: this.themeMenus,
+            libraries: uniq(this.themeLibraries)
+          })
           resolve()
         })
-      )).then(() => {
-        saveConfig(db, {
-          menus: theme.menus,
-          libraries: uniq(theme.libraries)
-        }).then(finish(message.SUCCEED_REMOVED_MENU)).catch(exit)
-      }).catch(exit)
+      ]).then(
+        finish(messages.SUCCEED_REMOVED_MENU)
+      ).catch(exit)
     }).catch(exit)
-  }).catch(exit)
+  }
 }
+
+module.exports = RemoveMenu
