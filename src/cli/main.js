@@ -99,7 +99,7 @@ class CLI {
   themeInfo(key = '') {
     const currentTheme = Object.assign({}, this.getCurrentTheme())
 
-    if (key !== '') {
+    if (key !== '' && key in currentTheme) {
       return currentTheme[key]
     }
 
