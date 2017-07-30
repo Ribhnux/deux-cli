@@ -525,15 +525,12 @@ class AddAsset extends CLI {
 
           // Save webfonts
           if (asset.type === assetTypes.FONT) {
-            const safeFontFamily = font.selected.family.replace(/\s/g, '+')
             const fontName = slugify(font.selected.family)
-            const fontVariants = font.variants.map(item => item.mini).join(',')
 
             themeInfo.asset.fonts[fontName] = {
               name: font.selected.family,
-              variants: font.variants.map(item => item.name),
+              variants: font.variants.map(item => item.mini.toString()),
               subsets: font.subsets,
-              url: weft.embedUrl(safeFontFamily, fontVariants, font.subsets.join(','))
             }
           }
 
