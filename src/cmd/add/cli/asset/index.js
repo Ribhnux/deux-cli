@@ -427,7 +427,7 @@ class AddAsset extends CLI {
         libsemver += `@${lib.version}`
       }
 
-      const libpath = this.themePath([themeDetails.slug, 'asset-src', 'libs', libsemver])
+      const libpath = this.themePath([themeDetails.slug, 'assets-src', 'libs', libsemver])
       const downloadLoader = loader('Downloading assets...')
 
       task = new Promise((resolve, reject) => {
