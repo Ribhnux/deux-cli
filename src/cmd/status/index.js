@@ -1,14 +1,7 @@
 const program = require('caporal')
 
-const action = () => {
-  const init = global.helpers.require('db')
-  const cli = global.commands.require('status/cli')
-
-  init().then(cli).catch(err => {
-    throw err
-  })
-}
+const StatusCLI = global.deuxcmd.require('status/cli')
 
 program
 .command('status', 'Display current theme status')
-.action(action)
+.action(() => new StatusCLI())

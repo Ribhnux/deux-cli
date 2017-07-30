@@ -28,7 +28,7 @@ program.action(() => {
   init.check()
 })
 global.deuxcmd.require('new')
-// global.commands.require('status')
+global.deuxcmd.require('status')
 // global.commands.require('switch')
 global.deuxcmd.require('add')
 global.deuxcmd.require('remove')
