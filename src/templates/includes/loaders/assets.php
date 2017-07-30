@@ -6,6 +6,35 @@
  * @since {{theme.version}}
  */
 
+if ( ! function_exists( '{{theme.slugfn}}_font_url' ) ) :
+	/**
+	 * Register Google Fonts
+	 *
+	 * @return string
+	 */
+	function {{theme.slugfn}}_font_url() {
+		global ${{theme.slugfn}}_config;
+
+		$fonts_url = '';
+		$font_families = array();
+		$font_subsets = array();
+
+		foreach ( ${{theme.slugfn}}_config['asset']['fonts'] as $font ) {
+			$font_families[] = urlencode( $font['name'] ) . ':' . implode( ',', $font['variants'] );
+			$font_subsets = array_merge( $font_subsets, $font['subsets'] );
+		}
+
+		$query_args = array(
+			'family' => implode( '|', $font_families ),
+			'subset' => implode( ',', array_unique( $font_subsets ) ),
+		);
+
+		$fonts_url = add_query_arg( $query_args, '//fonts.googleapis.com/css' );
+
+		return esc_url_raw( $fonts_url );
+	}
+endif;
+
 if ( ! function_exists( '{{theme.slugfn}}_enqueue_dependencies' ) ) :
 	/**
 	 * Assets dependencies loader to load fonts, styles, and javascripts.
@@ -18,9 +47,7 @@ if ( ! function_exists( '{{theme.slugfn}}_enqueue_dependencies' ) ) :
 		$assets_path = get_template_directory_uri() . '/assets/vendors/';
 
 		// Load Fonts from google.
-		foreach ( ${{theme.slugfn}}_config['asset']['fonts'] as $name => $font ) {
-			wp_enqueue_style( $name, $font['url'], array(), null );
-		}
+		wp_enqueue_style( '{{theme.slug}}-fonts', {{theme.slugfn}}_font_url(), array(), null );
 
 		// Load Stylesheet and Javascript.
 		foreach ( ${{theme.slugfn}}_config['asset']['libs'] as $name => $libs ) {
