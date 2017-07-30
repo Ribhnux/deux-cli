@@ -38,7 +38,11 @@ class DevCLI extends CLI {
      * Start browser-sync server
      */
     gulp.task('start-server', () => {
-      const watchFileList = [['**', '*.php'], '*.css', '*.js'].map(
+      const watchFileList = [
+        ['**', '*.php'],
+        ['**', '*.css'],
+        ['**', '*.js']
+      ].map(
         item => this.themePath([themeSlug].concat(item))
       )
 
@@ -53,7 +57,10 @@ class DevCLI extends CLI {
 
     // SASS Watcher
     gulp.task('watch-sass', () => {
-      return watch(this.themePath([themeSlug, 'assets-src', '**', '*.scss']), () => {
+      return watch([
+        this.themePath([themeSlug, 'assets-src', 'sass', '**', '*.scss']),
+        this.themePath([themeSlug, 'assets-src', 'sass', 'main.scss'])
+      ], () => {
         this.compileCSS()
       })
     })
