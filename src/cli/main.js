@@ -61,6 +61,10 @@ class CLI {
   getConfig(key = '') {
     const config = this.db[dbTypes.CONFIG]
 
+    if (key === '') {
+      return config
+    }
+
     if (!(key in config)) {
       return undefined
     }
@@ -75,6 +79,10 @@ class CLI {
    */
   getThemes(key = '') {
     const themes = this.db[dbTypes.THEMES]
+
+    if (key === '') {
+      return themes
+    }
 
     if (!(key in themes)) {
       return undefined
