@@ -223,8 +223,11 @@ class NewCLI extends CLI {
             .map(item => item.replace(phpRegx, ''))
             .filter(notHiddenFile)
 
+          const themeDetails = Object.assign({}, theme)
+          delete themeDetails.repoUrl
+
           const info = {
-            details: theme,
+            details: themeDetails,
             develop: false,
             optimize: true,
             asset: {
