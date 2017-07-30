@@ -6,6 +6,7 @@ const messages = global.deuxcli.require('messages')
 const {exit, finish} = global.deuxhelpers.require('logger')
 const {assetTypes} = global.deuxcmd.require('add/cli/asset/const')
 const {capitalize} = global.deuxhelpers.require('util/misc')
+const compileFile = global.deuxhelpers.require('compiler/single')
 
 class RemoveAsset extends CLI {
   constructor() {
@@ -137,7 +138,8 @@ class RemoveAsset extends CLI {
       happyExit()
     }
 
-    const themeSlug = this.themeDetails('slug')
+    const themeDetails = this.themeDetails()
+    const themeSlug = themeDetails.slug
 
     Promise.all(assets.map(
       item => new Promise(resolve => {
@@ -155,6 +157,21 @@ class RemoveAsset extends CLI {
             this.themeAsset.sass[item.type] = this.themeAsset.sass[item.type].filter(
               _item => _item !== item.value
             )
+
+            compileFile({
+              srcPath: this.templateSourcePath(['assets-src', 'sass', 'main.scss']),
+              dstPath: this.themePath([themeSlug, 'assets-src', 'sass', 'main.scss']),
+              syntax: {
+                sass: {
+                  components: this.themeAsset.sass.components.map(item => `'components/${item}'`).join(',\n  '),
+                  layouts: this.themeAsset.sass.layouts.map(item => `'layouts/${item}'`).join(',\n  '),
+                  pages: this.themeAsset.sass.pages.map(item => `'pages/${item}'`).join(',\n  '),
+                  themes: this.themeAsset.sass.themes.map(item => `'themes/${item}'`).join(',\n  '),
+                  vendors: this.themeAsset.sass.vendors.map(item => `'vendors/${item}'`).join(',\n  ')
+                },
+                theme: themeDetails
+              }
+            })
             break
 
           case assetTypes.FONT:
