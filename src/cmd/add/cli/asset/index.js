@@ -509,7 +509,7 @@ class AddAsset extends CLI {
               dstPath: sassPath,
               syntax: {
                 sass,
-                theme: themeInfo
+                theme: themeDetails
               }
             })
 
@@ -518,7 +518,7 @@ class AddAsset extends CLI {
               dstPath: this.themePath([themeDetails.slug, 'assets-src', 'sass', 'main.scss']),
               syntax: {
                 sass,
-                theme: themeInfo
+                theme: themeDetails
               }
             })
           }
