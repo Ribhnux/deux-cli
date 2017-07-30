@@ -76,8 +76,8 @@ if ( ! function_exists( '{{theme.slugfn}}_setup' ) ) :
 		}
 
 		// Register menus.
-		foreach ( ${{theme.slugfn}}_config['menus'] as $menu ) {
-			register_nav_menus( $menu['item'] );
+		foreach ( ${{theme.slugfn}}_config['menus'] as $id => $menu ) {
+			register_nav_menu( $id, $menu['description'] );
 		}
 	}
 endif;

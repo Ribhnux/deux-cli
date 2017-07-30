@@ -1,30 +1,40 @@
-const path = require('path')
 const {existsSync} = require('fs')
-const inquirer = require('inquirer')
-const rimraf = require('rimraf')
 const wpFileHeader = require('wp-get-file-header')
+const rimraf = require('rimraf')
 const uniq = require('lodash.uniq')
 const {happyExit, captchaMaker, separatorMaker} = require('./util')
 
-const {getCurrentTheme, saveConfig} = global.helpers.require('db/utils')
-const {colorlog, exit, finish} = global.helpers.require('logger')
-const message = global.const.require('messages')
-const {wpThemeDir} = global.const.require('path')
+const CLI = global.deuxcli.require('main')
+const messages = global.deuxcli.require('messages')
+const {exit, finish} = global.deuxhelpers.require('logger')
 
-module.exports = db => {
-  colorlog('Remove {Components}')
+class RemoveComponent extends CLI {
+  constructor() {
+    super()
+    this.themeComponents = undefined
+    this.init()
+  }
 
-  getCurrentTheme(db).then(theme => {
-    const componentDirPath = path.join(wpThemeDir, theme.details.slug, 'components')
-    const prompts = [
+  /**
+   * Setup remove assets prompts
+   */
+  prepare() {
+    this.themeComponents = this.themeInfo('components')
+
+    if (this.themeComponents.length === 0) {
+      happyExit()
+    }
+
+    this.title = 'Remove {Components}'
+    this.prompts = [
       {
         type: 'checkbox',
         name: 'components',
         message: 'Select components you want to remove',
         choices: () => new Promise((resolve, reject) => {
-          Promise.all(theme.components.map(
+          Promise.all(this.themeComponents.map(
             value => new Promise((resolve, reject) => {
-              const componentPath = path.join(componentDirPath, `${value}.php`)
+              const componentPath = this.themePath([this.themeDetails('slug'), 'components', `${value}.php`])
               if (existsSync(componentPath)) {
                 wpFileHeader(componentPath).then(info => {
                   resolve({
@@ -60,31 +70,44 @@ module.exports = db => {
         message: () => 'Removing components from config can\'t be undone. Do you want to continue?'
       }
     ]
+  }
 
-    if (theme.components.length === 0) {
+  /**
+   * Remove component file and config
+   *
+   * @param {Object} {components, confirm}
+   */
+  action({components, confirm}) {
+    if (components.length === 0 || !confirm) {
       happyExit()
     }
 
-    inquirer.prompt(prompts).then(({components, confirm}) => {
-      if (components.length === 0 || !confirm) {
-        happyExit()
-      }
+    Promise.all(components.map(
+      item => new Promise(resolve => {
+        const componentPath = this.themePath([this.themeDetails('slug'), 'components', `${item}.php`])
+        if (existsSync(componentPath)) {
+          rimraf.sync(componentPath)
+        }
+        resolve(item)
+      })
+    )).then(list => {
+      Promise.all([
+        new Promise(resolve => {
+          this.themeComponents = this.themeComponents.filter(item => !list.includes(item))
+          resolve()
+        }),
 
-      Promise.all(components.map(
-        item => new Promise(resolve => {
-          const componentPath = path.join(componentDirPath, `${item}.php`)
-          if (existsSync(componentPath)) {
-            rimraf.sync(componentPath)
-          }
-          resolve(item)
+        new Promise(resolve => {
+          this.setThemeConfig({
+            components: uniq(this.themeComponents)
+          })
+          resolve()
         })
-      )).then(list => {
-        theme.components = theme.components.filter(item => !list.includes(item))
-
-        saveConfig(db, {
-          components: uniq(theme.components)
-        }).then(finish(message.SUCCEED_REMOVED_COMPONENT)).catch(exit)
-      }).catch(exit)
+      ]).then(
+        finish(messages.SUCCEED_REMOVED_COMPONENT)
+      ).catch(exit)
     }).catch(exit)
-  }).catch(exit)
+  }
 }
+
+module.exports = RemoveComponent

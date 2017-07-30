@@ -1,39 +1,47 @@
-const path = require('path')
 const chalk = require('chalk')
 
-const {colorlog, noop, exit} = global.helpers.require('logger')
-const {wpThemeDir} = global.helpers.require('constant/path')
-const {getCurrentTheme} = global.helpers.require('db/utils')
+const CLI = global.deuxcli.require('main')
+const {colorlog} = global.deuxhelpers.require('logger')
 
-module.exports = db => {
-  getCurrentTheme(db).then(theme => {
-    const stats = []
-    const themePath = path.join(wpThemeDir, theme.details.slug)
+class StatusCLI extends CLI {
+  constructor() {
+    super()
+    this.statusList = []
+    this.init()
+  }
+
+  prepare() {
+    const themeDetails = this.themeDetails()
+    const themeInfo = this.themeInfo()
+
     let sassCount = 0
-
-    for (const i in theme.asset.sass) {
-      if (Object.prototype.hasOwnProperty.call(theme.asset.sass, i)) {
-        sassCount += theme.asset.sass[i].length
+    for (const i in themeInfo.asset.sass) {
+      if (Object.prototype.hasOwnProperty.call(themeInfo.asset.sass, i)) {
+        sassCount += themeInfo.asset.sass[i].length
       }
     }
 
-    noop()
-    colorlog(`Your current project is {${theme.details.name}}`, false)
-    stats.push(`Theme URI\t\t: {${theme.details.uri}}`)
-    stats.push(`Author\t\t\t: {${theme.details.author}}`)
-    stats.push(`Author URI\t\t: {${theme.details.authorUri}}`)
-    stats.push(`Version\t\t\t: {${theme.details.version}}`)
-    stats.push(`Path\t\t\t: {${themePath}}`)
-    stats.push(`Repository URL\t\t: {${theme.details.repoUrl}}`)
-    stats.push(`Page Templates\t\t: {${theme.template.pages.length}} Templates`)
-    stats.push(`Partial Templates\t: {${theme.template.partials.length}} Templates`)
-    stats.push(`Components\t\t: {${theme.components.length}} Installed`)
-    stats.push(`Plugins\t\t\t: {${Object.keys(theme.plugins).length}} Dependencies`)
-    stats.push(`CSS / JS Libraries\t: {${Object.keys(theme.asset.libs).length}} Dependencies`)
-    stats.push(`SASS\t\t\t: {${sassCount}} Files`)
-    stats.push(`Web Fonts\t\t: {${Object.keys(theme.asset.fonts).length}} Fonts`)
-    colorlog(stats.join('\n'))
-    colorlog(`type ${chalk.bold.cyan('deux switch')} to change with another project.`, false)
-    noop()
-  }).catch(exit)
+    this.title = `Your current project is {${themeDetails.name}}`
+
+    this.statusList.push(`Theme URI\t\t: {${themeDetails.uri}}`)
+    this.statusList.push(`Author\t\t\t: {${themeDetails.author}}`)
+    this.statusList.push(`Author URI\t\t: {${themeDetails.authorUri}}`)
+    this.statusList.push(`Version\t\t\t: {${themeDetails.version}}`)
+    this.statusList.push(`Path\t\t\t: {${this.themePath(themeDetails.slug)}}`)
+    this.statusList.push(`Repository URL\t\t: {${themeDetails.repoUrl}}`)
+    this.statusList.push(`Page Templates\t\t: {${themeInfo.pageTemplates.length}} Templates`)
+    this.statusList.push(`Partial Templates\t: {${themeInfo.partialTemplates.length}} Templates`)
+    this.statusList.push(`Components\t\t: {${themeInfo.components.length}} Installed`)
+    this.statusList.push(`Plugins\t\t\t: {${Object.keys(themeInfo.plugins).length}} Dependencies`)
+    this.statusList.push(`CSS / JS Libraries\t: {${Object.keys(themeInfo.asset.libs).length}} Dependencies`)
+    this.statusList.push(`SASS\t\t\t: {${sassCount}} Files`)
+    this.statusList.push(`Web Fonts\t\t: {${Object.keys(themeInfo.asset.fonts).length}} Fonts`)
+  }
+
+  action() {
+    colorlog(this.statusList.join('\n'), false)
+    colorlog(`type ${chalk.bold.cyan('deux switch')} to change with another project.`)
+  }
 }
+
+module.exports = StatusCLI

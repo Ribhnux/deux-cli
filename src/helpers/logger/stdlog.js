@@ -1,6 +1,6 @@
 const chalk = require('chalk')
 const {sep, prefix} = require('./const')
-const noop = require('./noop')
+const blank = require('./blank')
 
 module.exports = options => {
   const defaultOptions = {
@@ -31,7 +31,7 @@ module.exports = options => {
   }
 
   if (padTop && message !== '') {
-    noop()
+    blank()
   }
 
   if (message !== '') {
@@ -39,7 +39,7 @@ module.exports = options => {
   }
 
   if (padBtm && message !== '') {
-    noop()
+    blank()
   }
 
   if (exit) {

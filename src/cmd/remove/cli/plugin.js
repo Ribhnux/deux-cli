@@ -1,18 +1,29 @@
-const path = require('path')
-const inquirer = require('inquirer')
 const rimraf = require('rimraf')
 const {happyExit, captchaMaker, separatorMaker} = require('./util')
 
-const {getCurrentTheme, saveConfig} = global.helpers.require('db/utils')
-const {colorlog, exit, finish} = global.helpers.require('logger')
-const message = global.const.require('messages')
-const {wpThemeDir} = global.const.require('path')
+const CLI = global.deuxcli.require('main')
+const messages = global.deuxcli.require('messages')
+const {exit, finish} = global.deuxhelpers.require('logger')
 
-module.exports = db => {
-  colorlog('Remove {Plugins}')
+class RemovePlugin extends CLI {
+  constructor() {
+    super()
+    this.themePlugins = undefined
+    this.init()
+  }
 
-  getCurrentTheme(db).then(theme => {
-    const prompts = [
+  /**
+   * Setup remove plugin prompts
+   */
+  prepare() {
+    this.themePlugins = this.themeInfo('plugins')
+
+    if (Object.keys(this.themePlugins).length === 0) {
+      happyExit()
+    }
+
+    this.title = 'Remove {Plugins}'
+    this.prompts = [
       {
         type: 'checkbox',
         name: 'plugins',
@@ -20,10 +31,10 @@ module.exports = db => {
         choices: () => new Promise(resolve => {
           let list = []
 
-          for (const value in theme.plugins) {
-            if (Object.prototype.hasOwnProperty.call(theme.plugins, value)) {
+          for (const value in this.themePlugins) {
+            if (Object.prototype.hasOwnProperty.call(this.themePlugins, value)) {
               list.push({
-                name: theme.plugins[value].name,
+                name: this.themePlugins[value].name,
                 value
               })
             }
@@ -49,31 +60,39 @@ module.exports = db => {
         message: () => 'Removing plugins from config can\'t be undone. Do you want to continue?'
       }
     ]
+  }
 
-    if (Object.keys(theme.plugins).length === 0) {
+  /**
+   * Remove plugins file and config
+   *
+   * @param {Object} {plugins, confirm}
+   */
+  action({plugins, confirm}) {
+    if (plugins.length === 0 || !confirm) {
       happyExit()
     }
 
-    inquirer.prompt(prompts).then(({plugins, confirm}) => {
-      if (plugins.length === 0 || !confirm) {
-        happyExit()
-      }
-
-      const pluginPath = path.join(wpThemeDir, theme.details.slug, 'includes', 'plugins')
-
-      Promise.all(plugins.map(
-        item => new Promise(resolve => {
-          if (theme.plugins[item].init === true) {
-            rimraf.sync(path.join(pluginPath, `${item}.php`))
-          }
-          delete theme.plugins[item]
+    Promise.all(plugins.map(
+      item => new Promise(resolve => {
+        if (this.themePlugins[item].init === true) {
+          rimraf.sync(this.themePath([this.themeDetails('slug'), 'includes', 'plugins', `${item}.php`]))
+        }
+        delete this.themePlugins[item]
+        resolve()
+      })
+    )).then(() => {
+      Promise.all([
+        new Promise(resolve => {
+          this.setThemeConfig({
+            plugins: this.themePlugins
+          })
           resolve()
         })
-      )).then(() => {
-        saveConfig(db, {
-          plugins: theme.plugins
-        }).then(finish(message.SUCCEED_REMOVED_PLUGIN)).catch(exit)
-      }).catch(exit)
+      ]).then(
+        finish(messages.SUCCEED_REMOVED_PLUGIN)
+      ).catch(exit)
     }).catch(exit)
-  }).catch(exit)
+  }
 }
+
+module.exports = RemovePlugin

@@ -1,20 +1,42 @@
-const path = require('path')
-const inquirer = require('inquirer')
 const rimraf = require('rimraf')
 const {happyExit, captchaMaker, separatorMaker} = require('./util')
 
-const {wpThemeDir} = global.const.require('path')
-const {assetTypes} = global.commands.require('add/cli/asset/const')
-const {getCurrentTheme, saveConfig} = global.helpers.require('db/utils')
-const {colorlog, exit, finish} = global.helpers.require('logger')
-const {capitalize} = global.helpers.require('util/misc')
-const message = global.const.require('messages')
+const CLI = global.deuxcli.require('main')
+const messages = global.deuxcli.require('messages')
+const {exit, finish} = global.deuxhelpers.require('logger')
+const {assetTypes} = global.deuxcmd.require('add/cli/asset/const')
+const {capitalize} = global.deuxhelpers.require('util/misc')
+const compileFile = global.deuxhelpers.require('compiler/single')
 
-module.exports = db => {
-  colorlog('Remove {Asset}')
+class RemoveAsset extends CLI {
+  constructor() {
+    super()
+    this.themeAsset = undefined
+    this.init()
+  }
 
-  getCurrentTheme(db).then(theme => {
-    const prompts = [
+  /**
+   * Setup remove assets prompts
+   */
+  prepare() {
+    this.themeAsset = this.themeInfo('asset')
+
+    const libTotal = Object.keys(this.themeAsset.libs).length
+    const fontTotal = Object.keys(this.themeAsset.fonts).length
+    let assetLength = libTotal + fontTotal
+
+    for (const type in this.themeAsset.sass) {
+      if (Object.prototype.hasOwnProperty.call(this.themeAsset.sass, type)) {
+        assetLength += this.themeAsset.sass[type].length
+      }
+    }
+
+    if (assetLength === 0) {
+      happyExit()
+    }
+
+    this.title = 'Remove {Assets}'
+    this.prompts = [
       {
         type: 'checkbox',
         name: 'assets',
@@ -22,18 +44,18 @@ module.exports = db => {
         choices: () => new Promise(resolve => {
           let list = []
 
-          if (Object.keys(theme.asset.libs).length > 0) {
+          if (Object.keys(this.themeAsset.libs).length > 0) {
             list = list.concat(separatorMaker('CSS / Javascript'))
           }
 
-          for (const value in theme.asset.libs) {
-            if (Object.prototype.hasOwnProperty.call(theme.asset.libs, value)) {
+          for (const value in this.themeAsset.libs) {
+            if (Object.prototype.hasOwnProperty.call(this.themeAsset.libs, value)) {
               let version = ''
               let semver = value
 
-              if (theme.asset.libs[value].version) {
-                semver += `@${theme.asset.libs[value].version}`
-                version = `v${theme.asset.libs[value].version}`
+              if (this.themeAsset.libs[value].version) {
+                semver += `@${this.themeAsset.libs[value].version}`
+                version = `v${this.themeAsset.libs[value].version}`
               }
 
               list.push({
@@ -49,9 +71,9 @@ module.exports = db => {
 
           let sass = []
 
-          for (const type in theme.asset.sass) {
-            if (Object.prototype.hasOwnProperty.call(theme.asset.sass, type)) {
-              theme.asset.sass[type].forEach(value => {
+          for (const type in this.themeAsset.sass) {
+            if (Object.prototype.hasOwnProperty.call(this.themeAsset.sass, type)) {
+              this.themeAsset.sass[type].forEach(value => {
                 sass.push({
                   name: capitalize(`${value} ${type.substr(0, type.length - 1)}`),
                   value: {
@@ -71,10 +93,10 @@ module.exports = db => {
 
           let fonts = []
 
-          for (const value in theme.asset.fonts) {
-            if (Object.prototype.hasOwnProperty.call(theme.asset.fonts, value)) {
+          for (const value in this.themeAsset.fonts) {
+            if (Object.prototype.hasOwnProperty.call(this.themeAsset.fonts, value)) {
               fonts.push({
-                name: `${theme.asset.fonts[value].name} Font`,
+                name: `${this.themeAsset.fonts[value].name} Font`,
                 value: {
                   key: assetTypes.FONT,
                   value
@@ -104,55 +126,76 @@ module.exports = db => {
         message: () => 'Removing files or assets from config can\'t be undone. Do you want to continue?'
       }
     ]
+  }
 
-    const libTotal = Object.keys(theme.asset.libs).length
-    const fontTotal = Object.keys(theme.asset.fonts).length
-    let sassTotal = 0
-    for (const type in theme.asset.sass) {
-      if (Object.prototype.hasOwnProperty.call(theme.asset.sass, type)) {
-        sassTotal += theme.asset.sass[type].length
-      }
-    }
-    const assetLength = libTotal + fontTotal + sassTotal
-
-    if (assetLength === 0) {
+  /**
+   * Remove asset file and config
+   *
+   * @param {Object} {assets, confirm}
+   */
+  action({assets, confirm}) {
+    if (assets.length === 0 || !confirm) {
       happyExit()
     }
 
-    inquirer.prompt(prompts).then(({assets, confirm}) => {
-      if (assets.length === 0 || !confirm) {
-        happyExit()
-      }
+    const themeDetails = this.themeDetails()
+    const themeSlug = themeDetails.slug
 
-      const assetPath = path.join(wpThemeDir, theme.details.slug, 'assets-src')
-
-      assets.forEach(item => {
+    Promise.all(assets.map(
+      item => new Promise(resolve => {
         switch (item.key) {
           case assetTypes.LIB:
-            rimraf.sync(path.join(assetPath, 'libs', item.semver))
-            delete theme.asset.libs[item.value]
+            rimraf.sync(this.themePath([themeSlug, 'assets-src', 'libs', item.semver]))
+            delete this.themeAsset.libs[item.value]
             break
 
           case assetTypes.SASS:
-            theme.asset.sass[item.type].forEach(_item => {
-              rimraf.sync(path.join(assetPath, 'sass', item.type, `_${_item}.scss`))
+            this.themeAsset.sass[item.type].forEach(_item => {
+              rimraf.sync(this.themePath([themeSlug, 'assets-src', 'sass', item.type, `_${_item}.scss`]))
             })
-            theme.asset.sass[item.type] = theme.asset.sass[item.type].filter(
+
+            this.themeAsset.sass[item.type] = this.themeAsset.sass[item.type].filter(
               _item => _item !== item.value
             )
+
+            compileFile({
+              srcPath: this.templateSourcePath(['assets-src', 'sass', 'main.scss']),
+              dstPath: this.themePath([themeSlug, 'assets-src', 'sass', 'main.scss']),
+              syntax: {
+                sass: {
+                  components: this.themeAsset.sass.components.map(item => `'components/${item}'`).join(',\n  '),
+                  layouts: this.themeAsset.sass.layouts.map(item => `'layouts/${item}'`).join(',\n  '),
+                  pages: this.themeAsset.sass.pages.map(item => `'pages/${item}'`).join(',\n  '),
+                  themes: this.themeAsset.sass.themes.map(item => `'themes/${item}'`).join(',\n  '),
+                  vendors: this.themeAsset.sass.vendors.map(item => `'vendors/${item}'`).join(',\n  ')
+                },
+                theme: themeDetails
+              }
+            })
             break
 
           case assetTypes.FONT:
-            delete theme.asset.fonts[item.value]
+            delete this.themeAsset.fonts[item.value]
             break
 
           default: break
         }
-      })
 
-      saveConfig(db, {
-        asset: theme.asset
-      }).then(finish(message.SUCCEED_REMOVED_ASSET)).catch(exit)
+        resolve()
+      })
+    )).then(() => {
+      Promise.all([
+        new Promise(resolve => {
+          this.setThemeConfig({
+            asset: this.themeAsset
+          })
+          resolve()
+        })
+      ]).then(
+        finish(messages.SUCCEED_REMOVED_ASSET)
+      ).catch(exit)
     }).catch(exit)
-  }).catch(exit)
+  }
 }
+
+module.exports = RemoveAsset

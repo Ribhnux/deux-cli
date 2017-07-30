@@ -1,53 +1,65 @@
-const path = require('path')
-const inquirer = require('inquirer')
 const rimraf = require('rimraf')
 const uniq = require('lodash.uniq')
 const wpFileHeader = require('wp-get-file-header')
 const {happyExit, captchaMaker, separatorMaker} = require('./util')
 
-const {templateTypes} = global.commands.require('add/cli/const')
-const {getCurrentTheme, saveConfig} = global.helpers.require('db/utils')
-const {colorlog, exit, finish} = global.helpers.require('logger')
-const message = global.const.require('messages')
-const {wpThemeDir} = global.const.require('path')
+const CLI = global.deuxcli.require('main')
+const messages = global.deuxcli.require('messages')
+const {templateTypes} = global.deuxcmd.require('add/cli/const')
+const {exit, finish} = global.deuxhelpers.require('logger')
 
-const getTemplateInfo = (items, type, templatePath) => new Promise((resolve, reject) => {
-  Promise.all(items.map(
-    value => new Promise((resolve, reject) => {
-      wpFileHeader(path.join(templatePath, `${value}.php`)).then(info => {
+class RemoveTemplate extends CLI {
+  constructor() {
+    super()
+    this.pageTemplates = undefined
+    this.partialTemplates = undefined
+    this.init()
+  }
+
+  /**
+   * Setup remove template prompts
+   */
+  prepare() {
+    const themeInfo = this.themeInfo()
+    this.pageTemplates = themeInfo.pageTemplates
+    this.partialTemplates = themeInfo.partialTemplates
+
+    if ((this.pageTemplates.length + this.partialTemplates.length) === 0) {
+      happyExit()
+    }
+
+    const getTemplateInfo = (items, type) => new Promise((resolve, reject) => {
+      Promise.all(items.map(
+        value => new Promise((resolve, reject) => {
+          wpFileHeader(this.themePath([this.themeDetails('slug'), `${type}-templates`, `${value}.php`]))
+          .then(info => {
+            resolve({
+              name: info.templateName,
+              value: {
+                type,
+                value
+              }
+            })
+          }).catch(reject)
+        })
+      )).then(items => {
         resolve({
-          name: info.templateName,
-          value: {
-            type,
-            value
-          }
+          type,
+          items
         })
       }).catch(reject)
     })
-  )).then(items => {
-    resolve({
-      type,
-      items
-    })
-  }).catch(reject)
-})
 
-module.exports = db => {
-  colorlog('Remove {Templates}')
-
-  getCurrentTheme(db).then(theme => {
-    const pageTemplatePath = path.join(wpThemeDir, theme.details.slug, 'page-templates')
-    const partialTemplatePath = path.join(wpThemeDir, theme.details.slug, 'partial-templates')
-
-    const prompts = [
+    this.title = 'Remove {Templates}'
+    this.prompts = [
       {
         type: 'checkbox',
         name: 'templates',
         message: 'Select templates you want to remove',
         choices: () => new Promise((resolve, reject) => {
           Promise.all([
-            getTemplateInfo(theme.pageTemplates, templateTypes.PAGE, pageTemplatePath),
-            getTemplateInfo(theme.partialTemplates, templateTypes.PARTIAL, partialTemplatePath)
+            getTemplateInfo(this.pageTemplates, templateTypes.PAGE),
+            getTemplateInfo(this.partialTemplates, templateTypes.PARTIAL)
           ]).then(templates => {
             let list = []
             let pageList = []
@@ -92,37 +104,45 @@ module.exports = db => {
         message: () => 'Removing template\'s files and config can\'t be undone. Do you want to continue?'
       }
     ]
+  }
 
-    const pageTotal = theme.pageTemplates.length
-    const partialTotal = theme.partialTemplates.length
-    const templateTotal = pageTotal + partialTotal
-
-    if (templateTotal === 0) {
+  /**
+   * Remove template files and config
+   *
+   * @param {Object} {templates, confirm}
+   */
+  action({templates, confirm}) {
+    if (templates.length === 0 || !confirm) {
       happyExit()
     }
 
-    inquirer.prompt(prompts).then(({templates, confirm}) => {
-      if (templates.length === 0 || !confirm) {
-        happyExit()
-      }
+    Promise.all(templates.map(
+      item => new Promise(resolve => {
+        const themeDetails = this.themeDetails()
 
-      Promise.all(templates.map(
-        item => new Promise(resolve => {
-          if (item.type === templateTypes.PAGE) {
-            rimraf.sync(path.join(pageTemplatePath, `${item.value}.php`))
-            theme.pageTemplates = theme.pageTemplates.filter(_item => _item !== item.value)
-          } else {
-            rimraf.sync(path.join(partialTemplatePath, `${item.value}.php`))
-            theme.partialTemplates = theme.partialTemplates.filter(_item => _item !== item.value)
-          }
+        if (item.type === templateTypes.PAGE) {
+          rimraf.sync(this.themePath([themeDetails.slug, `${templateTypes.PAGE}-templates`, `${item.value}.php`]))
+          this.pageTemplates = this.pageTemplates.filter(_item => _item !== item.value)
+        } else {
+          rimraf.sync(this.themePath([themeDetails.slug, `${templateTypes.PARTIAL}-templates`, `${item.value}.php`]))
+          this.partialTemplates = this.partialTemplates.filter(_item => _item !== item.value)
+        }
+        resolve()
+      })
+    )).then(() => {
+      Promise.all([
+        new Promise(resolve => {
+          this.setThemeConfig({
+            pageTemplates: uniq(this.pageTemplates),
+            partialTemplates: uniq(this.partialTemplates)
+          })
           resolve()
         })
-      )).then(() => {
-        saveConfig(db, {
-          pageTemplates: uniq(theme.pageTemplates),
-          partialTemplates: uniq(theme.partialTemplates)
-        }).then(finish(message.SUCCEED_REMOVED_PLUGIN)).catch(exit)
-      }).catch(exit)
+      ]).then(
+        finish(messages.SUCCEED_REMOVED_PLUGIN)
+      ).catch(exit)
     }).catch(exit)
-  }).catch(exit)
+  }
 }
+
+module.exports = RemoveTemplate

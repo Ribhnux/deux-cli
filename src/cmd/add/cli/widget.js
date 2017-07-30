@@ -1,65 +1,89 @@
-const inquirer = require('inquirer')
 const faker = require('faker')
 const slugify = require('node-slugify')
 const jsonar = require('jsonar')
 
-const {getCurrentTheme, saveConfig} = global.helpers.require('db/utils')
-const validator = global.helpers.require('util/validator')
-const message = global.const.require('messages')
-const {colorlog, exit, finish} = global.helpers.require('logger')
+const CLI = global.deuxcli.require('main')
+const messages = global.deuxcli.require('messages')
+const validator = global.deuxhelpers.require('util/validator')
+const {exit, finish} = global.deuxhelpers.require('logger')
 
-module.exports = db => {
-  colorlog('Register {New Widget}')
+class AddWidget extends CLI {
+  constructor() {
+    super()
+    this.init()
+  }
 
-  const prompts = [
-    {
-      name: 'widget.name',
-      message: 'Widget Name',
-      default: 'New Widget',
-      validate: value => validator(value, {minimum: 3, var: `"${value}"`})
-    },
+  /**
+   * Setup add widget prompts
+   */
+  prepare() {
+    this.title = 'Register {New Widget}'
+    this.prompts = [
+      {
+        name: 'widget.name',
+        message: 'Widget Name',
+        default: 'New Widget',
+        validate: value => validator(value, {minimum: 3, var: `"${value}"`})
+      },
 
-    {
-      name: 'widget.description',
-      message: 'Widget Description',
-      default: faker.lorem.sentence(),
-      validate: value => validator(value, {minimum: 3, word: true, var: `"${value}"`})
-    },
+      {
+        name: 'widget.description',
+        message: 'Widget Description',
+        default: faker.lorem.sentence(),
+        validate: value => validator(value, {minimum: 3, word: true, var: `"${value}"`})
+      },
 
-    {
-      type: 'confirm',
-      name: 'widget.overwrite',
-      message: 'Widget already exists. Continue to overwrite?',
-      default: true,
-      when: ({widget}) => new Promise((resolve, reject) => {
-        getCurrentTheme(db).then(theme => {
-          resolve(theme.widgets[slugify(widget.name)] !== undefined)
-        }).catch(reject)
-      })
+      {
+        type: 'confirm',
+        name: 'widget.overwrite',
+        message: 'Widget already exists. Continue to overwrite?',
+        default: true,
+        when: ({widget}) => new Promise(resolve => {
+          resolve(this.themeInfo('widgets')[slugify(widget.name)] !== undefined)
+        })
+      }
+    ]
+  }
+
+  /**
+   * Compile widget config
+   * @param {*} param0
+   */
+  action({widget}) {
+    if (widget.overwrite === false) {
+      exit(messages.ERROR_WIDGET_ALREADY_EXISTS)
     }
-  ]
 
-  return inquirer.prompt(prompts).then(({widget}) => {
-    getCurrentTheme(db).then(theme => {
-      if (widget.overwrite === false) {
-        exit(message.ERROR_WIDGET_ALREADY_EXISTS)
-      }
+    const widgets = this.themeInfo('widgets')
+    const themeSlug = this.themeDetails('slug')
 
-      /* eslint-disable camelcase, quotes */
-      theme.widgets[slugify(widget.name)] = {
-        name: jsonar.literal(`__( '${widget.name}', '${theme.details.slug}' )`),
-        description: jsonar.literal(`__( '${widget.description}', '${theme.details.slug}' )`),
-        class: '',
-        before_widget: jsonar.literal(`'<section id="%1$s" class="widget %2$s">'`),
-        after_widget: jsonar.literal(`'</section>'`),
-        before_title: jsonar.literal(`'<h2 class="widget-title">'`),
-        after_title: jsonar.literal(`'</h2>'`)
-      }
-      /* eslint-enable */
+    Promise.all([
+      new Promise(resolve => {
+        /* eslint-disable camelcase, quotes */
+        widgets[slugify(widget.name)] = {
+          name: jsonar.literal(`__( '${widget.name}', '${themeSlug}' )`),
+          description: jsonar.literal(`__( '${widget.description}', '${themeSlug}' )`),
+          class: '',
+          before_widget: jsonar.literal(`'<section id="%1$s" class="widget %2$s">'`),
+          after_widget: jsonar.literal(`'</section>'`),
+          before_title: jsonar.literal(`'<h2 class="widget-title">'`),
+          after_title: jsonar.literal(`'</h2>'`)
+        }
+        /* eslint-enable */
 
-      saveConfig(db, {
-        widgets: theme.widgets
-      }).then(finish(message.SUCCEED_WIDGET_ADDED)).catch(exit)
-    }).catch(exit)
-  }).catch(exit)
+        resolve()
+      }),
+
+      new Promise(resolve => {
+        this.setThemeConfig({
+          widgets
+        })
+        resolve()
+      })
+    ]).then(
+      finish(messages.SUCCEED_WIDGET_ADDED)
+    ).catch(exit)
+  }
 }
+
+module.exports = AddWidget

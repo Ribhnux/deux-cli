@@ -1,29 +1,39 @@
-const path = require('path')
 const {existsSync} = require('fs')
-const inquirer = require('inquirer')
 const rimraf = require('rimraf')
 const wpFileHeader = require('wp-get-file-header')
 const {happyExit, captchaMaker, separatorMaker} = require('./util')
 
-const {getCurrentTheme, saveConfig} = global.helpers.require('db/utils')
-const {colorlog, exit, finish} = global.helpers.require('logger')
-const message = global.const.require('messages')
-const {wpThemeDir} = global.const.require('path')
+const CLI = global.deuxcli.require('main')
+const messages = global.deuxcli.require('messages')
+const {exit, finish} = global.deuxhelpers.require('logger')
 
-module.exports = db => {
-  colorlog('Remove {Libraries}')
+class RemoveLibClass extends CLI {
+  constructor() {
+    super()
+    this.themeLibraries = undefined
+    this.init()
+  }
 
-  getCurrentTheme(db).then(theme => {
-    const libDirectory = path.join(wpThemeDir, theme.details.slug, 'includes', 'libraries')
-    const prompts = [
+  /**
+   * Setup remove libclass rompts
+   */
+  prepare() {
+    this.themeLibraries = this.themeInfo('libraries')
+
+    if (this.themeLibraries.length === 0) {
+      happyExit()
+    }
+
+    this.title = 'Remove {Libraries}'
+    this.prompts = [
       {
         type: 'checkbox',
         name: 'libraries',
         message: 'Select libraries you want to remove',
         choices: () => new Promise((resolve, reject) => {
-          Promise.all(theme.libraries.map(
+          Promise.all(this.themeLibraries.map(
             value => new Promise((resolve, reject) => {
-              const libPath = path.join(libDirectory, `${value}.php`)
+              const libPath = this.themePath([this.themeDetails('slug'), 'includes', 'libraries', `${value}.php`])
               if (existsSync(libPath)) {
                 wpFileHeader(libPath).then(info => {
                   let resolver = {}
@@ -67,31 +77,39 @@ module.exports = db => {
         message: () => 'Removing libraries from config can\'t be undone. Do you want to continue?'
       }
     ]
+  }
 
-    if (theme.libraries.length === 0) {
+  action({libraries, confirm}) {
+    if (libraries.length === 0 || !confirm) {
       happyExit()
     }
 
-    inquirer.prompt(prompts).then(({libraries, confirm}) => {
-      if (libraries.length === 0 || !confirm) {
-        happyExit()
-      }
+    Promise.all(libraries.map(
+      item => new Promise(resolve => {
+        const libPath = this.themePath([this.themeDetails('slug'), 'includes', 'libraries', `${item}.php`])
+        if (existsSync(libPath)) {
+          rimraf.sync(libPath)
+        }
+        resolve(item)
+      })
+    )).then(libraries => {
+      Promise.all([
+        new Promise(resolve => {
+          this.themeLibraries = this.themeLibraries.filter(item => !libraries.includes(item))
+          resolve()
+        }),
 
-      Promise.all(libraries.map(
-        item => new Promise(resolve => {
-          const libPath = path.join(libDirectory, `${item}.php`)
-          if (existsSync(libPath)) {
-            rimraf.sync(libPath)
-          }
-          resolve(item)
+        new Promise(resolve => {
+          this.setThemeConfig({
+            libraries: this.themeLibraries
+          })
+          resolve()
         })
-      )).then(libraries => {
-        theme.libraries = theme.libraries.filter(item => !libraries.includes(item))
-
-        saveConfig(db, {
-          libraries: theme.libraries
-        }).then(finish(message.SUCCEED_REMOVED_LIBCLASS)).catch(exit)
-      }).catch(exit)
+      ]).then(
+        finish(messages.SUCCEED_REMOVED_LIBCLASS)
+      ).catch(exit)
     }).catch(exit)
-  }).catch(exit)
+  }
 }
+
+module.exports = RemoveLibClass

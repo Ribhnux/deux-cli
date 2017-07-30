@@ -1,20 +1,12 @@
 const program = require('caporal')
 
-const {validAddCommand} = global.commands.require('add/cli/const')
-const availableCmd = Object.keys(validAddCommand).map(item => validAddCommand[item])
-
-const action = args => {
-  const init = global.helpers.require('db')
-  const cli = global.commands.require('remove/cli')
-
-  init().then(db => {
-    cli(db, args.option)
-  }).catch(err => {
-    throw err
-  })
-}
+const {commandList} = global.deuxcli.require('fixtures')
+const availableCmd = Object.keys(commandList).map(item => commandList[item])
 
 program
-.command('remove', 'Remove Theme Functionality')
-.argument('[option]', availableCmd.join(' | '), availableCmd)
-.action(action)
+  .command('remove', 'Remove Theme Functionality')
+  .argument('[option]', availableCmd.join(' | '), availableCmd)
+  .action(args => {
+    const RemoveCLI = global.deuxcmd.require('remove/cli')
+    return new RemoveCLI(args.option)
+  })

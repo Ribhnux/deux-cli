@@ -7,178 +7,173 @@ const mkdirp = require('mkdirp')
 const rimraf = require('rimraf')
 const execa = require('execa')
 const wpFileHeader = require('wp-get-file-header')
-const jsonar = require('jsonar')
 const slugify = require('node-slugify')
+const jsonar = require('jsonar')
 const {validTags} = require('./const')
 
-const {dbTypes} = global.helpers.require('db/const')
-const {capitalize} = global.helpers.require('util/misc')
-const validator = global.helpers.require('util/validator')
-const {dirlist, filelist} = global.helpers.require('util/file')
-const message = global.const.require('messages')
-const {wpThemeDir} = global.const.require('path')
-const {colorlog, exit} = global.helpers.require('logger')
-const compileFiles = global.helpers.require('compiler/bulk')
-const {setCurrentTheme} = global.helpers.require('db/utils')
+const CLI = global.deuxcli.require('main')
+const messages = global.deuxcli.require('messages')
+const validator = global.deuxhelpers.require('util/validator')
+const {colorlog, exit, finish} = global.deuxhelpers.require('logger')
+const {capitalize} = global.deuxhelpers.require('util/misc')
+const compileFiles = global.deuxhelpers.require('compiler/bulk')
 
-module.exports = db => {
-  colorlog('Create {New Theme}')
+class NewCLI extends CLI {
+  constructor() {
+    super()
+    this.init()
+  }
 
-  const prompts = [
-    {
-      type: 'confirm',
-      name: 'isChild',
-      message: 'Is Child Theme?',
-      default: false
-    },
+  prepare() {
+    this.skipInit = true
+    this.title = 'Create {New Theme}'
+    this.prompts = [
+      {
+        name: 'theme.name',
+        message: 'Theme Name',
+        default: 'Deux Theme',
+        validate: value => validator(value, {minimum: 3, var: `"${value}"`})
+      },
 
-    {
-      name: 'theme.name',
-      message: 'Theme Name',
-      default: 'Deux Theme',
-      validate: value => validator(value, {minimum: 3, var: `"${value}"`})
-    },
+      {
+        type: 'confirm',
+        name: 'isChild',
+        message: 'Is Child Theme?',
+        default: false
+      },
 
-    {
-      type: 'list',
-      name: 'theme.parent',
-      message: 'Parent Theme',
-      when: ({isChild}) => isChild,
-      choices: answers => new Promise((resolve, reject) => {
-        const themes = dirlist(wpThemeDir).map(themeDir => {
-          const themeStyle = path.join(wpThemeDir, themeDir, 'style.css')
+      {
+        type: 'list',
+        name: 'theme.parent',
+        message: 'Parent Theme',
+        when: ({isChild}) => isChild,
+        choices: answers => new Promise((resolve, reject) => {
+          const themes = this.themeListPath(true)
 
-          // Check if theme has style.css, since WP themes should have this file
-          return new Promise((resolve, reject) => {
-            if (existsSync(themeStyle) === true) {
-              wpFileHeader(themeStyle).then(info => {
-                const {themeName, textDomain, template} = info
-                let resolveValue
+          Promise.all(themes.map(
+            // Check if theme has style.css, since WP themes should have this file
+            themeStyle => new Promise((resolve, reject) => {
+              if (existsSync(themeStyle) === true) {
+                wpFileHeader(themeStyle).then(info => {
+                  const {themeName, textDomain, template} = info
 
-                // Pick themes that not a child theme
-                if (themeName && textDomain && !template) {
-                  resolveValue = {
-                    name: themeName,
-                    value: textDomain
+                  // Pick themes that not a child theme
+                  if (themeName && answers.theme.name !== themeName && textDomain && !template) {
+                    resolve({
+                      name: themeName,
+                      value: textDomain
+                    })
+                  } else {
+                    resolve({})
                   }
-                }
-
-                resolve(resolveValue)
-              }).catch(reject)
-            } else {
-              resolve()
-            }
-          }).then(info => info).catch(reject)
-        })
-
-        return new Promise(resolve => {
-          Promise.all(themes).then(themeResult => {
-            const validThemes = themeResult.filter(theme => {
-              return theme && theme.name !== answers.theme.name
+                }).catch(reject)
+              } else {
+                resolve({})
+              }
             })
-            resolve(validThemes)
+          )).then(value => {
+            resolve(value.filter(item => item.name))
           }).catch(reject)
         })
-      })
-    },
+      },
 
-    {
-      name: 'theme.uri',
-      message: 'Theme URI',
-      default: 'http://wordpress.org',
-      validate: value => validator(value, {url: true, var: `"${value}"`})
-    },
+      {
+        name: 'theme.uri',
+        message: 'Theme URI',
+        default: 'http://wordpress.org',
+        validate: value => validator(value, {url: true, var: `"${value}"`})
+      },
 
-    {
-      name: 'theme.author',
-      message: 'Author',
-      default: faker.name.findName(),
-      validate: value => validator(value, {minimum: 3, var: `"${value}"`})
-    },
+      {
+        name: 'theme.author',
+        message: 'Author',
+        default: faker.name.findName(),
+        validate: value => validator(value, {minimum: 3, var: `"${value}"`})
+      },
 
-    {
-      name: 'theme.authorUri',
-      message: 'Author URI',
-      default: 'http://wordpress.org',
-      validate: value => validator(value, {url: true, var: `"${value}"`})
-    },
+      {
+        name: 'theme.authorUri',
+        message: 'Author URI',
+        default: 'http://wordpress.org',
+        validate: value => validator(value, {url: true, var: `"${value}"`})
+      },
 
-    {
-      name: 'theme.description',
-      message: 'Description',
-      default: faker.lorem.sentence(),
-      validate: value => validator(value, {minimum: 3, word: true, var: `"${value}"`})
-    },
+      {
+        name: 'theme.description',
+        message: 'Description',
+        default: faker.lorem.sentence(),
+        validate: value => validator(value, {minimum: 3, word: true, var: `"${value}"`})
+      },
 
-    {
-      name: 'theme.version',
-      message: 'Version',
-      default: '1.0.0'
-    },
+      {
+        name: 'theme.version',
+        message: 'Version',
+        default: '1.0.0'
+      },
 
-    {
-      type: 'checkbox',
-      name: 'theme.tags',
-      message: 'Tags',
-      choices: [
-        new inquirer.Separator(),
-        ...validTags.map(value => {
-          return {
-            value,
-            name: capitalize(slugify(value, {replacement: ' '}))
-          }
+      {
+        type: 'checkbox',
+        name: 'theme.tags',
+        message: 'Tags',
+        choices: [
+          new inquirer.Separator(),
+          ...validTags.map(value => {
+            return {
+              value,
+              name: capitalize(slugify(value, {replacement: ' '}))
+            }
+          })
+        ],
+        validate: value => validator(value, {minimum: 2, array: true, var: 'Tags'})
+      },
+
+      {
+        name: 'theme.repoUrl',
+        message: 'Repository',
+        default: 'https://github.com/example/my-theme.git',
+        validate: value => validator(value, {url: 2, git: true, var: `"${value}"`})
+      },
+
+      {
+        type: 'confirm',
+        name: 'overwrite',
+        message: 'Theme already exists. Overwrite?',
+        default: false,
+        when: answers => new Promise(resolve => {
+          const themePath = this.themePath(slugify(answers.theme.name.toLowerCase()))
+          resolve(existsSync(themePath))
         })
-      ],
-      validate: value => validator(value, {minimum: 2, array: true, var: 'Tags'})
-    },
+      },
 
-    {
-      name: 'theme.repoUrl',
-      message: 'Repository',
-      default: 'https://github.com/example/my-theme.git',
-      validate: value => validator(value, {url: 2, git: true, var: `"${value}"`})
-    },
-
-    {
-      type: 'confirm',
-      name: 'overwrite',
-      message: 'Theme already exists. Overwrite?',
-      default: false,
-      when: answers => {
-        const themePath = path.join(wpThemeDir, slugify(answers.theme.name))
-        return existsSync(themePath)
+      {
+        type: 'confirm',
+        name: 'confirm',
+        message: 'Are you sure?'
       }
-    },
+    ]
+  }
 
-    {
-      type: 'confirm',
-      name: 'confirm',
-      message: 'Are you sure?'
-    }
-  ]
-
-  return inquirer.prompt(prompts).then(answers => {
-    const {theme, overwrite, confirm} = answers
-
+  action({theme, overwrite, confirm}) {
     if (!confirm) {
-      exit(message.ERROR_THEME_CREATION_CANCELED)
+      exit(messages.ERROR_THEME_CREATION_CANCELED)
     }
 
     const themeNameLower = theme.name.toLowerCase()
     theme.slug = slugify(themeNameLower)
     theme.slugfn = slugify(themeNameLower, {replacement: '_'})
 
-    const themePath = path.join(wpThemeDir, theme.slug)
+    const themePath = this.themePath(theme.slug)
     const gitPath = path.join(themePath, '.git')
 
-    colorlog(`Initialize {${theme.name}}`)
+    colorlog(`Initializing {${theme.name}}`)
+
     const task = new Listr([
       {
         title: 'Make theme directory',
         enabled: () => overwrite === false || overwrite === undefined,
         task: () => new Promise(resolve => {
           if (existsSync(themePath)) {
-            exit(message.ERROR_THEME_ALREADY_EXISTS)
+            exit(messages.ERROR_THEME_ALREADY_EXISTS)
           }
 
           mkdirp(themePath, err => {
@@ -216,19 +211,19 @@ module.exports = db => {
           const phpRegx = /\.php$/g
           const notHiddenFile = item => item && item !== '.gitkeep'
 
-          const components = filelist(path.join(global.templates.path, 'components'))
+          const components = this.templateSourceList('components')
             .map(item => item.replace(phpRegx, ''))
             .filter(notHiddenFile)
 
-          const partialTemplates = filelist(path.join(global.templates.path, 'partial-templates'))
+          const partialTemplates = this.templateSourceList('partial-templates')
             .map(item => item.replace(phpRegx, ''))
             .filter(notHiddenFile)
 
-          const pageTemplates = filelist(path.join(global.templates.path, 'page-templates'))
+          const pageTemplates = this.templateSourceList('page-templates')
             .map(item => item.replace(phpRegx, ''))
             .filter(notHiddenFile)
 
-          const themeInfo = {
+          const info = {
             details: theme,
             develop: false,
             optimize: true,
@@ -262,7 +257,12 @@ module.exports = db => {
           }
 
           try {
-            db[dbTypes.THEMES][theme.slug] = themeInfo
+            this.addTheme(theme.slug, info)
+
+            if (!this.db.name) {
+              this.setCurrentTheme(theme)
+            }
+
             resolve()
           } catch (err) {
             reject(err)
@@ -273,16 +273,17 @@ module.exports = db => {
       {
         title: 'Init WordPress Theme',
         task: () => new Promise(resolve => {
-          const themedb = Object.assign({}, db[dbTypes.THEMES][theme.slug])
-          delete themedb.details
+          const themeInfo = this.themeInfo()
+          delete themeInfo.details
 
-          const config = jsonar.arrify(themedb, {
+          const config = jsonar.arrify(themeInfo, {
             prettify: true,
             quote: jsonar.quoteTypes.SINGLE,
             trailingComma: true
           })
+
           compileFiles({
-            srcDir: global.templates.path,
+            srcDir: global.deuxtpl.path,
             dstDir: themePath,
             rename: {
               'config.php': `${theme.slug}-config.php`
@@ -292,6 +293,7 @@ module.exports = db => {
               config
             }
           })
+
           resolve()
         })
       },
@@ -326,18 +328,14 @@ module.exports = db => {
             task: () => execa.stdout('git', [`--git-dir=${gitPath}`, 'fetch'])
           }
         ])
-      },
-
-      {
-        title: `Save ${theme.name} to database`,
-        task: () => new Promise((resolve, reject) => {
-          const {name, slug, version} = theme
-          setCurrentTheme(db, {name, slug, version}).then(resolve).catch(reject)
-        })
       }
     ])
 
-    task.run().catch(() => {
+    task.run()
+    .then(() => {
+      finish(messages.SUCCEED_CREATE_NEW_THEME)
+    })
+    .catch(() => {
       setTimeout(() => {
         rimraf(themePath, err => {
           if (err) {
@@ -346,5 +344,7 @@ module.exports = db => {
         })
       }, 1500)
     })
-  }).catch(exit)
+  }
 }
+
+module.exports = NewCLI

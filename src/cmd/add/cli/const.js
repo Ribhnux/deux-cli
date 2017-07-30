@@ -1,18 +1,3 @@
-exports.validAddCommand = {
-  ASSET: 'asset',
-  PLUGIN: 'plugin',
-  MENU: 'menu',
-  WIDGET: 'widget',
-  FEATURE: 'feature',
-  TEMPLATE: 'template',
-  COMPONENT: 'component',
-  CUSTOMIZER: 'customizer',
-  HELPER: 'helper',
-  HOOK: 'hook',
-  IMGSIZE: 'imgsize',
-  LIBCLASS: 'libclass'
-}
-
 exports.templateTypes = {
   PARTIAL: 'partial',
   PAGE: 'page'
