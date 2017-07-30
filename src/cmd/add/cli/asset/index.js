@@ -8,6 +8,7 @@ const mkdirp = require('mkdirp')
 const rimraf = require('rimraf')
 const slugify = require('node-slugify')
 const download = require('download')
+const uniq = require('lodash.uniq')
 const {
   assetTypes,
   libSource,
@@ -414,8 +415,9 @@ class AddAsset extends CLI {
    * @param {Object} {asset, lib, sass, font}
    */
   action({asset, lib, sass, font}) {
-    const assetPath = this.themePath([this.themeDetails('slug'), 'assets-src'])
-    const theme = this.themeInfo()
+    const themeDetails = this.themeDetails()
+    const themeInfo = this.themeInfo()
+
     let task = new Promise(resolve => resolve())
 
     // Download Assets
@@ -425,7 +427,7 @@ class AddAsset extends CLI {
         libsemver += `@${lib.version}`
       }
 
-      const libpath = path.join(assetPath, 'libs', libsemver)
+      const libpath = this.themePath([themeDetails.slug, 'asset-src', 'libs', libsemver])
       const downloadLoader = loader('Downloading assets...')
 
       task = new Promise((resolve, reject) => {
@@ -482,8 +484,8 @@ class AddAsset extends CLI {
               delete lib.deps
             }
 
-            theme.asset.libs[lib.name.handle] = lib
-            delete theme.asset.libs[lib.name.handle].name
+            themeInfo.asset.libs[lib.name.handle] = lib
+            delete themeInfo.asset.libs[lib.name.handle].name
           }
 
           // Save SASS
@@ -493,33 +495,32 @@ class AddAsset extends CLI {
             }
 
             const structName = `${sass.type}s`
-            const sassPath = path.join(assetPath, 'sass', structName, `_${sass.name}.scss`)
+            const sassPath = this.themePath([themeDetails.slug, 'assets-src', 'sass', structName, `_${sass.name}.scss`])
 
-            sass.components = theme.asset.sass.components.map(item => `'components/${item}'`).join(',\n  ')
-            sass.layouts = theme.asset.sass.layouts.map(item => `'layouts/${item}'`).join(',\n  ')
-            sass.pages = theme.asset.sass.pages.map(item => `'pages/${item}'`).join(',\n  ')
-            sass.themes = theme.asset.sass.themes.map(item => `'themes/${item}'`).join(',\n  ')
-            sass.vendors = theme.asset.sass.vendors.map(item => `'vendors/${item}'`).join(',\n  ')
+            themeInfo.asset.sass[structName] = uniq(themeInfo.asset.sass[structName].concat(sass.name))
+            sass.components = themeInfo.asset.sass.components.map(item => `'components/${item}'`).join(',\n  ')
+            sass.layouts = themeInfo.asset.sass.layouts.map(item => `'layouts/${item}'`).join(',\n  ')
+            sass.pages = themeInfo.asset.sass.pages.map(item => `'pages/${item}'`).join(',\n  ')
+            sass.themes = themeInfo.asset.sass.themes.map(item => `'themes/${item}'`).join(',\n  ')
+            sass.vendors = themeInfo.asset.sass.vendors.map(item => `'vendors/${item}'`).join(',\n  ')
 
             compileFile({
-              srcPath: path.join(global.templates.path, '_partials', 'sass.scss'),
+              srcPath: this.templateSourcePath(['_partials', 'sass.scss']),
               dstPath: sassPath,
               syntax: {
                 sass,
-                theme
+                theme: themeInfo
               }
             })
 
             compileFile({
-              srcPath: path.join(global.templates.path, 'assets-src', 'sass', 'main.scss'),
-              dstPath: path.join(assetPath, 'sass', 'main.scss'),
+              srcPath: this.templateSourcePath(['assets-src', 'sass', 'main.scss']),
+              dstPath: this.themePath([themeDetails.slug, 'assets-src', 'sass', 'main.scss']),
               syntax: {
                 sass,
-                theme
+                theme: themeInfo
               }
             })
-
-            theme.asset.sass[structName] = theme.asset.sass[structName].concat(sass.name)
           }
 
           // Save webfonts
@@ -528,7 +529,7 @@ class AddAsset extends CLI {
             const fontName = slugify(font.selected.family)
             const fontVariants = font.variants.map(item => item.mini).join(',')
 
-            theme.asset.fonts[fontName] = {
+            themeInfo.asset.fonts[fontName] = {
               name: font.selected.family,
               variants: font.variants.map(item => item.name),
               subsets: font.subsets,
@@ -537,11 +538,11 @@ class AddAsset extends CLI {
           }
 
           resolve()
-        }),
+        }).catch(exit),
 
         new Promise(resolve => {
           this.setThemeConfig({
-            asset: theme.asset
+            asset: themeInfo.asset
           })
           resolve()
         })
