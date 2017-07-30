@@ -104,7 +104,7 @@ class AddMenu extends CLI {
         menus[menu.location] = {
           walker: menu.walker,
           name: menu.name,
-          item: jsonar.literal(`__( '${menu.description}', '${themeDetails.slug}' )`)
+          description: jsonar.literal(`__( '${menu.description}', '${themeDetails.slug}' )`)
         }
 
         resolve()
