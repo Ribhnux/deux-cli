@@ -208,6 +208,21 @@ class CLI {
   }
 
   /**
+   * Get theme from database by slug
+   *
+   * @param {String} slug
+   */
+  getThemeBySlug(slug = '') {
+    const themes = this.db[dbTypes.THEMES]
+
+    if (!(slug in themes)) {
+      return undefined
+    }
+
+    return themes[slug]
+  }
+
+  /**
    * Set active theme in project
    *
    * @param {Object} object
