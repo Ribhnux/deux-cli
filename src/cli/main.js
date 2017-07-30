@@ -22,15 +22,19 @@ class CLI {
   init() {
     init.skip = this.skipInit
     init.check().then(db => {
+      let actionHandler = new Promise(resolve => resolve())
+
       this.db = db
       this.prepare()
 
       if (this.prompts.length > 0) {
-        colorlog(this.title)
-        inquirer.prompt(this.prompts).then(answers => {
-          this.action(answers)
-        }).catch(exit)
+        actionHandler = inquirer.prompt(this.prompts)
       }
+
+      actionHandler.then(data => {
+        colorlog(this.title)
+        this.action(data)
+      }).catch(exit)
     })
   }
 
