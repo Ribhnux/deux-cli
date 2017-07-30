@@ -48,7 +48,7 @@ class NewCLI extends CLI {
         message: 'Parent Theme',
         when: ({isChild}) => isChild,
         choices: answers => new Promise((resolve, reject) => {
-          const themes = this.themeList(true)
+          const themes = this.themeListPath(true)
 
           Promise.all(themes.map(
             // Check if theme has style.css, since WP themes should have this file
