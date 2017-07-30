@@ -56,22 +56,25 @@ if ( ! function_exists( '{{theme.slugfn}}_enqueue_scripts' ) ) :
 		global ${{theme.slugfn}}_config;
 
 		$assets_path = get_template_directory_uri() . '/assets/';
-		$style_css = 'style.css';
-		$script_js = 'script.js';
+		$style_path = $assets_path . 'css/';
+		$script_path = $assets_path . 'js/';
+
+		$main_css = 'main.css';
+		$main_js = 'main.js';
 
 		if ( true === ${{theme.slugfn}}_config['optimize'] ) {
-			$style_css = 'style.min.css';
-			$script_js = 'script.min.css';
+			$main_css = 'main.min.css';
+			$main_js = 'main.min.js';
 		}
 
 		// Load all dependencies.
 		{{theme.slugfn}}_load_dependencies();
 
 		// Main stylesheets.
-		wp_enqueue_style( '{{theme.slug}}', $assets_path . $style_css );
+		wp_enqueue_style( '{{theme.slug}}', $style_path . $main_css );
 
 		// Main script.
-		wp_enqueue_script( '{{theme.slug}}', $assets_path . $script_js, array(), null, true );
+		wp_enqueue_script( '{{theme.slug}}', $script_path . $main_js, array(), null, true );
 
 		// Enable nested comments reply.
 		if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
