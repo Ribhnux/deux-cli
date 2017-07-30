@@ -456,7 +456,7 @@ class AddAsset extends CLI {
           // Save Library
           if (asset.type === assetTypes.LIB) {
             if (lib.source === libSource.WP) {
-              lib.deps = lib.name.deps
+              lib.deps = lib.name.deps || []
             }
 
             if (lib.source === libSource.CDN) {
