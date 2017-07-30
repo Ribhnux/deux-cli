@@ -136,6 +136,7 @@ class CLI {
     const themeDetails = this.themeDetails()
     const config = Object.assign({}, themeInfo)
 
+    delete config.asset.sass
     delete config.pageTemplates
     delete config.partialTemplates
     delete config.details
