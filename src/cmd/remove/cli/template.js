@@ -139,7 +139,7 @@ class RemoveTemplate extends CLI {
           resolve()
         })
       ]).then(
-        finish(messages.SUCCEED_REMOVED_PLUGIN)
+        finish(messages.SUCCEED_REMOVED_TEMPLATE)
       ).catch(exit)
     }).catch(exit)
   }

@@ -59,7 +59,7 @@ class AddHooks extends CLI {
         default: ({hooks}) => {
           return hooks.type === hookTypes.ACTION ? 'wp_head' : 'the_content'
         },
-        validate: value => validator(value, {slug: true, slugPattern: '[a-z0-9-\/_]+', var: 'Function Name'})
+        validate: value => validator(value, {slug: true, slugPattern: '[a-z0-9-/_]+', var: 'Function Name'})
       },
 
       {
