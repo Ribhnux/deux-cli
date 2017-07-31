@@ -35,6 +35,26 @@ if ( ! function_exists( '{{theme.slugfn}}_font_url' ) ) :
 	}
 endif;
 
+if ( ! function_exists( '{{theme.slugfn}}_resource_hints' ) ) :
+	/**
+	 * Add preconnect for Google Fonts.
+	 *
+	 * @param array  $urls           URLs to print for resource hints.
+	 * @param string $relation_type  The relation type the URLs are printed.
+	 * @return array $urls           URLs to print for resource hints.
+	 */
+	function {{theme.slugfn}}_resource_hints( $urls, $relation_type ) {
+		if ( wp_style_is( '{{theme.slug}}-fonts', 'queue' ) && 'preconnect' === $relation_type ) {
+			$urls[] = array(
+				'href' => 'https://fonts.gstatic.com',
+				'crossorigin',
+			);
+		}
+		return $urls;
+	}
+endif;
+add_filter( 'wp_resource_hints', '{{theme.slugfn}}_resource_hints', 10, 2 );
+
 if ( ! function_exists( '{{theme.slugfn}}_enqueue_dependencies' ) ) :
 	/**
 	 * Assets dependencies loader to load fonts, styles, and javascripts.
