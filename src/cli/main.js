@@ -125,8 +125,9 @@ class CLI {
    * Save current theme config
    *
    * @param {Object} newConfig
+   * @param {Boolean} sync Used to save synchronize mode
    */
-  setThemeConfig(newConfig = {}) {
+  setThemeConfig(newConfig = {}, sync = false) {
     const extend = require('extend')
     const jsonar = require('jsonar')
 
@@ -141,20 +142,22 @@ class CLI {
     delete config.partialTemplates
     delete config.details
 
-    const phpconfig = jsonar.arrify(config, {
-      prettify: true,
-      quote: jsonar.quoteTypes.SINGLE,
-      trailingComma: true
-    })
+    if (sync === false) {
+      const phpconfig = jsonar.arrify(config, {
+        prettify: true,
+        quote: jsonar.quoteTypes.SINGLE,
+        trailingComma: true
+      })
 
-    compileFile({
-      srcPath: this.templateSourcePath('config.php'),
-      dstPath: this.themePath([themeDetails.slug, `${themeDetails.slug}-config.php`]),
-      syntax: {
-        theme: themeDetails,
-        config: phpconfig
-      }
-    })
+      compileFile({
+        srcPath: this.templateSourcePath('config.php'),
+        dstPath: this.themePath([themeDetails.slug, `${themeDetails.slug}-config.php`]),
+        syntax: {
+          theme: themeDetails,
+          config: phpconfig
+        }
+      })
+    }
   }
 
   /**
