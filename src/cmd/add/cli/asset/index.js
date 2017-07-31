@@ -530,7 +530,7 @@ class AddAsset extends CLI {
             themeInfo.asset.fonts[fontName] = {
               name: font.selected.family,
               variants: font.variants.map(item => item.mini.toString()),
-              subsets: font.subsets,
+              subsets: font.subsets
             }
           }
 

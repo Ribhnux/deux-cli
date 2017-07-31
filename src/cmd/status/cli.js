@@ -55,7 +55,7 @@ class StatusCLI extends CLI {
           colorlog(this.statusList.join('\n'), false)
           resolve()
         }).catch(exit)
-      }),
+      })
     ]).then(() => {
       colorlog(`type ${chalk.bold.cyan('deux switch')} to change with another project.`)
     }).catch(exit)
