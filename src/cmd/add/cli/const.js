@@ -92,3 +92,8 @@ exports.bgAttachmentTypes = {
   SCROLL: 'scroll',
   FIXED: 'fixed'
 }
+
+exports.hookTypes = {
+  FILTER: 'filter',
+  ACTION: 'action'
+}

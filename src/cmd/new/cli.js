@@ -246,10 +246,8 @@ class NewCLI extends CLI {
             pageTemplates,
             partialTemplates,
             imgsize: {},
-            hook: {
-              filters: [],
-              actions: []
-            },
+            filters: [],
+            actions: [],
             libraries: [
               'class-tgm-plugin-activation'
             ],

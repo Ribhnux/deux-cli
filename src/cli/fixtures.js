@@ -20,5 +20,5 @@ exports.commandList = {
   IMGSIZE: 'imgsize',
   HELPER: 'helper',
   LIBCLASS: 'libclass',
-  HOOK: 'hook'
+  HOOKS: 'hooks'
 }

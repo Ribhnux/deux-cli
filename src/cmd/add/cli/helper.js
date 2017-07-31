@@ -50,7 +50,7 @@ class AddHelper extends CLI {
   /**
    * Compile helpers file and config
    *
-   * @param {*Object} {helper}
+   * @param {Object} {helper}
    */
   action({helper}) {
     if (helper.overwrite === false) {
