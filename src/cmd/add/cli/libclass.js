@@ -67,8 +67,8 @@ class AddLibClass extends CLI {
     Promise.all([
       new Promise(resolve => {
         compileFile({
-          srcPath: this.templateSourcePath(['_partials', 'class.php']),
-          dstPath: this.themePath([themeDetails.slug, 'includes', 'libraries', `${lib.slug}.php`]),
+          srcPath: this.templateSourcePath('_partials', 'class.php'),
+          dstPath: this.currentThemePath('includes', 'libraries', `${lib.slug}.php`),
           syntax: {
             theme: themeDetails,
             lib

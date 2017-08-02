@@ -80,7 +80,7 @@ class RemoveMenu extends CLI {
       item => new Promise(resolve => {
         if (this.themeMenus[item].walker === true) {
           const libFileName = `class-${item}-menu-nav-walker`
-          rimraf.sync(this.themePath([this.themeDetails('slug'), 'includes', 'libraries', `${libFileName}.php`]))
+          rimraf.sync(this.currentThemePath('includes', 'libraries', `${libFileName}.php`))
           this.themeLibraries = this.themeLibraries.filter(item => item !== libFileName)
         }
         delete this.themeMenus[item]

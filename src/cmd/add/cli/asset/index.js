@@ -402,8 +402,9 @@ class AddAsset extends CLI {
             return
           }
 
-          const sassPath = [this.themeDetails('slug'), 'assets-src', 'sass', `${sass.type}s`, `_${sass.name}.scss`]
-          resolve(existsSync(this.themePath(sassPath)))
+          resolve(
+            existsSync(this.currentThemePath('assets-src', 'sass', `${sass.type}s`, `_${sass.name}.scss`))
+          )
         })
       }
     ]
@@ -427,7 +428,7 @@ class AddAsset extends CLI {
         libsemver += `@${lib.version}`
       }
 
-      const libpath = this.themePath([themeDetails.slug, 'assets-src', 'libs', libsemver])
+      const libpath = this.currentThemePath('assets-src', 'libs', libsemver)
       const downloadLoader = loader('Downloading assets...')
 
       task = new Promise((resolve, reject) => {
@@ -495,7 +496,6 @@ class AddAsset extends CLI {
             }
 
             const structName = `${sass.type}s`
-            const sassPath = this.themePath([themeDetails.slug, 'assets-src', 'sass', structName, `_${sass.name}.scss`])
 
             themeInfo.asset.sass[structName] = uniq(themeInfo.asset.sass[structName].concat(sass.name))
             sass.components = themeInfo.asset.sass.components.map(item => `'components/${item}'`).join(',\n  ')
@@ -505,8 +505,8 @@ class AddAsset extends CLI {
             sass.vendors = themeInfo.asset.sass.vendors.map(item => `'vendors/${item}'`).join(',\n  ')
 
             compileFile({
-              srcPath: this.templateSourcePath(['_partials', 'sass.scss']),
-              dstPath: sassPath,
+              srcPath: this.templateSourcePath('_partials', 'sass.scss'),
+              dstPath: this.currentThemePath('assets-src', 'sass', structName, `_${sass.name}.scss`),
               syntax: {
                 sass,
                 theme: themeDetails
@@ -514,8 +514,8 @@ class AddAsset extends CLI {
             })
 
             compileFile({
-              srcPath: this.templateSourcePath(['assets-src', 'sass', 'main.scss']),
-              dstPath: this.themePath([themeDetails.slug, 'assets-src', 'sass', 'main.scss']),
+              srcPath: this.templateSourcePath('assets-src', 'sass', 'main.scss'),
+              dstPath: this.currentThemePath('assets-src', 'sass', 'main.scss'),
               syntax: {
                 sass,
                 theme: themeDetails

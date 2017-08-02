@@ -33,7 +33,7 @@ class RemoveLibClass extends CLI {
         choices: () => new Promise((resolve, reject) => {
           Promise.all(this.themeLibraries.map(
             value => new Promise((resolve, reject) => {
-              const libPath = this.themePath([this.themeDetails('slug'), 'includes', 'libraries', `${value}.php`])
+              const libPath = this.currentThemePath('includes', 'libraries', `${value}.php`)
               if (existsSync(libPath)) {
                 wpFileHeader(libPath).then(info => {
                   let resolver = {}
@@ -86,7 +86,7 @@ class RemoveLibClass extends CLI {
 
     Promise.all(libraries.map(
       item => new Promise(resolve => {
-        const libPath = this.themePath([this.themeDetails('slug'), 'includes', 'libraries', `${item}.php`])
+        const libPath = this.currentThemePath('includes', 'libraries', `${item}.php`)
         if (existsSync(libPath)) {
           rimraf.sync(libPath)
         }

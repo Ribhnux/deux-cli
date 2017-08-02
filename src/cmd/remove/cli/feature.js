@@ -136,7 +136,7 @@ class RemoveFeature extends CLI {
 
         Promise.all(removeFiles.map(
           filename => new Promise(resolve => {
-            rimraf.sync(this.themePath([this.themeDetails('slug'), 'includes', 'helpers', `${filename}.php`]))
+            rimraf.sync(this.currentThemePath('includes', 'helpers', `${filename}.php`))
             resolve(filename)
           })
         )).then(filenames => {

@@ -75,7 +75,7 @@ class RemovePlugin extends CLI {
     Promise.all(plugins.map(
       item => new Promise(resolve => {
         if (this.themePlugins[item].init === true) {
-          rimraf.sync(this.themePath([this.themeDetails('slug'), 'includes', 'plugins', `${item}.php`]))
+          rimraf.sync(this.currentThemePath('includes', 'plugins', `${item}.php`))
         }
         delete this.themePlugins[item]
         resolve()

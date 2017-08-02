@@ -99,8 +99,8 @@ class AddHooks extends CLI {
     Promise.all([
       new Promise(resolve => {
         compileFile({
-          srcPath: this.templateSourcePath(['_partials', 'hook.php']),
-          dstPath: this.themePath([this.themeDetails('slug'), 'includes', `${hooks.type}s`, `${hooks.slug}.php`]),
+          srcPath: this.templateSourcePath('_partials', 'hook.php'),
+          dstPath: this.currentThemePath('includes', `${hooks.type}s`, `${hooks.slug}.php`),
           syntax: {
             theme: this.themeDetails(),
             hooks

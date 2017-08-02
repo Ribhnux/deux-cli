@@ -152,16 +152,16 @@ class AddTemplate extends CLI {
       if (template.name.length === 0) {
         template.name = template.prefix
       }
-      srcPath = this.templateSourcePath(['_partials', 'partial-template.php'])
-      dstPath = this.themePath([themeDetails.slug, 'partial-templates', `${template.slug}.php`])
+      srcPath = this.templateSourcePath('_partials', 'partial-template.php')
+      dstPath = this.currentThemePath('partial-templates', `${template.slug}.php`)
       successMsg = messages.SUCCEED_PARTIAL_TEMPLATE_ADDED
       partialTemplates = uniq(this.themeInfo('partialTemplates').concat(template.slug))
     }
 
     if (template.type === templateTypes.PAGE) {
       template.slug = slugify(template.name)
-      srcPath = this.templateSourcePath(['_partials', 'page-template.php'])
-      dstPath = this.themePath([themeDetails.slug, 'page-templates', `${template.slug}.php`])
+      srcPath = this.templateSourcePath('_partials', 'page-template.php')
+      dstPath = this.currentThemePath('page-templates', `${template.slug}.php`)
       successMsg = messages.SUCCEED_PAGE_TEMPLATE_ADDED
       pageTemplates = uniq(this.themeInfo('pageTemplates').concat(template.slug))
     }

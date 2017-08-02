@@ -31,7 +31,7 @@ class RemoveHooks extends CLI {
     const getHookInfo = (items, type) => new Promise((resolve, reject) => {
       Promise.all(items.map(
         value => new Promise((resolve, reject) => {
-          wpFileHeader(this.themePath([this.themeDetails('slug'), 'includes', `${type}s`, `${value}.php`]))
+          wpFileHeader(this.currentThemePath('includes', `${type}s`, `${value}.php`))
           .then(info => {
             resolve({
               name: info[`${type}Name`],
@@ -118,9 +118,8 @@ class RemoveHooks extends CLI {
 
     Promise.all(hooks.map(
       item => new Promise(resolve => {
-        const themeDetails = this.themeDetails()
+        rimraf.sync(this.currentThemePath('includes', `${item.type}s`, `${item.value}.php`))
 
-        rimraf.sync(this.themePath([themeDetails.slug, 'includes', `${item.type}s`, `${item.value}.php`]))
         if (item.type === hookTypes.FILTER) {
           this.themeFilters = this.themeFilters.filter(_item => _item !== item.value)
         } else {

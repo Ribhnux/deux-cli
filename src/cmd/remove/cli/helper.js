@@ -41,7 +41,7 @@ class RemoveHelper extends CLI {
 
           Promise.all(helpersException.map(
             value => new Promise((resolve, reject) => {
-              const helperPath = this.themePath([this.themeDetails('slug'), 'includes', 'helpers', `${value}.php`])
+              const helperPath = this.currentThemePath('includes', 'helpers', `${value}.php`)
               if (existsSync(helperPath)) {
                 wpFileHeader(helperPath).then(info => {
                   resolve({
@@ -91,7 +91,7 @@ class RemoveHelper extends CLI {
 
     Promise.all(helpers.map(
       item => new Promise(resolve => {
-        const helperPath = this.themePath([this.themeDetails('slug'), 'includes', 'helpers', `${item}.php`])
+        const helperPath = this.currentThemePath('includes', 'helpers', `${item}.php`)
         if (existsSync(helperPath)) {
           rimraf.sync(helperPath)
         }

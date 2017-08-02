@@ -63,8 +63,8 @@ class AddComponent extends CLI {
         component.slugfn = slugify(component.name, {replacement: '_'})
 
         compileFile({
-          srcPath: this.templateSourcePath(['_partials', 'component.php']),
-          dstPath: this.themePath([this.themeDetails('slug'), 'components', `${component.slug}.php`]),
+          srcPath: this.templateSourcePath('_partials', 'component.php'),
+          dstPath: this.currentThemePath('components', `${component.slug}.php`),
           syntax: {
             theme: this.themeDetails(),
             component
