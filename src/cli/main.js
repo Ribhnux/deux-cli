@@ -153,7 +153,7 @@ class CLI {
 
       compileFile({
         srcPath: this.templateSourcePath('config.php'),
-        dstPath: this.themePath([themeDetails.slug, `${themeDetails.slug}-config.php`]),
+        dstPath: this.currentThemeConfigPath(),
         syntax: {
           theme: themeDetails,
           config: phpconfig
@@ -188,6 +188,17 @@ class CLI {
    */
   currentThemePath(...paths) {
     return this.themePath([this.themeDetails('slug')].concat(...paths))
+  }
+
+  /**
+   * Get current theme config path
+   * reusable function
+   *
+   * @return string
+   */
+  currentThemeConfigPath() {
+    const slug = this.themeDetails('slug')
+    return this.currentThemePath(`${slug}-config.php`)
   }
 
   /**
@@ -250,11 +261,11 @@ class CLI {
    *
    * @param {String|Array} sourcePath
    */
-  templateSourcePath(sourcePath = null) {
+  templateSourcePath(...paths) {
     let templatePath = [global.deuxtpl.path]
 
-    if (sourcePath) {
-      templatePath = templatePath.concat(sourcePath)
+    if (paths.length > 0) {
+      templatePath = templatePath.concat(...paths)
     }
 
     return path.join(...templatePath)
@@ -280,9 +291,8 @@ class CLI {
    */
   sync() {
     const themeDetails = this.themeDetails()
-    const slug = themeDetails.slug
     const slugfn = themeDetails.slugfn
-    const configPath = this.currentThemePath(`${slug}-config.php`)
+    const configPath = this.currentThemeConfigPath()
     const phpArray = arrandel(configPath)
     const json = jsonar.parse(phpArray[`${slugfn}_config`], true)
     this.setThemeConfig(json, true)

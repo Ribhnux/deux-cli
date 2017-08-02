@@ -32,7 +32,6 @@ class DevCLI extends CLI {
     ]
 
     const themeDetails = this.themeDetails()
-    const themeSlug = themeDetails.slug
 
     /**
      * Start browser-sync server
@@ -43,7 +42,7 @@ class DevCLI extends CLI {
         ['**', '*.css'],
         ['**', '*.js']
       ].map(
-        item => this.themePath([themeSlug].concat(item))
+        item => this.currentThemePath(item)
       )
 
       browserSync.init(watchFileList, {
@@ -58,8 +57,8 @@ class DevCLI extends CLI {
     // SASS Watcher
     gulp.task('watch-sass', () => {
       return watch([
-        this.themePath([themeSlug, 'assets-src', 'sass', '**', '*.scss']),
-        this.themePath([themeSlug, 'assets-src', 'sass', 'main.scss'])
+        this.currentThemePath('assets-src', 'sass', '**', '*.scss'),
+        this.currentThemePath('assets-src', 'sass', 'main.scss')
       ], () => {
         this.compileCSS()
       })
@@ -77,8 +76,7 @@ class DevCLI extends CLI {
    * Compile CSS
    */
   compileCSS() {
-    const themeSlug = this.themeDetails('slug')
-    const destPath = this.themePath([themeSlug, 'assets', 'css'])
+    const destPath = this.currentThemePath('assets', 'css')
 
     const gulpPlumber = plumber({
       errorHandler(err) {
@@ -91,7 +89,7 @@ class DevCLI extends CLI {
     })
 
     const compiledCSS = gulp
-      .src(this.themePath([themeSlug, 'assets-src', 'sass', 'main.scss']))
+      .src(this.currentThemePath('assets-src', 'sass', 'main.scss'))
       .pipe(gulpPlumber)
       .pipe(
         sass({

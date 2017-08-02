@@ -63,8 +63,8 @@ class AddHelper extends CLI {
     Promise.all([
       new Promise(resolve => {
         compileFile({
-          srcPath: this.templateSourcePath(['_partials', 'helper.php']),
-          dstPath: this.themePath([this.themeDetails('slug'), 'includes', 'helpers', `${helper.slug}.php`]),
+          srcPath: this.templateSourcePath('_partials', 'helper.php'),
+          dstPath: this.currentThemePath('includes', 'helpers', `${helper.slug}.php`),
           syntax: {
             theme: this.themeDetails(),
             helper

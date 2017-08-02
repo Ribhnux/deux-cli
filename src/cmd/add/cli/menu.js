@@ -69,7 +69,7 @@ class AddMenu extends CLI {
     menu.location = slugify(menu.name)
 
     const themeDetails = this.themeDetails()
-    const navWalkerFile = this.templateSourcePath(['_partials', 'nav-walker.php'])
+    const navWalkerFile = this.templateSourcePath('_partials', 'nav-walker.php')
     const slugCapital = menu.location.split('-').map(item => capitalize(item))
     const niceName = slugCapital.join(' ')
     const className = slugCapital.join('_')
@@ -85,7 +85,7 @@ class AddMenu extends CLI {
 
     Promise.all([
       new Promise(resolve => {
-        const navWalkerPath = this.themePath([themeDetails.slug, 'includes', 'libraries', `${walker.file}.php`])
+        const navWalkerPath = this.currentThemePath('includes', 'libraries', `${walker.file}.php`)
         if (menu.walker) {
           compileFile({
             srcPath: navWalkerFile,

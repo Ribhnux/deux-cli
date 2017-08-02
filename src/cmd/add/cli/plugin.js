@@ -239,15 +239,14 @@ class AddPlugin extends CLI {
         // Safe string
         plugin.name = capitalize(slugify(plugin.name, {replacement: ' '}))
 
-        const themeDetails = this.themeDetails()
-        const initPath = this.themePath([themeDetails.slug, 'includes', 'plugins', `${plugin.slug}.php`])
+        const initPath = this.currentThemePath('includes', 'plugins', `${plugin.slug}.php`)
 
         if (plugin.init) {
           compileFile({
-            srcPath: this.templateSourcePath(['_partials', 'plugin.php']),
+            srcPath: this.templateSourcePath('_partials', 'plugin.php'),
             dstPath: initPath,
             syntax: {
-              theme: themeDetails,
+              theme: this.themeDetails(),
               plugin
             }
           })

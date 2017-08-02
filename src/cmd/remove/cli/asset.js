@@ -139,19 +139,18 @@ class RemoveAsset extends CLI {
     }
 
     const themeDetails = this.themeDetails()
-    const themeSlug = themeDetails.slug
 
     Promise.all(assets.map(
       item => new Promise(resolve => {
         switch (item.key) {
           case assetTypes.LIB:
-            rimraf.sync(this.themePath([themeSlug, 'assets-src', 'libs', item.semver]))
+            rimraf.sync(this.currentThemePath('assets-src', 'libs', item.semver))
             delete this.themeAsset.libs[item.value]
             break
 
           case assetTypes.SASS:
             this.themeAsset.sass[item.type].forEach(_item => {
-              rimraf.sync(this.themePath([themeSlug, 'assets-src', 'sass', item.type, `_${_item}.scss`]))
+              rimraf.sync(this.currentThemePath('assets-src', 'sass', item.type, `_${_item}.scss`))
             })
 
             this.themeAsset.sass[item.type] = this.themeAsset.sass[item.type].filter(
@@ -159,8 +158,8 @@ class RemoveAsset extends CLI {
             )
 
             compileFile({
-              srcPath: this.templateSourcePath(['assets-src', 'sass', 'main.scss']),
-              dstPath: this.themePath([themeSlug, 'assets-src', 'sass', 'main.scss']),
+              srcPath: this.templateSourcePath('assets-src', 'sass', 'main.scss'),
+              dstPath: this.currentThemePath('assets-src', 'sass', 'main.scss'),
               syntax: {
                 sass: {
                   components: this.themeAsset.sass.components.map(item => `'components/${item}'`).join(',\n  '),

@@ -34,7 +34,7 @@ class RemoveComponent extends CLI {
         choices: () => new Promise((resolve, reject) => {
           Promise.all(this.themeComponents.map(
             value => new Promise((resolve, reject) => {
-              const componentPath = this.themePath([this.themeDetails('slug'), 'components', `${value}.php`])
+              const componentPath = this.currentThemePath('components', `${value}.php`)
               if (existsSync(componentPath)) {
                 wpFileHeader(componentPath).then(info => {
                   resolve({
@@ -84,7 +84,7 @@ class RemoveComponent extends CLI {
 
     Promise.all(components.map(
       item => new Promise(resolve => {
-        const componentPath = this.themePath([this.themeDetails('slug'), 'components', `${item}.php`])
+        const componentPath = this.currentThemePath('components', `${item}.php`)
         if (existsSync(componentPath)) {
           rimraf.sync(componentPath)
         }

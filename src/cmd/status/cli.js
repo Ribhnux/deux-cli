@@ -30,7 +30,7 @@ class StatusCLI extends CLI {
         const themeDetails = this.themeDetails()
         const themeInfo = this.themeInfo()
 
-        execa('git', [`--git-dir=${this.themePath([themeDetails.slug, '.git'])}`, 'remote', 'get-url', 'origin'])
+        execa('git', [`--git-dir=${this.currentThemePath('.git')}`, 'remote', 'get-url', 'origin'])
         .then(output => {
           const gitUrl = output.stdout
 
@@ -38,7 +38,7 @@ class StatusCLI extends CLI {
           this.statusList.push(`Author\t\t\t: {${themeDetails.author}}`)
           this.statusList.push(`Author URI\t\t: {${themeDetails.authorUri}}`)
           this.statusList.push(`Version\t\t\t: {${themeDetails.version}}`)
-          this.statusList.push(`Path\t\t\t: {${this.themePath(themeDetails.slug)}}`)
+          this.statusList.push(`Path\t\t\t: {${this.currentThemePath()}}`)
 
           if (gitUrl) {
             this.statusList.push(`Repository URL\t\t: {${gitUrl}}`)

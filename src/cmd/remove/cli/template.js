@@ -31,7 +31,7 @@ class RemoveTemplate extends CLI {
     const getTemplateInfo = (items, type) => new Promise((resolve, reject) => {
       Promise.all(items.map(
         value => new Promise((resolve, reject) => {
-          wpFileHeader(this.themePath([this.themeDetails('slug'), `${type}-templates`, `${value}.php`]))
+          wpFileHeader(this.currentThemePath(`${type}-templates`, `${value}.php`))
           .then(info => {
             resolve({
               name: info.templateName,
@@ -118,13 +118,11 @@ class RemoveTemplate extends CLI {
 
     Promise.all(templates.map(
       item => new Promise(resolve => {
-        const themeDetails = this.themeDetails()
-
         if (item.type === templateTypes.PAGE) {
-          rimraf.sync(this.themePath([themeDetails.slug, `${templateTypes.PAGE}-templates`, `${item.value}.php`]))
+          rimraf.sync(this.currentThemePath(`${templateTypes.PAGE}-templates`, `${item.value}.php`))
           this.pageTemplates = this.pageTemplates.filter(_item => _item !== item.value)
         } else {
-          rimraf.sync(this.themePath([themeDetails.slug, `${templateTypes.PARTIAL}-templates`, `${item.value}.php`]))
+          rimraf.sync(this.currentThemePath(`${templateTypes.PARTIAL}-templates`, `${item.value}.php`))
           this.partialTemplates = this.partialTemplates.filter(_item => _item !== item.value)
         }
         resolve()
