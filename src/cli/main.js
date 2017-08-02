@@ -1,5 +1,7 @@
 const path = require('path')
 const inquirer = require('inquirer')
+const jsonar = require('jsonar')
+const arrandel = require('arrandel')
 const {dbTypes} = require('./fixtures')
 const Init = require('./init')
 
@@ -181,6 +183,14 @@ class CLI {
   }
 
   /**
+   * Get current theme path
+   * @param {String} paths
+   */
+  currentThemePath(...paths) {
+    return this.themePath([this.themeDetails('slug')].concat(...paths))
+  }
+
+  /**
    * Get theme list from wp-content/themes/
    */
   themeList() {
@@ -263,6 +273,19 @@ class CLI {
     }
 
     return filelist(path.join(...list))
+  }
+
+  /**
+   * Synchronize from php config to database
+   */
+  sync() {
+    const themeDetails = this.themeDetails()
+    const slug = themeDetails.slug
+    const slugfn = themeDetails.slugfn
+    const configPath = this.currentThemePath(`${slug}-config.php`)
+    const phpArray = arrandel(configPath)
+    const json = jsonar.parse(phpArray[`${slugfn}_config`], true)
+    this.setThemeConfig(json, true)
   }
 }
 
