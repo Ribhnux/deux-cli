@@ -28,7 +28,8 @@ class DevCLI extends CLI {
     this.title = 'Start {development} mode'
     this.tasklist = [
       'start-server',
-      'watch-sass'
+      'watch-sass',
+      'watch-theme-config'
     ]
 
     const themeDetails = this.themeDetails()
@@ -61,6 +62,15 @@ class DevCLI extends CLI {
         this.currentThemePath('assets-src', 'sass', 'main.scss')
       ], () => {
         this.compileCSS()
+      })
+    })
+
+    // Watch theme-config.php
+    gulp.task('watch-theme-config', () => {
+      return watch([
+        this.currentThemeConfigPath()
+      ], () => {
+        this.sync()
       })
     })
   }
