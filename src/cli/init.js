@@ -50,7 +50,7 @@ class Init {
     return new Promise(resolve => {
       Promise.all([
         new Promise(resolve => {
-          if (!existsSync(dbPath)) {
+          if (existsSync(dbPath) === false) {
             error({
               message: messages.ERROR_PROJECT_FILE_NOT_EXISTS,
               paddingTop: true
