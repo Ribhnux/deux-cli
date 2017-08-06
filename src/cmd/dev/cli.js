@@ -91,7 +91,7 @@ class DevCLI extends CLI {
    * Compile CSS
    */
   compileCSS() {
-    const rtlRegx = /;\/\*!rtl(.[^\/]*)\*\//g
+    const rtlRegx = /;\/\*!rtl(.[^/]*)\*\//g
     const destPath = this.currentThemePath('assets', 'css')
 
     const gulpPlumber = plumber({
