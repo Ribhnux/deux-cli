@@ -21,11 +21,10 @@ const compileFiles = global.deuxhelpers.require('compiler/bulk')
 class NewCLI extends CLI {
   constructor() {
     super()
-    this.init()
+    this.init(true)
   }
 
   prepare() {
-    this.skipInit = true
     this.title = 'Create {New Theme}'
     this.prompts = [
       {
