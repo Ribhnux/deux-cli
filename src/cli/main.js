@@ -8,21 +8,18 @@ const Init = require('./init')
 const {colorlog, exit} = global.deuxhelpers.require('logger')
 const {dirlist, filelist} = global.deuxhelpers.require('util/file')
 
-const init = new Init()
-
 class CLI {
   constructor() {
     this.db = {}
     this.title = 'Untitled CLI'
     this.prompts = []
-    this.skipInit = false
   }
 
   /**
    * Initializing cli
    */
-  init() {
-    init.skip = this.skipInit
+  init(skip = false) {
+    const init = new Init(skip)
     init.check().then(db => {
       this.db = db
       this.prepare()

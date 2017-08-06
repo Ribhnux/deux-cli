@@ -1,5 +1,5 @@
 const path = require('path')
-const {existsSync, writeFileSync} = require('fs')
+const {existsSync, writeFile} = require('fs')
 const Listr = require('listr')
 const execa = require('execa')
 const inquirer = require('inquirer')
@@ -11,11 +11,16 @@ const {colorlog, error, done, exit} = global.deuxhelpers.require('logger')
 const validator = global.deuxhelpers.require('util/validator')
 
 class Init {
-  constructor() {
-    this.skip = false
+  constructor(skip = false) {
+    this.skip = skip
     this.db = null
   }
 
+  /**
+   * Show notice message to create new theme
+   *
+   * @param {Boolean} isExit
+   */
   notice(isExit = false) {
     error({
       message: messages.ERROR_NO_THEME,
@@ -28,58 +33,109 @@ class Init {
     })
   }
 
+  /**
+   * Check if theme has been initialized
+   */
+  initialized() {
+    return this.db &&
+      typeof this.db[dbTypes.CONFIG] === 'object' &&
+      'wpPath' in this.db[dbTypes.CONFIG] &&
+      'devUrl' in this.db[dbTypes.CONFIG]
+  }
+
+  /**
+   * Check, whether config has been initialized or not
+   */
   check() {
     return new Promise(resolve => {
-      if (!existsSync(dbPath)) {
-        error({
-          message: messages.ERROR_PROJECT_FILE_NOT_EXISTS,
-          paddingTop: true
-        })
+      Promise.all([
+        new Promise(resolve => {
+          if (!existsSync(dbPath)) {
+            error({
+              message: messages.ERROR_PROJECT_FILE_NOT_EXISTS,
+              paddingTop: true
+            })
 
-        const defaultDb = {
-          [dbTypes.CONFIG]: undefined,
-          [dbTypes.CURRENT]: {},
-          [dbTypes.THEMES]: {}
+            const defaultDb = {
+              [dbTypes.CONFIG]: undefined,
+              [dbTypes.CURRENT]: {},
+              [dbTypes.THEMES]: {}
+            }
+
+            writeFile(dbPath, JSON.stringify(defaultDb), err => {
+              if (err) {
+                exit(err)
+              }
+
+              this.db = jsonr(dbPath)
+              resolve()
+            })
+          } else {
+            this.db = jsonr(dbPath)
+            resolve()
+          }
+        }),
+
+        // Check if init has been skipped
+        new Promise(resolve => {
+          resolve(this.initialized() && this.skip)
+        }),
+
+        // Check if database have no theme
+        new Promise(resolve => {
+          resolve(
+            this.initialized() &&
+            Object.keys(this.db[dbTypes.THEMES]).length === 0
+          )
+        }),
+
+        // Check if it already have current theme
+        new Promise(resolve => {
+          resolve(
+            this.initialized() &&
+            Object.keys(this.db[dbTypes.CURRENT]).length > 0
+          )
+        })
+      ]).then(resolver => {
+        const skip = resolver[1]
+        const zeroTheme = resolver[2]
+        const hasCurrentTheme = resolver[3]
+
+        if (skip || (hasCurrentTheme && skip === false)) {
+          return resolve(this.db)
         }
 
-        writeFileSync(dbPath, JSON.stringify(defaultDb))
-      }
+        if (zeroTheme && skip === false) {
+          this.notice(true)
+        }
 
-      this.db = jsonr(dbPath)
+        this.setup().then(() => {
+          if (!hasCurrentTheme && !skip) {
+            this.notice(true)
+          }
 
-      if (Object.keys(this.db[dbTypes.THEMES]).length === 0 && this.skip === false) {
-        this.notice()
-      }
-
-      if (this.db[dbTypes.CONFIG]) {
-        return resolve(this.db)
-      }
-
-      this.setup().then(() => {
-        this.notice(false)
-        resolve(this.db)
-      }).catch(exit)
+          resolve(this.db)
+        }).catch(exit)
+      })
     })
   }
 
+  /**
+   * Initial setup
+   */
   setup() {
     return new Promise(resolve => {
-      colorlog('{Init Project}')
+      colorlog('Prerequisite check')
 
       const task = new Listr([
         {
-          title: 'Prerequisite check',
-          task: () => new Listr([
-            {
-              title: 'Install PHP',
-              task: () => execa.stdout('php', ['--version'])
-            },
+          title: 'Install PHP',
+          task: () => execa.stdout('php', ['--version'])
+        },
 
-            {
-              title: 'Install Git',
-              task: () => execa.stdout('git', ['--version'])
-            }
-          ])
+        {
+          title: 'Install Git',
+          task: () => execa.stdout('git', ['--version'])
         }
       ])
 
@@ -120,7 +176,7 @@ class Init {
 
         inquirer.prompt(prompts).then(({config}) => {
           this.db[dbTypes.CONFIG] = config
-          resolve(this.db)
+          resolve()
         })
       }).catch(exit)
     })
