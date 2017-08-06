@@ -13,6 +13,7 @@ const replacer = require('gulp-replace')
 const rtlcss = require('gulp-rtlcss')
 const wpPot = require('gulp-wp-pot')
 const gettext = require('gulp-gettext')
+const extend = require('extend')
 
 const CLI = global.deuxcli.require('main')
 const error = global.deuxhelpers.require('logger/error')
@@ -30,7 +31,8 @@ class DevCLI extends CLI {
   prepare() {
     this.title = 'Start {development} mode'
     this.tasklist = [
-      'autocompile-sass',
+      'autocompile-main-style',
+      'autocompile-editor-style',
       'autocompile-pot',
       'autosync-config',
       'start-server'
@@ -60,17 +62,27 @@ class DevCLI extends CLI {
 
       // After add task to gulp
       // Run some startup script directly
-      this.compileCSS()
+      this.compileMainStyle()
+      this.compileEditorStyle()
       this.compilePot()
     })
 
-    // SASS Watcher
-    gulp.task('autocompile-sass', () => {
+    // Main stylesheet compiler
+    gulp.task('autocompile-main-style', () => {
       return watch([
         this.currentThemePath('assets-src', 'sass', '**', '*.scss'),
         this.currentThemePath('assets-src', 'sass', 'main.scss')
       ], () => {
-        this.compileCSS()
+        this.compileMainStyle()
+      })
+    })
+
+    // Editor stylesheet compiler
+    gulp.task('autocompile-editor-style', () => {
+      return watch([
+        this.currentThemePath('assets-src', 'sass', 'editor-style.scss')
+      ], () => {
+        this.compileEditorStyle()
       })
     })
 
@@ -102,9 +114,9 @@ class DevCLI extends CLI {
   }
 
   /**
-   * Compile CSS
+   *
    */
-  compileCSS() {
+  sassCompiler(options) {
     const rtlRegx = /;\/\*!rtl(.[^/]*)\*\//g
     const destPath = this.currentThemePath('assets', 'css')
 
@@ -118,58 +130,92 @@ class DevCLI extends CLI {
       }
     })
 
-    const compiledCSS = gulp
-      .src(this.currentThemePath('assets-src', 'sass', 'main.scss'))
+    options = extend({
+      source: undefined,
+      basename: 'main',
+      rtl: false,
+      beautify: true
+    }, options)
+
+    const {
+      source,
+      basename,
+      rtl,
+      beautify
+    } = options
+
+    if (!source) {
+      throw new Error('No source defined.')
+    }
+
+    let output = source
       .pipe(gulpPlumber)
       .pipe(sass({
         outputStyle: 'compressed'
       }))
-      .pipe(rename('main.css'))
+      .pipe(clone())
+      .pipe(replacer(rtlRegx, rtl ? '/*rtl$1*/;' : ';'))
 
-    // Compile main stylesheet
-    const compiler = (basename = 'main', isRTL = false, beautify = true) => {
-      let output = compiledCSS
-        .pipe(clone()).pipe(replacer(rtlRegx, isRTL ? '/*rtl$1*/;' : ';'))
-
-      if (isRTL) {
-        output = output.pipe(rtlcss())
-      }
-
-      if (beautify) {
-        output = output
-          .pipe(cssbeautify({indent: '  ', autosemicolon: true}))
-          .pipe(replacer(/}\/\*!/g, '}\n\n/*!'))
-          .pipe(replacer(/\*\//g, '*/\n'))
-      } else {
-        output = output
-          .pipe(stripComments({preserve: false}))
-          .pipe(srcmap.init({
-            loadMaps: true
-          }))
-          .pipe(stripComments({preserve: false}))
-      }
-
-      output = output.pipe(rename({basename}))
-
-      if (beautify === false) {
-        output = output
-          .pipe(srcmap.write('./'))
-      }
-
-      return output.pipe(gulp.dest(destPath))
+    if (rtl) {
+      output = output.pipe(rtlcss())
     }
 
+    if (beautify) {
+      output = output
+        .pipe(cssbeautify({indent: '  ', autosemicolon: true}))
+        .pipe(replacer(/}\/\*!/g, '}\n\n/*!'))
+        .pipe(replacer(/\*\//g, '*/\n'))
+    } else {
+      output = output
+        .pipe(stripComments({preserve: false}))
+        .pipe(srcmap.init({
+          loadMaps: true
+        }))
+        .pipe(stripComments({preserve: false}))
+    }
+
+    output = output.pipe(rename({basename}))
+
+    if (beautify === false) {
+      output = output
+        .pipe(srcmap.write('./'))
+    }
+
+    return output.pipe(gulp.dest(destPath))
+  }
+
+  /**
+   * Compile main.css
+   */
+  compileMainStyle() {
+    const mainCSS = gulp.src(this.currentThemePath('assets-src', 'sass', 'main.scss'))
+
     // Compile main.css
-    const style = compiler()
+    const style = this.sassCompiler({
+      source: mainCSS
+    })
 
     // Compile RTL Stylesheet main-rtl.css
-    const rtlStyle = compiler('main-rtl', true)
+    const rtlStyle = this.sassCompiler({
+      source: mainCSS,
+      basename: 'main-rtl',
+      rtl: true
+    })
 
     // Compile main.min.css
-    const minStyle = compiler('main.min', false, false)
+    const minStyle = this.sassCompiler({
+      source: mainCSS,
+      basename: 'main.min',
+      beautify: false
+    })
 
-    // Compile RTL Stylesheet minified main-rtl.min.css
-    const rtlMinStyle = compiler('main.min-rtl', true, false)
+    // Compile RTL Stylesheet minified main.min-rtl.css
+    const rtlMinStyle = this.sassCompiler({
+      source: mainCSS,
+      basename: 'main.min-rtl',
+      rtl: true,
+      beautify: false
+    })
 
     return merge([
       style,
@@ -177,6 +223,18 @@ class DevCLI extends CLI {
       minStyle,
       rtlMinStyle
     ])
+  }
+
+  /**
+   * Compile editor-style.css
+   */
+  compileEditorStyle() {
+    const editorCSS = gulp.src(this.currentThemePath('assets-src', 'sass', 'editor-style.scss'))
+    return this.sassCompiler({
+      source: editorCSS,
+      basename: 'editor-style',
+      rtl: false
+    })
   }
 
   /**
