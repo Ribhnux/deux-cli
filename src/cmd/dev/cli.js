@@ -11,6 +11,8 @@ const merge = require('merge2')
 const clone = require('gulp-clone')
 const replacer = require('gulp-replace')
 const rtlcss = require('gulp-rtlcss')
+const wpPot = require('gulp-wp-pot')
+const gettext = require('gulp-gettext')
 
 const CLI = global.deuxcli.require('main')
 const error = global.deuxhelpers.require('logger/error')
@@ -28,8 +30,9 @@ class DevCLI extends CLI {
   prepare() {
     this.title = 'Start {development} mode'
     this.tasklist = [
-      'watch-sass',
-      'watch-theme-config',
+      'autocompile-sass',
+      'autocompile-pot',
+      'autosync-config',
       'start-server'
     ]
 
@@ -58,10 +61,11 @@ class DevCLI extends CLI {
       // After add task to gulp
       // Run some startup script directly
       this.compileCSS()
+      this.compilePot()
     })
 
     // SASS Watcher
-    gulp.task('watch-sass', () => {
+    gulp.task('autocompile-sass', () => {
       return watch([
         this.currentThemePath('assets-src', 'sass', '**', '*.scss'),
         this.currentThemePath('assets-src', 'sass', 'main.scss')
@@ -71,11 +75,21 @@ class DevCLI extends CLI {
     })
 
     // Watch theme-config.php
-    gulp.task('watch-theme-config', () => {
+    gulp.task('autosync-config', () => {
       return watch([
         this.currentThemeConfigPath()
       ], () => {
         this.sync()
+      })
+    })
+
+    // Auto compile pot file
+    gulp.task('autocompile-pot', () => {
+      return watch([
+        this.currentThemePath('**', '*.php'),
+        this.currentThemePath('*.php')
+      ], () => {
+        this.compilePot()
       })
     })
   }
@@ -163,6 +177,29 @@ class DevCLI extends CLI {
       minStyle,
       rtlMinStyle
     ])
+  }
+
+  /**
+   * Auto compile translation for all php source in theme
+   */
+  compilePot() {
+    const themeDetails = this.themeDetails()
+    const potFilePath = this.currentThemePath('languages', `${themeDetails.slug}.pot`)
+
+    const compilePotFile = gulp
+      .src(this.currentThemePath('*.php'))
+      .pipe(wpPot({
+        domain: themeDetails.slug,
+        package: themeDetails.name,
+        relativeTo: this.currentThemePath()
+      }))
+      .pipe(gulp.dest(potFilePath))
+
+    const compilePotToMo = gulp.src(potFilePath)
+      .pipe(gettext())
+      .pipe(gulp.dest(this.currentThemePath('languages')))
+
+    return merge(compilePotFile, compilePotToMo)
   }
 }
 
