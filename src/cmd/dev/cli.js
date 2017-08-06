@@ -7,9 +7,10 @@ const rename = require('gulp-rename')
 const srcmap = require('gulp-sourcemaps')
 const cssbeautify = require('gulp-cssbeautify')
 const stripComments = require('gulp-strip-css-comments')
-const merge = require('gulp-merge')
+const merge = require('merge2')
 const clone = require('gulp-clone')
 const replacer = require('gulp-replace')
+const rtlcss = require('gulp-rtlcss')
 
 const CLI = global.deuxcli.require('main')
 const error = global.deuxhelpers.require('logger/error')
@@ -27,9 +28,9 @@ class DevCLI extends CLI {
   prepare() {
     this.title = 'Start {development} mode'
     this.tasklist = [
-      'start-server',
       'watch-sass',
-      'watch-theme-config'
+      'watch-theme-config',
+      'start-server'
     ]
 
     const themeDetails = this.themeDetails()
@@ -53,6 +54,10 @@ class DevCLI extends CLI {
         open: false,
         notify: false
       })
+
+      // After add task to gulp
+      // Run some startup script directly
+      this.compileCSS()
     })
 
     // SASS Watcher
@@ -86,6 +91,7 @@ class DevCLI extends CLI {
    * Compile CSS
    */
   compileCSS() {
+    const rtlRegx = /;\/\*!rtl(.[^\/]*)\*\//g
     const destPath = this.currentThemePath('assets', 'css')
 
     const gulpPlumber = plumber({
@@ -101,35 +107,62 @@ class DevCLI extends CLI {
     const compiledCSS = gulp
       .src(this.currentThemePath('assets-src', 'sass', 'main.scss'))
       .pipe(gulpPlumber)
-      .pipe(
-        sass({
-          outputStyle: 'compressed'
-        })
-      )
+      .pipe(sass({
+        outputStyle: 'compressed'
+      }))
       .pipe(rename('main.css'))
 
+    // Compile main stylesheet
+    const compiler = (basename = 'main', isRTL = false, beautify = true) => {
+      let output = compiledCSS
+        .pipe(clone()).pipe(replacer(rtlRegx, isRTL ? '/*rtl$1*/;' : ';'))
+
+      if (isRTL) {
+        output = output.pipe(rtlcss())
+      }
+
+      if (beautify) {
+        output = output
+          .pipe(cssbeautify({indent: '  ', autosemicolon: true}))
+          .pipe(replacer(/}\/\*!/g, '}\n\n/*!'))
+          .pipe(replacer(/\*\//g, '*/\n'))
+      } else {
+        output = output
+          .pipe(stripComments({preserve: false}))
+          .pipe(srcmap.init({
+            loadMaps: true
+          }))
+          .pipe(stripComments({preserve: false}))
+      }
+
+      output = output.pipe(rename({basename}))
+
+      if (beautify === false) {
+        output = output
+          .pipe(srcmap.write('./'))
+      }
+
+      return output.pipe(gulp.dest(destPath))
+    }
+
     // Compile main.css
-    const style = compiledCSS
-      .pipe(clone())
-      .pipe(cssbeautify({indent: '  ', autosemicolon: true}))
-      .pipe(replacer(/}\/\*!/g, '}\n\n/*!'))
-      .pipe(replacer(/\*\//g, '*/\n'))
-      .pipe(gulp.dest(destPath))
+    const style = compiler()
+
+    // Compile RTL Stylesheet main-rtl.css
+    const rtlStyle = compiler('main-rtl', true)
 
     // Compile main.min.css
-    const minStyle = compiledCSS
-      .pipe(clone())
-      .pipe(stripComments({preserve: false}))
-      .pipe(
-        srcmap.init({
-          loadMaps: true
-        })
-      )
-      .pipe(rename({suffix: '.min'}))
-      .pipe(srcmap.write('./'))
-      .pipe(gulp.dest(destPath))
+    const minStyle = compiler('main.min', false, false)
 
-    return merge(style, minStyle)
+    // Compile RTL Stylesheet minified main-rtl.min.css
+    const rtlMinStyle = compiler('main.min-rtl', true, false)
+
+    return merge([
+      style,
+      rtlStyle,
+      minStyle,
+      rtlMinStyle
+    ])
   }
 }
 
