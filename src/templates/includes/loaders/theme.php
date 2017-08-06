@@ -43,6 +43,9 @@ if ( ! function_exists( '{{theme.slugfn}}_setup' ) ) :
 		// Make theme available for translation.
 		load_theme_textdomain( '{{theme.slug}}' );
 
+		// Editor style.
+		add_editor_style( array( 'assets/css/editor-style.css') );
+
 		// Native theme support.
 		add_theme_support( 'title-tag' );
 		add_theme_support( 'customize-selective-refresh-widgets' );
