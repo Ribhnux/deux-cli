@@ -93,7 +93,8 @@ class DevCLI extends CLI {
     // Javascript bundler
     gulp.task('build:js', () => {
       return watch([
-        this.currentThemePath('assets-src', 'js', 'main.js')
+        this.currentThemePath('assets-src', 'js', '**', '*.js'),
+        '!' + this.currentThemePath('assets-src', 'js', 'node_modules', '**', '*.js')
       ], () => {
         this.compileJS()
       })
