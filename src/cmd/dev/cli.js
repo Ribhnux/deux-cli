@@ -1,3 +1,4 @@
+const {existsSync} = require('fs')
 const gulp = require('gulp')
 const browserSync = require('browser-sync')
 const watch = require('gulp-watch')
@@ -279,31 +280,41 @@ class DevCLI extends CLI {
   compileJS() {
     const srcPath = this.currentThemePath('assets-src', 'js', 'main.js')
     const destPath = this.currentThemePath('assets', 'js')
+    const customWebpackConfigPath = this.currentThemePath('assets', 'js', 'webpack.config.js')
+
+    let customConfig = {}
+    if (existsSync(customWebpackConfigPath)) {
+      customConfig = require(customWebpackConfigPath)
+    }
+
+    const defaultConfig = extend(customConfig, {
+      entry: {
+        main: srcPath
+      },
+
+      output: {
+        library: this.themeDetails('slug'),
+        libraryTarget: 'umd',
+        filename: '[name].js',
+        sourceMapFilename: '[name].map'
+      },
+
+      externals: {
+        jquery: 'jQuery'
+      },
+
+      plugins: [
+        new webpack.optimize.UglifyJsPlugin({
+          compress: {
+            warnings: false,
+          }
+        })
+      ]
+    })
+
     return gulp
       .src(srcPath)
-      .pipe(webpackStream({
-        target: 'web',
-        entry: {
-          main: srcPath
-        },
-        output: {
-          library: this.themeDetails('slug'),
-          libraryTarget: 'umd',
-          filename: '[name].js',
-          sourceMapFilename: '[name].map'
-        },
-        plugins: [
-          new webpack.ProvidePlugin({
-            $: 'jquery',
-            jQuery: 'jquery'
-          }),
-          new webpack.optimize.UglifyJsPlugin({
-            compress: {
-              warnings: false,
-            }
-          })
-        ]
-      }, webpack))
+      .pipe(webpackStream(defaultConfig, webpack))
       .pipe(gulp.dest(destPath))
   }
 }
