@@ -31,11 +31,11 @@ class DevCLI extends CLI {
   prepare() {
     this.title = 'Start {development} mode'
     this.tasklist = [
-      'autocompile-main-style',
-      'autocompile-editor-style',
-      'autocompile-pot',
-      'autosync-config',
-      'start-server'
+      'build:style',
+      'build:editor-style',
+      'build:translation',
+      'sync:config',
+      'start:server'
     ]
 
     const themeDetails = this.themeDetails()
@@ -43,7 +43,7 @@ class DevCLI extends CLI {
     /**
      * Start browser-sync server
      */
-    gulp.task('start-server', () => {
+    gulp.task('start:server', () => {
       const watchFileList = [
         ['**', '*.php'],
         ['**', '*.css'],
@@ -68,7 +68,7 @@ class DevCLI extends CLI {
     })
 
     // Main stylesheet compiler
-    gulp.task('autocompile-main-style', () => {
+    gulp.task('build:style', () => {
       return watch([
         this.currentThemePath('assets-src', 'sass', '**', '*.scss'),
         this.currentThemePath('assets-src', 'sass', 'main.scss')
@@ -78,7 +78,7 @@ class DevCLI extends CLI {
     })
 
     // Editor stylesheet compiler
-    gulp.task('autocompile-editor-style', () => {
+    gulp.task('build:editor-style', () => {
       return watch([
         this.currentThemePath('assets-src', 'sass', 'editor-style.scss')
       ], () => {
@@ -87,7 +87,7 @@ class DevCLI extends CLI {
     })
 
     // Watch theme-config.php
-    gulp.task('autosync-config', () => {
+    gulp.task('sync:config', () => {
       return watch([
         this.currentThemeConfigPath()
       ], () => {
@@ -96,7 +96,7 @@ class DevCLI extends CLI {
     })
 
     // Auto compile pot file
-    gulp.task('autocompile-pot', () => {
+    gulp.task('build:translation', () => {
       return watch([
         this.currentThemePath('**', '*.php'),
         this.currentThemePath('*.php')
