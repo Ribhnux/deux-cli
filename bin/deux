@@ -1,9 +1,9 @@
 #!/usr/bin/env node
+const roadrunner = require('roadrunner')
+const program = require('caporal')
 const globalPath = require('global-path')
 const updateNotifier = require('update-notifier')
 const pkg = require('../package.json')
-const program = require('caporal')
-const roadrunner = require('roadrunner')
 
 // Load with roadrunner
 roadrunner.load()
