@@ -1,5 +1,6 @@
 module.exports = {
   externals: {
-    jquery: 'jQuery'
+    jQuery: 'jQuery',
+    wp: 'wp'
   }
 }
