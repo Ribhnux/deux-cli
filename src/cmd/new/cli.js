@@ -294,7 +294,13 @@ class NewCLI extends CLI {
             }
           })
 
-          resolve()
+          mkdirp(this.currentThemePath('assets-src', 'js', 'node_modules'), err => {
+            if (err) {
+              exit(err)
+            }
+
+            resolve()
+          })
         })
       },
 

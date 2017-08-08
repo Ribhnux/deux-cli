@@ -1,0 +1,13 @@
+{
+  "name": "{{theme.slug}}-js",
+  "version": "1.0.0",
+  "description": "{{theme.name}} Javascript Bundle",
+  "main": "main.js",
+  "scripts": {},
+  "keywords": [
+    "wordpress",
+    "wordpress-theme"
+  ],
+  "author": "{{theme.author}}",
+  "license": "GPL-2.0"
+}

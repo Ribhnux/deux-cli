@@ -1,3 +1,4 @@
+const {existsSync} = require('fs')
 const gulp = require('gulp')
 const browserSync = require('browser-sync')
 const watch = require('gulp-watch')
@@ -14,6 +15,8 @@ const rtlcss = require('gulp-rtlcss')
 const wpPot = require('gulp-wp-pot')
 const gettext = require('gulp-gettext')
 const extend = require('extend')
+const webpack = require('webpack')
+const webpackStream = require('webpack-stream')
 
 const CLI = global.deuxcli.require('main')
 const error = global.deuxhelpers.require('logger/error')
@@ -31,11 +34,12 @@ class DevCLI extends CLI {
   prepare() {
     this.title = 'Start {development} mode'
     this.tasklist = [
-      'autocompile-main-style',
-      'autocompile-editor-style',
-      'autocompile-pot',
-      'autosync-config',
-      'start-server'
+      'build:style',
+      'build:editor-style',
+      'build:js',
+      'build:translation',
+      'sync:config',
+      'start:server'
     ]
 
     const themeDetails = this.themeDetails()
@@ -43,7 +47,7 @@ class DevCLI extends CLI {
     /**
      * Start browser-sync server
      */
-    gulp.task('start-server', () => {
+    gulp.task('start:server', () => {
       const watchFileList = [
         ['**', '*.php'],
         ['**', '*.css'],
@@ -68,7 +72,7 @@ class DevCLI extends CLI {
     })
 
     // Main stylesheet compiler
-    gulp.task('autocompile-main-style', () => {
+    gulp.task('build:style', () => {
       return watch([
         this.currentThemePath('assets-src', 'sass', '**', '*.scss'),
         this.currentThemePath('assets-src', 'sass', 'main.scss')
@@ -78,7 +82,7 @@ class DevCLI extends CLI {
     })
 
     // Editor stylesheet compiler
-    gulp.task('autocompile-editor-style', () => {
+    gulp.task('build:editor-style', () => {
       return watch([
         this.currentThemePath('assets-src', 'sass', 'editor-style.scss')
       ], () => {
@@ -86,8 +90,18 @@ class DevCLI extends CLI {
       })
     })
 
+    // Javascript bundler
+    gulp.task('build:js', () => {
+      return watch([
+        this.currentThemePath('assets-src', 'js', '**', '*.js'),
+        '!' + this.currentThemePath('assets-src', 'js', 'node_modules', '**', '*.js')
+      ], () => {
+        this.compileJS()
+      })
+    })
+
     // Watch theme-config.php
-    gulp.task('autosync-config', () => {
+    gulp.task('sync:config', () => {
       return watch([
         this.currentThemeConfigPath()
       ], () => {
@@ -96,7 +110,7 @@ class DevCLI extends CLI {
     })
 
     // Auto compile pot file
-    gulp.task('autocompile-pot', () => {
+    gulp.task('build:translation', () => {
       return watch([
         this.currentThemePath('**', '*.php'),
         this.currentThemePath('*.php')
@@ -258,6 +272,68 @@ class DevCLI extends CLI {
       .pipe(gulp.dest(this.currentThemePath('languages')))
 
     return merge(compilePotFile, compilePotToMo)
+  }
+
+  /**
+   * Auto bundling javascript using webpack
+   */
+  compileJS() {
+    const srcPath = this.currentThemePath('assets-src', 'js', 'main.js')
+    const destPath = this.currentThemePath('assets', 'js')
+    const customWebpackConfigPath = this.currentThemePath('assets', 'js', 'webpack.config.js')
+
+    let customConfig = {}
+    if (existsSync(customWebpackConfigPath)) {
+      customConfig = require(customWebpackConfigPath)
+    }
+
+    const defaultConfig = extend({
+      context: destPath,
+
+      entry: {
+        main: srcPath
+      },
+
+      output: {
+        library: this.themeDetails('slug'),
+        libraryTarget: 'umd',
+        filename: '[name].js',
+        sourceMapFilename: '[name].map'
+      },
+
+      module: {
+        rules: [
+          {
+            test: /\.js?$/,
+            use: {
+              loader: require.resolve('babel-loader'),
+              options: {
+                presets: [
+                  require('babel-preset-es2015')
+                ]
+              }
+            }
+          }
+        ]
+      },
+
+      externals: {
+        jQuery: 'jQuery'
+      },
+
+      plugins: [
+        new webpack.optimize.UglifyJsPlugin({
+          compress: {
+            warnings: false,
+          }
+        })
+      ]
+    }, customConfig)
+
+    return gulp
+      .src(srcPath)
+      .pipe(webpackStream(defaultConfig, webpack))
+      .pipe(gulp.dest(destPath))
   }
 }
 
