@@ -68,7 +68,6 @@ class DevCLI extends CLI {
       // Run some startup script directly
       this.compileMainStyle()
       this.compileEditorStyle()
-      this.compileJS()
       this.compilePot()
     })
 
@@ -287,7 +286,9 @@ class DevCLI extends CLI {
       customConfig = require(customWebpackConfigPath)
     }
 
-    const defaultConfig = extend(customConfig, {
+    const defaultConfig = extend({
+      context: destPath,
+
       entry: {
         main: srcPath
       },
@@ -299,8 +300,24 @@ class DevCLI extends CLI {
         sourceMapFilename: '[name].map'
       },
 
+      module: {
+        rules: [
+          {
+            test: /\.js?$/,
+            use: {
+              loader: require.resolve('babel-loader'),
+              options: {
+                presets: [
+                  require('babel-preset-es2015')
+                ]
+              }
+            }
+          }
+        ]
+      },
+
       externals: {
-        jquery: 'jQuery'
+        jQuery: 'jQuery'
       },
 
       plugins: [
@@ -310,7 +327,7 @@ class DevCLI extends CLI {
           }
         })
       ]
-    })
+    }, customConfig)
 
     return gulp
       .src(srcPath)
