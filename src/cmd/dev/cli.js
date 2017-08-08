@@ -324,7 +324,7 @@ class DevCLI extends CLI {
       plugins: [
         new webpack.optimize.UglifyJsPlugin({
           compress: {
-            warnings: false,
+            warnings: false
           }
         })
       ]
