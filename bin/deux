@@ -30,6 +30,7 @@ global.deuxcmd.require('add')
 global.deuxcmd.require('remove')
 global.deuxcmd.require('dev')
 global.deuxcmd.require('sync')
+global.deuxcmd.require('validate')
 program.parse(process.argv)
 
 // Update notify code.
