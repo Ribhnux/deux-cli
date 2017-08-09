@@ -51,6 +51,7 @@
     "gulp-wp-pot": "^2.0.6",
     "handlebars": "^4.0.10",
     "html-entities": "^1.2.1",
+    "html5-validator": "^1.0.5",
     "inquirer": "^3.2.1",
     "isarray": "^2.0.2",
     "json-realtime": "^1.3.3",
@@ -71,7 +72,9 @@
     "webpack-stream": "^4.0.0",
     "weft": "^1.2.4",
     "wp-get-file-header": "^1.0.1",
-    "wp-plugin-search": "^1.1.0"
+    "wp-plugin-search": "^1.1.0",
+    "wp-theme-check": "^1.2.1",
+    "wpcs": "^1.4.0"
   },
   "devDependencies": {
     "ava": "^0.21.0",
