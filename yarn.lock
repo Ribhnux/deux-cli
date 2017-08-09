@@ -6016,10 +6016,6 @@ ripemd160@^2.0.0, ripemd160@^2.0.1:
     hash-base "^2.0.0"
     inherits "^2.0.1"
 
-roadrunner@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/roadrunner/-/roadrunner-1.1.0.tgz#1180a30d64e1970d8f55dd8cb0da8ffccecad71e"
-
 rtlcss@^2.0.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/rtlcss/-/rtlcss-2.2.0.tgz#134415254d0c26b5c403e2ead2c1b8bf4fc000dd"
