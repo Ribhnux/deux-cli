@@ -1,12 +1,8 @@
 #!/usr/bin/env node
-const roadrunner = require('roadrunner')
 const program = require('caporal')
 const globalPath = require('global-path')
 const updateNotifier = require('update-notifier')
 const pkg = require('../package.json')
-
-// Load with roadrunner
-roadrunner.load()
 
 // Register global path
 globalPath('deuxcli', '@/../src/cli', '')
@@ -35,9 +31,6 @@ global.deuxcmd.require('remove')
 global.deuxcmd.require('dev')
 global.deuxcmd.require('sync')
 program.parse(process.argv)
-
-// Save roadrunner
-roadrunner.save()
 
 // Update notify code.
 updateNotifier({
