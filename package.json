@@ -68,16 +68,16 @@
     "through2": "^2.0.3",
     "update-notifier": "^2.2.0",
     "validate.js": "^0.11.1",
-    "webpack": "^3.5.3",
+    "webpack": "^3.5.4",
     "webpack-stream": "^4.0.0",
     "weft": "^1.2.4",
     "wp-get-file-header": "^1.0.1",
     "wp-plugin-search": "^1.1.0",
-    "wp-theme-check": "^1.2.1",
-    "wpcs": "^1.5.1"
+    "wp-theme-check": "^1.2.3",
+    "wpcs": "^1.5.5"
   },
   "devDependencies": {
-    "ava": "^0.21.0",
+    "ava": "^0.22.0",
     "xo": "^0.18.2"
   },
   "scripts": {
