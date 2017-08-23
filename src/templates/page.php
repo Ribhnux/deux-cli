@@ -17,8 +17,9 @@ get_header();
 <div id="content-wrapper" class="site__wrapper--page">
 	<div id="content" class="content__wrapper" tabindex="-1">
 		<main id="main" class="site__main">
-
-			<?php while ( have_posts() ) : the_post();
+			<?php
+			while ( have_posts() ) :
+				the_post();
 
 				// Load partial-templates for page.
 				get_template_part( 'partial-templates/content', 'page' );
@@ -28,12 +29,12 @@ get_header();
 					comments_template();
 				endif;
 
-			endwhile; // end of the loops. ?>
-
+			endwhile; // end of the loops.
+			?>
 		</main><!-- #main -->
 	</div><!-- #content -->
 
-	<?php get_sidebar(); // load the sidebar. ?>
+	<?php get_sidebar(); ?>
 </div><!-- #content-wrapper -->
 
 <?php get_footer(); ?>

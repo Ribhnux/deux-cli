@@ -48,21 +48,17 @@ if ( post_password_required() ) {
 			?>
 		</h2><!-- .comments-title -->
 
-		<?php
-		// are there comments to navigate through.
-		if ( get_comment_pages_count() > 1 && get_option( 'page_comments' ) ) : ?>
+		<?php if ( get_comment_pages_count() > 1 && get_option( 'page_comments' ) ) : ?>
 			<nav class="comment-navigation" id="comment-nav-above">
 				<h1 class="screen-reader-text"><?php esc_html_e( 'Comment navigation', '{{theme.slug}}' ); ?></h1>
 				<?php if ( get_previous_comments_link() ) : ?>
-					<div class="nav-previous"><?php previous_comments_link( __( '&larr; Older Comments',
-					'{{theme.slug}}' ) ); ?></div>
+					<div class="nav-previous"><?php previous_comments_link( __( '&larr; Older Comments', '{{theme.slug}}' ) ); ?></div>
 				<?php endif; ?>
 				<?php if ( get_next_comments_link() ) : ?>
-					<div class="nav-next"><?php next_comments_link( __( 'Newer Comments &rarr;',
-					'{{theme.slug}}' ) ); ?></div>
+					<div class="nav-next"><?php next_comments_link( __( 'Newer Comments &rarr;', '{{theme.slug}}' ) ); ?></div>
 				<?php endif; ?>
 			</nav><!-- #comment-nav-above -->
-		<?php endif; // check for comment navigation. ?>
+		<?php endif; ?>
 
 		<ol class="comment-list">
 			<?php
@@ -73,23 +69,19 @@ if ( post_password_required() ) {
 			?>
 		</ol><!-- .comment-list -->
 
-		<?php
-		// are there comments to navigate through.
-		if ( get_comment_pages_count() > 1 && get_option( 'page_comments' ) ) : ?>
+		<?php if ( get_comment_pages_count() > 1 && get_option( 'page_comments' ) ) : ?>
 			<nav class="comment-navigation" id="comment-nav-below">
 				<h1 class="screen-reader-text"><?php esc_html_e( 'Comment navigation', '{{theme.slug}}' ); ?></h1>
 				<?php if ( get_previous_comments_link() ) : ?>
-					<div class="nav-previous"><?php previous_comments_link( __( '&larr; Older Comments',
-					'{{theme.slug}}' ) ); ?></div>
+					<div class="nav-previous"><?php previous_comments_link( __( '&larr; Older Comments', '{{theme.slug}}' ) ); ?></div>
 				<?php endif; ?>
 				<?php if ( get_next_comments_link() ) : ?>
-					<div class="nav-next"><?php next_comments_link( __( 'Newer Comments &rarr;',
-					'{{theme.slug}}' ) ); ?></div>
+					<div class="nav-next"><?php next_comments_link( __( 'Newer Comments &rarr;', '{{theme.slug}}' ) ); ?></div>
 				<?php endif; ?>
 			</nav><!-- #comment-nav-below -->
-		<?php endif; // check for comment navigation. ?>
+		<?php endif; ?>
 
-	<?php endif; // endif have_comments(). ?>
+	<?php endif; ?>
 
 	<?php
 	// If comments are closed and there are comments, let's leave a little note, shall we?
@@ -100,6 +92,9 @@ if ( post_password_required() ) {
 
 	<?php endif; ?>
 
-	<?php comment_form(); // Render comments form. ?>
+	<?php
+	// Render comments form.
+	comment_form();
+	?>
 
 </div><!-- #comments -->

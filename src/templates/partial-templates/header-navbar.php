@@ -10,5 +10,5 @@
 
 ?>
 <nav class="navbar">
-	<?php // insert wp_nav_menu here. ?>
+	<!-- insert wp_nav_menu here. -->
 </nav>

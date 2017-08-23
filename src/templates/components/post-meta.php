@@ -44,8 +44,8 @@ if ( ! function_exists( '{{theme.slugfn}}_post_meta' ) ) :
 				printf(
 					/* translators: categories list */
 					'<span class="cat-links">' . esc_html__( 'Posted in %1$s', '{{theme.slug}}' ) . '</span>',
-					$categories_list
-				); // WPCS: XSS OK.
+					wp_kses( $categories_list, wp_kses_allowed_html( $categories_list ) )
+				);
 			}
 
 			/* translators: used between list items, there is a space after the comma */
@@ -54,8 +54,8 @@ if ( ! function_exists( '{{theme.slugfn}}_post_meta' ) ) :
 				printf(
 					/* translators: tag list */
 					'<span class="tags-links">' . esc_html__( 'Tagged %1$s', '{{theme.slug}}' ) . '</span>',
-					$tags_list
-				); // WPCS: XSS OK.
+					wp_kses( $tags_list, wp_kses_allowed_html( $tags_list ) )
+				);
 			}
 		}
 
