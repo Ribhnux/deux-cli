@@ -34,7 +34,7 @@ class AddFeature extends CLI {
    * Setup add feature prompts
    */
   prepare() {
-    this.title = ''
+    this.title = 'Add {Theme Features}'
     this.prompts = [
       {
         type: 'list',
