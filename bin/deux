@@ -17,12 +17,11 @@ process.on('unhandledRejection', (err, p) => {
   exit(err)
 })
 
-program.version(pkg.version)
-program.action(() => {
-  const Init = global.deuxcli.require('init')
-  const init = new Init()
-  init.check()
-})
+program
+.version(pkg.version)
+.description(pkg.description)
+
+// Subcommands.
 global.deuxcmd.require('new')
 global.deuxcmd.require('status')
 global.deuxcmd.require('switch')
@@ -31,6 +30,7 @@ global.deuxcmd.require('remove')
 global.deuxcmd.require('dev')
 global.deuxcmd.require('sync')
 global.deuxcmd.require('validate')
+global.deuxcmd.require('main')
 program.parse(process.argv)
 
 // Update notify code.
