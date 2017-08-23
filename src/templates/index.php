@@ -19,8 +19,11 @@ get_header();
 <div id="content-wrapper" class="site__wrapper--home">
 	<div id="content" class="content__wrapper" tabindex="-1">
 		<main id="main" class="site__main">
-			<?php if ( have_posts() ) :
-				while ( have_posts() ) : the_post();
+			<?php
+			if ( have_posts() ) :
+				while ( have_posts() ) :
+					// Setup the post.
+					the_post();
 
 					// Load partial-templates for page.
 					get_template_part( 'partial-templates/content', get_post_format() );
@@ -37,7 +40,8 @@ get_header();
 				// Load partial-templates for empty content.
 				get_template_part( 'partial-templates/content', 'none' );
 
-			endif; ?>
+			endif;
+			?>
 		</main><!-- #main -->
 
 		<!-- The pagination component -->
@@ -45,7 +49,7 @@ get_header();
 
 	</div><!-- #content -->
 
-	<?php get_sidebar(); // load the sidebar. ?>
+	<?php get_sidebar(); ?>
 </div><!-- #content-wrapper -->
 
 <?php get_footer(); ?>

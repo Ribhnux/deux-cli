@@ -44,7 +44,7 @@ if ( ! function_exists( '{{theme.slugfn}}_setup' ) ) :
 		load_theme_textdomain( '{{theme.slug}}' );
 
 		// Editor style.
-		add_editor_style( array( 'assets/css/editor-style.css') );
+		add_editor_style( array( 'assets/css/editor-style.css' ) );
 
 		// Native theme support.
 		add_theme_support( 'title-tag' );
@@ -54,7 +54,7 @@ if ( ! function_exists( '{{theme.slugfn}}_setup' ) ) :
 		foreach ( ${{theme.slugfn}}_config['features'] as $name => $value ) {
 			if ( is_bool( $value ) ) {
 				add_theme_support( $name );
-			} else if ( is_array( $value ) ) {
+			} elseif ( is_array( $value ) ) {
 				$features = array();
 				foreach ( $value as $key => $val ) {
 					if ( is_string( $val ) ) {

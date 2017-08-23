@@ -52,24 +52,27 @@ $author_desc = $current_author->user_description;
 					:</h2>
 			</header><!-- #page-header -->
 
-			<?php if ( have_posts() ) : ?>
-				<ul>
-				<?php while ( have_posts() ) : the_post(); ?>
+			<?php
+			if ( have_posts() ) :
+				echo '<ul>';
+				while ( have_posts() ) :
+					the_post();
+				?>
 					<li>
-						<a rel="bookmark" href="<?php the_permalink() ?>" title="Permanent Link: <?php the_title(); ?>"> <?php the_title(); ?></a>,
+						<a rel="bookmark" href="<?php the_permalink(); ?>" title="Permanent Link: <?php the_title(); ?>"> <?php the_title(); ?></a>,
 						<?php {{theme.slugfn}}_posted_on(); ?>
 						<?php esc_html_e( 'in', '{{theme.slug}}' ); ?> <?php the_category( '&' ); ?>
 					</li>
-				<?php endwhile; // end of the loops. ?>
-				</ul>
-			<?php else : ?>
-
 				<?php
-					// Load partial-templates for empty content.
-					get_template_part( 'partial-templates/content', 'none' );
-				?>
+				endwhile;
+				echo '</ul>';
+			else :
 
-			<?php endif; ?>
+				// Load partial-templates for empty content.
+				get_template_part( 'partial-templates/content', 'none' );
+
+			endif;
+			?>
 		</main><!-- #main -->
 
 		<!-- The pagination component -->
@@ -77,7 +80,7 @@ $author_desc = $current_author->user_description;
 
 	</div><!-- #content -->
 
-	<?php get_sidebar(); // load the sidebar. ?>
+	<?php get_sidebar(); ?>
 </div><!-- #content-wrapper -->
 
 <?php get_footer(); ?>

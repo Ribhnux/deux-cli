@@ -18,7 +18,8 @@
 
 	<div id="page-content" class="page__content">
 		<?php if ( is_home() && current_user_can( 'publish_posts' ) ) : ?>
-			<p><?php
+			<p>
+			<?php
 				printf(
 					wp_kses(
 						/* translators: new post link to wp-admin */
@@ -27,11 +28,11 @@
 							'a' => array(
 								'href' => array(),
 							),
-						),
-					),
-					esc_url( admin_url( 'post-new.php' ) )
+						)
+					), esc_url( admin_url( 'post-new.php' ) )
 				);
-			?></p>
+			?>
+			</p>
 
 		<?php elseif ( is_search() ) : ?>
 

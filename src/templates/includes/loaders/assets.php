@@ -20,7 +20,7 @@ if ( ! function_exists( '{{theme.slugfn}}_font_url' ) ) :
 		$font_subsets = array();
 
 		foreach ( ${{theme.slugfn}}_config['asset']['fonts'] as $font ) {
-			$font_families[] = urlencode( $font['name'] ) . ':' . implode( ',', $font['variants'] );
+			$font_families[] = rawurlencode( $font['name'] ) . ':' . implode( ',', $font['variants'] );
 			$font_subsets = array_merge( $font_subsets, $font['subsets'] );
 		}
 
@@ -75,7 +75,9 @@ if ( ! function_exists( '{{theme.slugfn}}_enqueue_dependencies' ) ) :
 				wp_enqueue_script( $name );
 			} else {
 				foreach ( $libs['files'] as $file ) {
-					if ( ! $file['is_active'] ) continue;
+					if ( ! $file['is_active'] ) {
+						continue;
+					}
 
 					switch ( $file['ext'] ) {
 						case 'css':
@@ -120,7 +122,7 @@ if ( ! function_exists( '{{theme.slugfn}}_enqueue_scripts' ) ) :
 		// Main stylesheets.
 		wp_enqueue_style( '{{theme.slug}}-style', $style_path . $main_css );
 
-		// RTL Stylesheets
+		// RTL Stylesheets.
 		if ( is_rtl() ) {
 			wp_style_add_data( '{{theme.slug}}-style', 'rtl', 'replace' );
 		}
