@@ -3,6 +3,7 @@ const Table = require('cli-table2')
 const chalk = require('chalk')
 const {colorize} = require('caporal/lib/colorful')
 
+/* eslint-disable quote-props */
 const commandTable = new Table({
   chars: {
     'top': '',
@@ -26,6 +27,7 @@ const commandTable = new Table({
     'padding-right': 0
   }
 })
+/* eslint-enable */
 
 let customHelp = chalk.underline.white('Available Commands') + '\n\n'
 
