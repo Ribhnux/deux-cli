@@ -59,7 +59,7 @@ class RemoveAsset extends CLI {
               }
 
               list.push({
-                name: `${value}${version}`,
+                name: `${value} ${version}`,
                 value: {
                   key: assetTypes.LIB,
                   semver,
