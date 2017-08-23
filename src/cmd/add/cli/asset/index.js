@@ -72,6 +72,11 @@ class AddAsset extends CLI {
           {
             name: 'From WordPress',
             value: libSource.WP
+          },
+
+          {
+            name: 'Custom URL',
+            value: libSource.URL
           }
         ]
       },
@@ -202,9 +207,35 @@ class AddAsset extends CLI {
       },
 
       {
+        name: 'lib.name',
+        message: 'Library Name',
+        when: ({asset, lib}) => asset.type === assetTypes.LIB && lib.source === libSource.URL,
+        validate: value => validator(value, {minimum: 3, var: `"${value}"`})
+      },
+
+      {
+        name: 'lib.version',
+        message: 'Library Version',
+        when: ({asset, lib}) => asset.type === assetTypes.LIB && lib.source === libSource.URL,
+        validate: value => validator(value, {semver: true, var: `"${value}"`})
+      },
+
+      {
+        name: 'lib.url',
+        message: 'Library URL',
+        when: ({asset, lib}) => asset.type === assetTypes.LIB && lib.source === libSource.URL,
+        validate: value => validator(value, {url: true, var: `"${value}"`})
+      },
+
+      {
         name: 'lib.deps',
         message: 'Dependencies (separate with commas)',
-        when: ({asset, lib}) => asset.type === assetTypes.LIB && lib.source === libSource.CDN && lib.name.handle
+        when: ({asset, lib}) => {
+          const isCDN = lib.source === libSource.CDN && lib.name.handle
+          const isURL = lib.source === libSource.URL
+
+          return asset.type === assetTypes.LIB && (isCDN || isURL)
+        }
       },
 
       {
@@ -420,10 +451,18 @@ class AddAsset extends CLI {
     const themeInfo = this.themeInfo()
 
     let task = new Promise(resolve => resolve())
+    let libname = lib.name.handle
+
+    if (lib.source === libSource.URL) {
+      libname = slugify(lib.name)
+      lib.files = [lib.url]
+      delete lib.url
+    }
 
     // Download Assets
-    if (asset.type === assetTypes.LIB && lib.source === libSource.CDN) {
-      let libsemver = lib.name.handle
+    if (asset.type === assetTypes.LIB && (lib.source === libSource.CDN || lib.source === libSource.URL)) {
+      let libsemver = libname
+
       if (lib.version) {
         libsemver += `@${lib.version}`
       }
@@ -442,7 +481,13 @@ class AddAsset extends CLI {
               throw err
             }
 
-            Promise.all(cdnjs.url(libsemver, lib.files).map(
+            let files = lib.files
+
+            if (lib.source === libSource.CDN) {
+              files = cdnjs.url(libsemver, lib.files)
+            }
+
+            Promise.all(files.map(
               filename => download(filename, libpath)
             )).then(() => {
               downloadLoader.succeed(`${lib.files.length} file(s) downloaded.`)
@@ -462,7 +507,7 @@ class AddAsset extends CLI {
               lib.deps = lib.name.deps || []
             }
 
-            if (lib.source === libSource.CDN) {
+            if (lib.source === libSource.CDN || lib.source === libSource.URL) {
               let deps = []
               if (lib.deps.length > 0) {
                 deps = lib.deps.split(',').map(item => item.trim())
@@ -485,8 +530,8 @@ class AddAsset extends CLI {
               delete lib.deps
             }
 
-            themeInfo.asset.libs[lib.name.handle] = lib
-            delete themeInfo.asset.libs[lib.name.handle].name
+            themeInfo.asset.libs[libname] = lib
+            delete themeInfo.asset.libs[libname].name
           }
 
           // Save SASS
