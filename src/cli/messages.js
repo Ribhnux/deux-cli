@@ -31,6 +31,7 @@ exports.SUCCEED_FEATURE_ADDED = 'Cool, new feature has been added.'
 exports.SUCCEED_IMGSIZE_ADDED = 'Cool, new image size has been added.'
 exports.SUCCEED_HOOKS_ADDED = 'Cool, new hooks has been added.'
 exports.SUCCEED_SYNCRHONIZED = 'Synchronizing theme config with database has been completed.'
+exports.SUCCEED_REMOVED_THEME = `You have been removed theme, type ${chalk.bold.cyan('deux new')} to add new theme`
 exports.SUCCEED_REMOVED_ASSET = 'You have been removed some assets from theme.'
 exports.SUCCEED_REMOVED_PLUGIN = 'You have been removed some plugins from theme.'
 exports.SUCCEED_REMOVED_COMPONENT = 'You have been removed some components from theme.'
