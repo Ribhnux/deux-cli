@@ -1,5 +1,4 @@
 const rimraf = require('rimraf')
-const {happyExit, captchaMaker, separatorMaker} = require('./util')
 
 const CLI = global.deuxcli.require('main')
 const messages = global.deuxcli.require('messages')
@@ -7,6 +6,7 @@ const {exit, finish} = global.deuxhelpers.require('logger')
 const {assetTypes} = global.deuxcmd.require('add/cli/asset/const')
 const {capitalize} = global.deuxhelpers.require('util/misc')
 const compileFile = global.deuxhelpers.require('compiler/single')
+const {happyExit, captchaMaker, separatorMaker} = global.deuxhelpers.require('util/cli')
 
 class RemoveAsset extends CLI {
   constructor() {

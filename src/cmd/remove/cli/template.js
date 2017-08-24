@@ -1,12 +1,12 @@
 const rimraf = require('rimraf')
 const uniq = require('lodash.uniq')
 const wpFileHeader = require('wp-get-file-header')
-const {happyExit, captchaMaker, separatorMaker} = require('./util')
 
 const CLI = global.deuxcli.require('main')
 const messages = global.deuxcli.require('messages')
 const {templateTypes} = global.deuxcmd.require('add/cli/const')
 const {exit, finish} = global.deuxhelpers.require('logger')
+const {happyExit, captchaMaker, separatorMaker} = global.deuxhelpers.require('util/cli')
 
 class RemoveTemplate extends CLI {
   constructor() {

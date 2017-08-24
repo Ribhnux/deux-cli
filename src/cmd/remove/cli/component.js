@@ -2,11 +2,11 @@ const {existsSync} = require('fs')
 const wpFileHeader = require('wp-get-file-header')
 const rimraf = require('rimraf')
 const uniq = require('lodash.uniq')
-const {happyExit, captchaMaker, separatorMaker} = require('./util')
 
 const CLI = global.deuxcli.require('main')
 const messages = global.deuxcli.require('messages')
 const {exit, finish} = global.deuxhelpers.require('logger')
+const {happyExit, captchaMaker, separatorMaker} = global.deuxhelpers.require('util/cli')
 
 class RemoveComponent extends CLI {
   constructor() {

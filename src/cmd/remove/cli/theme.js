@@ -1,9 +1,9 @@
 const rimraf = require('rimraf')
-const {happyExit, captchaMaker} = require('./util')
 
 const CLI = global.deuxcli.require('main')
 const messages = global.deuxcli.require('messages')
 const {exit, finish} = global.deuxhelpers.require('logger')
+const {happyExit, captchaMaker} = global.deuxhelpers.require('util/cli')
 
 class RemoveTheme extends CLI {
   constructor() {
