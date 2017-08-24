@@ -70,8 +70,8 @@ class RemoveTheme extends CLI {
         this.removeTheme(theme)
         finish(messages.SUCCEED_REMOVED_THEME)
       })
-    } catch (e) {
-      exit(e)
+    } catch (err) {
+      exit(err)
     }
   }
 }

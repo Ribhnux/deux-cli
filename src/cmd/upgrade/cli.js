@@ -51,7 +51,7 @@ class UpgradeCLI extends CLI {
             plugins.push({
               slug,
               name,
-              version: version,
+              version,
               type: itemTypes.PLUGIN
             })
           }
@@ -90,7 +90,7 @@ class UpgradeCLI extends CLI {
             const {version} = this.assets.libs[slug]
             assets.push({
               slug,
-              version: version,
+              version,
               type: itemTypes.ASSET
             })
           }
@@ -136,7 +136,7 @@ class UpgradeCLI extends CLI {
           }).catch(reject)
         })
       ]).then(upgradeList => {
-        let [pluginList, assetList] = upgradeList
+        const [pluginList, assetList] = upgradeList
 
         this.loader.stop()
         this.prompts = [
@@ -191,13 +191,13 @@ class UpgradeCLI extends CLI {
     }
 
     Promise.all(upgradeItems.map(item => {
-      new Promise((resolve, reject) => {
+      return new Promise((resolve, reject) => {
         try {
           if (item.type === itemTypes.PLUGIN) {
             this.upgradePlugin(item.slug, item.latestVersion)
             resolve()
           } else if (item.type === itemTypes.ASSET) {
-
+            // Assets upgrade script.
           }
         } catch (err) {
           reject(err)
