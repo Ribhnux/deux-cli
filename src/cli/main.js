@@ -313,6 +313,21 @@ class CLI {
     const json = jsonar.parse(phpArray[`${slugfn}_config`], true)
     this.setThemeConfig(json, true)
   }
+
+  /**
+   * Change plugin version.
+   * @param {String} pluginSlug
+   */
+  upgradePlugin(pluginSlug = '', version = '') {
+    const plugins = this.themeInfo('plugins')
+    if (pluginSlug !== '' && version !== '' && plugins[pluginSlug].version) {
+      plugins[pluginSlug].version = version
+
+      this.setThemeConfig({
+        plugins
+      })
+    }
+  }
 }
 
 module.exports = CLI
