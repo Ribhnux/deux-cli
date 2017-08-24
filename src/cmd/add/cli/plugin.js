@@ -180,7 +180,7 @@ class AddPlugin extends CLI {
         type: 'confirm',
         name: 'plugin.force_activation',
         message: 'Force to activate this plugin when installing theme?',
-        default: true
+        default: false
       },
 
       {
