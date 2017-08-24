@@ -8,7 +8,8 @@ const {itemTypes} = require('./fixtures')
 const CLI = global.deuxcli.require('main')
 const {loader, exit} = global.deuxhelpers.require('logger')
 const {separatorMaker} = global.deuxhelpers.require('util/cli')
-const {libSource, pluginSrcTypes} = global.deuxcmd.require('add/cli/asset/fixtures')
+const {libSource} = global.deuxcmd.require('add/cli/asset/fixtures')
+const {pluginSrcTypes} = global.deuxcmd.require('add/cli/fixtures')
 
 class UpgradeCLI extends CLI {
   constructor() {
