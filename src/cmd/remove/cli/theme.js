@@ -1,3 +1,4 @@
+const rimraf = require('rimraf')
 const {happyExit, captchaMaker} = require('./util')
 
 const CLI = global.deuxcli.require('main')
@@ -61,8 +62,14 @@ class RemoveTheme extends CLI {
     }
 
     try {
-      this.removeTheme(theme)
-      finish(messages.SUCCEED_REMOVED_THEME)
+      rimraf(this.themePath(theme), err => {
+        if (err) {
+          exit(err)
+        }
+
+        this.removeTheme(theme)
+        finish(messages.SUCCEED_REMOVED_THEME)
+      })
     } catch (e) {
       exit(e)
     }
