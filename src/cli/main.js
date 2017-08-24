@@ -24,17 +24,27 @@ class CLI {
       this.db = db
       this.prepare()
 
-      if (this.prompts.length > 0) {
-        colorlog(this.title)
-        this.beforeInit()
-        inquirer.prompt(this.prompts).then(answers => {
-          this.action(answers)
-        }).catch(exit)
+      const action = () => {
+        if (this.prompts.length > 0) {
+          colorlog(this.title)
+          inquirer.prompt(this.prompts).then(answers => {
+            this.action(answers)
+          }).catch(exit)
+        }
+
+        if (!this.subcmd && this.prompts.length === 0) {
+          colorlog(this.title)
+          this.beforeInit()
+          this.action({})
+        }
       }
 
-      if (!this.subcmd && this.prompts.length === 0) {
-        colorlog(this.title)
-        this.action({})
+      if (this.beforeAction) {
+        this.beforeAction().then(() => {
+          action()
+        })
+      } else {
+        action()
       }
     })
   }
@@ -43,11 +53,6 @@ class CLI {
    * Setup everything before init
    */
   prepare() {}
-
-  /**
-   * Setup everything before init
-   */
-  beforeInit() {}
 
   /**
    * Action after prompts filled
@@ -303,7 +308,7 @@ class CLI {
   }
 
   /**
-   * Synchronize from php config to database
+   * Synchronize from php config to database.
    */
   sync() {
     const themeDetails = this.themeDetails()
