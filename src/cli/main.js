@@ -26,6 +26,7 @@ class CLI {
 
       if (this.prompts.length > 0) {
         colorlog(this.title)
+        this.beforeInit()
         inquirer.prompt(this.prompts).then(answers => {
           this.action(answers)
         }).catch(exit)
@@ -42,6 +43,11 @@ class CLI {
    * Setup everything before init
    */
   prepare() {}
+
+  /**
+   * Setup everything before init
+   */
+  beforeInit() {}
 
   /**
    * Action after prompts filled
