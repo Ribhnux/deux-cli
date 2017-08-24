@@ -74,20 +74,33 @@ class CLI {
   /**
    * Get theme list from database
    *
-   * @param {String} key
+   * @param {String} themeName
    */
-  getThemes(key = '') {
-    const themes = this.db[dbTypes.THEMES]
+  getThemes(themeName = '') {
+    const themes = Object.assign({}, this.db[dbTypes.THEMES])
 
-    if (key === '') {
+    if (themeName === '') {
       return themes
     }
 
-    if (!(key in themes)) {
+    if (!(themeName in themes)) {
       return undefined
     }
 
-    return themes[key]
+    return themes[themeName]
+  }
+
+  /**
+   * Remove theme from database
+   * @param {String} themeName
+   */
+  removeTheme(themeName = '') {
+    if (themeName !== '' && this.getThemes(themeName)) {
+      delete this.db[dbTypes.THEMES][themeName]
+      if (this.db[dbTypes.CURRENT] && this.db[dbTypes.CURRENT].slug === themeName) {
+        this.db[dbTypes.CURRENT] = {}
+      }
+    }
   }
 
   /**
