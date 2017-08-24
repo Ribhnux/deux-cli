@@ -4,7 +4,7 @@ const {commandList} = global.deuxcli.require('fixtures')
 const availableCmd = Object.keys(commandList).map(item => commandList[item])
 
 program
-  .command('add', 'Add Theme Functionality')
+  .command('add', 'Add theme functionality')
   .argument('[option]', availableCmd.join(' | '), availableCmd)
   .action(args => {
     const AddCLI = global.deuxcmd.require('add/cli')
