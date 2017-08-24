@@ -7,7 +7,7 @@ const {itemTypes} = require('./fixtures')
 
 const CLI = global.deuxcli.require('main')
 const messages = global.deuxcli.require('messages')
-const {loader, exit, done} = global.deuxhelpers.require('logger')
+const {loader, exit, done, finish} = global.deuxhelpers.require('logger')
 const {separatorMaker} = global.deuxhelpers.require('util/cli')
 const {libSource} = global.deuxcmd.require('add/cli/asset/fixtures')
 const {pluginSrcTypes} = global.deuxcmd.require('add/cli/fixtures')
@@ -196,13 +196,15 @@ class UpgradeCLI extends CLI {
           if (item.type === itemTypes.PLUGIN) {
             this.upgradePlugin(item.slug, item.latestVersion)
             resolve()
+          } else if (item.type === itemTypes.ASSET) {
+
           }
         } catch (err) {
           reject(err)
         }
       })
     })).then(() => {
-      console.log('finish')
+      finish(messages.SUCCEED_ALL_UPDATED)
     }).catch(exit)
   }
 }

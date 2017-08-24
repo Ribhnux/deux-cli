@@ -492,7 +492,10 @@ class AddAsset extends CLI {
             )).then(() => {
               downloadLoader.succeed(`${lib.files.length} file(s) downloaded.`)
               resolve()
-            }).catch(reject)
+            }).catch(err => {
+              rimraf.sync(libpath)
+              reject(err)
+            })
           })
         })
       })
