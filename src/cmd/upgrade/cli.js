@@ -8,7 +8,7 @@ const {itemTypes} = require('./fixtures')
 const CLI = global.deuxcli.require('main')
 const {loader, exit} = global.deuxhelpers.require('logger')
 const {separatorMaker} = global.deuxhelpers.require('util/cli')
-const {libSource} = global.deuxcmd.require('add/cli/asset/fixtures')
+const {libSource, pluginSrcTypes} = global.deuxcmd.require('add/cli/asset/fixtures')
 
 class UpgradeCLI extends CLI {
   constructor() {
@@ -33,7 +33,7 @@ class UpgradeCLI extends CLI {
 
       // Add plugin to list.
       for (const slug in this.plugins) {
-        if (Object.prototype.hasOwnProperty.call(this.plugins, slug)) {
+        if (Object.prototype.hasOwnProperty.call(this.plugins, slug) && this.plugins[slug].srctype === pluginSrcTypes.WP) {
           const {version, name} = this.plugins[slug]
           plugins.push({
             slug,

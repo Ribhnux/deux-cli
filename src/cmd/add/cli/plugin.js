@@ -259,7 +259,6 @@ class AddPlugin extends CLI {
         delete plugin.item
         delete plugin.versions
         delete plugin.search
-        delete plugin.srctype
         delete plugin.external_url
 
         plugins[plugin.slug] = plugin

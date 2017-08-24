@@ -30,6 +30,7 @@ if ( ! function_exists( '{{theme.slugfn}}_tgmpa_register' ) ) :
 		foreach ( ${{theme.slugfn}}_config['plugins'] as $slug => $plugin ) {
 			$plugin['slug'] = $slug;
 			unset( $plugin['init'] );
+			unset( $plugin['srctype'] );
 			$plugins[] = $plugin;
 		}
 
