@@ -15,7 +15,7 @@ const {
   fontSource,
   registeredScript,
   sassTypes
-} = require('./const')
+} = require('./fixtures')
 
 const CLI = global.deuxcli.require('main')
 const messages = global.deuxcli.require('messages')

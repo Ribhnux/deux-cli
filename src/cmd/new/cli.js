@@ -9,7 +9,7 @@ const execa = require('execa')
 const wpFileHeader = require('wp-get-file-header')
 const slugify = require('node-slugify')
 const jsonar = require('jsonar')
-const {validTags} = require('./const')
+const {validTags} = require('./fixtures')
 
 const CLI = global.deuxcli.require('main')
 const messages = global.deuxcli.require('messages')

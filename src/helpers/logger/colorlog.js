@@ -1,5 +1,5 @@
 const chalk = require('chalk')
-const {msgRegx} = require('./const')
+const {msgRegx} = require('./fixtures')
 
 module.exports = (message, padding = true, color = 'magenta') => {
   message = message.replace(msgRegx, `${chalk.bold[color]('$1')}`)

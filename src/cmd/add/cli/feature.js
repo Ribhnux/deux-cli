@@ -16,7 +16,7 @@ const {
   bgSizeTypes,
   bgRepeatTypes,
   bgAttachmentTypes
-} = require('./const')
+} = require('./fixtures')
 
 const CLI = global.deuxcli.require('main')
 const messages = global.deuxcli.require('messages')

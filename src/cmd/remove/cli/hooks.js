@@ -4,7 +4,7 @@ const uniq = require('lodash.uniq')
 
 const CLI = global.deuxcli.require('main')
 const messages = global.deuxcli.require('messages')
-const {hookTypes} = global.deuxcmd.require('add/cli/const')
+const {hookTypes} = global.deuxcmd.require('add/cli/fixtures')
 const {exit, finish} = global.deuxhelpers.require('logger')
 const {happyExit, captchaMaker, separatorMaker} = global.deuxhelpers.require('util/cli')
 

@@ -4,7 +4,7 @@ const Entities = require('html-entities').AllHtmlEntities
 const searchPlugin = require('wp-plugin-search')
 const slugify = require('node-slugify')
 const rimraf = require('rimraf')
-const {pluginSrcTypes} = require('./const')
+const {pluginSrcTypes} = require('./fixtures')
 
 const entities = new Entities()
 

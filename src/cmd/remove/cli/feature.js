@@ -1,7 +1,7 @@
 const rimraf = require('rimraf')
 
 const CLI = global.deuxcli.require('main')
-const {featureTypes, featureLabels} = global.deuxcmd.require('add/cli/const')
+const {featureTypes, featureLabels} = global.deuxcmd.require('add/cli/fixtures')
 const messages = global.deuxcli.require('messages')
 const {exit, finish} = global.deuxhelpers.require('logger')
 const {happyExit, captchaMaker, separatorMaker} = global.deuxhelpers.require('util/cli')

@@ -2,7 +2,7 @@ const inquirer = require('inquirer')
 const faker = require('faker')
 const slugify = require('node-slugify')
 const uniq = require('lodash.uniq')
-const {templateTypes, postTypes} = require('./const')
+const {templateTypes, postTypes} = require('./fixtures')
 
 const CLI = global.deuxcli.require('main')
 const messages = global.deuxcli.require('messages')
