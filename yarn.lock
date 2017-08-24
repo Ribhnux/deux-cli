@@ -7270,6 +7270,13 @@ wp-get-file-header@^1.0.1:
     slugify "^1.1.0"
     trim "^0.0.1"
 
+wp-plugin-info@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/wp-plugin-info/-/wp-plugin-info-1.0.0.tgz#2961d2b6a21aa2bc93d2d465508677496d205dd8"
+  dependencies:
+    axios "^0.16.2"
+    striptags "^3.0.1"
+
 wp-plugin-search@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/wp-plugin-search/-/wp-plugin-search-1.1.1.tgz#598ac6332be439d75b8e162cb2e7c60ce715b40f"
