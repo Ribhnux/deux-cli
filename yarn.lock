@@ -6622,6 +6622,10 @@ strip-outer@^1.0.0:
   dependencies:
     escape-string-regexp "^1.0.2"
 
+striptags@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/striptags/-/striptags-3.0.1.tgz#48f0d6932549c47bb3582920c87527cf49a160c1"
+
 supports-color@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/supports-color/-/supports-color-0.2.0.tgz#d92de2694eb3f67323973d7ae3d8b55b4c22190a"
