@@ -7,7 +7,6 @@ const pkg = require('../package.json')
 // Register global path
 globalPath('deuxcli', '@/../src/cli', '')
 globalPath('deuxhelpers', '@/../src/helpers', '')
-globalPath('deuxconst', '@/../src/helpers/fixtures', '')
 globalPath('deuxcmd', '@/../src/cmd', '')
 globalPath('deuxtpl', '@/../src/templates', '')
 
