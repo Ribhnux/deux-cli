@@ -34,7 +34,7 @@ class UpgradeCLI extends CLI {
 
       // Add plugin to list.
       for (const slug in this.plugins) {
-        if (Object.prototype.hasOwnProperty.call(this.plugins, slug) && this.plugins[slug].srctype === pluginSrcTypes.WP) {
+        if (Object.prototype.hasOwnProperty.call(this.plugins, slug) && this.plugins[slug].srctype === pluginSrcTypes.WP && this.plugins[slug].version) {
           const {version, name} = this.plugins[slug]
           plugins.push({
             slug,
