@@ -24,16 +24,26 @@ class CLI {
       this.db = db
       this.prepare()
 
-      if (this.prompts.length > 0) {
-        colorlog(this.title)
-        inquirer.prompt(this.prompts).then(answers => {
-          this.action(answers)
-        }).catch(exit)
+      const action = () => {
+        if (this.prompts.length > 0) {
+          colorlog(this.title)
+          inquirer.prompt(this.prompts).then(answers => {
+            this.action(answers)
+          }).catch(exit)
+        }
+
+        if (!this.subcmd && this.prompts.length === 0) {
+          colorlog(this.title)
+          this.action({})
+        }
       }
 
-      if (!this.subcmd && this.prompts.length === 0) {
-        colorlog(this.title)
-        this.action({})
+      if (this.beforeAction) {
+        this.beforeAction().then(() => {
+          action()
+        })
+      } else {
+        action()
       }
     })
   }
@@ -74,20 +84,33 @@ class CLI {
   /**
    * Get theme list from database
    *
-   * @param {String} key
+   * @param {String} themeName
    */
-  getThemes(key = '') {
-    const themes = this.db[dbTypes.THEMES]
+  getThemes(themeName = '') {
+    const themes = Object.assign({}, this.db[dbTypes.THEMES])
 
-    if (key === '') {
+    if (themeName === '') {
       return themes
     }
 
-    if (!(key in themes)) {
+    if (!(themeName in themes)) {
       return undefined
     }
 
-    return themes[key]
+    return themes[themeName]
+  }
+
+  /**
+   * Remove theme from database
+   * @param {String} themeName
+   */
+  removeTheme(themeName = '') {
+    if (themeName !== '' && this.getThemes(themeName)) {
+      delete this.db[dbTypes.THEMES][themeName]
+      if (this.db[dbTypes.CURRENT] && this.db[dbTypes.CURRENT].slug === themeName) {
+        this.db[dbTypes.CURRENT] = {}
+      }
+    }
   }
 
   /**
@@ -284,7 +307,7 @@ class CLI {
   }
 
   /**
-   * Synchronize from php config to database
+   * Synchronize from php config to database.
    */
   sync() {
     const themeDetails = this.themeDetails()

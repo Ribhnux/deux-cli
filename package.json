@@ -35,6 +35,7 @@
     "execa": "^0.8.0",
     "extend": "^3.0.1",
     "faker": "^4.1.0",
+    "force-semver": "^1.0.0",
     "global-path": "^1.1.0",
     "gulp": "^3.9.1",
     "gulp-clone": "^1.0.0",
@@ -73,6 +74,7 @@
     "webpack-stream": "^4.0.0",
     "weft": "^1.2.4",
     "wp-get-file-header": "^1.0.1",
+    "wp-plugin-info": "^1.0.0",
     "wp-plugin-search": "^1.1.1",
     "wp-theme-check": "^1.2.5",
     "wpcs": "^1.5.5"

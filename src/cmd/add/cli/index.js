@@ -6,6 +6,8 @@ const messages = global.deuxcli.require('messages')
 const {capitalize} = global.deuxhelpers.require('util/misc')
 const exit = global.deuxhelpers.require('logger/exit')
 
+delete commandList.THEME
+
 class AddCLI extends CLI {
   constructor(subcmd) {
     super()

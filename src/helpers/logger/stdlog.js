@@ -1,5 +1,5 @@
 const chalk = require('chalk')
-const {sep, prefix} = require('./const')
+const {sep, prefix} = require('./fixtures')
 const blank = require('./blank')
 
 module.exports = options => {

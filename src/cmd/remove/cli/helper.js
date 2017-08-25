@@ -1,11 +1,11 @@
 const {existsSync} = require('fs')
 const rimraf = require('rimraf')
 const wpFileHeader = require('wp-get-file-header')
-const {happyExit, captchaMaker, separatorMaker} = require('./util')
 
 const CLI = global.deuxcli.require('main')
 const messages = global.deuxcli.require('messages')
 const {exit, finish} = global.deuxhelpers.require('logger')
+const {happyExit, captchaMaker, separatorMaker} = global.deuxhelpers.require('util/cli')
 
 class RemoveHelper extends CLI {
   constructor() {

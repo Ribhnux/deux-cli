@@ -1,6 +1,6 @@
 const inquirer = require('inquirer')
 const slugify = require('node-slugify')
-const {positionTypes} = require('./const')
+const {positionTypes} = require('./fixtures')
 
 const CLI = global.deuxcli.require('main')
 const messages = global.deuxcli.require('messages')

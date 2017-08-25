@@ -15,7 +15,7 @@ const {
   fontSource,
   registeredScript,
   sassTypes
-} = require('./const')
+} = require('./fixtures')
 
 const CLI = global.deuxcli.require('main')
 const messages = global.deuxcli.require('messages')
@@ -492,7 +492,10 @@ class AddAsset extends CLI {
             )).then(() => {
               downloadLoader.succeed(`${lib.files.length} file(s) downloaded.`)
               resolve()
-            }).catch(reject)
+            }).catch(err => {
+              rimraf.sync(libpath)
+              reject(err)
+            })
           })
         })
       })

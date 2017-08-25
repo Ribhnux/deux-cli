@@ -1,7 +1,7 @@
 const faker = require('faker')
 const slugify = require('node-slugify')
 const uniq = require('lodash.uniq')
-const {hookTypes} = require('./const')
+const {hookTypes} = require('./fixtures')
 
 const CLI = global.deuxcli.require('main')
 const messages = global.deuxcli.require('messages')

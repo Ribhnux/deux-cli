@@ -4,7 +4,7 @@ const Entities = require('html-entities').AllHtmlEntities
 const searchPlugin = require('wp-plugin-search')
 const slugify = require('node-slugify')
 const rimraf = require('rimraf')
-const {pluginSrcTypes} = require('./const')
+const {pluginSrcTypes} = require('./fixtures')
 
 const entities = new Entities()
 
@@ -180,7 +180,7 @@ class AddPlugin extends CLI {
         type: 'confirm',
         name: 'plugin.force_activation',
         message: 'Force to activate this plugin when installing theme?',
-        default: true
+        default: false
       },
 
       {
@@ -259,7 +259,6 @@ class AddPlugin extends CLI {
         delete plugin.item
         delete plugin.versions
         delete plugin.search
-        delete plugin.srctype
         delete plugin.external_url
 
         plugins[plugin.slug] = plugin

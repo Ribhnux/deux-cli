@@ -2876,6 +2876,12 @@ for-own@^1.0.0:
   dependencies:
     for-in "^1.0.1"
 
+force-semver@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/force-semver/-/force-semver-1.0.0.tgz#60de83012f3a0adf67248842068011a648125a40"
+  dependencies:
+    semver-regex "^1.0.0"
+
 forever-agent@~0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/forever-agent/-/forever-agent-0.6.1.tgz#fbc71f0c41adeb37f96c577ad1ed42d8fdacca91"
@@ -6622,6 +6628,10 @@ strip-outer@^1.0.0:
   dependencies:
     escape-string-regexp "^1.0.2"
 
+striptags@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/striptags/-/striptags-3.0.1.tgz#48f0d6932549c47bb3582920c87527cf49a160c1"
+
 supports-color@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/supports-color/-/supports-color-0.2.0.tgz#d92de2694eb3f67323973d7ae3d8b55b4c22190a"
@@ -7265,6 +7275,13 @@ wp-get-file-header@^1.0.1:
   dependencies:
     slugify "^1.1.0"
     trim "^0.0.1"
+
+wp-plugin-info@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/wp-plugin-info/-/wp-plugin-info-1.0.0.tgz#2961d2b6a21aa2bc93d2d465508677496d205dd8"
+  dependencies:
+    axios "^0.16.2"
+    striptags "^3.0.1"
 
 wp-plugin-search@^1.1.1:
   version "1.1.1"

@@ -1,12 +1,12 @@
 const rimraf = require('rimraf')
 const wpFileHeader = require('wp-get-file-header')
 const uniq = require('lodash.uniq')
-const {happyExit, captchaMaker, separatorMaker} = require('./util')
 
 const CLI = global.deuxcli.require('main')
 const messages = global.deuxcli.require('messages')
-const {hookTypes} = global.deuxcmd.require('add/cli/const')
+const {hookTypes} = global.deuxcmd.require('add/cli/fixtures')
 const {exit, finish} = global.deuxhelpers.require('logger')
+const {happyExit, captchaMaker, separatorMaker} = global.deuxhelpers.require('util/cli')
 
 class RemoveHooks extends CLI {
   constructor() {

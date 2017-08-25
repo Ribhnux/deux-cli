@@ -1,8 +1,7 @@
-const {happyExit, captchaMaker, separatorMaker} = require('./util')
-
 const CLI = global.deuxcli.require('main')
 const messages = global.deuxcli.require('messages')
 const {exit, finish} = global.deuxhelpers.require('logger')
+const {happyExit, captchaMaker, separatorMaker} = global.deuxhelpers.require('util/cli')
 
 class RemoveImageSize extends CLI {
   constructor() {
