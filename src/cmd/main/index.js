@@ -3,6 +3,9 @@ const Table = require('cli-table2')
 const chalk = require('chalk')
 const {colorize} = require('caporal/lib/colorful')
 
+const message = global.deuxcli.require('messages')
+const {exit, finish} = global.deuxhelpers.require('logger')
+
 /* eslint-disable quote-props */
 const commandTable = new Table({
   chars: {
@@ -32,8 +35,11 @@ const commandTable = new Table({
 let customHelp = chalk.underline.white('Available Commands') + '\n\n'
 
 program.getCommands().forEach(item => {
+  const arglist = () => {
+    return item._args.map(arg => `${arg.name()}`).join(' ')
+  }
   commandTable.push(
-    [chalk.magenta(item._name), item._description]
+    [chalk.magenta(item.name()), chalk.gray(arglist()), item.description()]
   )
 })
 
@@ -46,5 +52,7 @@ program
   .action(() => {
     const Init = global.deuxcli.require('init')
     const init = new Init()
-    init.check()
+    init.check(false, true).then(() => {
+      finish(message.MORE_INFO)
+    }).catch(exit)
   })
