@@ -34,7 +34,6 @@ class CLI {
 
         if (!this.subcmd && this.prompts.length === 0) {
           colorlog(this.title)
-          this.beforeInit()
           this.action({})
         }
       }
