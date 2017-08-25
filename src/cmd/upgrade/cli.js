@@ -262,8 +262,7 @@ class UpgradeCLI extends CLI {
             resolve()
           } else if (item.type === itemTypes.ASSET) {
             // Assets upgrade script.
-            let newFiles = []
-
+            const newFiles = []
             assets.filter(asset => asset.slug === item.slug).forEach(asset => {
               let existingFileObj
 
