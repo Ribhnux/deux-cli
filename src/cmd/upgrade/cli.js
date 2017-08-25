@@ -1,3 +1,4 @@
+const path = require('path')
 const semver = require('semver')
 const pluginInfo = require('wp-plugin-info')
 const chalk = require('chalk')
@@ -91,6 +92,7 @@ class UpgradeCLI extends CLI {
             assets.push({
               slug,
               version,
+              files: this.assets.libs[slug].files.map(file => file.path),
               type: itemTypes.ASSET
             })
           }
@@ -99,7 +101,7 @@ class UpgradeCLI extends CLI {
         // Find new asset with new version.
         Promise.all(assets.map(asset => {
           return new Promise((resolve, reject) => {
-            cdnjs.search(asset.slug, {
+            cdnjs.lib(asset.slug, {
               fields: {
                 version: true
               }
@@ -142,33 +144,92 @@ class UpgradeCLI extends CLI {
         this.prompts = [
           {
             type: 'checkbox',
-            name: 'upgradeItems',
+            name: 'upgrade.items',
             message: 'Choose which assets / plugins to update',
             when: () => pluginList.length > 0 || assetList.length > 0,
             choices: () => new Promise(resolve => {
               let list = []
 
+              let plugins = []
               if (pluginList.length > 0) {
-                list = separatorMaker('Plugins').concat(list)
                 pluginList.forEach(item => {
-                  list.push({
+                  plugins.push({
                     name: `${item.name} ${chalk.blue(item.version)} > ${chalk.green(item.latestVersion)}`,
                     value: item
                   })
                 })
+                plugins = separatorMaker('Plugins').concat(plugins)
+                list = list.concat(plugins)
               }
 
+              let assets = []
               if (assetList.length > 0) {
-                list = separatorMaker('Assets').concat(list)
                 assetList.forEach(item => {
-                  list.push({
+                  assets.push({
                     name: `${item.slug} ${chalk.blue(item.version)} > ${chalk.green(item.latestVersion)}`,
                     value: item
                   })
                 })
+                assets = separatorMaker('Assets').concat(assets)
+                list = list.concat(assets)
               }
 
               resolve(list)
+            })
+          },
+
+          {
+            type: 'checkbox',
+            name: 'assets',
+            message: 'Choose which files to update',
+            when: ({upgrade}) => {
+              if (upgrade && upgrade.items) {
+                let assetItems = 0
+                upgrade.items.forEach(item => {
+                  if (item.type === itemTypes.ASSET) {
+                    assetItems++
+                  }
+                })
+
+                return assetItems > 0
+              }
+
+              return false
+            },
+            choices: ({upgrade}) => new Promise(resolve => {
+              let list = []
+
+              upgrade.items.filter(item => item.type === itemTypes.ASSET).reduce((promise, item) => {
+                return promise.then(() => {
+                  const assetSemver = `${item.slug}@${item.latestVersion}`
+
+                  return new Promise((resolve, reject) => {
+                    // Get files in latest version.
+                    cdnjs.files(assetSemver).then(newFiles => {
+                      let files = []
+
+                      newFiles.forEach(file => {
+                        files.push({
+                          name: file,
+                          checked: item.files.includes(file),
+                          value: {
+                            slug: item.slug,
+                            file
+                          }
+                        })
+                      })
+
+                      if (files.length > 0) {
+                        files = separatorMaker(assetSemver).concat(files)
+                        list = list.concat(files)
+                      }
+                      resolve()
+                    }).catch(reject)
+                  })
+                }).catch(exit)
+              }, Promise.resolve()).then(() => {
+                resolve(list)
+              }).catch(exit)
             })
           }
         ]
@@ -181,8 +242,8 @@ class UpgradeCLI extends CLI {
    * Upgrade assets and plugins
    * @param {Object} {upgradeItems}
    */
-  action({upgradeItems}) {
-    if (!upgradeItems) {
+  action({upgrade, assets}) {
+    if (!upgrade) {
       done({
         message: messages.SUCCEED_ALL_UPDATED,
         paddingBottom: true,
@@ -190,7 +251,7 @@ class UpgradeCLI extends CLI {
       })
     }
 
-    Promise.all(upgradeItems.map(item => {
+    Promise.all(upgrade.items.map(item => {
       return new Promise((resolve, reject) => {
         try {
           if (item.type === itemTypes.PLUGIN) {
@@ -201,13 +262,47 @@ class UpgradeCLI extends CLI {
             resolve()
           } else if (item.type === itemTypes.ASSET) {
             // Assets upgrade script.
+            let newFiles = []
+
+            assets.filter(asset => asset.slug === item.slug).forEach(asset => {
+              let existingFileObj
+
+              this.assets.libs[item.slug].files.forEach(file => {
+                if (file.path === asset.file) {
+                  existingFileObj = file
+                }
+              })
+
+              /* eslint-disable camelcase */
+              const ext = path.extname(asset.file)
+              let fileObj = {
+                ext: ext.replace('.', ''),
+                path: asset.file,
+                is_active: true,
+                deps: []
+              }
+              /* eslint-enable */
+
+              if (existingFileObj) {
+                fileObj = Object.assign(fileObj, existingFileObj)
+              }
+
+              newFiles.push(fileObj)
+            })
+
+            this.assets.libs[item.slug].version = item.latestVersion
+            this.assets.libs[item.slug].files = newFiles
+            this.setThemeConfig({
+              asset: this.asset
+            })
+            resolve()
           }
         } catch (err) {
           reject(err)
         }
       })
     })).then(() => {
-      finish(messages.SUCCEED_ALL_UPDATED)
+      finish(messages.SUCCEED_UPDATED)
     }).catch(exit)
   }
 }
