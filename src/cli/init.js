@@ -11,7 +11,8 @@ const {colorlog, error, done, exit} = global.deuxhelpers.require('logger')
 const validator = global.deuxhelpers.require('util/validator')
 
 class Init {
-  constructor(skip = false) {
+  constructor(skip = false, moreInfo = false) {
+    this.moreInfo = moreInfo
     this.skip = skip
     this.db = null
   }
@@ -107,6 +108,10 @@ class Init {
 
         if (zeroTheme && skip === false) {
           this.notice(true)
+        }
+
+        if (this.moreInfo) {
+          return resolve()
         }
 
         this.setup().then(() => {
