@@ -12,6 +12,7 @@ exports.PROMPT_YES = 'Okay'
 exports.PROMPT_NO = 'Nope'
 exports.DONE_FINISH = 'Finish'
 exports.DONE_UPDATED = 'Updated'
+exports.MORE_INFO = `type ${chalk.bold.cyan('deux --help')} to see available commands.`
 exports.SYNC_NEXT_TIME = 'I\'ts okay, you can synchronize next time.'
 exports.DONE_NO_REMOVE = 'Good, nothing to remove, keep your config safe.'
 exports.SUCCEED_INIT_DB = 'Success init database.'
