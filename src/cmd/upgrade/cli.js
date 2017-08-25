@@ -194,7 +194,10 @@ class UpgradeCLI extends CLI {
       return new Promise((resolve, reject) => {
         try {
           if (item.type === itemTypes.PLUGIN) {
-            this.upgradePlugin(item.slug, item.latestVersion)
+            this.plugins[item.slug].version = item.latestVersion
+            this.setThemeConfig({
+              plugins: this.plugins
+            })
             resolve()
           } else if (item.type === itemTypes.ASSET) {
             // Assets upgrade script.
