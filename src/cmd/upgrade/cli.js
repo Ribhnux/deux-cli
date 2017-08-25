@@ -4,6 +4,9 @@ const pluginInfo = require('wp-plugin-info')
 const chalk = require('chalk')
 const forceSemver = require('force-semver')
 const cdnjs = require('cdnjs-api')
+const mkdirp = require('mkdirp')
+const rimraf = require('rimraf')
+const download = require('download')
 const {itemTypes} = require('./fixtures')
 
 const CLI = global.deuxcli.require('main')
@@ -183,18 +186,17 @@ class UpgradeCLI extends CLI {
             name: 'assets',
             message: 'Choose which files to update',
             when: ({upgrade}) => {
+              let assetItems = 0
+
               if (upgrade && upgrade.items) {
-                let assetItems = 0
                 upgrade.items.forEach(item => {
                   if (item.type === itemTypes.ASSET) {
                     assetItems++
                   }
                 })
-
-                return assetItems > 0
               }
 
-              return false
+              return assetItems > 0
             },
             choices: ({upgrade}) => new Promise(resolve => {
               let list = []
@@ -220,6 +222,7 @@ class UpgradeCLI extends CLI {
                       })
 
                       if (files.length > 0) {
+                        files = files.filter(item => /(\.map)$/.test(item.name) === false)
                         files = separatorMaker(assetSemver).concat(files)
                         list = list.concat(files)
                       }
@@ -289,12 +292,43 @@ class UpgradeCLI extends CLI {
               newFiles.push(fileObj)
             })
 
-            this.assets.libs[item.slug].version = item.latestVersion
-            this.assets.libs[item.slug].files = newFiles
-            this.setThemeConfig({
-              asset: this.asset
+            const libsemver = `${item.slug}@${item.version}`
+            rimraf.sync(this.currentThemePath('assets-src', 'libs', libsemver))
+
+            const newLibsemver = `${item.slug}@${item.latestVersion}`
+            const libpath = this.currentThemePath('assets-src', 'libs', newLibsemver)
+            const assetUrls = cdnjs.url(newLibsemver, newFiles.map(i => i.path))
+
+            mkdirp(newLibsemver, err => {
+              if (err) {
+                reject(err)
+              }
+
+              this.loader.frame()
+              this.loader.text = 'Downloading assets...'
+              this.loader.start()
+
+              const assetDownloader = () => new Promise(resolve => {
+                Promise.all(assetUrls.map(
+                  filename => download(filename, libpath)
+                )).then(() => {
+                  this.loader.succeed(`${item.slug} file(s) downloaded.`)
+                  resolve()
+                }).catch(err => {
+                  rimraf.sync(libpath)
+                  reject(err)
+                })
+              })
+
+              assetDownloader().then(() => {
+                this.assets.libs[item.slug].version = item.latestVersion
+                this.assets.libs[item.slug].files = newFiles
+                this.setThemeConfig({
+                  asset: this.asset
+                })
+                resolve()
+              }).catch(reject)
             })
-            resolve()
           }
         } catch (err) {
           reject(err)
