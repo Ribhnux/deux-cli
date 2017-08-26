@@ -22,7 +22,7 @@ class AddCLI extends CLI {
     if (this.subcmd) {
       this.initSubCommands(this.subcmd)
     } else {
-      this.title = 'What you want to {add} in your theme?'
+      this.title = 'What you want to {add} to your theme?'
       this.prompts = [
         {
           type: 'list',
