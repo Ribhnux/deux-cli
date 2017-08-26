@@ -57,7 +57,7 @@
     "inquirer": "^3.2.2",
     "isarray": "^2.0.2",
     "json-realtime": "^1.3.3",
-    "jsonar": "^1.7.0",
+    "jsonar": "^1.8.0",
     "listr": "^0.12.0",
     "lodash.uniq": "^4.5.0",
     "log-symbols": "^2.0.0",
