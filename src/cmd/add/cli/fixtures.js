@@ -13,6 +13,7 @@ exports.pluginSrcTypes = {
   WP: 'wp',
   PRIVATE: 'private'
 }
+
 exports.featureTypes = {
   HTML5: 'html5',
   FEED_LINKS: 'autmatic-feed-links',
@@ -96,4 +97,11 @@ exports.bgAttachmentTypes = {
 exports.hookTypes = {
   FILTER: 'filter',
   ACTION: 'action'
+}
+
+exports.customizerTypes = {
+  PANEL: 'panel',
+  SECTION: 'section',
+  SETTING: 'setting',
+  CONTROL: 'control'
 }
