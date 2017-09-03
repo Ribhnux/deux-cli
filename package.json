@@ -74,6 +74,7 @@
     "webpack-stream": "^4.0.0",
     "weft": "^1.2.4",
     "wp-get-file-header": "^1.0.1",
+    "wp-get-l10n": "^1.0.0",
     "wp-plugin-info": "^1.0.0",
     "wp-plugin-search": "^1.1.1",
     "wp-theme-check": "^1.2.5",
