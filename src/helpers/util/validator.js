@@ -24,8 +24,17 @@ validate.validators.color = function (value, options) {
 
   options = validate.extend({}, this.options, options)
   const message = options.message || this.message || 'is not a valid color'
+  let isValid = false
 
-  if (/(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(value) === false) {
+  if (/^rgba\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3}),\s*(\d*(?:\.\d+)?)\)$/.test(value)) {
+    isValid = true
+  } else if (/^rgba\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3}),\s*(\d*(?:\.\d+)?)\)$/.test(value)) {
+    isValid = true
+  } else if (/(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(value)) {
+    isValid = true
+  }
+
+  if (!isValid) {
     return message
   }
 }
