@@ -15,7 +15,6 @@ if ( ! class_exists( '{{lib.className}}' ) ) :
 	 * @package {{theme.name}}
 	 * @author  {{theme.author}}
 	 */
-
 	class {{lib.className}} {
 		public function __construct() {
 

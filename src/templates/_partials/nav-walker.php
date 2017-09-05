@@ -15,7 +15,6 @@ if ( ! class_exists( '{{walker.className}}' ) ) :
 	 * @package {{theme.name}}
 	 * @author  {{theme.author}}
 	 */
-
 	class {{walker.className}} extends Walker_Nav_Menu {
 		/**
 		 * Start Level.
