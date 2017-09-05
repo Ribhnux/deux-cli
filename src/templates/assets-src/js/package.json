@@ -9,5 +9,6 @@
     "wordpress-theme"
   ],
   "author": "{{theme.author}}",
-  "license": "GPL-2.0"
+  "license": "GPL-2.0",
+  "private": true
 }
