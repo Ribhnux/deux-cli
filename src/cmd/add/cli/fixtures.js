@@ -99,9 +99,70 @@ exports.hookTypes = {
   ACTION: 'action'
 }
 
-exports.customizerTypes = {
-  PANEL: 'panel',
-  SECTION: 'section',
-  SETTING: 'setting',
-  CONTROL: 'control'
+exports.customizerControlTypes = {
+  TEXT: 'text',
+  NUMBER: 'number',
+  CHECKBOX: 'checkbox',
+  RADIO: 'radio',
+  SELECT: 'select',
+  RANGE: 'range',
+  EMAIL: 'email',
+  URL: 'url',
+  PAGES_DROPDOWN: 'dropdown-pages',
+  COLOR_PICKER: 'color-picker',
+  UPLOAD: 'uploader',
+  IMAGE_PICKER: 'image-picker',
+  MEDIA_PICKER: 'media-picker',
+  CUSTOM: 'custom'
+}
+
+exports.customizerControlLabels = {
+  TEXT: 'Text',
+  NUMBER: 'Number',
+  CHECKBOX: 'Checkbox',
+  RADIO: 'Radiobox',
+  SELECT: 'Dropdown List',
+  RANGE: 'Range Slider',
+  EMAIL: 'Email Address',
+  URL: 'URL Address',
+  PAGES_DROPDOWN: 'Pages Selector',
+  COLOR_PICKER: 'Color Picker',
+  UPLOAD: 'File Uploader',
+  IMAGE_PICKER: 'Image Uploader',
+  MEDIA_PICKER: 'Custom Media Uploader',
+  CUSTOM: 'Custom Control'
+}
+
+exports.customizerSectionTypes = {
+  THEMES: 'themes',
+  TITLE_TAGLINE: 'title_tagline',
+  COLORS: 'colors',
+  HEADER_IMAGE: 'header_image',
+  BACKGROUND_IMAGE: 'background_image',
+  STATIC_FRONT_PAGE: 'static_front_page',
+  CUSTOM_CSS: 'custom_css',
+  CUSTOM: 'custom'
+}
+
+exports.customizerSectionLabels = {
+  THEMES: 'Themes Chooser',
+  TITLE_TAGLINE: 'Site Identity',
+  COLORS: 'Colors',
+  HEADER_IMAGE: 'Header Image',
+  BACKGROUND_IMAGE: 'Background Image',
+  STATIC_FRONT_PAGE: 'Static Front Page',
+  CUSTOM_CSS: 'Custom CSS',
+  CUSTOM: 'New Section'
+}
+
+exports.customizerPanelTypes = {
+  NAVIGATION: 'nav_menus',
+  WIDGETS: 'widget',
+  CUSTOM: 'custom'
+}
+
+exports.customizerPanelLabels = {
+  NAVIGATION: 'Navigation Menus',
+  WIDGETS: 'Widgets',
+  CUSTOM: 'New Panel'
 }
