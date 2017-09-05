@@ -90,7 +90,7 @@ if ( ! function_exists( '{{theme.slugfn}}_preview_init' ) ) :
 	 */
 	function {{theme.slugfn}}_preview_init() {
 		$theme_info = wp_get_theme();
-		wp_enqueue_script( '{{theme.slugfn}}-customize-preview', get_theme_file_uri( '/includes/customizers/assets/js/preview.js' ), array( 'customize-preview' ), $theme_info->get( 'Version' ), true );
+		wp_enqueue_script( '{{theme.slug}}-customize-preview', get_theme_file_uri( '/includes/customizers/assets/js/preview.js' ), array( 'customize-preview' ), $theme_info->get( 'Version' ), true );
 	}
 endif;
 add_action( 'customize_preview_init', '{{theme.slugfn}}_preview_init' );
@@ -101,8 +101,8 @@ if ( ! function_exists( '{{theme.slugfn}}_customizer_control_scripts' ) ) :
 	 */
 	function {{theme.slugfn}}_customizer_control_scripts() {
 		$theme_info = wp_get_theme();
-		wp_enqueue_style( '{{theme.slugfn}}-customize-control', get_theme_file_uri( '/includes/customizers/assets/css/customizer.css' ), array(), $theme_info->get( 'Version' ), true );
-		wp_enqueue_script( '{{theme.slugfn}}-customize-control', get_theme_file_uri( '/includes/customizers/assets/js/control.js' ), array( 'jquery' ), $theme_info->get( 'Version' ), true );
+		wp_enqueue_style( '{{theme.slug}}-customize-control', get_theme_file_uri( '/includes/customizers/assets/css/customizer.css' ), array(), $theme_info->get( 'Version' ) );
+		wp_enqueue_script( '{{theme.slug}}-customize-control', get_theme_file_uri( '/includes/customizers/assets/js/control.js' ), array( 'jquery' ), $theme_info->get( 'Version' ), true );
 	}
 endif;
 add_action( 'customize_controls_enqueue_scripts', '{{theme.slugfn}}_customizer_control_scripts' );
