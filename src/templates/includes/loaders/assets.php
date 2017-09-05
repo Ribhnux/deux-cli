@@ -24,14 +24,16 @@ if ( ! function_exists( '{{theme.slugfn}}_font_url' ) ) :
 			$font_subsets = array_merge( $font_subsets, $font['subsets'] );
 		}
 
-		$query_args = array(
-			'family' => implode( '|', $font_families ),
-			'subset' => implode( ',', array_unique( $font_subsets ) ),
-		);
-
-		$fonts_url = add_query_arg( $query_args, '//fonts.googleapis.com/css' );
-
-		return esc_url_raw( $fonts_url );
+		if ( count( $font_families ) > 0 ) {
+			$query_args = array(
+				'family' => implode( '|', $font_families ),
+				'subset' => implode( ',', array_unique( $font_subsets ) ),
+			);
+	
+			$fonts_url = add_query_arg( $query_args, '//fonts.googleapis.com/css' );
+	
+			return esc_url_raw( $fonts_url );
+		}
 	}
 endif;
 
@@ -96,7 +98,7 @@ endif;
 
 if ( ! function_exists( '{{theme.slugfn}}_enqueue_scripts' ) ) :
 	/**
-	 * Enqueues All Scripts
+	 * Load all styles and scripts.
 	 *
 	 * @link https://codex.wordpress.org/Plugin_API/Action_Reference/wp_enqueue_scripts
 	 * @return void
@@ -104,10 +106,10 @@ if ( ! function_exists( '{{theme.slugfn}}_enqueue_scripts' ) ) :
 	function {{theme.slugfn}}_enqueue_scripts() {
 		global ${{theme.slugfn}}_config;
 
-		$assets_path = get_template_directory_uri() . '/assets/';
-		$style_path = $assets_path . 'css/';
-		$script_path = $assets_path . 'js/';
-
+		$theme_info = wp_get_theme();
+		$theme_version = $theme_info->get( 'Version' );
+		$style_path = '/assets/css/';
+		$script_path = '/assets/js/';
 		$main_css = 'main.css';
 		$main_js = 'main.js';
 
@@ -116,11 +118,11 @@ if ( ! function_exists( '{{theme.slugfn}}_enqueue_scripts' ) ) :
 			$main_js = 'main.min.js';
 		}
 
-		// Load all dependencies.
+		// Load dependencies.
 		{{theme.slugfn}}_load_dependencies();
 
 		// Main stylesheets.
-		wp_enqueue_style( '{{theme.slug}}-style', $style_path . $main_css );
+		wp_enqueue_style( '{{theme.slug}}-style', get_theme_file_uri( $style_path . $main_css ), array(), $theme_version );
 
 		// RTL Stylesheets.
 		if ( is_rtl() ) {
@@ -128,7 +130,7 @@ if ( ! function_exists( '{{theme.slugfn}}_enqueue_scripts' ) ) :
 		}
 
 		// Main script.
-		wp_enqueue_script( '{{theme.slug}}-script', $script_path . $main_js, array(), null, true );
+		wp_enqueue_script( '{{theme.slug}}-script', get_theme_file_uri( $script_path . $main_js ), array(), $theme_version, true );
 
 		// Enable nested comments reply.
 		if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {

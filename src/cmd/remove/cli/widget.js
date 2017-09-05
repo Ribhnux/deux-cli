@@ -1,3 +1,5 @@
+const getL10n = require('wp-get-l10n')
+
 const CLI = global.deuxcli.require('main')
 const messages = global.deuxcli.require('messages')
 const {exit, finish} = global.deuxhelpers.require('logger')
@@ -31,8 +33,7 @@ class RemoveWidget extends CLI {
 
           for (const value in this.themeWidgets) {
             if (Object.prototype.hasOwnProperty.call(this.themeWidgets, value)) {
-              let name = this.themeWidgets[value].name.string.split(',')
-              name = name[0].substr(5, name[0].length - 6)
+              let name = getL10n( this.themeWidgets[value].name.___$string )
 
               list.push({
                 name,

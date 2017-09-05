@@ -39,7 +39,7 @@ class AddAsset extends CLI {
       {
         type: 'list',
         name: 'asset.type',
-        message: 'What you want to add?',
+        message: 'Choose asset you want to add',
         choices: [
           {
             name: 'CSS or JS Library',

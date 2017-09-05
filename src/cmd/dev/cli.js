@@ -25,6 +25,7 @@ class DevCLI extends CLI {
   constructor() {
     super()
     this.task = undefined
+    this.defaultWebpackConfig = undefined
     this.init()
   }
 
@@ -33,14 +34,45 @@ class DevCLI extends CLI {
    */
   prepare() {
     this.title = 'Start {development} mode'
+
     this.tasklist = [
       'build:style',
+      'build:customizer-style',
       'build:editor-style',
       'build:js',
+      'build:customizer-js',
       'build:translation',
       'sync:config',
       'start:server'
     ]
+
+    this.defaultWebpackConfig = {
+      module: {
+        rules: [
+          {
+            test: /\.js?$/,
+            use: {
+              loader: require.resolve('babel-loader'),
+              options: {
+                presets: [
+                  require('babel-preset-es2015')
+                ]
+              }
+            }
+          }
+        ]
+      },
+
+      externals: {},
+
+      plugins: [
+        new webpack.optimize.UglifyJsPlugin({
+          compress: {
+            warnings: false
+          }
+        })
+      ]
+    }
 
     const themeDetails = this.themeDetails()
 
@@ -62,13 +94,16 @@ class DevCLI extends CLI {
         logPrefix: themeDetails.slug,
         open: false,
         notify: false
+      }, () => {
+        // Run some startup after browsersync completely initialized.
+        this.compileMainStyle()
+        this.compileEditorStyle()
+        this.compileCustomizerStyle()
+        this.compileJS()
+        this.compileCustomizerJS()
+        this.compilePot()
       })
 
-      // After add task to gulp
-      // Run some startup script directly
-      this.compileMainStyle()
-      this.compileEditorStyle()
-      this.compilePot()
     })
 
     // Main stylesheet compiler
@@ -78,6 +113,16 @@ class DevCLI extends CLI {
         this.currentThemePath('assets-src', 'sass', 'main.scss')
       ], () => {
         this.compileMainStyle()
+      })
+    })
+
+    // Customizer stylesheet compiler
+    gulp.task('build:customizer-style', () => {
+      return watch([
+        this.currentThemePath('includes', 'customizers', 'assets-src', 'sass', '**', '*.scss'),
+        this.currentThemePath('includes', 'customizers', 'assets-src', 'sass', 'customizer.scss')
+      ], () => {
+        this.compileCustomizerStyle()
       })
     })
 
@@ -97,6 +142,16 @@ class DevCLI extends CLI {
         '!' + this.currentThemePath('assets-src', 'js', 'node_modules', '**', '*.js')
       ], () => {
         this.compileJS()
+      })
+    })
+
+    // Customizer Javascript bundler
+    gulp.task('build:customizer-js', () => {
+      return watch([
+        this.currentThemePath('includes', 'customizers', 'assets-src', 'js', '**', '*.js'),
+        '!' + this.currentThemePath('includes', 'customizers', 'assets-src', 'js', 'node_modules', '**', '*.js')
+      ], () => {
+        this.compileCustomizerJS()
       })
     })
 
@@ -132,7 +187,6 @@ class DevCLI extends CLI {
    */
   sassCompiler(options) {
     const rtlRegx = /;\/\*!rtl(.[^/]*)\*\//g
-    const destPath = this.currentThemePath('assets', 'css')
 
     const gulpPlumber = plumber({
       errorHandler(err) {
@@ -148,7 +202,8 @@ class DevCLI extends CLI {
       source: undefined,
       basename: 'main',
       rtl: false,
-      beautify: true
+      beautify: true,
+      destPath: this.currentThemePath('assets', 'css')
     }, options)
 
     const {
@@ -195,7 +250,7 @@ class DevCLI extends CLI {
         .pipe(srcmap.write('./'))
     }
 
-    return output.pipe(gulp.dest(destPath))
+    return output.pipe(gulp.dest(options.destPath))
   }
 
   /**
@@ -240,6 +295,19 @@ class DevCLI extends CLI {
   }
 
   /**
+   * Compile customizer styles
+   */
+  compileCustomizerStyle() {
+    const customizerCSS = gulp.src(this.currentThemePath('includes', 'customizers', 'assets-src', 'sass', 'customizer.scss'))
+    return this.sassCompiler({
+      source: customizerCSS,
+      basename: 'customizer',
+      destPath: this.currentThemePath('includes', 'customizers', 'assets', 'css'),
+      rtl: false
+    })
+  }
+
+  /**
    * Compile editor-style.css
    */
   compileEditorStyle() {
@@ -278,17 +346,13 @@ class DevCLI extends CLI {
    * Auto bundling javascript using webpack
    */
   compileJS() {
+    const srcDir = this.currentThemePath('assets-src', 'js')
     const srcPath = this.currentThemePath('assets-src', 'js', 'main.js')
-    const destPath = this.currentThemePath('assets', 'js')
+    const destDir = this.currentThemePath('assets', 'js')
     const customWebpackConfigPath = this.currentThemePath('assets', 'js', 'webpack.config.js')
 
-    let customConfig = {}
-    if (existsSync(customWebpackConfigPath)) {
-      customConfig = require(customWebpackConfigPath)
-    }
-
-    const defaultConfig = extend({
-      context: destPath,
+    let webpackConfig = extend(this.defaultWebpackConfig, {
+      context: srcDir,
 
       entry: {
         main: srcPath
@@ -299,41 +363,60 @@ class DevCLI extends CLI {
         libraryTarget: 'umd',
         filename: '[name].js',
         sourceMapFilename: '[name].map'
-      },
+      }
+    })
 
-      module: {
-        rules: [
-          {
-            test: /\.js?$/,
-            use: {
-              loader: require.resolve('babel-loader'),
-              options: {
-                presets: [
-                  require('babel-preset-es2015')
-                ]
-              }
-            }
-          }
-        ]
-      },
-
-      externals: {
-        jQuery: 'jQuery'
-      },
-
-      plugins: [
-        new webpack.optimize.UglifyJsPlugin({
-          compress: {
-            warnings: false
-          }
-        })
-      ]
-    }, customConfig)
+    if (existsSync(customWebpackConfigPath)) {
+      webpackConfig = extend(webpackConfig, require(customWebpackConfigPath))
+    }
 
     return gulp
       .src(srcPath)
-      .pipe(webpackStream(defaultConfig, webpack))
-      .pipe(gulp.dest(destPath))
+      .pipe(webpackStream(webpackConfig, webpack))
+      .pipe(gulp.dest(destDir))
+  }
+
+  /**
+   * Auto bundling customizer javascript using webpack
+   */
+  compileCustomizerJS() {
+    const srcDir = this.currentThemePath('includes', 'customizers', 'assets-src', 'js')
+    const destDir = this.currentThemePath('includes', 'customizers', 'assets', 'js')
+    const customWebpackConfigPath = this.currentThemePath('includes', 'customizers', 'assets', 'js', 'webpack.config.js')
+    const controlPath = this.currentThemePath('includes', 'customizers', 'assets-src', 'js', 'control.js')
+    const previewPath = this.currentThemePath('includes', 'customizers', 'assets-src', 'js', 'preview.js')
+
+    let webpackConfig = extend(this.defaultWebpackConfig, {
+      context: srcDir,
+
+      entry: {
+        control: controlPath,
+        preview: previewPath
+      },
+
+      output: {
+        library: this.themeDetails('slug'),
+        libraryTarget: 'umd',
+        filename: '[name].js',
+        sourceMapFilename: '[name].map'
+      }
+    })
+
+    if (existsSync(customWebpackConfigPath)) {
+      webpackConfig = extend(webpackConfig, require(customWebpackConfigPath))
+    }
+
+    const controlJsBuild = gulp
+      .src(controlPath)
+      .pipe(webpackStream(webpackConfig, webpack))
+      .pipe(gulp.dest(destDir))
+
+    const previewJsBuild = gulp
+      .src(previewPath)
+      .pipe(webpackStream(webpackConfig, webpack))
+      .pipe(gulp.dest(destDir))
+
+    return merge(controlJsBuild, previewJsBuild)
   }
 }
 

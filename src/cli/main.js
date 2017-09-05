@@ -314,7 +314,42 @@ class CLI {
     const slugfn = themeDetails.slugfn
     const configPath = this.currentThemeConfigPath()
     const phpArray = arrandel(configPath)
-    const json = jsonar.parse(phpArray[`${slugfn}_config`], true)
+    const json = jsonar.parse(phpArray[`${slugfn}_config`], {
+      emptyRules: {
+        asset: {
+          libs: {},
+          sass: {
+            components: [],
+            layouts: [],
+            pages: [],
+            themes: [],
+            vendors: []
+          },
+          fonts: {}
+        },
+        plugins: {},
+        components: [],
+        pageTemplates: [],
+        partialTemplates: [],
+        imgsize: {},
+        filters: [],
+        actions: [],
+        libraries: [],
+        helpers: [],
+        menus: {},
+        widgets: {},
+        features: {},
+        customizer: {
+          /* eslint-disable camelcase */
+          panels: {},
+          sections: {},
+          settings: {},
+          control_types: {},
+          controls: {}
+          /* eslint-enable */
+        }
+      }
+    })
     this.setThemeConfig(json, true)
   }
 }

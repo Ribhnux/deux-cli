@@ -1,8 +1,7 @@
 {
-  "name": "{{theme.slug}}-js",
+  "name": "{{theme.slug}}-customizer-js",
   "version": "1.0.0",
-  "description": "{{theme.name}} Javascript Bundle",
-  "main": "main.js",
+  "description": "{{theme.name}} Customizer Javascript Bundle",
   "scripts": {},
   "keywords": [
     "wordpress",

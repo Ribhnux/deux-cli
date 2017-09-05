@@ -32,3 +32,6 @@ require get_template_directory() . '/includes/loaders/assets.php';
 
 // Components init.
 require get_template_directory() . '/includes/loaders/components.php';
+
+// Customizers init.
+require get_template_directory() . '/includes/loaders/customizers.php';

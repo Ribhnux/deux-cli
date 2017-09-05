@@ -24,8 +24,17 @@ validate.validators.color = function (value, options) {
 
   options = validate.extend({}, this.options, options)
   const message = options.message || this.message || 'is not a valid color'
+  let isValid = false
 
-  if (/(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(value) === false) {
+  if (/^rgba\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3}),\s*(\d*(?:\.\d+)?)\)$/.test(value)) {
+    isValid = true
+  } else if (/^rgba\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3}),\s*(\d*(?:\.\d+)?)\)$/.test(value)) {
+    isValid = true
+  } else if (/(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(value)) {
+    isValid = true
+  }
+
+  if (!isValid) {
     return message
   }
 }
@@ -40,6 +49,7 @@ module.exports = (value, options) => {
     minimum: 0,
     word: false,
     array: false,
+    email: false,
     url: false,
     ext: '',
     git: false,
@@ -85,6 +95,12 @@ module.exports = (value, options) => {
     lengthRule.minimum = options.minimum
     lengthRule.tooShort = errorMessage(options.var, `${tooShort} (${minimumIs} ${options.minimum} ${tokenSuffix})`)
     rules.value.length = lengthRule
+  }
+
+  if (options.email) {
+    rules.value.email = {
+      message: errorMessage(options.var, 'is not a valid email')
+    }
   }
 
   if (options.url) {
@@ -141,7 +157,7 @@ module.exports = (value, options) => {
 
     rules.value.numericality = {
       strict: true,
-      greaterThan: options.minimum,
+      greaterThan: options.minimum - 1,
       message: errorMessage(options.var, numberMessage)
     }
   }
