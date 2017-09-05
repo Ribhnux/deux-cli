@@ -148,7 +148,7 @@ module.exports = (value, options) => {
 
     rules.value.numericality = {
       strict: true,
-      greaterThan: options.minimum,
+      greaterThan: options.minimum - 1,
       message: errorMessage(options.var, numberMessage)
     }
   }
