@@ -253,7 +253,16 @@ class NewCLI extends CLI {
             helpers: [],
             menus: {},
             widgets: {},
-            features: {}
+            features: {},
+            customizer: {
+              /* eslint-disable camelcase */
+              panels: {},
+              sections: {},
+              settings: {},
+              control_types: {},
+              controls: {}
+              /* eslint-enable */
+            }
           }
 
           try {
@@ -294,11 +303,27 @@ class NewCLI extends CLI {
             }
           })
 
-          mkdirp(this.currentThemePath('assets-src', 'js', 'node_modules'), err => {
-            if (err) {
-              exit(err)
-            }
+          Promise.all([
+            new Promise((resolve, reject) => {
+              mkdirp(this.currentThemePath('assets-src', 'js', 'node_modules'), err => {
+                if (err) {
+                  reject(err)
+                }
 
+                resolve()
+              })
+            }),
+
+            new Promise((resolve, reject) => {
+              mkdirp(this.currentThemePath('includes', 'customizers', 'assets-src', 'js', 'node_modules'), err => {
+                if (err) {
+                  reject(err)
+                }
+
+                resolve()
+              })
+            }),
+          ]).then(() => {
             resolve()
           })
         })
