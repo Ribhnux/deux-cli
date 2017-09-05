@@ -1,0 +1,13 @@
+{
+  "name": "{{theme.slug}}-customizer-js",
+  "version": "1.0.0",
+  "description": "{{theme.name}} Customizer Javascript Bundle",
+  "scripts": {},
+  "keywords": [
+    "wordpress",
+    "wordpress-theme"
+  ],
+  "author": "{{theme.author}}",
+  "license": "GPL-2.0",
+  "private": true
+}
