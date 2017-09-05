@@ -40,6 +40,7 @@ module.exports = (value, options) => {
     minimum: 0,
     word: false,
     array: false,
+    email: false,
     url: false,
     ext: '',
     git: false,
@@ -85,6 +86,12 @@ module.exports = (value, options) => {
     lengthRule.minimum = options.minimum
     lengthRule.tooShort = errorMessage(options.var, `${tooShort} (${minimumIs} ${options.minimum} ${tokenSuffix})`)
     rules.value.length = lengthRule
+  }
+
+  if (options.email) {
+    rules.value.email = {
+      message: errorMessage(options.var, 'is not a valid email')
+    }
   }
 
   if (options.url) {
