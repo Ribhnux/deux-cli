@@ -54,7 +54,7 @@
     "handlebars": "^4.0.10",
     "html-entities": "^1.2.1",
     "html5-validator": "^1.0.6",
-    "inquirer": "^3.2.2",
+    "inquirer": "^3.2.3",
     "isarray": "^2.0.2",
     "json-realtime": "^1.3.3",
     "jsonar": "^1.8.0",
