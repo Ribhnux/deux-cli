@@ -1,4 +1,9 @@
+# Hidden Files
 .DS_Store
+.gitkeep
+
+# Folders
 assets-src
 releases
 tests
+includes/customizers/assets-src
