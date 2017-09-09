@@ -163,6 +163,7 @@ class CLI {
     delete config.pageTemplates
     delete config.partialTemplates
     delete config.details
+    delete config.releases
 
     if (sync === false) {
       const phpconfig = jsonar.arrify(config, {
