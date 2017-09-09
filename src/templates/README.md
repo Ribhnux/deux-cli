@@ -7,6 +7,9 @@
 3. Upload the zip file that you downloaded and click **Install Now**.
 4. Click **Activate** to use the theme you just installed.
 
+## Development and Modification
+All assets, plugins, filters and hooks are configurable, inside `{{theme.slug}}-config.php` file.
+
 ## Copyright, License, and Other info
 
 ### Copyright
@@ -15,7 +18,7 @@
 ### License
 [GNU General Public License v2.0] unless otherwise specified, all the theme files including scripts and images are licensed under GNU General Public License. See License URI in style.css for further details.
 
-### Assets License and Info
+### Assets Info
 
 #### Styles and Scripts
 *Insert styles and javascripts license here*
