@@ -1,5 +1,19 @@
 const {writeFileSync, readFileSync} = require('fs')
 const handlebars = require('handlebars')
+const moment = require('moment')
+
+handlebars.registerHelper('gt', function (a, b) {
+  const next =  arguments[arguments.length - 1]
+  return (a > b) ? next.fn(this) : next.inverse(this)
+})
+
+handlebars.registerHelper('reverse', arr => {
+  arr.reverse()
+})
+
+handlebars.registerHelper('time', time => {
+  return moment(new Date(time)).format('YYYY/MM/DD')
+})
 
 module.exports = ({srcPath, dstPath, syntax}) => {
   const input = readFileSync(srcPath, 'ascii')
