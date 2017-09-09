@@ -1,4 +1,5 @@
 const path = require('path')
+const {createReadStream, createWriteStream} = require('fs')
 const {existsSync} = require('fs')
 const inquirer = require('inquirer')
 const faker = require('faker')
@@ -161,6 +162,9 @@ class NewCLI extends CLI {
     const themeNameLower = theme.name.toLowerCase()
     theme.slug = slugify(themeNameLower)
     theme.slugfn = slugify(themeNameLower, {replacement: '_'})
+    theme.created = {
+      year: new Date().getFullYear()
+    }
 
     const themePath = this.themePath(theme.slug)
     const gitPath = path.join(themePath, '.git')
@@ -263,7 +267,8 @@ class NewCLI extends CLI {
               control_types: {},
               controls: {}
               /* eslint-enable */
-            }
+            },
+            releases: []
           }
 
           try {
@@ -282,59 +287,78 @@ class NewCLI extends CLI {
 
       {
         title: 'Init WordPress Theme',
-        task: () => new Promise(resolve => {
-          const themeInfo = this.themeInfo()
-          delete themeInfo.details
+        task: () => new Listr([
+          {
+            title: 'Compiles theme',
+            task: () => new Promise((resolve, reject) => {
+              const themeInfo = this.themeInfo()
+              delete themeInfo.details
+              delete themeInfo.releases
 
-          const config = jsonar.arrify(themeInfo, {
-            prettify: true,
-            quote: jsonar.quoteTypes.SINGLE,
-            trailingComma: true
-          })
-
-          compileFiles({
-            srcDir: global.deuxtpl.path,
-            dstDir: themePath,
-            rename: {
-              'config.php': `${theme.slug}-config.php`
-            },
-            syntax: {
-              theme,
-              config
-            }
-          })
-
-          Promise.all([
-            new Promise((resolve, reject) => {
-              mkdirp(this.currentThemePath('assets-src', 'js', 'node_modules'), err => {
-                if (err) {
-                  reject(err)
-                }
-
-                resolve()
+              const config = jsonar.arrify(themeInfo, {
+                prettify: true,
+                quote: jsonar.quoteTypes.SINGLE,
+                trailingComma: true
               })
-            }),
 
-            new Promise((resolve, reject) => {
-              mkdirp(this.currentThemePath('includes', 'customizers', 'assets-src', 'js', 'node_modules'), err => {
-                if (err) {
-                  reject(err)
+              compileFiles({
+                srcDir: global.deuxtpl.path,
+                dstDir: themePath,
+                rename: {
+                  'config.php': `${theme.slug}-config.php`
+                },
+                syntax: {
+                  theme,
+                  config
                 }
-
-                resolve()
               })
-            }),
-          ]).then(() => {
-            resolve()
-          })
-        })
+
+              Promise.all([
+                new Promise((resolve, reject) => {
+                  mkdirp(this.currentThemePath('assets-src', 'js', 'node_modules'), err => {
+                    if (err) {
+                      reject(err)
+                    }
+
+                    resolve()
+                  })
+                }),
+
+                new Promise((resolve, reject) => {
+                  mkdirp(this.currentThemePath('includes', 'customizers', 'assets-src', 'js', 'node_modules'), err => {
+                    if (err) {
+                      reject(err)
+                    }
+
+                    resolve()
+                  })
+                }),
+              ]).then(() => {
+                resolve()
+              }).catch(reject)
+            })
+          },
+
+          {
+            title: 'Add screenshot',
+            task: () => new Promise((resolve, reject) => {
+              try {
+                createReadStream(this.templateSourcePath('_partials', 'screenshot.png'))
+                  .pipe(createWriteStream(this.currentThemePath('screenshot.png')))
+                resolve()
+              } catch (e) {
+                reject(e)
+              }
+            })
+          }
+        ])
       },
 
       {
         title: 'Init Repository',
         task: () => new Listr([
           {
-            title: 'Init git',
+            title: 'Init repository url',
             task: () => new Promise((resolve, reject) => {
               mkdirp(gitPath, err => {
                 if (err) {
@@ -367,12 +391,14 @@ class NewCLI extends CLI {
     .then(() => {
       finish(messages.SUCCEED_CREATE_NEW_THEME)
     })
-    .catch(() => {
+    .catch(err => {
       setTimeout(() => {
-        rimraf(themePath, err => {
-          if (err) {
-            exit(err)
+        rimraf(themePath, _err => {
+          if (_err) {
+            exit(_err)
           }
+
+          exit(err)
         })
       }, 1500)
     })
