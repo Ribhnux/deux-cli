@@ -128,7 +128,7 @@ exports.customizerControlLabels = {
   UPLOAD: 'File Uploader',
   IMAGE_PICKER: 'Image Uploader',
   MEDIA_PICKER: 'Custom Media Uploader',
-  CUSTOM: 'Custom Control'
+  CUSTOM: 'New Control'
 }
 
 exports.customizerSectionTypes = {
