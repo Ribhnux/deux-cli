@@ -121,9 +121,9 @@ if ( ! function_exists( '{{theme.slugfn}}_enqueue_scripts' ) ) :
 		{{theme.slugfn}}_load_dependencies();
 
 		// Main stylesheets.
-		$style_path = get_theme_file_uri( $css_dir . $style_filename );
+		$style_path = get_theme_file_path( $css_dir . $style_filename );
 		if ( file_exists( $style_path ) ) {
-			wp_enqueue_style( '{{theme.slug}}-style', $style_path, array(), $theme_version );
+			wp_enqueue_style( '{{theme.slug}}-style', get_theme_file_uri( $css_dir . $style_filename ), array(), $theme_version );
 
 			// RTL Stylesheets.
 			if ( is_rtl() ) {
@@ -131,11 +131,10 @@ if ( ! function_exists( '{{theme.slugfn}}_enqueue_scripts' ) ) :
 			}
 		}
 
-
 		// Main script.
-		$script_path = get_theme_file_uri( $js_dir . $script_filename );
+		$script_path = get_theme_file_path( $js_dir . $script_filename );
 		if ( file_exists( $script_path ) ) {
-			wp_enqueue_script( '{{theme.slug}}-script', $script_path, array(), $theme_version, true );
+			wp_enqueue_script( '{{theme.slug}}-script', get_theme_file_uri( $js_dir . $script_filename ), array(), $theme_version, true );
 		}
 
 		// Enable nested comments reply.

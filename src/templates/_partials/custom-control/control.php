@@ -31,18 +31,18 @@ if ( class_exists( 'WP_Customize_Control' ) ) :
 		public function enqueue() {
 			$theme_info = wp_get_theme();
 			$theme_version = $theme_info->get( 'Version' );
-			$asset_control_path = '/includes/customizers/' . $this->type . '/assets/';
+			$asset_control_path = '/includes/customizers/controls/' . $this->type . '/assets/';
 			$style_filename = 'css/style.css';
 			$script_filename = 'js/script.js';
 
-			$style_path = get_theme_file_uri( $asset_control_path . $style_filename );
+			$style_path = get_theme_file_path( $asset_control_path . $style_filename );
 			if ( file_exists( $style_path ) ) {
-				wp_enqueue_style( '{{theme.name}}-{{control.slug}}-control', $style_path, array(), $theme_version );
+				wp_enqueue_style( '{{theme.slug}}-{{control.slug}}-control', get_theme_file_uri( $asset_control_path . $style_filename ), array(), $theme_version );
 			}
 
-			$script_path = get_theme_file_uri( $asset_control_path . $script_filename );
+			$script_path = get_theme_file_path( $asset_control_path . $script_filename );
 			if ( file_exists( $script_path ) ) {
-				wp_enqueue_script( '{{theme.name}}-{{control.slug}}-control', $script_path, array( 'jquery' ), $theme_version, true );
+				wp_enqueue_script( '{{theme.slug}}-{{control.slug}}-control', get_theme_file_uri( $asset_control_path . $script_filename ), array( 'jquery' ), $theme_version, true );
 			}
 		}
 
