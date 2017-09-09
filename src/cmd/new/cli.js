@@ -123,7 +123,8 @@ class NewCLI extends CLI {
             }
           })
         ],
-        validate: value => validator(value, {minimum: 2, array: true, var: 'Tags'})
+        validate: value => validator(value, {minimum: 2, array: true, var: 'Tags'}),
+        filter: value => value.join(', ')
       },
 
       {
