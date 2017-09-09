@@ -16,7 +16,6 @@ exports.pluginSrcTypes = {
 
 exports.featureTypes = {
   HTML5: 'html5',
-  FEED_LINKS: 'autmatic-feed-links',
   POST_FORMATS: 'post-formats',
   POST_THUMBNAILS: 'post-thumbnails',
   CUSTOM_BACKGROUND: 'custom-background',
@@ -26,7 +25,6 @@ exports.featureTypes = {
 
 exports.featureLabels = {
   HTML5: 'HTML5 Theme Markup',
-  FEED_LINKS: 'Automatic Feed Links',
   POST_FORMATS: 'Post Formats',
   POST_THUMBNAILS: 'Post Thumbnails',
   CUSTOM_BACKGROUND: 'Custom Background',
@@ -130,7 +128,7 @@ exports.customizerControlLabels = {
   UPLOAD: 'File Uploader',
   IMAGE_PICKER: 'Image Uploader',
   MEDIA_PICKER: 'Custom Media Uploader',
-  CUSTOM: 'Custom Control'
+  CUSTOM: 'New Control'
 }
 
 exports.customizerSectionTypes = {

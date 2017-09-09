@@ -2,6 +2,7 @@ const slugify = require('node-slugify')
 const jsonar = require('jsonar')
 const inquirer = require('inquirer')
 const faker = require('faker')
+const getFileHeader = require('wp-get-file-header')
 const getL10n = require('wp-get-l10n')
 const mkdirp = require('mkdirp')
 const {
@@ -46,13 +47,31 @@ class AddCustomizer extends CLI {
 
       {
         type: 'list',
+        name: 'customizer.setting.transport',
+        message: 'Setting Transport',
+        default: 1,
+        choices: [
+          {
+            name: 'Post Message',
+            value: 'postMessage'
+          },
+
+          {
+            name: 'Manual Refresh',
+            value: 'refresh'
+          }
+        ]
+      },
+
+      {
+        type: 'list',
         name: 'customizer.control.type',
         message: 'Control Type',
         choices: () => new Promise(resolve => {
-          const list = [new inquirer.Separator()]
+          let list = [new inquirer.Separator()]
 
           for (const key in customizerControlTypes) {
-            if (Object.prototype.hasOwnProperty.call(customizerControlTypes, key)) {
+            if (Object.prototype.hasOwnProperty.call(customizerControlTypes, key) && customizerControlTypes[key] !== customizerControlTypes.CUSTOM) {
               list.push({
                 name: customizerControlLabels[key],
                 value: customizerControlTypes[key]
@@ -60,14 +79,60 @@ class AddCustomizer extends CLI {
             }
           }
 
-          resolve(list)
+          const definedControls = []
+          for (const key in this.customizer.control_types) {
+            if (Object.prototype.hasOwnProperty.call(this.customizer.control_types, key)) {
+              definedControls.push(key)
+            }
+          }
+
+          const newControl = () => {
+            list.push(new inquirer.Separator())
+            list.push({
+              name: customizerControlLabels.CUSTOM,
+              value: customizerControlTypes.CUSTOM
+            })
+          }
+
+          if (definedControls.length > 0) {
+            Promise.all(definedControls.map(
+              value => new Promise((resolve, reject) => {
+                const controlPath = this.currentThemePath('includes', 'customizers', 'controls', value, `class-wp-customize-${value}-control.php`)
+                console.log(controlPath)
+                getFileHeader(controlPath).then(info => {
+                  if (info.controlName) {
+                    resolve({
+                      name: info.controlName,
+                      value
+                    })
+                  } else {
+                    resolve(undefined)
+                  }
+                }).then(reject)
+              })
+            )).then(controlList => {
+              controlList = controlList.filter(item => item)
+              if (controlList.length > 0) {
+                list = list.concat(controlList)
+              }
+
+              newControl()
+              resolve(list)
+            }).catch(exit)
+          } else {
+            newControl()
+            resolve(list)
+          }
         })
       },
 
       {
         name: 'customizer.setting.default',
         message: 'Default Value',
-        when: ({customizer}) => customizer.control.type === customizerControlTypes.TEXT
+        when: ({customizer}) => {
+          return customizer.control.type === customizerControlTypes.TEXT ||
+          customizer.control.type === customizerControlTypes.CUSTOM
+        }
       },
 
       {
@@ -297,7 +362,7 @@ class AddCustomizer extends CLI {
         message: 'New Section Priority',
         default: 160,
         when: ({customizer}) => customizer.control.section === customizerSectionTypes.CUSTOM,
-        validate: value => validator(value, {minimum: 0, number: true, var: 'Section priority'})
+        validate: value => validator(value, {minimum: 1, number: true, var: 'Section priority'})
       },
 
       {
@@ -372,7 +437,7 @@ class AddCustomizer extends CLI {
         message: 'New Panel Priority',
         default: 160,
         when: ({customizer}) => customizer.control.section === customizerSectionTypes.CUSTOM && customizer.section.inPanel && customizer.section.panel === customizerPanelTypes.CUSTOM,
-        validate: value => validator(value, {minimum: 0, number: true, var: 'Section priority'})
+        validate: value => validator(value, {minimum: 1, number: true, var: 'Section priority'})
       }
     ]
   }
@@ -490,7 +555,7 @@ class AddCustomizer extends CLI {
     Promise.all([
       new Promise(resolve => {
         if (customControl) {
-          const customControlPath = this.currentThemePath('includes', 'customizers', customControl.slug)
+          const customControlPath = this.currentThemePath('includes', 'customizers', 'controls', customControl.slug)
 
           mkdirp.sync(customControlPath)
 

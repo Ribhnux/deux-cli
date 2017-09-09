@@ -29,9 +29,21 @@ if ( class_exists( 'WP_Customize_Control' ) ) :
 		 * @return void
 		 */
 		public function enqueue() {
-			$asset_path = get_template_directory_uri() . '/includes/customizers/' . $this->type . '/assets/';
-			wp_enqueue_style( '{{control.slug}}-control', $asset_path . 'css/style.css' );
-			wp_enqueue_script( '{{control.slug}}-control', $asset_path . 'js/script.js', array( 'jquery' ) );
+			$theme_info = wp_get_theme();
+			$theme_version = $theme_info->get( 'Version' );
+			$asset_control_path = '/includes/customizers/controls/' . $this->type . '/assets/';
+			$style_filename = 'css/style.css';
+			$script_filename = 'js/script.js';
+
+			$style_path = get_theme_file_path( $asset_control_path . $style_filename );
+			if ( file_exists( $style_path ) ) {
+				wp_enqueue_style( '{{theme.slug}}-{{control.slug}}-control', get_theme_file_uri( $asset_control_path . $style_filename ), array(), $theme_version );
+			}
+
+			$script_path = get_theme_file_path( $asset_control_path . $script_filename );
+			if ( file_exists( $script_path ) ) {
+				wp_enqueue_script( '{{theme.slug}}-{{control.slug}}-control', get_theme_file_uri( $asset_control_path . $script_filename ), array( 'jquery' ), $theme_version, true );
+			}
 		}
 
 		/**

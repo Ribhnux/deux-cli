@@ -231,10 +231,13 @@ class AddAsset extends CLI {
         name: 'lib.deps',
         message: 'Dependencies (separate with commas)',
         when: ({asset, lib}) => {
-          const isCDN = lib.source === libSource.CDN && lib.name.handle
-          const isURL = lib.source === libSource.URL
+          if (asset.type === assetTypes.LIB) {
+            const isCDN = lib.source === libSource.CDN && lib.name.handle
+            const isURL = lib.source === libSource.URL
+            return isCDN || isURL
+          }
 
-          return asset.type === assetTypes.LIB && (isCDN || isURL)
+          return false
         }
       },
 

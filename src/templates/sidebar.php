@@ -9,3 +9,6 @@
 ?>
 
 <!-- Sidebar codes here -->
+<?php if ( is_active_sidebar( '' ) ) : ?>
+	<?php dynamic_sidebar( '' ); ?>
+<?php endif; ?>
