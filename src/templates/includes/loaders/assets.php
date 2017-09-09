@@ -108,29 +108,35 @@ if ( ! function_exists( '{{theme.slugfn}}_enqueue_scripts' ) ) :
 
 		$theme_info = wp_get_theme();
 		$theme_version = $theme_info->get( 'Version' );
-		$style_path = '/assets/css/';
-		$script_path = '/assets/js/';
-		$main_css = 'main.css';
-		$main_js = 'main.js';
+		$css_dir = '/assets/css/';
+		$js_dir = '/assets/js/';
+		$style_filename = 'main.css';
+		$script_filename = 'main.min.js';
 
 		if ( true === ${{theme.slugfn}}_config['optimize'] ) {
-			$main_css = 'main.min.css';
-			$main_js = 'main.min.js';
+			$style_filename = 'main.min.css';
 		}
 
 		// Load dependencies.
 		{{theme.slugfn}}_load_dependencies();
 
 		// Main stylesheets.
-		wp_enqueue_style( '{{theme.slug}}-style', get_theme_file_uri( $style_path . $main_css ), array(), $theme_version );
+		$style_path = get_theme_file_uri( $css_dir . $style_filename );
+		if ( file_exists( $style_path ) ) {
+			wp_enqueue_style( '{{theme.slug}}-style', $style_path, array(), $theme_version );
 
-		// RTL Stylesheets.
-		if ( is_rtl() ) {
-			wp_style_add_data( '{{theme.slug}}-style', 'rtl', 'replace' );
+			// RTL Stylesheets.
+			if ( is_rtl() ) {
+				wp_style_add_data( '{{theme.slug}}-style', 'rtl', 'replace' );
+			}
 		}
 
+
 		// Main script.
-		wp_enqueue_script( '{{theme.slug}}-script', get_theme_file_uri( $script_path . $main_js ), array(), $theme_version, true );
+		$script_path = get_theme_file_uri( $js_dir . $script_filename );
+		if ( file_exists( $script_path ) ) {
+			wp_enqueue_script( '{{theme.slug}}-script', $script_path, array(), $theme_version, true );
+		}
 
 		// Enable nested comments reply.
 		if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
