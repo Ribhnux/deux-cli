@@ -35,7 +35,9 @@ if ( ! function_exists( '{{theme.slugfn}}_customize_register' ) ) :
 				} elseif ( 'sections' === $type ) {
 					$wp_customize->add_section( $id, $args );
 				} elseif ( 'settings' === $type ) {
-					$wp_customize->add_setting( $id, $args );
+					$wp_customize->add_setting( $id, wp_parse_args( $args, array(
+						'sanitize_callback' => false,
+					) ) );
 				} elseif ( 'controls' === $type ) {
 					switch ( $args['type'] ) {
 						case 'color-picker':
@@ -63,10 +65,10 @@ if ( ! function_exists( '{{theme.slugfn}}_customize_register' ) ) :
 
 							if ( $class_name ) {
 								$control = new ReflectionClass( $class_name );
-	
+
 								unset( $args['type'] );
 								unset( $args['custom_control'] );
-	
+
 								$new_control = $control->newInstanceArgs( array( $wp_customize, $id, $args ) );
 								$wp_customize->add_control( $new_control );
 							}

@@ -29,9 +29,9 @@ if ( ! function_exists( '{{theme.slugfn}}_font_url' ) ) :
 				'family' => implode( '|', $font_families ),
 				'subset' => implode( ',', array_unique( $font_subsets ) ),
 			);
-	
+
 			$fonts_url = add_query_arg( $query_args, '//fonts.googleapis.com/css' );
-	
+
 			return esc_url_raw( $fonts_url );
 		}
 	}
