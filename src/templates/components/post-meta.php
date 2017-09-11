@@ -21,7 +21,13 @@ if ( ! function_exists( '{{theme.slugfn}}_post_meta' ) ) :
 				printf(
 					/* translators: categories list */
 					'<span class="cat-links">' . esc_html__( 'Posted in %1$s', '{{theme.slug}}' ) . '</span>',
-					wp_kses( $categories_list, wp_kses_allowed_html( $categories_list ) )
+					wp_kses( $categories_list, array(
+						'a' => array(
+							'href' => array(),
+							'rel' => array(),
+							'class' => array(),
+						),
+					) )
 				);
 			}
 
@@ -31,7 +37,13 @@ if ( ! function_exists( '{{theme.slugfn}}_post_meta' ) ) :
 				printf(
 					/* translators: tag list */
 					'<span class="tags-links">' . esc_html__( 'Tagged %1$s', '{{theme.slug}}' ) . '</span>',
-					wp_kses( $tags_list, wp_kses_allowed_html( $tags_list ) )
+					wp_kses( $tags_list, array(
+						'a' => array(
+							'href' => array(),
+							'rel' => array(),
+							'class' => array(),
+						),
+					) )
 				);
 			}
 		}
