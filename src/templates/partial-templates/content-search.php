@@ -1,6 +1,6 @@
 <?php
 /**
- * Template Name: Search Content
+ * Partial Template Name: Search Content
  *
  * Search page template.
  *

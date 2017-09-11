@@ -1,6 +1,6 @@
 <?php
 /**
- * Template Name: Standard Content
+ * Partial Template Name: Standard Content
  *
  * Post template to rendering get_template_part.
  *
