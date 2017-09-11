@@ -1,6 +1,6 @@
 <?php
 /**
- * Template Name: {{template.name}}
+ * Partial Template Name: {{template.name}}
  *
  * {{template.description}}
  *

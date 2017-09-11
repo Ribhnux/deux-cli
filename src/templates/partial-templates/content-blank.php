@@ -1,6 +1,6 @@
 <?php
 /**
- * Template Name: Blank Template
+ * Partial Template Name: Blank Template
  *
  * Just displaying a "naked" content from database, no markup.
  *

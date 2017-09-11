@@ -1,6 +1,6 @@
 <?php
 /**
- * Template Name: Single Content
+ * Partial Template Name: Single Content
  *
  * Single post template.
  *

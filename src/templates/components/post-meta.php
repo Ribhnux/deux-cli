@@ -13,38 +13,21 @@ if ( ! function_exists( '{{theme.slugfn}}_post_meta' ) ) :
 	 * @return void
 	 */
 	function {{theme.slugfn}}_post_meta() {
-		$has_more_categories = false;
-
-		// Create an array of all the categories that are attached to posts.
-		$all_categories = get_transient( '{{theme.slugfn}}_categories' );
-
-		if ( false === $all_categories ) {
-			$all_categories = get_categories( array(
-				'fields'     => 'ids',
-				'hide_empty' => 1,
-				// We only need to know if there is more than one category.
-				'number'     => 2,
-			) );
-
-			// Count the number of categories that are attached to the posts.
-			$all_categories = count( $all_categories );
-			set_transient( '{{theme.slugfn}}_categories', $all_categories );
-		}
-
-		// This blog has more than 1 category.
-		if ( $all_categories > 1 ) {
-			$has_more_categories = true;
-		}
-
 		// Hide category and tag text for pages.
 		if ( 'post' === get_post_type() ) {
 			/* translators: used between list items, there is a space after the comma */
 			$categories_list = get_the_category_list( esc_html__( ', ', '{{theme.slug}}' ) );
-			if ( $categories_list && $has_more_categories ) {
+			if ( $categories_list ) {
 				printf(
 					/* translators: categories list */
 					'<span class="cat-links">' . esc_html__( 'Posted in %1$s', '{{theme.slug}}' ) . '</span>',
-					wp_kses_post( $categories_list )
+					wp_kses( $categories_list, array(
+						'a' => array(
+							'href' => array(),
+							'rel' => array(),
+							'class' => array(),
+						),
+					) )
 				);
 			}
 
@@ -54,7 +37,13 @@ if ( ! function_exists( '{{theme.slugfn}}_post_meta' ) ) :
 				printf(
 					/* translators: tag list */
 					'<span class="tags-links">' . esc_html__( 'Tagged %1$s', '{{theme.slug}}' ) . '</span>',
-					wp_kses_post( $tags_list )
+					wp_kses( $tags_list, array(
+						'a' => array(
+							'href' => array(),
+							'rel' => array(),
+							'class' => array(),
+						),
+					) )
 				);
 			}
 		}

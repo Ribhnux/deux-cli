@@ -1,6 +1,6 @@
 <?php
 /**
- * Template Name: Standard Content
+ * Partial Template Name: Standard Content
  *
  * Post template to rendering get_template_part.
  *
@@ -14,9 +14,9 @@
 		<?php
 		the_title(
 			sprintf(
-				'<h2 class="entry-title"><a href="%s" rel="bookmark">', esc_url( get_permalink() )
+				'<h3 class="entry-title"><a href="%s" rel="bookmark">', esc_url( get_permalink() )
 			),
-			'</a></h2>'
+			'</a></h3>'
 		);
 		?>
 

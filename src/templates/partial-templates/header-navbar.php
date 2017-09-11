@@ -1,6 +1,6 @@
 <?php
 /**
- * Template Name: Header Navigation Bar
+ * Partial Template Name: Header Navigation Bar
  *
  * Display Navigation Bar
  *

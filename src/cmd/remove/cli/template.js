@@ -33,8 +33,9 @@ class RemoveTemplate extends CLI {
         value => new Promise((resolve, reject) => {
           wpFileHeader(this.currentThemePath(`${type}-templates`, `${value}.php`))
           .then(info => {
+            const name = (type === templateTypes.PARTIAL) ? info.partialTemplateName : info.templateName
             resolve({
-              name: info.templateName,
+              name,
               value: {
                 type,
                 value

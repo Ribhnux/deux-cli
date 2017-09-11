@@ -1,6 +1,6 @@
 <?php
 /**
- * Template Name: Page Content
+ * Partial Template Name: Page Content
  *
  * Page template for page.php.
  *
