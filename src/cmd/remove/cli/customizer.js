@@ -13,7 +13,7 @@ const {capitalize} = global.deuxhelpers.require('util/misc')
 class RemoveCustomizer extends CLI {
   constructor() {
     super()
-    this.themeCustomizer = undefined
+    this.customizer = undefined
     this.init()
   }
 
@@ -21,16 +21,16 @@ class RemoveCustomizer extends CLI {
    * Setup remove customizer prompts
    */
   prepare() {
-    this.themeCustomizer = this.themeInfo('customizer')
+    this.customizer = this.themeInfo('customizer')
     let hasCustomizers = false
 
-    for (const key in this.themeCustomizer) {
-      if (Object.prototype.hasOwnProperty.call(this.themeCustomizer, key)) {
+    for (const key in this.customizer) {
+      if (Object.prototype.hasOwnProperty.call(this.customizer, key)) {
         if (key !== `${customizerTypes.CONTROL}s`) {
           continue
         }
 
-        hasCustomizers = Object.keys(this.themeCustomizer[key]).length > 0
+        hasCustomizers = Object.keys(this.customizer[key]).length > 0
       }
     }
 
@@ -47,28 +47,28 @@ class RemoveCustomizer extends CLI {
         choices: () => new Promise(resolve => {
           let list = [new inquirer.Separator()]
 
-          if (Object.keys(this.themeCustomizer.panels).length > 0) {
+          if (Object.keys(this.customizer.panels).length > 0) {
             list.push({
               name: `${capitalize(customizerTypes.PANEL)}s`,
               value: customizerTypes.PANEL
             })
           }
 
-          if (Object.keys(this.themeCustomizer.sections).length > 0) {
+          if (Object.keys(this.customizer.sections).length > 0) {
             list.push({
               name: `${capitalize(customizerTypes.SECTION)}s`,
               value: customizerTypes.SECTION
             })
           }
 
-          if (Object.keys(this.themeCustomizer.settings).length > 0) {
+          if (Object.keys(this.customizer.settings).length > 0) {
             list.push({
               name: `${capitalize(customizerTypes.SETTING)}s`,
               value: customizerTypes.SETTING
             })
           }
 
-          if (Object.keys(this.themeCustomizer.control_types).length > 0) {
+          if (Object.keys(this.customizer.control_types).length > 0) {
             list.push({
               name: `Custom ${capitalize(customizerTypes.CONTROL_TYPE.replace(/_/g, ' '))}s`,
               value: customizerTypes.CONTROL_TYPE
@@ -84,16 +84,16 @@ class RemoveCustomizer extends CLI {
         name: 'customizer.panels',
         message: 'Choose Panels',
         when: ({customizer}) => {
-          return Object.keys(this.themeCustomizer.panels).length > 0 &&
+          return Object.keys(this.customizer.panels).length > 0 &&
             customizer.type === customizerTypes.PANEL
         },
         choices: () => new Promise(resolve => {
           let list = [new inquirer.Separator()]
 
-          for (const value in this.themeCustomizer.panels) {
-            if (Object.prototype.hasOwnProperty.call(this.themeCustomizer.panels, value)) {
+          for (const value in this.customizer.panels) {
+            if (Object.prototype.hasOwnProperty.call(this.customizer.panels, value)) {
               list.push({
-                name: getL10n(this.themeCustomizer.panels[value].title.___$string),
+                name: getL10n(this.customizer.panels[value].title.___$string),
                 value
               })
             }
@@ -109,7 +109,7 @@ class RemoveCustomizer extends CLI {
         default: false,
         message: 'Remove all sections and settings under selected panels?',
         when: ({customizer}) => {
-          return Object.keys(this.themeCustomizer.panels).length > 0 &&
+          return Object.keys(this.customizer.panels).length > 0 &&
             customizer.type === customizerTypes.PANEL
         }
       },
@@ -119,16 +119,16 @@ class RemoveCustomizer extends CLI {
         name: 'customizer.sections',
         message: 'Choose Sections',
         when: ({customizer}) => {
-          return Object.keys(this.themeCustomizer.sections).length > 0 &&
+          return Object.keys(this.customizer.sections).length > 0 &&
             customizer.type === customizerTypes.SECTION
         },
         choices: () => new Promise(resolve => {
           let list = [new inquirer.Separator()]
 
-          for (const value in this.themeCustomizer.sections) {
-            if (Object.prototype.hasOwnProperty.call(this.themeCustomizer.sections, value)) {
+          for (const value in this.customizer.sections) {
+            if (Object.prototype.hasOwnProperty.call(this.customizer.sections, value)) {
               list.push({
-                name: getL10n(this.themeCustomizer.sections[value].title.___$string),
+                name: getL10n(this.customizer.sections[value].title.___$string),
                 value
               })
             }
@@ -144,7 +144,7 @@ class RemoveCustomizer extends CLI {
         default: false,
         message: 'Remove all settings under selected sections?',
         when: ({customizer}) => {
-          return Object.keys(this.themeCustomizer.sections).length > 0 &&
+          return Object.keys(this.customizer.sections).length > 0 &&
             customizer.type === customizerTypes.SECTION
         }
       },
@@ -154,17 +154,17 @@ class RemoveCustomizer extends CLI {
         name: 'customizer.settings',
         message: 'Choose Settings',
         when: ({customizer}) => {
-          return Object.keys(this.themeCustomizer.settings).length > 0 &&
+          return Object.keys(this.customizer.settings).length > 0 &&
             customizer.type === customizerTypes.SETTING
         },
         choices: () => new Promise(resolve => {
           let list = [new inquirer.Separator()]
 
-          for (const key in this.themeCustomizer.controls) {
-            if (Object.prototype.hasOwnProperty.call(this.themeCustomizer.controls, key)) {
+          for (const key in this.customizer.controls) {
+            if (Object.prototype.hasOwnProperty.call(this.customizer.controls, key)) {
               list.push({
-                name: getL10n(this.themeCustomizer.controls[key].label.___$string),
-                value: this.themeCustomizer.controls[key].settings
+                name: getL10n(this.customizer.controls[key].label.___$string),
+                value: this.customizer.controls[key].settings
               })
             }
           }
@@ -178,13 +178,13 @@ class RemoveCustomizer extends CLI {
         name: 'customizer.control_types',
         message: 'Choose Custom Control Types',
         when: ({customizer}) => {
-          return Object.keys(this.themeCustomizer.control_types).length > 0 &&
+          return Object.keys(this.customizer.control_types).length > 0 &&
             customizer.type === customizerTypes.CONTROL_TYPE
         },
         choices: () => new Promise(resolve => {
           let list = [new inquirer.Separator()]
 
-          Promise.all(Object.keys(this.themeCustomizer.control_types).map(
+          Promise.all(Object.keys(this.customizer.control_types).map(
             value => new Promise((resolve, reject) => {
               const controlPath = this.currentThemePath('includes', 'customizers', 'controls', value, `class-wp-customize-${value}-control.php`)
               getFileHeader(controlPath).then(info => {
@@ -248,52 +248,90 @@ class RemoveCustomizer extends CLI {
       happyExit()
     }
 
-    Promise.all(features.map(
-      type => new Promise((resolve, reject) => {
-        const removeFiles = []
+    let items
 
-        switch (type) {
-          case featureTypes.CUSTOM_BACKGROUND:
-            if ('wp-head-callback' in this.themeFeatures[type]) {
-              removeFiles.push('custom-background')
-            }
-            break
+    switch(customizer.type) {
+      case customizerTypes.PANEL:
+        items = customizer.panels
+        break
 
-          case featureTypes.CUSTOM_HEADER:
-            if ('wp-head-callback' in this.themeFeatures[type]) {
-              removeFiles.push('custom-header')
-            }
+      case customizerTypes.SECTION:
+        items = customizer.sections
+        break
 
-            if ('video-active-callback' in this.themeFeatures[type]) {
-              removeFiles.push('custom-header-video')
-            }
-            break
+      case customizerTypes.SETTING:
+        items = customizer.settings
+        break
 
-          default: break
+      case customizerTypes.CONTROL_TYPE:
+        items = customizer.control_types
+        break
+    }
+
+    Promise.all(items.map(
+      item => new Promise(resolve => {
+        if (customizer.type === customizerTypes.PANEL) {
+          if (customizer.panelsChild && customizer.panelsChild === true) {
+
+            // Remove All sections under panels.
+            Object.keys(this.customizer.sections).forEach(sectionName => {
+              if (this.customizer.sections[sectionName].panel === item) {
+
+                // Remove all controls and settings under sections.
+                Object.keys(this.customizer.controls).forEach(controlName => {
+                  if (this.customizer.controls[controlName].section === sectionName) {
+                    const settingName = this.customizer.controls[controlName].settings
+                    delete this.customizer.settings[settingName]
+                    delete this.customizer.controls[controlName]
+                  }
+                })
+
+                delete this.customizer.sections[sectionName]
+              }
+            })
+          }
+
+          delete this.customizer.panels[item]
         }
 
-        Promise.all(removeFiles.map(
-          filename => new Promise(resolve => {
-            rimraf.sync(this.currentThemePath('includes', 'helpers', `${filename}.php`))
-            resolve(filename)
-          })
-        )).then(filenames => {
-          this.themeHelpers = this.themeHelpers.filter(item => !filenames.includes(item))
-          delete this.themeFeatures[type]
-          resolve()
-        }).catch(reject)
+        if (customizer.type === customizerTypes.SECTION) {
+          if (customizer.sectionsChild && customizer.sectionsChild === true) {
+            // Remove all controls and settings under sections.
+            Object.keys(this.customizer.controls).forEach(controlName => {
+              if (this.customizer.controls[controlName].section === item) {
+                const settingName = this.customizer.controls[controlName].settings
+                delete this.customizer.settings[settingName]
+                delete this.customizer.controls[controlName]
+              }
+            })
+          }
+
+          delete this.customizer.sections[item]
+        }
+
+        if (customizer.type === customizerTypes.SETTING) {
+          const settingName = this.customizer.controls[item].settings
+          delete this.customizer.settings[settingName]
+          delete this.customizer.controls[item]
+        }
+
+        if (customizer.type === customizerTypes.CONTROL_TYPE) {
+          rimraf.sync(this.currentThemePath('includes', 'customizers', 'controls', item))
+          delete this.customizer.control_types[item]
+        }
+
+        resolve()
       })
     )).then(() => {
       Promise.all([
         new Promise(resolve => {
           this.setThemeConfig({
-            features: this.themeFatures,
-            helpers: this.themeHelpers
+            customizer: this.customizer
           })
           resolve()
         })
       ]).then(
-        finish(messages.SUCCEED_REMOVED_FEATURE)
+        finish(messages.SUCCEED_REMOVED_CUSTOMIZER)
       ).catch(exit)
     }).catch(exit)
   }
