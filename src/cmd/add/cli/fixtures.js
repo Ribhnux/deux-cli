@@ -97,6 +97,14 @@ exports.hookTypes = {
   ACTION: 'action'
 }
 
+exports.customizerTypes = {
+  PANEL: 'panel',
+  SECTION: 'section',
+  SETTING: 'setting',
+  CONTROL_TYPE: 'control_type',
+  CONTROL: 'control'
+}
+
 exports.customizerControlTypes = {
   TEXT: 'text',
   NUMBER: 'number',

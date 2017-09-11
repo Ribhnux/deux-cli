@@ -98,7 +98,6 @@ class AddCustomizer extends CLI {
             Promise.all(definedControls.map(
               value => new Promise((resolve, reject) => {
                 const controlPath = this.currentThemePath('includes', 'customizers', 'controls', value, `class-wp-customize-${value}-control.php`)
-                console.log(controlPath)
                 getFileHeader(controlPath).then(info => {
                   if (info.controlName) {
                     resolve({

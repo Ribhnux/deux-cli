@@ -1,7 +1,18 @@
 const chalk = require('chalk')
+const sample = require('lodash.sample')
 
 const removehint = (cmd, prefix = 'Please choose another name') => {
   return `${prefix}, type: ${chalk.bold.cyan(`deux remove ${cmd}`)} to remove from list`
+}
+
+const okayRandomizer = () => {
+  const messages = [
+    'It\'s okay',
+    'It\'s alright',
+    'Keep calm',
+    'Don\'t worry'
+  ]
+  return sample(messages)
 }
 
 exports.INIT = 'Initializing'
@@ -14,7 +25,7 @@ exports.DONE_FINISH = 'Finish'
 exports.DONE_UPDATED = 'Updated'
 exports.MORE_INFO = `type ${chalk.bold.cyan('deux --help')} to see available commands.`
 exports.SYNC_NEXT_TIME = 'It\'s okay, you can do it next time.'
-exports.DONE_NO_REMOVE = 'Good, nothing to remove, keep your config safe.'
+exports.DONE_NO_REMOVE = 'Remove nothing.'
 exports.SUCCEED_INIT_DB = 'Success init database.'
 exports.SUCCEED_CREATE_NEW_THEME = 'Your new theme has been created.'
 exports.SUCCEED_ALREADY_IN_CURRENT_PROJECT = 'Theme already used as current project.'
@@ -33,17 +44,18 @@ exports.SUCCEED_IMGSIZE_ADDED = 'Cool, new image size has been added.'
 exports.SUCCEED_HOOKS_ADDED = 'Cool, new hooks has been added.'
 exports.SUCCEED_CUSTOMIZER_ADDED = 'Cool, new customizer setting has been added.'
 exports.SUCCEED_SYNCRHONIZED = 'Synchronizing theme config with database has been completed.'
-exports.SUCCEED_REMOVED_THEME = `You have been removed theme, type ${chalk.bold.cyan('deux new')} to add new theme`
-exports.SUCCEED_REMOVED_ASSET = 'You have been removed some assets from theme.'
-exports.SUCCEED_REMOVED_PLUGIN = 'You have been removed some plugins from theme.'
-exports.SUCCEED_REMOVED_COMPONENT = 'You have been removed some components from theme.'
-exports.SUCCEED_REMOVED_HELPER = 'You have been removed some helpers from theme.'
-exports.SUCCEED_REMOVED_LIBCLASS = 'You have been removed some libraries from theme.'
-exports.SUCCEED_REMOVED_FEATURE = 'You have been removed some features from theme.'
-exports.SUCCEED_REMOVED_WIDGET = 'You have been removed some widgets from theme.'
-exports.SUCCEED_REMOVED_MENU = 'You have been removed some menus from theme.'
-exports.SUCCEED_REMOVED_IMGSIZE = 'You have been removed some image size from theme.'
-exports.SUCCEED_REMOVED_HOOKS = 'You have been removed hooks from theme.'
+exports.SUCCEED_REMOVED_THEME = `Theme have been removed from project, type ${chalk.bold.cyan('deux new')} to add new theme`
+exports.SUCCEED_REMOVED_ASSET = `${okayRandomizer()}, you've just removed some assets from theme.`
+exports.SUCCEED_REMOVED_PLUGIN = `${okayRandomizer()}, you've just removed some plugins from theme.`
+exports.SUCCEED_REMOVED_COMPONENT = `${okayRandomizer()}, you've just removed some components from theme.`
+exports.SUCCEED_REMOVED_HELPER = `${okayRandomizer()}, you've just removed some helpers from theme.`
+exports.SUCCEED_REMOVED_LIBCLASS = `${okayRandomizer()}, you've just removed some php libraries from theme.`
+exports.SUCCEED_REMOVED_FEATURE = `${okayRandomizer()}, you've just removed some features from theme.`
+exports.SUCCEED_REMOVED_WIDGET = `${okayRandomizer()}, you've just removed some widgets from theme.`
+exports.SUCCEED_REMOVED_MENU = `${okayRandomizer()}, you've just removed some menus from theme.`
+exports.SUCCEED_REMOVED_IMGSIZE = `${okayRandomizer()}, you've just removed some image size from theme.`
+exports.SUCCEED_REMOVED_HOOKS = `${okayRandomizer()}, you've just removed some hooks from theme.`
+exports.SUCCEED_REMOVED_CUSTOMIZER = `${okayRandomizer()}, you've just removed some customizers from theme.`
 exports.SUCCEED_VALID_THEME = 'Your theme is valid and ready to release'
 exports.SUCCEED_UPDATED = 'Your assets or plugins are updated.'
 exports.SUCCEED_ALL_UPDATED = 'All of your assets or plugins are up to date.'
