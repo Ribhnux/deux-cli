@@ -29,8 +29,21 @@
 
 <body <?php body_class(); ?>>
 	<div id="page" class="site">
+		<a class="skip-link screen-reader-text" href="#content"><?php esc_html_e( 'Skip to content', '{{theme.slug}}' ); ?></a>
+
 		<div id="main-wrapper" class="site__wrapper">
-			<?php
-				// Display navigation bar.
-				get_template_part( 'partial-templates/header', 'navbar' );
-			?>
+			<header class="page-header">
+				<div class="site__title">
+					<?php if ( is_home() ) : ?>
+					<h1>
+						<a rel="home" href="<?php echo esc_url( home_url( '/' ) ); ?>" title="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>"><?php bloginfo( 'name' ); ?></a>
+					</h1>
+					<?php else : ?>
+					<a rel="home" href="<?php echo esc_url( home_url( '/' ) ); ?>" title="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>"><?php bloginfo( 'name' ); ?></a>
+					<?php endif; ?>
+				</div>
+				<?php
+					// Display navigation bar.
+					get_template_part( 'partial-templates/header', 'navbar' );
+				?>
+			</header>
