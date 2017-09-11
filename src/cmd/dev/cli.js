@@ -103,7 +103,6 @@ class DevCLI extends CLI {
         this.compileCustomizerJS()
         this.compilePot()
       })
-
     })
 
     // Main stylesheet compiler

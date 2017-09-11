@@ -332,7 +332,7 @@ class NewCLI extends CLI {
 
                     resolve()
                   })
-                }),
+                })
               ]).then(() => {
                 resolve()
               }).catch(reject)
@@ -346,8 +346,8 @@ class NewCLI extends CLI {
                 createReadStream(this.templateSourcePath('_partials', 'screenshot.png'))
                   .pipe(createWriteStream(this.currentThemePath('screenshot.png')))
                 resolve()
-              } catch (e) {
-                reject(e)
+              } catch (err) {
+                reject(err)
               }
             })
           }

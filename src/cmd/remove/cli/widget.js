@@ -33,7 +33,7 @@ class RemoveWidget extends CLI {
 
           for (const value in this.themeWidgets) {
             if (Object.prototype.hasOwnProperty.call(this.themeWidgets, value)) {
-              let name = getL10n( this.themeWidgets[value].name.___$string )
+              const name = getL10n(this.themeWidgets[value].name.___$string)
 
               list.push({
                 name,

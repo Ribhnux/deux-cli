@@ -3,7 +3,7 @@ const handlebars = require('handlebars')
 const moment = require('moment')
 
 handlebars.registerHelper('gt', function (a, b) {
-  const next =  arguments[arguments.length - 1]
+  const next = arguments[arguments.length - 1]
   return (a > b) ? next.fn(this) : next.inverse(this)
 })
 
