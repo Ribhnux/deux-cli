@@ -7,7 +7,7 @@ const CLI = global.deuxcli.require('main')
 const {customizerTypes} = global.deuxcmd.require('add/cli/fixtures')
 const messages = global.deuxcli.require('messages')
 const {exit, finish} = global.deuxhelpers.require('logger')
-const {happyExit, captchaMaker, separatorMaker} = global.deuxhelpers.require('util/cli')
+const {happyExit, captchaMaker} = global.deuxhelpers.require('util/cli')
 const {capitalize} = global.deuxhelpers.require('util/misc')
 
 class RemoveCustomizer extends CLI {
@@ -45,7 +45,7 @@ class RemoveCustomizer extends CLI {
         name: 'customizer.type',
         message: 'Select customizer type you want to remove',
         choices: () => new Promise(resolve => {
-          let list = [new inquirer.Separator()]
+          const list = [new inquirer.Separator()]
 
           if (Object.keys(this.customizer.panels).length > 0) {
             list.push({
@@ -88,7 +88,7 @@ class RemoveCustomizer extends CLI {
             customizer.type === customizerTypes.PANEL
         },
         choices: () => new Promise(resolve => {
-          let list = [new inquirer.Separator()]
+          const list = [new inquirer.Separator()]
 
           for (const value in this.customizer.panels) {
             if (Object.prototype.hasOwnProperty.call(this.customizer.panels, value)) {
@@ -123,7 +123,7 @@ class RemoveCustomizer extends CLI {
             customizer.type === customizerTypes.SECTION
         },
         choices: () => new Promise(resolve => {
-          let list = [new inquirer.Separator()]
+          const list = [new inquirer.Separator()]
 
           for (const value in this.customizer.sections) {
             if (Object.prototype.hasOwnProperty.call(this.customizer.sections, value)) {
@@ -158,7 +158,7 @@ class RemoveCustomizer extends CLI {
             customizer.type === customizerTypes.SETTING
         },
         choices: () => new Promise(resolve => {
-          let list = [new inquirer.Separator()]
+          const list = [new inquirer.Separator()]
 
           for (const key in this.customizer.controls) {
             if (Object.prototype.hasOwnProperty.call(this.customizer.controls, key)) {
@@ -250,7 +250,7 @@ class RemoveCustomizer extends CLI {
 
     let items
 
-    switch(customizer.type) {
+    switch (customizer.type) {
       case customizerTypes.PANEL:
         items = customizer.panels
         break
@@ -266,17 +266,17 @@ class RemoveCustomizer extends CLI {
       case customizerTypes.CONTROL_TYPE:
         items = customizer.control_types
         break
+
+      default: break
     }
 
     Promise.all(items.map(
       item => new Promise(resolve => {
         if (customizer.type === customizerTypes.PANEL) {
           if (customizer.panelsChild && customizer.panelsChild === true) {
-
             // Remove All sections under panels.
             Object.keys(this.customizer.sections).forEach(sectionName => {
               if (this.customizer.sections[sectionName].panel === item) {
-
                 // Remove all controls and settings under sections.
                 Object.keys(this.customizer.controls).forEach(controlName => {
                   if (this.customizer.controls[controlName].section === sectionName) {
