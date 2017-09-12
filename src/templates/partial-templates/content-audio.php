@@ -49,7 +49,43 @@
 			if ( ! empty( $audio ) ) {
 				foreach ( $audio as $audio_html ) {
 					echo '<div class="entry-video">';
-					echo $audio_html; // WPCS: xss ok.
+					echo wp_kses( $audio_html, array(
+						'audio' => array(
+							'autoplay' => array(),
+							'buffered' => array(),
+							'controls' => array(),
+							'loop' => array(),
+							'played' => array(),
+							'preload' => array(),
+							'src' => array(),
+							'volume' => array(),
+						),
+
+						'track' => array(
+							'default' => array(),
+							'kind' => array(),
+							'label' => array(),
+							'src' => array(),
+							'srclang' => array(),
+						),
+
+						'source' => array(
+							'sizes' => array(),
+							'src' => array(),
+							'srcset' => array(),
+							'type' => array(),
+							'media' => array(),
+						),
+
+						'iframe' => array(
+							'width' => array(),
+							'height' => array(),
+							'src' => array(),
+							'frameborder' => array(),
+							'allowfullscreen' => array(),
+							'srcdoc' => array(),
+						),
+					) );
 					echo '</div>';
 				}
 			}
