@@ -14,8 +14,8 @@ if ( ! function_exists( '{{theme.slugfn}}_pagination' ) ) :
 	 */
 	function {{theme.slugfn}}_pagination() {
 		the_posts_pagination( array(
-			'prev_text' => '<span class="prev-page pagination">&laquo; ' . __( 'Previous page', '{{theme.slug}}' ) . '</span>',
-			'next_text' => '<span class="next-page pagination">' . __( 'Next page', '{{theme.slug}}' ) . ' &raquo;</span>',
+			'prev_text' => '&laquo; <span class="screen-reader-text">' . __( 'Previous page', '{{theme.slug}}' ) . '</span>',
+			'next_text' => '<span class="screen-reader-text">' . __( 'Next page', '{{theme.slug}}' ) . '</span> &raquo;',
 		) );
 	}
 endif;
