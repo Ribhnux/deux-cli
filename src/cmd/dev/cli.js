@@ -326,7 +326,7 @@ class DevCLI extends CLI {
     const potFilePath = this.currentThemePath('languages', `${themeDetails.slug}.pot`)
 
     const compilePotFile = gulp
-      .src(this.currentThemePath('*.php'))
+      .src(this.currentThemePath('**', '*.php'))
       .pipe(wpPot({
         domain: themeDetails.slug,
         package: themeDetails.name,
@@ -336,6 +336,7 @@ class DevCLI extends CLI {
 
     const compilePotToMo = gulp.src(potFilePath)
       .pipe(gettext())
+      .pipe(rename({base: 'en_EN'}))
       .pipe(gulp.dest(this.currentThemePath('languages')))
 
     return merge(compilePotFile, compilePotToMo)

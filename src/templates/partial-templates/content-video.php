@@ -49,7 +49,48 @@
 			if ( ! empty( $video ) ) {
 				foreach ( $video as $video_html ) {
 					echo '<div class="entry-video">';
-					echo $video_html; // WPCS: xss ok.
+					echo wp_kses( $video_html, array(
+						'video' => array(
+							'autoplay' => array(),
+							'buffered' => array(),
+							'controls' => array(),
+							'crossorigin' => array(),
+							'height' => array(),
+							'loop' => array(),
+							'muted' => array(),
+							'played' => array(),
+							'preload' => array(),
+							'poster' => array(),
+							'src' => array(),
+							'width,' => array(),
+							'height' => array(),
+						),
+
+						'track' => array(
+							'default' => array(),
+							'kind' => array(),
+							'label' => array(),
+							'src' => array(),
+							'srclang' => array(),
+						),
+
+						'source' => array(
+							'sizes' => array(),
+							'src' => array(),
+							'srcset' => array(),
+							'type' => array(),
+							'media' => array(),
+						),
+
+						'iframe' => array(
+							'width' => array(),
+							'height' => array(),
+							'src' => array(),
+							'frameborder' => array(),
+							'allowfullscreen' => array(),
+							'srcdoc' => array(),
+						),
+					) );
 					echo '</div>';
 				}
 			}
