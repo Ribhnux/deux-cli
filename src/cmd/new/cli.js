@@ -219,14 +219,6 @@ class NewCLI extends CLI {
             .map(item => item.replace(phpRegx, ''))
             .filter(notHiddenFile)
 
-          const partialTemplates = this.templateSourceList('partial-templates')
-            .map(item => item.replace(phpRegx, ''))
-            .filter(notHiddenFile)
-
-          const pageTemplates = this.templateSourceList('page-templates')
-            .map(item => item.replace(phpRegx, ''))
-            .filter(notHiddenFile)
-
           const themeDetails = Object.assign({}, theme)
           delete themeDetails.repoUrl
 
@@ -247,8 +239,6 @@ class NewCLI extends CLI {
             },
             plugins: {},
             components,
-            pageTemplates,
-            partialTemplates,
             imgsize: {},
             filters: [],
             actions: [],
