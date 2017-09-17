@@ -5,6 +5,15 @@ const removehint = (cmd, prefix = 'Please choose another name') => {
   return `${prefix}, type: ${chalk.bold.cyan(`deux remove ${cmd}`)} to remove from list`
 }
 
+const coolRandomizer = () => {
+  const messages = [
+    'Cool',
+    'Awesome',
+    'Great'
+  ]
+  return sample(messages)
+}
+
 const okayRandomizer = () => {
   const messages = [
     'It\'s okay',
@@ -30,19 +39,20 @@ exports.SUCCEED_INIT_DB = 'Success init database.'
 exports.SUCCEED_CREATE_NEW_THEME = 'Your new theme has been created.'
 exports.SUCCEED_ALREADY_IN_CURRENT_PROJECT = 'Theme already used as current project.'
 exports.SUCCEED_THEME_SWITCHED = `Switched with another theme, type: ${chalk.bold.cyan('deux status')} to view project details.`
-exports.SUCCEED_COMPONENT_ADDED = 'Cool, new component has been added to `components` directory.'
-exports.SUCCEED_PARTIAL_TEMPLATE_ADDED = 'Cool, new partial template has been added to `partial-templates` directory.'
-exports.SUCCEED_PAGE_TEMPLATE_ADDED = 'Cool, new page template has been added to `page-templates` directory.'
-exports.SUCCEED_PLUGIN_ADDED = 'Cool, plugin has been added in dependencies list.'
-exports.SUCCEED_ASSET_ADDED = 'Cool, assets has been added in dependencies list.'
-exports.SUCCEED_WIDGET_ADDED = 'Cool, new widget has been added.'
-exports.SUCCEED_HELPER_ADDED = 'Cool, new helper has been added to `includes/helpers` directory.'
-exports.SUCCEED_LIBCLASS_ADDED = 'Cool, new class has been added to `includes/libraries` directory.'
-exports.SUCCEED_MENU_ADDED = 'Cool, new menu has been added.'
-exports.SUCCEED_FEATURE_ADDED = 'Cool, new feature has been added.'
-exports.SUCCEED_IMGSIZE_ADDED = 'Cool, new image size has been added.'
-exports.SUCCEED_HOOKS_ADDED = 'Cool, new hooks has been added.'
-exports.SUCCEED_CUSTOMIZER_ADDED = 'Cool, new customizer setting has been added.'
+exports.SUCCEED_COMPONENT_ADDED = `${coolRandomizer()}, new component has been added to 'components' directory.`
+exports.SUCCEED_PAGE_TEMPLATE_ADDED = `${coolRandomizer()}, new page template has been added to 'page-templates' directory.`
+exports.SUCCEED_PARTIAL_TEMPLATE_ADDED = `${coolRandomizer()}, new partial template has been added to 'partial-templates' directory.`
+exports.SUCCEED_WOOCOMMERCE_TEMPLATE_ADDED = `${coolRandomizer()}, new woocommerce template has been added to 'woocommerce' directory.`
+exports.SUCCEED_PLUGIN_ADDED = `${coolRandomizer()}, new plugin has been added in dependencies list.`
+exports.SUCCEED_ASSET_ADDED = `${coolRandomizer()}, new assets has been added in dependencies list.`
+exports.SUCCEED_WIDGET_ADDED = `${coolRandomizer()}, new widget has been added.`
+exports.SUCCEED_HELPER_ADDED = `${coolRandomizer()}, new helper has been added to 'includes/helpers' directory.`
+exports.SUCCEED_LIBCLASS_ADDED = `${coolRandomizer()}, new class has been added to 'includes/libraries' directory.`
+exports.SUCCEED_MENU_ADDED = `${coolRandomizer()}, new menu has been added.`
+exports.SUCCEED_FEATURE_ADDED = `${coolRandomizer()}, new feature has been added.`
+exports.SUCCEED_IMGSIZE_ADDED = `${coolRandomizer()}, new image size has been added.`
+exports.SUCCEED_HOOKS_ADDED = `${coolRandomizer()}, new hooks has been added.`
+exports.SUCCEED_CUSTOMIZER_ADDED = `${coolRandomizer()}, new customizer setting has been added.`
 exports.SUCCEED_SYNCRHONIZED = 'Synchronizing theme config with database has been completed.'
 exports.SUCCEED_REMOVED_THEME = `Theme have been removed from project, type ${chalk.bold.cyan('deux new')} to add new theme`
 exports.SUCCEED_REMOVED_ASSET = `${okayRandomizer()}, you've just removed some assets from theme.`
