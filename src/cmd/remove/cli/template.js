@@ -1,7 +1,7 @@
 const path = require('path')
 const {statSync} = require('fs')
 const rimraf = require('rimraf')
-const slugify = require('slugify')
+const slugify = require('node-slugify')
 const chalk = require('chalk')
 const wpFileHeader = require('wp-get-file-header')
 
