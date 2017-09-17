@@ -116,7 +116,7 @@ class AddPlugin extends CLI {
 
           list.push({
             value: -1,
-            name: `Latest ${plugin.item.version}`
+            name: `Always Latest (current: ${plugin.item.version})`
           })
 
           const filteredList = list.filter(item => item.name !== 'trunk').reverse()
