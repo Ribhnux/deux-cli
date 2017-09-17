@@ -4,6 +4,7 @@ const slugify = require('node-slugify')
 const rimraf = require('rimraf')
 const jsonar = require('jsonar')
 const uniq = require('lodash.uniq')
+const mkdirp = require('mkdirp')
 const {
   featureTypes,
   featureLabels,
@@ -589,6 +590,10 @@ class AddFeature extends CLI {
             'header-text': ''
           }
           /* eslint-enable */
+        }
+
+        if (feature.type === featureTypes.WOOCOMMERCE) {
+          mkdirp.sync(this.currentThemePath('woocommerce'))
         }
 
         theme.features[feature.type] = featureOptions
