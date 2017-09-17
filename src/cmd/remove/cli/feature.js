@@ -37,15 +37,11 @@ class RemoveFeature extends CLI {
 
           for (const value in this.themeFeatures) {
             if (Object.prototype.hasOwnProperty.call(this.themeFeatures, value)) {
-              let name = ''
+              let name = featureLabels[value]
 
               switch (value) {
                 case featureTypes.HTML5:
                   name = featureLabels.HTML5
-                  break
-
-                case featureTypes.FEED_LINKS:
-                  name = featureLabels.FEED_LINKS
                   break
 
                 case featureTypes.POST_FORMATS:
@@ -66,6 +62,10 @@ class RemoveFeature extends CLI {
 
                 case featureTypes.CUSTOM_LOGO:
                   name = featureLabels.CUSTOM_LOGO
+                  break
+
+                case featureTypes.WOOCOMMERCE:
+                  name = featureLabels.WOOCOMMERCE
                   break
 
                 default: break
