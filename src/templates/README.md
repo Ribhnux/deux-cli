@@ -29,4 +29,4 @@ All assets, plugins, filters and hooks are configurable, inside `{{theme.slug}}-
 ---
 
 ## Changelog
-See `CHANGELOG.md` for the details.
+See `CHANGELOG.md` for more details.
