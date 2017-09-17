@@ -1,6 +1,13 @@
 exports.templateTypes = {
   PARTIAL: 'partial',
-  PAGE: 'page'
+  PAGE: 'page',
+  WOOCOMMERCE: 'woocommerce'
+}
+
+exports.templateLabels = {
+  PARTIAL: 'Partial Template',
+  PAGE: 'Page Template',
+  WOOCOMMERCE: 'WooCommerce Template'
 }
 
 exports.postTypes = {
