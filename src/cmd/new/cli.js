@@ -258,7 +258,15 @@ class NewCLI extends CLI {
               controls: {}
               /* eslint-enable */
             },
-            releases: []
+            releases: [
+              {
+                version: theme.version,
+                date: Date.now(),
+                changes: [
+                  'Initial Release'
+                ]
+              }
+            ]
           }
 
           try {
@@ -282,6 +290,8 @@ class NewCLI extends CLI {
             title: 'Compiles theme',
             task: () => new Promise((resolve, reject) => {
               const themeInfo = this.themeInfo()
+              const releases = themeInfo.releases
+
               delete themeInfo.details
               delete themeInfo.releases
 
@@ -294,11 +304,15 @@ class NewCLI extends CLI {
               compileFiles({
                 srcDir: global.deuxtpl.path,
                 dstDir: themePath,
+                excludes: [
+                  '_partials'
+                ],
                 rename: {
                   'config.php': `${theme.slug}-config.php`
                 },
                 syntax: {
                   theme,
+                  releases,
                   config
                 }
               })
