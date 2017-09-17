@@ -60,6 +60,7 @@ exports.SUCCEED_REMOVED_PLUGIN = `${okayRandomizer()}, you've just removed some 
 exports.SUCCEED_REMOVED_COMPONENT = `${okayRandomizer()}, you've just removed some components from theme.`
 exports.SUCCEED_REMOVED_HELPER = `${okayRandomizer()}, you've just removed some helpers from theme.`
 exports.SUCCEED_REMOVED_LIBCLASS = `${okayRandomizer()}, you've just removed some php libraries from theme.`
+exports.SUCCEED_REMOVED_TEMPLATE = `${okayRandomizer()}, you've just removed some files from theme's template.`
 exports.SUCCEED_REMOVED_FEATURE = `${okayRandomizer()}, you've just removed some features from theme.`
 exports.SUCCEED_REMOVED_WIDGET = `${okayRandomizer()}, you've just removed some widgets from theme.`
 exports.SUCCEED_REMOVED_MENU = `${okayRandomizer()}, you've just removed some menus from theme.`
