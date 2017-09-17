@@ -8,7 +8,9 @@ handlebars.registerHelper('gt', function (a, b) {
 })
 
 handlebars.registerHelper('reverse', arr => {
-  arr.reverse()
+  if (Array.isArray(arr) && arr.length > 0) {
+    arr.reverse()
+  }
 })
 
 handlebars.registerHelper('time', time => {

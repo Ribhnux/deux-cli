@@ -1,6 +1,13 @@
 exports.templateTypes = {
   PARTIAL: 'partial',
-  PAGE: 'page'
+  PAGE: 'page',
+  WOOCOMMERCE: 'woocommerce'
+}
+
+exports.templateLabels = {
+  PARTIAL: 'Partial Template',
+  PAGE: 'Page Template',
+  WOOCOMMERCE: 'WooCommerce Template'
 }
 
 exports.postTypes = {
@@ -20,7 +27,8 @@ exports.featureTypes = {
   POST_THUMBNAILS: 'post-thumbnails',
   CUSTOM_BACKGROUND: 'custom-background',
   CUSTOM_HEADER: 'custom-header',
-  CUSTOM_LOGO: 'custom-logo'
+  CUSTOM_LOGO: 'custom-logo',
+  WOOCOMMERCE: 'woocommerce'
 }
 
 exports.featureLabels = {
@@ -29,7 +37,8 @@ exports.featureLabels = {
   POST_THUMBNAILS: 'Post Thumbnails',
   CUSTOM_BACKGROUND: 'Custom Background',
   CUSTOM_HEADER: 'Custom Header',
-  CUSTOM_LOGO: 'Custom Logo'
+  CUSTOM_LOGO: 'Custom Logo',
+  WOOCOMMERCE: 'WooCommerce'
 }
 
 exports.html5markup = [

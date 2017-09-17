@@ -160,8 +160,6 @@ class CLI {
     const config = Object.assign({}, themeInfo)
 
     delete config.asset.sass
-    delete config.pageTemplates
-    delete config.partialTemplates
     delete config.details
     delete config.releases
 
@@ -330,8 +328,6 @@ class CLI {
         },
         plugins: {},
         components: [],
-        pageTemplates: [],
-        partialTemplates: [],
         imgsize: {},
         filters: [],
         actions: [],
