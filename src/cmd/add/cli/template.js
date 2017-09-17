@@ -1,14 +1,19 @@
+const path = require('path')
+const {existsSync, statSync} = require('fs')
 const inquirer = require('inquirer')
+const chalk = require('chalk')
 const faker = require('faker')
 const slugify = require('node-slugify')
-const uniq = require('lodash.uniq')
-const {templateTypes, postTypes} = require('./fixtures')
+const {templateTypes, templateLabels, postTypes} = require('./fixtures')
 
 const CLI = global.deuxcli.require('main')
 const messages = global.deuxcli.require('messages')
 const {exit, finish} = global.deuxhelpers.require('logger')
 const validator = global.deuxhelpers.require('util/validator')
-const compileFile = global.deuxhelpers.require('compiler/single')
+const compileFiles = global.deuxhelpers.require('compiler/bulk')
+const {scandir} = global.deuxhelpers.require('util/file')
+const {capitalize} = global.deuxhelpers.require('util/misc')
+const {separatorMaker} = global.deuxhelpers.require('util/cli')
 
 const slugifyName = (prefix, name) => {
   let slug = slugify(prefix)
@@ -23,6 +28,7 @@ const slugifyName = (prefix, name) => {
 class AddTemplate extends CLI {
   constructor() {
     super()
+    this.woocommerce = undefined
     this.init()
   }
 
@@ -30,22 +36,35 @@ class AddTemplate extends CLI {
    * Setup add template prompts
    */
   prepare() {
+    this.woocommerce = this.themeInfo('features').woocommerce
     this.title = 'Add {New Template}'
     this.prompts = [
       {
         type: 'list',
         name: 'template.type',
         message: 'Select template type',
-        choices: [
-          {
-            value: templateTypes.PAGE,
-            name: 'Page Template'
-          },
-          {
-            value: templateTypes.PARTIAL,
-            name: 'Partial Template'
+        choices: () => new Promise(resolve => {
+          let list = []
+
+          for (const key in templateTypes) {
+            if (Object.prototype.hasOwnProperty.call(templateTypes, key)) {
+              list.push({
+                name: templateLabels[key],
+                value: templateTypes[key]
+              })
+            }
           }
-        ]
+
+          list = list.filter(item => {
+            if (item.value === templateTypes.WOOCOMMERCE) {
+              return this.woocommerce
+            }
+
+            return true
+          })
+
+          resolve(list)
+        })
       },
 
       {
@@ -105,7 +124,66 @@ class AddTemplate extends CLI {
         name: 'template.description',
         message: 'Description',
         default: faker.lorem.sentence(),
+        when: ({template}) => template.type !== templateTypes.WOOCOMMERCE,
         validate: value => validator(value, {minimum: 3, word: true, var: `"${value}"`})
+      },
+
+      {
+        type: 'checkbox',
+        name: 'template.woocommerce',
+        message: 'WooCommerce Template',
+        validate: value => validator(value, {minimum: 1, array: true, var: 'Template'}),
+        when: ({template}) => template.type === templateTypes.WOOCOMMERCE,
+        choices: () => new Promise(resolve => {
+          const subtemplates = []
+          const scanTemplates = (dir = []) => {
+            const templates = []
+            const woocommerceDir = ['_partials', 'woocommerce'].concat(dir)
+            const files = scandir(this.templateSourcePath(woocommerceDir))
+
+            files.forEach(value => {
+              const basename = path.basename(value, path.extname(value))
+              const label = slugify(basename, {replacement: ' '})
+                .replace(/cat$/, 'category')
+                .replace(/cats$/, 'categories')
+              const name = capitalize(label)
+
+              if (statSync(this.templateSourcePath(woocommerceDir.concat(value))).isFile()) {
+                if (!existsSync(this.currentThemePath('woocommerce', dir.concat(value)))) {
+                  templates.push({
+                    name: `${name} (${chalk.green(value)})`,
+                    value: dir.concat(value)
+                  })
+                }
+              } else {
+                const subdir = dir.concat(value)
+                subtemplates.push({
+                  label: separatorMaker(`${name} (woocommerce/templates/${chalk.green(subdir.join('/'))})`),
+                  items: scanTemplates(dir.concat(value))
+                })
+              }
+            })
+
+            return templates
+          }
+
+          const scannedTemplates = scanTemplates()
+          let list = []
+
+          if (Object.keys(scannedTemplates).length > 0) {
+            list = list.concat(separatorMaker('Basic'))
+            list = list.concat(scannedTemplates)
+          }
+
+          subtemplates.forEach(item => {
+            if (Object.keys(item.items).length > 0) {
+              list = list.concat(item.label)
+              list = list.concat(item.items)
+            }
+          })
+
+          resolve(list)
+        })
       },
 
       {
@@ -114,18 +192,19 @@ class AddTemplate extends CLI {
         message: 'Template already exists. Continue to overwrite?',
         default: true,
         when: ({template}) => new Promise(resolve => {
-          let slug
-          let resolver
+          let slug = slugify(template.name)
+          let filepath
 
-          if (template.type === templateTypes.PARTIAL) {
+          if (template.type === templateTypes.PAGE) {
+            filepath = this.currentThemePath('page-templates', `${slug}.php`)
+          } else if (template.type === templateTypes.PARTIAL) {
             slug = slugifyName(template.prefix, template.name)
-            resolver = this.themeInfo('partialTemplates').includes(slug)
-          } else if (template.type === templateTypes.PAGE) {
-            slug = slugify(template.name)
-            resolver = this.themeInfo('pageTemplates').includes(slug)
+            filepath = this.currentThemePath('partial-templates', `${slug}.php`)
+          } else {
+            return resolve(false)
           }
 
-          resolve(resolver)
+          return resolve(existsSync(filepath))
         })
       }
     ]
@@ -141,49 +220,53 @@ class AddTemplate extends CLI {
     }
 
     const themeDetails = this.themeDetails()
-    let srcPath
-    let dstPath
+    let files
+    let srcDir = this.templateSourcePath('_partials')
+    let dstDir
+    let rename
     let successMsg
-    let partialTemplates
-    let pageTemplates
 
     if (template.type === templateTypes.PARTIAL) {
       template.slug = slugifyName(template.prefix, template.name)
       if (template.name.length === 0) {
         template.name = template.prefix
       }
-      srcPath = this.templateSourcePath('_partials', 'partial-template.php')
-      dstPath = this.currentThemePath('partial-templates', `${template.slug}.php`)
+      files = ['partial-template.php']
+      dstDir = this.currentThemePath('partial-templates')
+      rename = {
+        'partial-template.php': `${template.slug}.php`
+      }
       successMsg = messages.SUCCEED_PARTIAL_TEMPLATE_ADDED
-      partialTemplates = uniq(this.themeInfo('partialTemplates').concat(template.slug))
     }
 
     if (template.type === templateTypes.PAGE) {
       template.slug = slugify(template.name)
-      srcPath = this.templateSourcePath('_partials', 'page-template.php')
-      dstPath = this.currentThemePath('page-templates', `${template.slug}.php`)
+      files = ['page-template.php']
+      dstDir = this.currentThemePath('page-templates')
+      rename = {
+        'page-template.php': `${template.slug}.php`
+      }
       successMsg = messages.SUCCEED_PAGE_TEMPLATE_ADDED
-      pageTemplates = uniq(this.themeInfo('pageTemplates').concat(template.slug))
+    }
+
+    if (template.type === templateTypes.WOOCOMMERCE) {
+      srcDir = this.templateSourcePath('_partials', 'woocommerce')
+      dstDir = this.currentThemePath('woocommerce')
+      files = template.woocommerce.map(item => path.join(...item))
+      successMsg = messages.SUCCEED_WOOCOMMERCE_TEMPLATE_ADDED
     }
 
     Promise.all([
       new Promise(resolve => {
-        compileFile({
-          srcPath,
-          dstPath,
+        compileFiles({
+          includes: files,
+          srcDir,
+          dstDir,
+          rename,
           syntax: {
             theme: themeDetails,
             template
           }
-        })
-
-        resolve()
-      }),
-
-      new Promise(resolve => {
-        this.setThemeConfig({
-          pageTemplates,
-          partialTemplates
         })
 
         resolve()
