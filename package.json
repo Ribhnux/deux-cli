@@ -80,7 +80,7 @@
     "wp-plugin-info": "^1.0.0",
     "wp-plugin-search": "^1.1.1",
     "wp-theme-check": "^1.2.5",
-    "wpcs": "^1.6.0"
+    "wpcs": "^1.6.2"
   },
   "devDependencies": {
     "ava": "^0.22.0",
