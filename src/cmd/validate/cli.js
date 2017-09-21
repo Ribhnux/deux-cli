@@ -14,11 +14,16 @@ const w3Validator = path.join(path.dirname(require.resolve('html5-validator')), 
 class ValidateCLI extends CLI {
   constructor(subcmd) {
     super()
+    this.cmdoptions = {}
     this.subcmd = subcmd
     this.init()
   }
 
   prepare() {
+    this.cmdoptions.wpcs = [this.currentThemePath(), '--excludes=woocommerce']
+    this.cmdoptions.themeCheck = []
+    this.cmdoptions.w3 = [this.getConfig('devUrl')]
+
     if (this.subcmd) {
       this.initSubCommands(this.subcmd)
     } else {
@@ -34,7 +39,7 @@ class ValidateCLI extends CLI {
       {
         title: 'WordPress Coding Standard',
         task: () => new Promise((resolve, reject) => {
-          execa(wpcs, [this.currentThemePath()])
+          execa(wpcs, this.cmdoptions.wpcs)
             .then(() => {
               resolve()
             }).catch(() => {
@@ -46,7 +51,7 @@ class ValidateCLI extends CLI {
       {
         title: 'Theme Check and Theme Mentor',
         task: () => new Promise((resolve, reject) => {
-          execa(themeCheck, [this.currentThemePath()])
+          execa(themeCheck, this.cmdoptions.themeCheck)
             .then(() => {
               resolve()
             }).catch(() => {
@@ -58,7 +63,7 @@ class ValidateCLI extends CLI {
       {
         title: 'W3 HTML5 Markup',
         task: () => new Promise((resolve, reject) => {
-          execa(w3Validator, [this.getConfig('devUrl')])
+          execa(w3Validator, this.cmdoptions.w3)
             .then(() => {
               resolve()
             }).catch(() => {
@@ -81,15 +86,15 @@ class ValidateCLI extends CLI {
   initSubCommands(subcmd) {
     switch (subcmd) {
       case commandList.STANDARD:
-        execa(wpcs, [this.currentThemePath()], {stdio: 'inherit'})
+        execa(wpcs, this.cmdoptions.wpcs, {stdio: 'inherit'})
         break
 
       case commandList.THEME:
-        execa(themeCheck, [this.currentThemePath()], {stdio: 'inherit'})
+        execa(themeCheck, this.cmdoptions.themeCheck, {stdio: 'inherit'})
         break
 
       case commandList.MARKUP:
-        execa(w3Validator, [this.getConfig('devUrl')], {stdio: 'inherit'})
+        execa(w3Validator, this.cmdoptions.w3, {stdio: 'inherit'})
         break
 
       default:
