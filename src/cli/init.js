@@ -1,20 +1,48 @@
 const path = require('path')
-const {existsSync, writeFile} = require('fs')
+const {statSync, existsSync, writeFile} = require('fs')
 const Listr = require('listr')
 const execa = require('execa')
 const inquirer = require('inquirer')
 const jsonr = require('json-realtime')
 const {dbTypes, dbPath} = require('./fixtures')
-const messages = require('./messages')
+const message = require('./messages')
 
-const {colorlog, error, done, exit} = global.deuxhelpers.require('logger')
+const {colorlog, versionlog, error, done, exit} = global.deuxhelpers.require('logger')
 const validator = global.deuxhelpers.require('util/validator')
+const {isJSON} = global.deuxhelpers.require('util/misc')
 
 class Init {
-  constructor(skip = false, moreInfo = false) {
-    this.moreInfo = moreInfo
-    this.skip = skip
-    this.db = null
+  constructor(skip = false, options = {}) {
+    this.$skip = skip
+    this.$dbPath = dbPath
+    this.$db = null
+    this.$input = null
+    this.$apiMode = false
+
+    if (options.db) {
+      const dbDir = path.dirname(options.db)
+      if (existsSync(dbDir) && statSync(dbDir).isDirectory()) {
+        this.$dbPath = options.db
+      }
+    }
+
+    if (options.input) {
+      const json = isJSON(options.input)
+      if (json && json.wpPath && json.devUrl) {
+        this.$apiMode = true
+        this.$input = json
+      } else {
+        exit(message.ERROR_INVALID_CONFIG, true)
+      }
+    }
+
+    if (options.api) {
+      this.$apiMode = true
+    }
+
+    if (!this.$apiMode) {
+      versionlog()
+    }
   }
 
   /**
@@ -23,104 +51,123 @@ class Init {
    * @param {Boolean} isExit
    */
   notice(isExit = false) {
-    error({
-      message: messages.ERROR_NO_THEME,
-      paddingTop: true
-    })
-    done({
-      message: messages.CREATE_NEW_THEME,
-      paddingBottom: true,
-      exit: isExit
-    })
+    if (this.$apiMode === false) {
+      error({
+        message: message.ERROR_NO_THEME,
+        paddingTop: true
+      })
+      done({
+        message: message.CREATE_NEW_THEME,
+        paddingBottom: true,
+        exit: isExit
+      })
+    } else {
+      const msg = [
+        message.ERROR_NO_THEME,
+        message.CREATE_NEW_THEME
+      ]
+
+      done({
+        isRaw: true,
+        message: {
+          message: msg
+        },
+        exit: isExit
+      })
+    }
   }
 
   /**
    * Check if theme has been initialized
    */
   initialized() {
-    return this.db &&
-      typeof this.db[dbTypes.CONFIG] === 'object' &&
-      'wpPath' in this.db[dbTypes.CONFIG] &&
-      'devUrl' in this.db[dbTypes.CONFIG]
+    return this.$db &&
+      typeof this.$db[dbTypes.CONFIG] === 'object' &&
+      'wpPath' in this.$db[dbTypes.CONFIG] &&
+      'devUrl' in this.$db[dbTypes.CONFIG]
   }
 
   /**
    * Check, whether config has been initialized or not
    */
   check() {
-    return new Promise(resolve => {
-      Promise.all([
-        new Promise(resolve => {
-          if (existsSync(dbPath) === false) {
-            error({
-              message: messages.ERROR_PROJECT_FILE_NOT_EXISTS,
-              paddingTop: true
-            })
+    const checkDbExistence = () => new Promise(resolve => {
+      if (existsSync(this.$dbPath) === false) {
+        if (!this.$apiMode) {
+          error({
+            message: message.ERROR_PROJECT_FILE_NOT_EXISTS,
+            paddingTop: true
+          })
+        }
 
-            const defaultDb = {
-              [dbTypes.CONFIG]: undefined,
-              [dbTypes.CURRENT]: {},
-              [dbTypes.THEMES]: {}
-            }
+        const defaultDb = {
+          [dbTypes.CONFIG]: undefined,
+          [dbTypes.CURRENT]: {},
+          [dbTypes.THEMES]: {}
+        }
 
-            writeFile(dbPath, JSON.stringify(defaultDb), err => {
-              if (err) {
-                exit(err)
-              }
-
-              this.db = jsonr(dbPath)
-              resolve()
-            })
-          } else {
-            this.db = jsonr(dbPath)
-            resolve()
+        writeFile(this.$dbPath, JSON.stringify(defaultDb), err => {
+          if (err) {
+            exit(err)
           }
-        }),
 
-        // Check if init has been skipped
-        new Promise(resolve => {
-          resolve(this.initialized() && this.skip)
-        }),
-
-        // Check if database have no theme
-        new Promise(resolve => {
-          resolve(
-            this.initialized() &&
-            Object.keys(this.db[dbTypes.THEMES]).length === 0
-          )
-        }),
-
-        // Check if it already have current theme
-        new Promise(resolve => {
-          resolve(
-            this.initialized() &&
-            Object.keys(this.db[dbTypes.CURRENT]).length > 0
-          )
+          this.$db = jsonr(this.$dbPath)
+          resolve()
         })
-      ]).then(resolver => {
-        const skip = resolver[1]
-        const zeroTheme = resolver[2]
-        const hasCurrentTheme = resolver[3]
+      } else {
+        this.$db = jsonr(this.$dbPath)
+        resolve()
+      }
+    })
 
-        if (skip || (hasCurrentTheme && skip === false)) {
-          return resolve(this.db)
-        }
+    return new Promise(resolve => {
+      checkDbExistence().then(() => {
+        Promise.all([
+          // Check if init has been skipped
+          new Promise(resolve => {
+            resolve(this.initialized() && this.$skip)
+          }),
 
-        if (zeroTheme && skip === false) {
-          this.notice(true)
-        }
+          // Check if database have no theme
+          new Promise(resolve => {
+            resolve(
+              this.initialized() &&
+              Object.keys(this.$db[dbTypes.THEMES]).length === 0
+            )
+          }),
 
-        if (this.moreInfo) {
-          return resolve()
-        }
+          // Check if it already have current theme
+          new Promise(resolve => {
+            resolve(
+              this.initialized() &&
+              Object.keys(this.$db[dbTypes.CURRENT]).length > 0
+            )
+          })
+        ]).then(resolver => {
+          const skip = resolver[0]
+          const zeroTheme = resolver[1]
+          const hasCurrentTheme = resolver[2]
 
-        this.setup().then(() => {
-          if (!hasCurrentTheme && !skip) {
+          if (skip || (hasCurrentTheme && skip === false)) {
+            return resolve(this.$db)
+          }
+
+          if (zeroTheme && skip === false) {
             this.notice(true)
           }
 
-          resolve(this.db)
-        }).catch(exit)
+          this.setup().then(() => {
+            if (!hasCurrentTheme && !skip) {
+              this.notice(true)
+            }
+
+            resolve(this.$db)
+          }).catch(err => {
+            exit(err, this.$apiMode)
+          })
+        })
+      }).catch(err => {
+        exit(err, this.$apiMode)
       })
     })
   }
@@ -130,7 +177,9 @@ class Init {
    */
   setup() {
     return new Promise(resolve => {
-      colorlog('Prerequisite check')
+      if (!this.$apiMode) {
+        colorlog('Prerequisite check')
+      }
 
       const task = new Listr([
         {
@@ -150,7 +199,7 @@ class Init {
           message: 'Where is your WordPress installation directory?',
           validate: value => {
             if (!existsSync(path.join(value, 'wp-config.php'))) {
-              return messages.ERROR_NOT_WP_FOLDER
+              return message.ERROR_NOT_WP_FOLDER
             }
 
             return true
@@ -176,14 +225,21 @@ class Init {
         }
       ]
 
-      task.run().then(() => {
-        colorlog('Setup {Config}')
+      if (this.$apiMode && this.$input) {
+        this.$db[dbTypes.CONFIG] = this.$input
+        resolve()
+      } else {
+        task.run().then(() => {
+          colorlog('Setup {Config}')
 
-        inquirer.prompt(prompts).then(({config}) => {
-          this.db[dbTypes.CONFIG] = config
-          resolve()
+          inquirer.prompt(prompts).then(({config}) => {
+            this.$db[dbTypes.CONFIG] = config
+            resolve()
+          })
+        }).catch(err => {
+          exit(err, this.$apiMode)
         })
-      }).catch(exit)
+      }
     })
   }
 }
