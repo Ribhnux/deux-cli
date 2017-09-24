@@ -17,6 +17,7 @@ process.on('unhandledRejection', (err, p) => {
 })
 
 program
+.name('deux')
 .version(pkg.version)
 .description(pkg.description)
 
