@@ -95,7 +95,7 @@
   "ava": {
     "files": [
       "test/init.js",
-      "test/add.js"
+      "test/new.js"
     ]
   },
   "xo": {

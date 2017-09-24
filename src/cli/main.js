@@ -18,8 +18,8 @@ class CLI {
   /**
    * Initializing cli
    */
-  init(skip = false) {
-    const init = new Init(skip)
+  init(skip = false, options) {
+    const init = new Init(skip, options)
     init.check().then(db => {
       this.db = db
       this.prepare()

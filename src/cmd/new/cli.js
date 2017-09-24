@@ -20,9 +20,9 @@ const {capitalize} = global.deuxhelpers.require('util/misc')
 const compileFiles = global.deuxhelpers.require('compiler/bulk')
 
 class NewCLI extends CLI {
-  constructor() {
+  constructor(options = {}) {
     super()
-    this.init(true)
+    this.init(true, options)
   }
 
   prepare() {
