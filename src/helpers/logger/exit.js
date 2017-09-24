@@ -1,9 +1,21 @@
 const error = require('./error')
 
-module.exports = err => {
+module.exports = (err, isRaw) => {
+  const errMsg = err.message || err
+  let message = errMsg
+
+  if (isRaw) {
+    message = {
+      error: true,
+      message: errMsg
+    }
+  }
+
   error({
-    message: err.message || err,
+    isRaw,
+    isError: true,
+    message,
     padding: true,
-    exit: true
+    exit: true,
   })
 }

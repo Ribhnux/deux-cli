@@ -2,7 +2,7 @@ const program = require('caporal')
 
 program
   .command('new', 'Create new theme')
-  .action(() => {
+  .action((args, options) => {
     const NewCLI = global.deuxcmd.require('new/cli')
-    return new NewCLI()
+    return new NewCLI(options)
   })

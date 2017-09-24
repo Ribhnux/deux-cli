@@ -17,10 +17,12 @@ process.on('unhandledRejection', (err, p) => {
 })
 
 program
+.name('deux')
 .version(pkg.version)
 .description(pkg.description)
 
 // Subcommands.
+global.deuxcmd.require('init')
 global.deuxcmd.require('new')
 global.deuxcmd.require('add')
 global.deuxcmd.require('remove')
@@ -29,7 +31,6 @@ global.deuxcmd.require('switch')
 global.deuxcmd.require('upgrade')
 global.deuxcmd.require('sync')
 global.deuxcmd.require('validate')
-global.deuxcmd.require('main')
 global.deuxcmd.require('dev')
 program.parse(process.argv)
 
