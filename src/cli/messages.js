@@ -102,6 +102,7 @@ exports.ERROR_QUERY_NOT_FOUND = 'Search query are not matched with any results.'
 exports.ERROR_INVALID_API_KEY = 'Invalid Google Fonts API Key.'
 exports.ERROR_CONFIG_NOT_EXISTS = 'Config file not exists.'
 exports.ERROR_INVALID_CONFIG = 'Invalid config.'
+exports.ERROR_INVALID_INPUT = 'Invalid input.'
 exports.ERROR_INVALID_THEME = `Invalid theme, type: ${chalk.bold.cyan('deux validate theme')} to see the details`
 exports.ERROR_INVALID_WPCS = `Invalid coding standard, type: ${chalk.bold.cyan('deux validate standard')} to see the details`
 exports.ERROR_INVALID_W3 = `Invalid html5 theme, type: ${chalk.bold.cyan('deux validate markup')} to see the details`

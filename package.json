@@ -89,21 +89,22 @@
   },
   "scripts": {
     "lint": "xo",
-    "ava": "ava --verbose",
-    "test": "yarn lint && yarn ava"
+    "unit-test": "ava --verbose",
+    "test": "yarn lint && yarn unit-test"
   },
   "ava": {
     "files": [
-      "test/init.js",
-      "test/new.js"
-    ]
+      "test/test.js"
+    ],
+    "serial": true
   },
   "xo": {
     "esnext": true,
     "space": true,
     "semicolon": false,
     "ignores": [
-      "src/templates/**"
+      "src/templates/**",
+      "test/wordpress/**"
     ]
   },
   "files": [

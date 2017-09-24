@@ -55,6 +55,6 @@ program
     const Init = global.deuxcli.require('init')
     const init = new Init(false, options)
     init.check().then(() => {
-      finish(message.MORE_INFO, options.api)
+      finish(message.MORE_INFO, init.apiMode())
     }).catch(exit)
   })

@@ -242,6 +242,13 @@ class Init {
       }
     })
   }
+
+  /**
+   * Check whether is in api mode or not.
+   */
+  apiMode() {
+    return this.$apiMode
+  }
 }
 
 module.exports = Init

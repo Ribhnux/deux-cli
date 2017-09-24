@@ -86,7 +86,7 @@ module.exports = (value, options) => {
     }
 
     if (options.array) {
-      lengthRule.tokenizer = value => value
+      lengthRule.tokenizer = value => value.split(',')
       tooShort = 'are less selected'
       tokenSuffix = 'is selected'
       minimumIs = 'at least'

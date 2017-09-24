@@ -13,9 +13,9 @@ const jsonar = require('jsonar')
 const {validTags} = require('./fixtures')
 
 const CLI = global.deuxcli.require('main')
+const ApiRenderer = global.deuxcli.require('api-renderer')
 const messages = global.deuxcli.require('messages')
 const validator = global.deuxhelpers.require('util/validator')
-const {colorlog, exit, finish} = global.deuxhelpers.require('logger')
 const {capitalize} = global.deuxhelpers.require('util/misc')
 const compileFiles = global.deuxhelpers.require('compiler/bulk')
 
@@ -26,8 +26,8 @@ class NewCLI extends CLI {
   }
 
   prepare() {
-    this.title = 'Create {New Theme}'
-    this.prompts = [
+    this.$title = 'Create {New Theme}'
+    this.$prompts = [
       {
         name: 'theme.name',
         message: 'Theme Name',
@@ -46,7 +46,10 @@ class NewCLI extends CLI {
         type: 'list',
         name: 'theme.parent',
         message: 'Parent Theme',
-        when: ({isChild}) => isChild,
+        when: ({isChild}) => {
+          const themes = this.themeListPath(true)
+          return isChild && themes.length > 0
+        },
         choices: answers => new Promise((resolve, reject) => {
           const themes = this.themeListPath(true)
 
@@ -155,8 +158,8 @@ class NewCLI extends CLI {
   }
 
   action({theme, overwrite, confirm}) {
-    if (!confirm) {
-      exit(messages.ERROR_THEME_CREATION_CANCELED)
+    if (!this.$init.apiMode() && !confirm) {
+      this.$logger.exit(messages.ERROR_THEME_CREATION_CANCELED)
     }
 
     const themeNameLower = theme.name.toLowerCase()
@@ -168,8 +171,11 @@ class NewCLI extends CLI {
 
     const themePath = this.themePath(theme.slug)
     const gitPath = path.join(themePath, '.git')
+    const listrOpts = {}
 
-    colorlog(`Initializing {${theme.name}}`)
+    if (this.$init.apiMode()) {
+      listrOpts.renderer = ApiRenderer
+    }
 
     const task = new Listr([
       {
@@ -177,12 +183,12 @@ class NewCLI extends CLI {
         enabled: () => overwrite === false || overwrite === undefined,
         task: () => new Promise(resolve => {
           if (existsSync(themePath)) {
-            exit(messages.ERROR_THEME_ALREADY_EXISTS)
+            this.$logger.exit(messages.ERROR_THEME_ALREADY_EXISTS, this.$init.apiMode())
           }
 
           mkdirp(themePath, err => {
             if (err) {
-              exit(err)
+              this.$logger.exit(err, this.$init.apiMode())
             }
 
             resolve()
@@ -193,20 +199,58 @@ class NewCLI extends CLI {
       {
         title: 'Overwrite theme directory',
         enabled: () => overwrite,
-        task: () => new Promise(resolve => {
-          rimraf(path.join(themePath, '*'), err => {
-            if (err) {
-              exit(err)
-            }
+        task: () => new Listr([
+          {
+            title: 'Remove all contents',
+            task: () => new Promise(resolve => {
+              rimraf(path.join(themePath, '*'), err => {
+                if (err) {
+                  this.$logger.exit(err, this.$init.apiMode())
+                }
 
-            rimraf(path.join(themePath, '.git'), err => {
-              if (err) {
-                exit(err)
-              }
-              resolve()
+                resolve()
+              })
             })
-          })
-        })
+          },
+
+          {
+            title: 'Remove .git directory',
+            task: () => new Promise(resolve => {
+              rimraf(path.join(themePath, '.git'), err => {
+                if (err) {
+                  this.$logger.exit(err, this.$init.apiMode())
+                }
+                resolve()
+              })
+            })
+          },
+
+          {
+            title: 'Create theme directory',
+            task: () => new Promise(resolve => {
+              mkdirp(themePath, err => {
+                if (err) {
+                  this.$logger.exit(err, this.$init.apiMode())
+                }
+
+                resolve()
+              })
+            })
+          },
+
+          {
+            title: 'Create git directory',
+            task: () => new Promise(resolve => {
+              mkdirp(gitPath, err => {
+                if (err) {
+                  this.$logger.exit(err, this.$init.apiMode())
+                }
+
+                resolve()
+              })
+            })
+          }
+        ])
       },
 
       {
@@ -272,7 +316,7 @@ class NewCLI extends CLI {
           try {
             this.addTheme(theme.slug, info)
 
-            if (!this.db.name) {
+            if (!this.$db.name) {
               this.setCurrentTheme(theme)
             }
 
@@ -363,49 +407,44 @@ class NewCLI extends CLI {
         task: () => new Listr([
           {
             title: 'Init repository url',
-            task: () => new Promise((resolve, reject) => {
-              mkdirp(gitPath, err => {
-                if (err) {
-                  reject(err)
-                }
-                execa.stdout('git', [`--git-dir=${gitPath}`, `--work-tree=${gitPath}`, 'init', '-q']).then(resolve).catch(reject)
-              })
-            })
+            task: () => execa.stdout('git', [`--git-dir=${gitPath}`, `--work-tree=${gitPath}`, 'init', '-q'])
           },
 
           {
-            title: `Add remote url \`${theme.repoUrl}\``,
+            title: `Add remote url '${theme.repoUrl}'`,
             task: () => execa.stdout('git', [`--git-dir=${gitPath}`, 'remote', 'add', 'origin', theme.repoUrl])
           },
 
           {
-            title: `Validate remote url \`${theme.repoUrl}\``,
+            title: `Validate remote url '${theme.repoUrl}'`,
             task: () => execa.stdout('git', [`--git-dir=${gitPath}`, 'pull', 'origin', 'master'])
           },
 
           {
-            title: `Download git objects and refs from \`${theme.repoUrl}\``,
+            title: `Download git objects and refs from '${theme.repoUrl}'`,
             task: () => execa.stdout('git', [`--git-dir=${gitPath}`, 'fetch'])
           }
         ])
       }
-    ])
+    ], listrOpts)
+
+    this.$logger.title(`Initializing {${theme.name}}`)
 
     task.run()
-    .then(() => {
-      finish(messages.SUCCEED_CREATE_NEW_THEME)
-    })
-    .catch(err => {
-      setTimeout(() => {
-        rimraf(themePath, _err => {
-          if (_err) {
-            exit(_err)
-          }
+      .then(() => {
+        this.$logger.finish(messages.SUCCEED_CREATE_NEW_THEME, this.$init.apiMode())
+      })
+      .catch(err => {
+        setTimeout(() => {
+          rimraf(themePath, _err => {
+            if (_err) {
+              this.$logger.exit(_err, this.$init.apiMode())
+            }
 
-          exit(err)
-        })
-      }, 1500)
-    })
+            this.$logger.exit(err, this.$init.apiMode())
+          })
+        }, 1500)
+      })
   }
 }
 
