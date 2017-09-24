@@ -1,4 +1,5 @@
 const chalk = require('chalk')
+const stripAnsi = require('strip-ansi')
 const {sep, prefix} = require('./fixtures')
 const blank = require('./blank')
 
@@ -9,10 +10,14 @@ module.exports = options => {
     exit: false,
     padding: false,
     paddingTop: false,
-    paddingBottom: false
+    paddingBottom: false,
+    isError: false,
+    isRaw: false
   }
 
   const {
+    isRaw,
+    isError,
     message,
     exit,
     color,
@@ -25,26 +30,38 @@ module.exports = options => {
   let padTop = paddingTop
   let padBtm = paddingBottom
 
-  if (padding) {
+  if (padding && !isRaw) {
     padTop = true
     padBtm = true
   }
 
-  if (padTop && message !== '') {
+  if (padTop && message !== '' && !isRaw) {
     blank()
   }
 
   if (message !== '') {
-    console.log(`${colored} ${sep} ${message}`)
+    let finalOutput = `${colored} ${sep} ${message}`
+
+    if (isRaw) {
+      if (message.message && Array.isArray(message.message)) {
+        message.message = message.message.map(stripAnsi).join(' ')
+      } else {
+        message.message = stripAnsi(message.message)
+      }
+
+      finalOutput = JSON.stringify(message)
+    }
+
+    console.log(finalOutput)
   }
 
-  if (padBtm && message !== '') {
+  if (padBtm && message !== '' && !isRaw) {
     blank()
   }
 
   if (exit) {
     /* eslint-disable unicorn/no-process-exit */
-    process.exit(1)
+    process.exit(isError)
     /* eslint-enable */
   }
 }
