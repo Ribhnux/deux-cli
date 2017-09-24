@@ -88,11 +88,14 @@
     "xo": "^0.18.2"
   },
   "scripts": {
-    "test": "xo && ava --verbose"
+    "lint": "xo",
+    "ava": "ava --verbose",
+    "test": "yarn lint && yarn ava"
   },
   "ava": {
     "files": [
-      "test/test.js"
+      "test/init.js",
+      "test/add.js"
     ]
   },
   "xo": {
