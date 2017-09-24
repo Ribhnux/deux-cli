@@ -35,9 +35,8 @@ const commandTable = new Table({
 let customHelp = chalk.underline.white('Available Commands') + '\n\n'
 
 program.getCommands().forEach(item => {
-  const arglist = () => {
-    return item._args.map(arg => `${arg.name()}`).join(' ')
-  }
+  const arglist = () => item._args.map(arg => `${arg.name()}`).join(' ')
+
   commandTable.push(
     [chalk.magenta(item.name()), chalk.gray(arglist()), item.description()]
   )
@@ -48,11 +47,14 @@ customHelp += colorize(commandTable.toString())
 program
   .argument('[command]', 'See available commands.')
   .argument('[option]', 'Optional option for each command. type deux [command] --help for more information.')
+  .option('--db <path>', 'Custom database path.', program.STRING)
+  .option('--input <json>', 'Set config in API mode without prompts.', program.STRING)
+  .option('--api', 'Run in API Mode.', program.BOOLEAN)
   .help(customHelp)
-  .action(() => {
+  .action((args, options) => {
     const Init = global.deuxcli.require('init')
-    const init = new Init()
-    init.check(false, true).then(() => {
-      finish(message.MORE_INFO)
+    const init = new Init(false, options)
+    init.check().then(() => {
+      finish(message.MORE_INFO, options.api)
     }).catch(exit)
   })
