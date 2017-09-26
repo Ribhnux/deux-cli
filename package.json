@@ -95,8 +95,7 @@
   "ava": {
     "files": [
       "test/test.js"
-    ],
-    "serial": true
+    ]
   },
   "xo": {
     "esnext": true,
