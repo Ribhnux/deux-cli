@@ -60,7 +60,7 @@ class CLI {
             }).catch(this.$logger.exit)
           }
 
-          if (!this.subcmd && this.$prompts.length === 0) {
+          if (!this.$subcmd && this.$prompts.length === 0) {
             this.$logger.title(this.$title)
             this.action({})
           }

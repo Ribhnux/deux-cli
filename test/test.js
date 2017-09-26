@@ -6,7 +6,7 @@ import rimraf from 'rimraf'
 import jsonr from 'json-realtime'
 import jsonar from 'jsonar'
 import arrandel from 'arrandel'
-import {deux, dbPath, wpPath, dbTypes} from './fixtures'
+import {deux, dbPath, wpPath, dbTypes, themePath} from './fixtures'
 
 const config = {
   wpPath,
@@ -17,7 +17,58 @@ if (process.env.GOOGLE_API_KEY) {
   config.fontApiKey = process.env.GOOGLE_API_KEY
 }
 
-const themePath = path.join(wpPath, 'wp-content', 'themes', 'deux-theme')
+const getConfig = () => {
+  const db = jsonr(dbPath)
+  const slug = db[dbTypes.CURRENT].slug
+  const currentTheme = Object.assign({}, db[dbTypes.THEMES][slug])
+  const configPath = path.join(themePath, `${slug}-config.php`)
+  const themeConfig = Object.assign({}, currentTheme)
+  /* eslint-disable camelcase */
+  const emptyRules = {
+    asset: {
+      libs: {},
+      sass: {
+        components: [],
+        layouts: [],
+        pages: [],
+        themes: [],
+        vendors: []
+      },
+      fonts: {}
+    },
+    plugins: {},
+    components: [],
+    imgsize: {},
+    filters: [],
+    actions: [],
+    libraries: [],
+    helpers: [],
+    menus: {},
+    widgets: {},
+    features: {},
+    customizer: {
+      panels: {},
+      sections: {},
+      settings: {},
+      control_types: {},
+      controls: {}
+    }
+  }
+  /* eslint-enable camelcase */
+
+  const phpArray = arrandel(configPath)
+  const phpConfig = jsonar.parse(phpArray.deux_theme_config, {
+    emptyRules
+  })
+
+  return {
+    db,
+    slug,
+    themeConfig,
+    phpConfig,
+    path: configPath
+  }
+}
 
 const cleanupTheme = () => {
   rimraf.sync(path.join(themePath))
@@ -53,12 +104,7 @@ test('INIT: Error config should be fail.', async t => {
     })
 })
 
-const initTheme = (() => new Promise(resolve => {
-  execa.stdout(deux, [`--db=${dbPath}`, `--input=${JSON.stringify(config)}`]).then(() => {
-    resolve()
-  })
-}))()
-
+const initTheme = execa.stdout(deux, [`--db=${dbPath}`, `--input=${JSON.stringify(config)}`])
 test('INIT: Correct config should be succeed.', async t => {
   await initTheme.then(() => {
     t.pass()
@@ -68,7 +114,7 @@ test('INIT: Correct config should be succeed.', async t => {
 /**
  * Add new theme
  */
-const defaultConfig = {
+const themeConfig = {
   theme: {
     name: 'Deux Theme',
     uri: 'https://github.com/RibhnuxDesign/ramen-theme',
@@ -82,167 +128,162 @@ const defaultConfig = {
   overwrite: true
 }
 
-const addNewTheme = ((newConfig = {}) => {
-  const config = Object.assign(newConfig, defaultConfig)
-  return new Promise(resolve => {
-    execa.stdout(deux, ['new', `--db=${dbPath}`, `--input=${JSON.stringify(config)}`]).then(() => {
-      resolve()
+const addNewTheme = (() => {
+  return new Promise(async resolve => {
+    await initTheme.then(() => {
+      execa.stdout(deux, ['new', `--db=${dbPath}`, `--input=${JSON.stringify(themeConfig)}`]).then(() => {
+        resolve()
+      })
     })
   })
 })()
 
 test('NEW COMMAND: Add new theme should be succeed.', async t => {
-  await initTheme.then(async () => {
-    await addNewTheme.then(() => {
-      t.true(existsSync(themePath))
-    })
+  await addNewTheme.then(() => {
+    t.true(existsSync(themePath))
   })
 })
 
 test('NEW COMMAND: Config should be valid.', async t => {
-  await initTheme.then(async () => {
-    await addNewTheme.then(() => {
-      const db = jsonr(dbPath)
-      const currentSlug = db[dbTypes.CURRENT].slug
-      const currentTheme = db[dbTypes.THEMES][currentSlug]
-      const theme = Object.assign({}, currentTheme)
-
-      /* eslint-disable camelcase */
-      const config = {
-        details: {
-          name: 'Deux Theme',
-          uri: 'https://github.com/RibhnuxDesign/ramen-theme',
-          author: 'Ribhnux Design',
-          authorUri: 'https://github.com/RibhnuxDesign',
-          description: 'Example description',
-          version: '1.0.0',
-          tags: 'full-width-template, blog',
-          slug: 'deux-theme',
-          slugfn: 'deux_theme',
-          created: {
-            year: new Date().getFullYear()
-          }
-        },
-        develop: false,
-        optimize: true,
-        asset: {
-          libs: {},
-          sass: {
-            components: [],
-            layouts: [],
-            pages: [],
-            themes: [],
-            vendors: []
-          },
-          fonts: {}
-        },
-        plugins: {},
-        components: [
-          'pagination',
-          'post-meta',
-          'posted-on'
-        ],
-        imgsize: {},
-        filters: [],
-        actions: [],
-        libraries: [
-          'class-tgm-plugin-activation'
-        ],
-        helpers: [],
-        menus: {},
-        widgets: {},
-        features: {},
-        customizer: {
-          panels: {},
-          sections: {},
-          settings: {},
-          control_types: {},
-          controls: {}
+  await addNewTheme.then(() => {
+    /* eslint-disable camelcase */
+    const config = {
+      details: {
+        name: 'Deux Theme',
+        uri: 'https://github.com/RibhnuxDesign/ramen-theme',
+        author: 'Ribhnux Design',
+        authorUri: 'https://github.com/RibhnuxDesign',
+        description: 'Example description',
+        version: '1.0.0',
+        tags: 'full-width-template, blog',
+        slug: 'deux-theme',
+        slugfn: 'deux_theme',
+        created: {
+          year: new Date().getFullYear()
         }
-      }
-      delete theme.releases
-
-      const emptyRules = {
-        asset: {
-          libs: {},
-          sass: {
-            components: [],
-            layouts: [],
-            pages: [],
-            themes: [],
-            vendors: []
-          },
-          fonts: {}
+      },
+      develop: false,
+      optimize: true,
+      asset: {
+        libs: {},
+        sass: {
+          components: [],
+          layouts: [],
+          pages: [],
+          themes: [],
+          vendors: []
         },
-        plugins: {},
-        components: [],
-        imgsize: {},
-        filters: [],
-        actions: [],
-        libraries: [],
-        helpers: [],
-        menus: {},
-        widgets: {},
-        features: {},
-        customizer: {
-          panels: {},
-          sections: {},
-          settings: {},
-          control_types: {},
-          controls: {}
-        }
+        fonts: {}
+      },
+      plugins: {},
+      components: [
+        'pagination',
+        'post-meta',
+        'posted-on'
+      ],
+      imgsize: {},
+      filters: [],
+      actions: [],
+      libraries: [
+        'class-tgm-plugin-activation'
+      ],
+      helpers: [],
+      menus: {},
+      widgets: {},
+      features: {},
+      customizer: {
+        panels: {},
+        sections: {},
+        settings: {},
+        control_types: {},
+        controls: {}
       }
-      /* eslint-enable */
+    }
+    /* eslint-enable camelcase */
 
-      const configFile = path.join(themePath, `${currentSlug}-config.php`)
+    const _config = getConfig()
+    t.true(existsSync(_config.path))
 
-      t.is(currentSlug, 'deux-theme')
-      t.true(existsSync(configFile))
-      t.deepEqual(theme, config)
+    delete _config.themeConfig.releases
+    t.deepEqual(_config.themeConfig, config)
 
-      const phpArray = arrandel(configFile)
-      const phpConfig = jsonar.parse(phpArray.deux_theme_config, {
-        emptyRules
-      })
+    delete config.details
+    t.deepEqual(config, _config.phpConfig)
 
-      delete config.details
-      t.deepEqual(config, phpConfig)
-    })
+    t.is(_config.slug, 'deux-theme')
   })
 })
 
 test('NEW COMMAND: Directory structures should be valid.', async t => {
-  await initTheme.then(async () => {
+  await addNewTheme.then(() => {
+    // Assets.
+    t.true(existsSync(path.join(themePath, 'assets')))
+    t.true(existsSync(path.join(themePath, 'assets', 'js')))
+    t.true(existsSync(path.join(themePath, 'assets', 'css')))
+    t.true(existsSync(path.join(themePath, 'assets', 'images')))
+
+    // Assets source.
+    t.true(existsSync(path.join(themePath, 'assets-src')))
+    t.true(existsSync(path.join(themePath, 'assets-src', 'sass')))
+    t.true(existsSync(path.join(themePath, 'assets-src', 'js')))
+    t.true(existsSync(path.join(themePath, 'assets-src', 'libs')))
+
+    // Templates
+    t.true(existsSync(path.join(themePath, 'components')))
+    t.true(existsSync(path.join(themePath, 'page-templates')))
+    t.true(existsSync(path.join(themePath, 'partial-templates')))
+
+    // Includes.
+    t.true(existsSync(path.join(themePath, 'includes')))
+    t.true(existsSync(path.join(themePath, 'includes', 'actions')))
+    t.true(existsSync(path.join(themePath, 'includes', 'customizers')))
+    t.true(existsSync(path.join(themePath, 'includes', 'filters')))
+    t.true(existsSync(path.join(themePath, 'includes', 'helpers')))
+    t.true(existsSync(path.join(themePath, 'includes', 'libraries')))
+    t.true(existsSync(path.join(themePath, 'includes', 'loaders')))
+    t.true(existsSync(path.join(themePath, 'includes', 'plugins')))
+
+    // Languages
+    t.true(existsSync(path.join(themePath, 'languages')))
+  })
+})
+
+/**
+ * Add commands.
+ */
+const addWidget = (() => {
+  const widgetConfig = {
+    widget: {
+      name: 'New Widget',
+      description: 'New Description'
+    }
+  }
+
+  return new Promise(async resolve => {
     await addNewTheme.then(() => {
-      // Assets.
-      t.true(existsSync(path.join(themePath, 'assets')))
-      t.true(existsSync(path.join(themePath, 'assets', 'js')))
-      t.true(existsSync(path.join(themePath, 'assets', 'css')))
-      t.true(existsSync(path.join(themePath, 'assets', 'images')))
-
-      // Assets source.
-      t.true(existsSync(path.join(themePath, 'assets-src')))
-      t.true(existsSync(path.join(themePath, 'assets-src', 'sass')))
-      t.true(existsSync(path.join(themePath, 'assets-src', 'js')))
-      t.true(existsSync(path.join(themePath, 'assets-src', 'libs')))
-
-      // Templates
-      t.true(existsSync(path.join(themePath, 'components')))
-      t.true(existsSync(path.join(themePath, 'page-templates')))
-      t.true(existsSync(path.join(themePath, 'partial-templates')))
-
-      // Includes.
-      t.true(existsSync(path.join(themePath, 'includes')))
-      t.true(existsSync(path.join(themePath, 'includes', 'actions')))
-      t.true(existsSync(path.join(themePath, 'includes', 'customizers')))
-      t.true(existsSync(path.join(themePath, 'includes', 'filters')))
-      t.true(existsSync(path.join(themePath, 'includes', 'helpers')))
-      t.true(existsSync(path.join(themePath, 'includes', 'libraries')))
-      t.true(existsSync(path.join(themePath, 'includes', 'loaders')))
-      t.true(existsSync(path.join(themePath, 'includes', 'plugins')))
-
-      // Languages
-      t.true(existsSync(path.join(themePath, 'languages')))
+      execa.stdout(deux, ['add', 'widget', `--db=${dbPath}`, `--input=${JSON.stringify(widgetConfig)}`]).then(() => {
+        resolve()
+      })
     })
+  })
+})()
+
+test('ADD COMMAND (WIDGET): Config should be valid.', async t => {
+  await addWidget.then(() => {
+    const _config = getConfig()
+    t.deepEqual({
+      /* eslint-disable quote-props */
+      /* eslint-disable camelcase */
+      'new-widget': {
+        name: jsonar.literal('__( \'New Widget\', \'deux-theme\' )'),
+        description: jsonar.literal('__( \'New Description\', \'deux-theme\' )'),
+        class: '',
+        before_widget: '<section id="%1$s" class="widget %2$s">',
+        after_widget: '</section>',
+        before_title: '<h2 class="widget-title">',
+        after_title: '</h2>'
+      }
+      /* eslint-enable quote-props camelcase */
+    }, _config.phpConfig.widgets)
   })
 })
