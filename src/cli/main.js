@@ -54,6 +54,10 @@ class CLI {
           this.action(this.$input)
         } else {
           if (this.$prompts.length > 0) {
+            if (!this.$init.apiMode()) {
+              this.$logger.versionlog()
+            }
+
             this.$logger.title(this.$title)
             inquirer.prompt(this.$prompts).then(answers => {
               this.action(answers)
