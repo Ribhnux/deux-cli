@@ -5,7 +5,7 @@ const messages = global.deuxcli.require('messages')
 const finish = global.deuxhelpers.require('logger/finish')
 const validator = global.deuxhelpers.require('util/validator')
 
-exports.happyExit = () => finish(messages.DONE_NO_REMOVE)
+exports.happyExit = apiMode => finish(messages.DONE_NO_REMOVE, apiMode)
 
 exports.captchaMaker = () => {
   const randomCaptcha = faker.lorem.word()
