@@ -401,6 +401,13 @@ test('`deux add component`: should be succeed.', async t => {
   })
 })
 
+test('`deux add component`: config should be valid.', async t => {
+  await addComponent.then(() => {
+    const _config = getConfig()
+    t.true(_config.phpConfig.components.includes('example-component'))
+  })
+})
+
 test('`deux add component`: component file should be exists.', async t => {
   await addComponent.then(() => {
     t.true(existsSync(path.join(themePath, 'components', 'example-component.php')))
@@ -424,6 +431,13 @@ const removeComponent = (() => {
 test('`deux remove component`: should be succeed.', async t => {
   await removeComponent.then(() => {
     t.pass()
+  })
+})
+
+test('`deux remove component`: config should be valid.', async t => {
+  await removeComponent.then(() => {
+    const _config = getConfig()
+    t.false(_config.phpConfig.components.includes('example-component'))
   })
 })
 
@@ -585,5 +599,77 @@ test('`deux remove widget`: config should be valid.', async t => {
   await removeWidget.then(() => {
     const _config = getConfig()
     t.deepEqual({}, _config.phpConfig.widgets)
+  })
+})
+
+/**
+ * Add and remove php libraries.
+ */
+const addLibClass = (() => {
+  const classConfig = {
+    lib: {
+      name: 'Example',
+      description: 'Example Description'
+    }
+  }
+
+  return new Promise(async resolve => {
+    await removeWidget.then(() => {
+      execa.stdout(deux, ['add', 'libclass', `--db=${dbPath}`, `--input=${JSON.stringify(classConfig)}`]).then(() => {
+        resolve()
+      })
+    })
+  })
+})()
+
+test('`deux add libclass`: should be succeed.', async t => {
+  await addLibClass.then(() => {
+    t.pass()
+  })
+})
+
+test('`deux add libclass`: config should be valid.', async t => {
+  await addLibClass.then(() => {
+    const _config = getConfig()
+    t.true(_config.phpConfig.libraries.includes('class-example'))
+  })
+})
+
+test('`deux add libclass`: file should be exists.', async t => {
+  await addLibClass.then(() => {
+    t.true(existsSync(path.join(themePath, 'includes', 'libraries', 'class-example.php')))
+  })
+})
+
+const removeLibClass = (() => {
+  const classConfig = {
+    libraries: ['class-example']
+  }
+
+  return new Promise(async resolve => {
+    await addLibClass.then(() => {
+      execa.stdout(deux, ['remove', 'libclass', `--db=${dbPath}`, `--input=${JSON.stringify(classConfig)}`]).then(() => {
+        resolve()
+      })
+    })
+  })
+})()
+
+test('`deux remove libclass`: should be succeed.', async t => {
+  await removeLibClass.then(() => {
+    t.pass()
+  })
+})
+
+test('`deux remove libclass`: config should be valid.', async t => {
+  await removeLibClass.then(() => {
+    const _config = getConfig()
+    t.false(_config.phpConfig.libraries.includes('class-example'))
+  })
+})
+
+test('`deux remove libclass`: file should be deleted.', async t => {
+  await removeLibClass.then(() => {
+    t.false(existsSync(path.join(themePath, 'includes', 'libraries', 'class-example.php')))
   })
 })

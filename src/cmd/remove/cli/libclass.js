@@ -4,14 +4,13 @@ const wpFileHeader = require('wp-get-file-header')
 
 const CLI = global.deuxcli.require('main')
 const messages = global.deuxcli.require('messages')
-const {exit, finish} = global.deuxhelpers.require('logger')
-const {happyExit, captchaMaker, separatorMaker} = global.deuxhelpers.require('util/cli')
+const {captchaMaker, separatorMaker} = global.deuxhelpers.require('util/cli')
 
 class RemoveLibClass extends CLI {
-  constructor() {
+  constructor(options) {
     super()
     this.themeLibraries = undefined
-    this.init()
+    this.init(false, options)
   }
 
   /**
@@ -21,11 +20,11 @@ class RemoveLibClass extends CLI {
     this.themeLibraries = this.themeInfo('libraries')
 
     if (this.themeLibraries.length === 0) {
-      happyExit()
+      this.$logger.happyExit()
     }
 
-    this.title = 'Remove {Libraries}'
-    this.prompts = [
+    this.$title = 'Remove {Libraries}'
+    this.$prompts = [
       {
         type: 'checkbox',
         name: 'libraries',
@@ -80,8 +79,8 @@ class RemoveLibClass extends CLI {
   }
 
   action({libraries, confirm}) {
-    if (libraries.length === 0 || !confirm) {
-      happyExit()
+    if (libraries.length === 0 || (!confirm && !this.$init.apiMode())) {
+      this.$logger.happyExit()
     }
 
     Promise.all(libraries.map(
@@ -106,9 +105,9 @@ class RemoveLibClass extends CLI {
           resolve()
         })
       ]).then(
-        finish(messages.SUCCEED_REMOVED_LIBCLASS)
-      ).catch(exit)
-    }).catch(exit)
+        this.$logger.finish(messages.SUCCEED_REMOVED_LIBCLASS)
+      ).catch(this.$logger.exit)
+    }).catch(this.$logger.exit)
   }
 }
 
