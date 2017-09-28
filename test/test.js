@@ -603,6 +603,78 @@ test('`deux remove widget`: config should be valid.', async t => {
 })
 
 /**
+ * Add and remove helper.
+ */
+const addHelper = (() => {
+  const helperConfig = {
+    helper: {
+      name: 'Example Helper',
+      description: 'Example Description'
+    }
+  }
+
+  return new Promise(async resolve => {
+    await removeWidget.then(() => {
+      execa.stdout(deux, ['add', 'helper', `--db=${dbPath}`, `--input=${JSON.stringify(helperConfig)}`]).then(() => {
+        resolve()
+      })
+    })
+  })
+})()
+
+test('`deux add helper`: should be succeed.', async t => {
+  await addHelper.then(() => {
+    t.pass()
+  })
+})
+
+test('`deux add helper`: config should be valid.', async t => {
+  await addHelper.then(() => {
+    const _config = getConfig()
+    t.true(_config.phpConfig.helpers.includes('example-helper'))
+  })
+})
+
+test('`deux add helper`: file should be exists.', async t => {
+  await addHelper.then(() => {
+    t.true(existsSync(path.join(themePath, 'includes', 'helpers', 'example-helper.php')))
+  })
+})
+
+const removeHelper = (() => {
+  const helperConfig = {
+    helpers: ['example-helper']
+  }
+
+  return new Promise(async resolve => {
+    await addHelper.then(() => {
+      execa.stdout(deux, ['remove', 'helper', `--db=${dbPath}`, `--input=${JSON.stringify(helperConfig)}`]).then(() => {
+        resolve()
+      })
+    })
+  })
+})()
+
+test('`deux remove helper`: should be succeed.', async t => {
+  await removeHelper.then(() => {
+    t.pass()
+  })
+})
+
+test('`deux remove helper`: config should be valid.', async t => {
+  await removeHelper.then(() => {
+    const _config = getConfig()
+    t.false(_config.phpConfig.helpers.includes('example-helper'))
+  })
+})
+
+test('`deux remove helper`: file should be deleted.', async t => {
+  await removeHelper.then(() => {
+    t.false(existsSync(path.join(themePath, 'includes', 'helpers', 'example-helper.php')))
+  })
+})
+
+/**
  * Add and remove php libraries.
  */
 const addLibClass = (() => {
@@ -614,7 +686,7 @@ const addLibClass = (() => {
   }
 
   return new Promise(async resolve => {
-    await removeWidget.then(() => {
+    await removeHelper.then(() => {
       execa.stdout(deux, ['add', 'libclass', `--db=${dbPath}`, `--input=${JSON.stringify(classConfig)}`]).then(() => {
         resolve()
       })
