@@ -62,7 +62,7 @@ class AddMenu extends CLI {
    */
   action({menu, overwrite}) {
     if (overwrite === false) {
-      this.$logger.exit(messages.ERROR_MENU_ALREADY_EXISTS, this.$init.apiMode())
+      this.$logger.exit(messages.ERROR_MENU_ALREADY_EXISTS)
     }
 
     menu.location = slugify(menu.name)
@@ -118,10 +118,8 @@ class AddMenu extends CLI {
         resolve()
       })
     ]).then(
-      this.$logger.finish(messages.SUCCEED_MENU_ADDED, this.$init.apiMode())
-    ).catch(err => {
-      this.$logger.exit(err, this.$init.apiMode())
-    })
+      this.$logger.finish(messages.SUCCEED_MENU_ADDED)
+    ).catch(this.$logger.exit)
   }
 }
 

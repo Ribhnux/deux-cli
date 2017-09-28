@@ -15,7 +15,7 @@ class CLI {
     this.$db = {}
     this.$title = 'Untitled CLI'
     this.$prompts = []
-    this.$logger = logger
+    this.$logger = {}
     this.$init = undefined
     this.$input = undefined
   }
@@ -30,7 +30,7 @@ class CLI {
         options.api = true
         this.$input = json
       } else {
-        this.$logger.exit(message.ERROR_INVALID_INPUT, true)
+        logger.exit(message.ERROR_INVALID_INPUT, true)
       }
     }
 
@@ -40,10 +40,23 @@ class CLI {
     }))
 
     this.$init.check().then(db => {
-      this.$logger.title = this.$logger.colorlog
+      this.$logger.versionlog = logger.versionlog
+      this.$logger.title = msg => {
+        if (!this.$init.apiMode()) {
+          logger.colorlog(msg)
+        }
+      }
 
-      if (this.$init.apiMode()) {
-        this.$logger.title = () => {}
+      this.$logger.exit = err => {
+        logger.exit(err, this.$init.apiMode())
+      }
+
+      this.$logger.finish = msg => {
+        logger.finish(msg, this.$init.apiMode())
+      }
+
+      this.$logger.happyExit = () => {
+        logger.finish(message.DONE_NO_REMOVE, this.$init.apiMode())
       }
 
       this.$db = db
@@ -74,7 +87,7 @@ class CLI {
       if (this.beforeAction) {
         this.beforeAction().then(() => {
           action()
-        })
+        }).catch(this.$logger.exit)
       } else {
         action()
       }

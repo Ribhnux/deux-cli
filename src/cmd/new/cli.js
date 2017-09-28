@@ -183,12 +183,12 @@ class NewCLI extends CLI {
         enabled: () => overwrite === false || overwrite === undefined,
         task: () => new Promise(resolve => {
           if (existsSync(themePath)) {
-            this.$logger.exit(messages.ERROR_THEME_ALREADY_EXISTS, this.$init.apiMode())
+            this.$logger.exit(messages.ERROR_THEME_ALREADY_EXISTS)
           }
 
           mkdirp(themePath, err => {
             if (err) {
-              this.$logger.exit(err, this.$init.apiMode())
+              this.$logger.exit(err)
             }
 
             resolve()
@@ -205,7 +205,7 @@ class NewCLI extends CLI {
             task: () => new Promise(resolve => {
               rimraf(path.join(themePath, '*'), err => {
                 if (err) {
-                  this.$logger.exit(err, this.$init.apiMode())
+                  this.$logger.exit(err)
                 }
 
                 resolve()
@@ -218,7 +218,7 @@ class NewCLI extends CLI {
             task: () => new Promise(resolve => {
               rimraf(path.join(themePath, '.git'), err => {
                 if (err) {
-                  this.$logger.exit(err, this.$init.apiMode())
+                  this.$logger.exit(err)
                 }
                 resolve()
               })
@@ -230,7 +230,7 @@ class NewCLI extends CLI {
             task: () => new Promise(resolve => {
               mkdirp(themePath, err => {
                 if (err) {
-                  this.$logger.exit(err, this.$init.apiMode())
+                  this.$logger.exit(err)
                 }
 
                 resolve()
@@ -243,7 +243,7 @@ class NewCLI extends CLI {
             task: () => new Promise(resolve => {
               mkdirp(gitPath, err => {
                 if (err) {
-                  this.$logger.exit(err, this.$init.apiMode())
+                  this.$logger.exit(err)
                 }
 
                 resolve()
@@ -432,16 +432,16 @@ class NewCLI extends CLI {
 
     task.run()
       .then(() => {
-        this.$logger.finish(messages.SUCCEED_CREATE_NEW_THEME, this.$init.apiMode())
+        this.$logger.finish(messages.SUCCEED_CREATE_NEW_THEME)
       })
       .catch(err => {
         setTimeout(() => {
           rimraf(themePath, _err => {
             if (_err) {
-              this.$logger.exit(_err, this.$init.apiMode())
+              this.$logger.exit(_err)
             }
 
-            this.$logger.exit(err, this.$init.apiMode())
+            this.$logger.exit(err)
           })
         }, 1500)
       })

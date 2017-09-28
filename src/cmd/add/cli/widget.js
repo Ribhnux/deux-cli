@@ -50,7 +50,7 @@ class AddWidget extends CLI {
    */
   action({widget, overwrite}) {
     if (overwrite === false) {
-      this.$logger.exit(messages.ERROR_WIDGET_ALREADY_EXISTS, this.$init.apiMode())
+      this.$logger.exit(messages.ERROR_WIDGET_ALREADY_EXISTS)
     }
 
     const widgets = this.themeInfo('widgets')
@@ -80,10 +80,8 @@ class AddWidget extends CLI {
         resolve()
       })
     ]).then(
-      this.$logger.finish(messages.SUCCEED_WIDGET_ADDED, this.$init.apiMode())
-    ).catch(err => {
-      this.$logger.exit(err, this.$init.apiMode())
-    })
+      this.$logger.finish(messages.SUCCEED_WIDGET_ADDED)
+    ).catch(this.$logger.exit)
   }
 }
 

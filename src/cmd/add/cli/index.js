@@ -86,7 +86,7 @@ class AddCLI extends CLI {
     }
 
     if (!availableCommand.includes(subcmd)) {
-      this.$logger.exit(messages.ERROR_INVALID_COMMAND, this.$init.apiMode())
+      this.$logger.exit(messages.ERROR_INVALID_COMMAND)
     }
   }
 }

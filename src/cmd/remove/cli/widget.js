@@ -2,7 +2,7 @@ const getL10n = require('wp-get-l10n')
 
 const CLI = global.deuxcli.require('main')
 const messages = global.deuxcli.require('messages')
-const {happyExit, captchaMaker, separatorMaker} = global.deuxhelpers.require('util/cli')
+const {captchaMaker, separatorMaker} = global.deuxhelpers.require('util/cli')
 
 class RemoveWidget extends CLI {
   constructor(options) {
@@ -18,7 +18,7 @@ class RemoveWidget extends CLI {
     this.themeWidgets = this.themeInfo('widgets')
 
     if (Object.keys(this.themeWidgets).length === 0) {
-      happyExit(this.$init.apiMode())
+      this.$logger.happyExit()
     }
 
     this.$title = 'Remove {Widgets}'
@@ -69,7 +69,7 @@ class RemoveWidget extends CLI {
    */
   action({widgets, confirm}) {
     if (widgets.length === 0 || (!confirm && !this.$init.apiMode())) {
-      happyExit(this.$init.apiMode())
+      this.$logger.happyExit()
     }
 
     Promise.all(widgets.map(
@@ -86,13 +86,9 @@ class RemoveWidget extends CLI {
           resolve()
         })
       ]).then(
-        this.$logger.finish(messages.SUCCEED_REMOVED_WIDGET, this.$init.apiMode())
-      ).catch(err => {
-        this.$logger.exit(err, this.$init.apiMode())
-      })
-    }).catch(err => {
-      this.$logger.exit(err, this.$init.apiMode())
-    })
+        this.$logger.finish(messages.SUCCEED_REMOVED_WIDGET)
+      ).catch(this.$logger.exit)
+    }).catch(this.$logger.exit)
   }
 }
 

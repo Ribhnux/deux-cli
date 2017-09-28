@@ -1,9 +1,10 @@
+const getL10n = require('wp-get-l10n')
 const rimraf = require('rimraf')
 const uniq = require('lodash.uniq')
 
 const CLI = global.deuxcli.require('main')
 const messages = global.deuxcli.require('messages')
-const {happyExit, captchaMaker, separatorMaker} = global.deuxhelpers.require('util/cli')
+const {captchaMaker, separatorMaker} = global.deuxhelpers.require('util/cli')
 
 class RemoveMenu extends CLI {
   constructor(options) {
@@ -22,7 +23,7 @@ class RemoveMenu extends CLI {
     this.themeLibraries = themeInfo.libraries
 
     if (Object.keys(this.themeMenus).length === 0) {
-      happyExit(this.$init.apiMode())
+      this.$logger.happyExit()
     }
 
     this.$title = 'Remove {Menus}'
@@ -36,8 +37,9 @@ class RemoveMenu extends CLI {
 
           for (const value in this.themeMenus) {
             if (Object.prototype.hasOwnProperty.call(this.themeMenus, value)) {
+              const name = getL10n(this.themeMenus[value].name.___$string)
               list.push({
-                name: this.themeMenus[value].name,
+                name,
                 value
               })
             }
@@ -72,7 +74,7 @@ class RemoveMenu extends CLI {
    */
   action({menus, confirm}) {
     if (menus.length === 0 || (!confirm && !this.$init.apiMode())) {
-      happyExit(this.$init.apiMode())
+      this.$logger.happyExit()
     }
 
     Promise.all(menus.map(
@@ -95,13 +97,9 @@ class RemoveMenu extends CLI {
           resolve()
         })
       ]).then(
-        this.$logger.finish(messages.SUCCEED_REMOVED_MENU, this.$init.apiMode())
-      ).catch(err => {
-        this.$logger.exit(err, this.$init.apiMode())
-      })
-    }).catch(err => {
-      this.$logger.exit(err, this.$init.apiMode())
-    })
+        this.$logger.finish(messages.SUCCEED_REMOVED_MENU)
+      ).catch(this.$logger.exit)
+    }).catch(this.$logger.exit)
   }
 }
 
