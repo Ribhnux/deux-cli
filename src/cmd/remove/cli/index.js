@@ -4,24 +4,24 @@ const CLI = global.deuxcli.require('main')
 const {commandList} = global.deuxcli.require('fixtures')
 const messages = global.deuxcli.require('messages')
 const {capitalize} = global.deuxhelpers.require('util/misc')
-const exit = global.deuxhelpers.require('logger/exit')
 
 class RemoveCLI extends CLI {
-  constructor(subcmd) {
+  constructor(subcmd, options) {
     super()
-    this.subcmd = subcmd
-    this.init()
+    this.$subcmd = subcmd
+    this.$options = options
+    this.init(false, options)
   }
 
   /**
    * Get remove subcommand list, set directly if subcommand is set
    */
   prepare() {
-    if (this.subcmd) {
-      this.initSubCommands(this.subcmd)
+    if (this.$subcmd) {
+      this.initSubCommands(this.$subcmd)
     } else {
-      this.title = 'What you want to {remove} in your theme?'
-      this.prompts = [
+      this.$title = 'What you want to {remove} in your theme?'
+      this.$prompts = [
         {
           type: 'list',
           name: 'subcmd',
@@ -60,7 +60,9 @@ class RemoveCLI extends CLI {
    * @param {Object} args
    */
   action({subcmd}) {
-    this.initSubCommands(subcmd)
+    if (!this.$init.apiMode()) {
+      this.initSubCommands(subcmd)
+    }
   }
 
   /**
@@ -76,13 +78,13 @@ class RemoveCLI extends CLI {
         availableCommand.push(commandList[key])
         if (subcmd === commandList[key]) {
           const SubCommands = global.deuxcmd.require(`remove/cli/${commandList[key]}`)
-          return new SubCommands()
+          return new SubCommands(this.$options)
         }
       }
     }
 
     if (!availableCommand.includes(subcmd)) {
-      exit(new Error(messages.ERROR_INVALID_COMMAND))
+      this.$logger.exit(new Error(messages.ERROR_INVALID_COMMAND), this.$init.apiMode())
     }
   }
 }

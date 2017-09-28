@@ -249,7 +249,7 @@ test('NEW COMMAND: Directory structures should be valid.', async t => {
 })
 
 /**
- * Add commands.
+ * Add and remove commands.
  */
 const addWidget = (() => {
   const widgetConfig = {
@@ -268,7 +268,13 @@ const addWidget = (() => {
   })
 })()
 
-test('ADD COMMAND (WIDGET): Config should be valid.', async t => {
+test('ADD COMMAND (WIDGET): should be succeed.', async t => {
+  await addWidget.then(() => {
+    t.pass()
+  })
+})
+
+test('ADD COMMAND (WIDGET): config should be valid.', async t => {
   await addWidget.then(() => {
     const _config = getConfig()
     t.deepEqual({
@@ -285,5 +291,32 @@ test('ADD COMMAND (WIDGET): Config should be valid.', async t => {
       }
       /* eslint-enable quote-props camelcase */
     }, _config.phpConfig.widgets)
+  })
+})
+
+const removeWidget = (() => {
+  const widgetConfig = {
+    widgets: ['new-widget']
+  }
+
+  return new Promise(async resolve => {
+    await addNewTheme.then(() => {
+      execa.stdout(deux, ['remove', 'widget', `--db=${dbPath}`, `--input=${JSON.stringify(widgetConfig)}`]).then(() => {
+        resolve()
+      })
+    })
+  })
+})()
+
+test('REMOVE COMMAND (WIDGET): should be succeed.', async t => {
+  await removeWidget.then(() => {
+    t.pass()
+  })
+})
+
+test('REMOVE COMMAND (WIDGET): config should be valid.', async t => {
+  await removeWidget.then(() => {
+    const _config = getConfig()
+    t.deepEqual({}, _config.phpConfig.widgets)
   })
 })
