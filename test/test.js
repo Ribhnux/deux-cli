@@ -97,7 +97,7 @@ test.after('Cleanup theme after init', async () => {
 /**
  * Init theme.
  */
-test('INIT: Error config should be fail.', async t => {
+test('`deux` (INIT): Error config should be fail.', async t => {
   await execa.stdout(deux, [`--db=${dbPath}`, `--input=${JSON.stringify(config)}}`])
     .catch(() => {
       t.pass()
@@ -105,7 +105,7 @@ test('INIT: Error config should be fail.', async t => {
 })
 
 const initTheme = execa.stdout(deux, [`--db=${dbPath}`, `--input=${JSON.stringify(config)}`])
-test('INIT: Correct config should be succeed.', async t => {
+test('`deux` (INIT): Correct config should be succeed.', async t => {
   await initTheme.then(() => {
     t.pass()
   })
@@ -138,13 +138,13 @@ const addNewTheme = (() => {
   })
 })()
 
-test('NEW COMMAND: Add new theme should be succeed.', async t => {
+test('`deux new`: Add new theme should be succeed.', async t => {
   await addNewTheme.then(() => {
     t.true(existsSync(themePath))
   })
 })
 
-test('NEW COMMAND: Config should be valid.', async t => {
+test('`deux new`: Config should be valid.', async t => {
   await addNewTheme.then(() => {
     /* eslint-disable camelcase */
     const config = {
@@ -214,7 +214,7 @@ test('NEW COMMAND: Config should be valid.', async t => {
   })
 })
 
-test('NEW COMMAND: Directory structures should be valid.', async t => {
+test('`deux new`: Directory structures should be valid.', async t => {
   await addNewTheme.then(() => {
     // Assets.
     t.true(existsSync(path.join(themePath, 'assets')))
@@ -249,6 +249,133 @@ test('NEW COMMAND: Directory structures should be valid.', async t => {
 })
 
 /**
+ * Add and remove page template.
+ */
+const addPageTemplate = (() => {
+  const templateConfig = {
+    template: {
+      type: 'page',
+      posttype: 'page',
+      name: 'Full Width',
+      description: 'Example Description'
+    }
+  }
+
+  return new Promise(async resolve => {
+    await addNewTheme.then(() => {
+      execa.stdout(deux, ['add', 'template', `--db=${dbPath}`, `--input=${JSON.stringify(templateConfig)}`]).then(() => {
+        resolve()
+      })
+    })
+  })
+})()
+
+test('`deux add template` (PAGE): should be succeed.', async t => {
+  await addPageTemplate.then(() => {
+    t.pass()
+  })
+})
+
+test('`deux add template` (PAGE): template file should be exists.', async t => {
+  await addPageTemplate.then(() => {
+    t.true(existsSync(path.join(themePath, 'page-templates', 'full-width.php')))
+  })
+})
+
+const removePageTemplate = (() => {
+  const templateConfig = {
+    templates: [
+      {
+        type: 'page',
+        file: 'full-width.php'
+      }
+    ]
+  }
+
+  return new Promise(async resolve => {
+    await addPageTemplate.then(() => {
+      execa.stdout(deux, ['remove', 'template', `--db=${dbPath}`, `--input=${JSON.stringify(templateConfig)}`]).then(() => {
+        resolve()
+      })
+    })
+  })
+})()
+
+test('`deux remove template` (PAGE): should be succeed.', async t => {
+  await removePageTemplate.then(() => {
+    t.pass()
+  })
+})
+
+test('`deux remove template` (PAGE): template file should be deleted.', async t => {
+  await removePageTemplate.then(() => {
+    t.false(existsSync(path.join(themePath, 'page-templates', 'full-width.php')))
+  })
+})
+
+const addPartialTemplate = (() => {
+  const templateConfig = {
+    template: {
+      type: 'partial',
+      prefix: 'header',
+      name: 'Navigation',
+      description: 'Example Description'
+    }
+  }
+
+  return new Promise(async resolve => {
+    await removePageTemplate.then(() => {
+      execa.stdout(deux, ['add', 'template', `--db=${dbPath}`, `--input=${JSON.stringify(templateConfig)}`]).then(() => {
+        resolve()
+      })
+    })
+  })
+})()
+
+test('`deux add template` (PARTIAL): should be succeed.', async t => {
+  await addPartialTemplate.then(() => {
+    t.pass()
+  })
+})
+
+test('`deux add template` (PARTIAL): template file should be exists.', async t => {
+  await addPartialTemplate.then(() => {
+    t.true(existsSync(path.join(themePath, 'partial-templates', 'header-navigation.php')))
+  })
+})
+
+const removePartialTemplate = (() => {
+  const templateConfig = {
+    templates: [
+      {
+        type: 'partial',
+        file: 'header-navigation.php'
+      }
+    ]
+  }
+
+  return new Promise(async resolve => {
+    await addPartialTemplate.then(() => {
+      execa.stdout(deux, ['remove', 'template', `--db=${dbPath}`, `--input=${JSON.stringify(templateConfig)}`]).then(() => {
+        resolve()
+      })
+    })
+  })
+})()
+
+test('`deux remove template` (PARTIAL): should be succeed.', async t => {
+  await removePartialTemplate.then(() => {
+    t.pass()
+  })
+})
+
+test('`deux remove template` (PARTIAL): template file should be deleted.', async t => {
+  await removePartialTemplate.then(() => {
+    t.false(existsSync(path.join(themePath, 'partial-templates', 'header-navigation.php')))
+  })
+})
+
+/**
  * Add and remove components.
  */
 const addComponent = (() => {
@@ -260,7 +387,7 @@ const addComponent = (() => {
   }
 
   return new Promise(async resolve => {
-    await addNewTheme.then(() => {
+    await removePartialTemplate.then(() => {
       execa.stdout(deux, ['add', 'component', `--db=${dbPath}`, `--input=${JSON.stringify(componentConfig)}`]).then(() => {
         resolve()
       })
@@ -268,13 +395,13 @@ const addComponent = (() => {
   })
 })()
 
-test('ADD COMMAND (COMPONENT): should be succeed.', async t => {
+test('`deux add component`: should be succeed.', async t => {
   await addComponent.then(() => {
     t.pass()
   })
 })
 
-test('ADD COMMAND (COMPONENT): component file should be exists.', async t => {
+test('`deux add component`: component file should be exists.', async t => {
   await addComponent.then(() => {
     t.true(existsSync(path.join(themePath, 'components', 'example-component.php')))
   })
@@ -294,13 +421,13 @@ const removeComponent = (() => {
   })
 })()
 
-test('REMOVE COMMAND (COMPONENT): should be succeed.', async t => {
+test('`deux remove component`: should be succeed.', async t => {
   await removeComponent.then(() => {
     t.pass()
   })
 })
 
-test('REMOVE COMMAND (COMPONENT): component file should be deleted.', async t => {
+test('`deux remove component`: component file should be deleted.', async t => {
   await removeComponent.then(() => {
     t.false(existsSync(path.join(themePath, 'components', 'example-component.php')))
   })
@@ -327,13 +454,13 @@ const addMenu = (() => {
   })
 })()
 
-test('ADD COMMAND (MENU): should be succeed.', async t => {
+test('`deux add menu`: should be succeed.', async t => {
   await addMenu.then(() => {
     t.pass()
   })
 })
 
-test('ADD COMMAND (MENU): config should be valid.', async t => {
+test('`deux add menu`: config should be valid.', async t => {
   await addMenu.then(() => {
     const _config = getConfig()
     t.deepEqual({
@@ -349,7 +476,7 @@ test('ADD COMMAND (MENU): config should be valid.', async t => {
   })
 })
 
-test('ADD COMMAND (MENU): nav-walker library should be exists.', async t => {
+test('`deux add menu`: nav-walker library should be exists.', async t => {
   await addMenu.then(() => {
     t.true(existsSync(path.join(themePath, 'includes', 'libraries', 'class-primary-menu-nav-walker.php')))
   })
@@ -369,20 +496,20 @@ const removeMenu = (() => {
   })
 })()
 
-test('REMOVE COMMAND (MENU): should be succeed.', async t => {
+test('`deux remove menu`: should be succeed.', async t => {
   await removeMenu.then(() => {
     t.pass()
   })
 })
 
-test('REMOVE COMMAND (MENU): config should be valid.', async t => {
+test('`deux remove menu`: config should be valid.', async t => {
   await removeMenu.then(() => {
     const _config = getConfig()
     t.deepEqual({}, _config.phpConfig.menus)
   })
 })
 
-test('REMOVE COMMAND (MENU): nav-walker library should be deleted.', async t => {
+test('`deux remove menu`: nav-walker library should be deleted.', async t => {
   await removeMenu.then(() => {
     t.false(existsSync(path.join(themePath, 'includes', 'libraries', 'class-primary-menu-nav-walker.php')))
   })
@@ -408,13 +535,13 @@ const addWidget = (() => {
   })
 })()
 
-test('ADD COMMAND (WIDGET): should be succeed.', async t => {
+test('`deux add widget`: should be succeed.', async t => {
   await addWidget.then(() => {
     t.pass()
   })
 })
 
-test('ADD COMMAND (WIDGET): config should be valid.', async t => {
+test('`deux add widget`: config should be valid.', async t => {
   await addWidget.then(() => {
     const _config = getConfig()
     t.deepEqual({
@@ -448,13 +575,13 @@ const removeWidget = (() => {
   })
 })()
 
-test('REMOVE COMMAND (WIDGET): should be succeed.', async t => {
+test('`deux remove widget`: should be succeed.', async t => {
   await removeWidget.then(() => {
     t.pass()
   })
 })
 
-test('REMOVE COMMAND (WIDGET): config should be valid.', async t => {
+test('`deux remove widget`: config should be valid.', async t => {
   await removeWidget.then(() => {
     const _config = getConfig()
     t.deepEqual({}, _config.phpConfig.widgets)

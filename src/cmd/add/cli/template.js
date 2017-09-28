@@ -8,7 +8,6 @@ const {templateTypes, templateLabels, postTypes} = require('./fixtures')
 
 const CLI = global.deuxcli.require('main')
 const messages = global.deuxcli.require('messages')
-const {exit, finish} = global.deuxhelpers.require('logger')
 const validator = global.deuxhelpers.require('util/validator')
 const compileFiles = global.deuxhelpers.require('compiler/bulk')
 const {scandir} = global.deuxhelpers.require('util/file')
@@ -26,10 +25,10 @@ const slugifyName = (prefix, name) => {
 }
 
 class AddTemplate extends CLI {
-  constructor() {
+  constructor(options) {
     super()
     this.woocommerce = undefined
-    this.init()
+    this.init(false, options)
   }
 
   /**
@@ -37,8 +36,8 @@ class AddTemplate extends CLI {
    */
   prepare() {
     this.woocommerce = this.themeInfo('features').woocommerce
-    this.title = 'Add {New Template}'
-    this.prompts = [
+    this.$title = 'Add {New Template}'
+    this.$prompts = [
       {
         type: 'list',
         name: 'template.type',
@@ -188,7 +187,7 @@ class AddTemplate extends CLI {
 
       {
         type: 'confirm',
-        name: 'template.overwrite',
+        name: 'overwrite',
         message: 'Template already exists. Continue to overwrite?',
         default: true,
         when: ({template}) => new Promise(resolve => {
@@ -212,11 +211,11 @@ class AddTemplate extends CLI {
 
   /**
    * Compile template file and config
-   * @param {Object} {template}
+   * @param {Object} {template, overwrite}
    */
-  action({template}) {
-    if (template.overwrite === false) {
-      exit(messages.ERROR_TEMPLATE_ALREADY_EXISTS)
+  action({template, overwrite}) {
+    if (overwrite === false) {
+      this.$logger.exit(messages.ERROR_TEMPLATE_ALREADY_EXISTS)
     }
 
     const themeDetails = this.themeDetails()
@@ -272,8 +271,8 @@ class AddTemplate extends CLI {
         resolve()
       })
     ]).then(
-      finish(successMsg)
-    ).catch(exit)
+      this.$logger.finish(successMsg)
+    ).catch(this.$logger.exit)
   }
 }
 
