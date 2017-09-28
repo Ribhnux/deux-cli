@@ -249,7 +249,77 @@ test('NEW COMMAND: Directory structures should be valid.', async t => {
 })
 
 /**
- * Add and remove commands.
+ * Add and remove menus.
+ */
+const addMenu = (() => {
+  const menuConfig = {
+    menu: {
+      name: 'New Menu',
+      description: 'New Description',
+      walker: true
+    }
+  }
+
+  return new Promise(async resolve => {
+    await addNewTheme.then(() => {
+      execa.stdout(deux, ['add', 'menu', `--db=${dbPath}`, `--input=${JSON.stringify(menuConfig)}`]).then(() => {
+        resolve()
+      })
+    })
+  })
+})()
+
+test('ADD COMMAND (MENU): should be succeed.', async t => {
+  await addMenu.then(() => {
+    t.pass()
+  })
+})
+
+test('ADD COMMAND (MENU): config should be valid.', async t => {
+  await addMenu.then(() => {
+    const _config = getConfig()
+    t.deepEqual({
+      /* eslint-disable quote-props */
+      /* eslint-disable camelcase */
+      'new-menu': {
+        walker: true,
+        name: jsonar.literal('__( \'New Menu\', \'deux-theme\' )'),
+        description: jsonar.literal('__( \'New Description\', \'deux-theme\' )')
+      }
+      /* eslint-enable quote-props camelcase */
+    }, _config.phpConfig.menus)
+  })
+})
+
+const removeMenu = (() => {
+  const menuConfig = {
+    menus: ['new-menu']
+  }
+
+  return new Promise(async resolve => {
+    await addNewTheme.then(() => {
+      execa.stdout(deux, ['remove', 'menu', `--db=${dbPath}`, `--input=${JSON.stringify(menuConfig)}`]).then(() => {
+        resolve()
+      })
+    })
+  })
+})()
+
+test('REMOVE COMMAND (MENU): should be succeed.', async t => {
+  await removeMenu.then(() => {
+    t.pass()
+  })
+})
+
+test('REMOVE COMMAND (MENU): config should be valid.', async t => {
+  await removeMenu.then(() => {
+    const _config = getConfig()
+    t.deepEqual({}, _config.phpConfig.menus)
+  })
+})
+
+/**
+ * Add and remove widgets.
  */
 const addWidget = (() => {
   const widgetConfig = {
@@ -260,7 +330,7 @@ const addWidget = (() => {
   }
 
   return new Promise(async resolve => {
-    await addNewTheme.then(() => {
+    await removeMenu.then(() => {
       execa.stdout(deux, ['add', 'widget', `--db=${dbPath}`, `--input=${JSON.stringify(widgetConfig)}`]).then(() => {
         resolve()
       })

@@ -3,15 +3,14 @@ const uniq = require('lodash.uniq')
 
 const CLI = global.deuxcli.require('main')
 const messages = global.deuxcli.require('messages')
-const {exit, finish} = global.deuxhelpers.require('logger')
 const {happyExit, captchaMaker, separatorMaker} = global.deuxhelpers.require('util/cli')
 
 class RemoveMenu extends CLI {
-  constructor() {
+  constructor(options) {
     super()
     this.themeMenus = undefined
     this.themeLibraries = undefined
-    this.init()
+    this.init(false, options)
   }
 
   /**
@@ -23,11 +22,11 @@ class RemoveMenu extends CLI {
     this.themeLibraries = themeInfo.libraries
 
     if (Object.keys(this.themeMenus).length === 0) {
-      happyExit()
+      happyExit(this.$init.apiMode())
     }
 
-    this.title = 'Remove {Menus}'
-    this.prompts = [
+    this.$title = 'Remove {Menus}'
+    this.$prompts = [
       {
         type: 'checkbox',
         name: 'menus',
@@ -72,8 +71,8 @@ class RemoveMenu extends CLI {
    * @param {Object} {menus, confirm}
    */
   action({menus, confirm}) {
-    if (menus.length === 0 || !confirm) {
-      happyExit()
+    if (menus.length === 0 || (!confirm && !this.$init.apiMode())) {
+      happyExit(this.$init.apiMode())
     }
 
     Promise.all(menus.map(
@@ -96,9 +95,13 @@ class RemoveMenu extends CLI {
           resolve()
         })
       ]).then(
-        finish(messages.SUCCEED_REMOVED_MENU)
-      ).catch(exit)
-    }).catch(exit)
+        this.$logger.finish(messages.SUCCEED_REMOVED_MENU, this.$init.apiMode())
+      ).catch(err => {
+        this.$logger.exit(err, this.$init.apiMode())
+      })
+    }).catch(err => {
+      this.$logger.exit(err, this.$init.apiMode())
+    })
   }
 }
 
