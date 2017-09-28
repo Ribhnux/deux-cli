@@ -4,22 +4,21 @@ const uniq = require('lodash.uniq')
 
 const CLI = global.deuxcli.require('main')
 const messages = global.deuxcli.require('messages')
-const {exit, finish} = global.deuxhelpers.require('logger')
 const validator = global.deuxhelpers.require('util/validator')
 const compileFile = global.deuxhelpers.require('compiler/single')
 
 class AddComponent extends CLI {
-  constructor() {
+  constructor(options) {
     super()
-    this.init()
+    this.init(false, options)
   }
 
   /**
    * Setup add component prompts
    */
   prepare() {
-    this.title = 'Add {New Component}'
-    this.prompts = [
+    this.$title = 'Add {New Component}'
+    this.$prompts = [
       {
         name: 'component.name',
         message: 'Name',
@@ -36,7 +35,7 @@ class AddComponent extends CLI {
 
       {
         type: 'confirm',
-        name: 'component.overwrite',
+        name: 'overwrite',
         message: 'Component already exists. Continue to overwrite?',
         default: true,
         when: ({component}) => new Promise(resolve => {
@@ -50,11 +49,11 @@ class AddComponent extends CLI {
   /**
    * Compile components file and config
    *
-   * @param {Object} {component}
+   * @param {Object} {component, overwrite}
    */
-  action({component}) {
-    if (component.overwrite === false) {
-      exit(messages.ERROR_COMPONENT_ALREADY_EXISTS)
+  action({component, overwrite}) {
+    if (overwrite === false) {
+      this.$logger.exit(messages.ERROR_COMPONENT_ALREADY_EXISTS)
     }
 
     Promise.all([
@@ -86,8 +85,8 @@ class AddComponent extends CLI {
         resolve()
       })
     ]).then(
-      finish(messages.SUCCEED_COMPONENT_ADDED)
-    ).catch(exit)
+      this.$logger.finish(messages.SUCCEED_COMPONENT_ADDED)
+    ).catch(this.$logger.exit)
   }
 }
 

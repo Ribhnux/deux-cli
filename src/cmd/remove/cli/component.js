@@ -5,14 +5,13 @@ const uniq = require('lodash.uniq')
 
 const CLI = global.deuxcli.require('main')
 const messages = global.deuxcli.require('messages')
-const {exit, finish} = global.deuxhelpers.require('logger')
-const {happyExit, captchaMaker, separatorMaker} = global.deuxhelpers.require('util/cli')
+const {captchaMaker, separatorMaker} = global.deuxhelpers.require('util/cli')
 
 class RemoveComponent extends CLI {
-  constructor() {
+  constructor(options) {
     super()
     this.themeComponents = undefined
-    this.init()
+    this.init(false, options)
   }
 
   /**
@@ -22,11 +21,11 @@ class RemoveComponent extends CLI {
     this.themeComponents = this.themeInfo('components')
 
     if (this.themeComponents.length === 0) {
-      happyExit()
+      this.$logger.happyExit()
     }
 
-    this.title = 'Remove {Components}'
-    this.prompts = [
+    this.$title = 'Remove {Components}'
+    this.$prompts = [
       {
         type: 'checkbox',
         name: 'components',
@@ -78,8 +77,8 @@ class RemoveComponent extends CLI {
    * @param {Object} {components, confirm}
    */
   action({components, confirm}) {
-    if (components.length === 0 || !confirm) {
-      happyExit()
+    if (components.length === 0 || (!confirm && !this.$init.apiMode())) {
+      this.$logger.happyExit()
     }
 
     Promise.all(components.map(
@@ -104,9 +103,9 @@ class RemoveComponent extends CLI {
           resolve()
         })
       ]).then(
-        finish(messages.SUCCEED_REMOVED_COMPONENT)
-      ).catch(exit)
-    }).catch(exit)
+        this.$logger.finish(messages.SUCCEED_REMOVED_COMPONENT)
+      ).catch(this.$logger.exit)
+    }).catch(this.$logger.exit)
   }
 }
 

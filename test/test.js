@@ -249,19 +249,77 @@ test('NEW COMMAND: Directory structures should be valid.', async t => {
 })
 
 /**
+ * Add and remove components.
+ */
+const addComponent = (() => {
+  const componentConfig = {
+    component: {
+      name: 'Example Component',
+      description: 'Example Description'
+    }
+  }
+
+  return new Promise(async resolve => {
+    await addNewTheme.then(() => {
+      execa.stdout(deux, ['add', 'component', `--db=${dbPath}`, `--input=${JSON.stringify(componentConfig)}`]).then(() => {
+        resolve()
+      })
+    })
+  })
+})()
+
+test('ADD COMMAND (COMPONENT): should be succeed.', async t => {
+  await addComponent.then(() => {
+    t.pass()
+  })
+})
+
+test('ADD COMMAND (COMPONENT): component file should be exists.', async t => {
+  await addComponent.then(() => {
+    t.true(existsSync(path.join(themePath, 'components', 'example-component.php')))
+  })
+})
+
+const removeComponent = (() => {
+  const componentConfig = {
+    components: ['example-component']
+  }
+
+  return new Promise(async resolve => {
+    await addComponent.then(() => {
+      execa.stdout(deux, ['remove', 'component', `--db=${dbPath}`, `--input=${JSON.stringify(componentConfig)}`]).then(() => {
+        resolve()
+      })
+    })
+  })
+})()
+
+test('REMOVE COMMAND (COMPONENT): should be succeed.', async t => {
+  await removeComponent.then(() => {
+    t.pass()
+  })
+})
+
+test('REMOVE COMMAND (COMPONENT): component file should be deleted.', async t => {
+  await removeComponent.then(() => {
+    t.false(existsSync(path.join(themePath, 'components', 'example-component.php')))
+  })
+})
+
+/**
  * Add and remove menus.
  */
 const addMenu = (() => {
   const menuConfig = {
     menu: {
       name: 'Primary',
-      description: 'New Description',
+      description: 'Example Description',
       walker: true
     }
   }
 
   return new Promise(async resolve => {
-    await addNewTheme.then(() => {
+    await removeComponent.then(() => {
       execa.stdout(deux, ['add', 'menu', `--db=${dbPath}`, `--input=${JSON.stringify(menuConfig)}`]).then(() => {
         resolve()
       })
@@ -284,7 +342,7 @@ test('ADD COMMAND (MENU): config should be valid.', async t => {
       'primary': {
         walker: true,
         name: jsonar.literal('__( \'Primary\', \'deux-theme\' )'),
-        description: jsonar.literal('__( \'New Description\', \'deux-theme\' )')
+        description: jsonar.literal('__( \'Example Description\', \'deux-theme\' )')
       }
       /* eslint-enable quote-props camelcase */
     }, _config.phpConfig.menus)
@@ -303,7 +361,7 @@ const removeMenu = (() => {
   }
 
   return new Promise(async resolve => {
-    await addNewTheme.then(() => {
+    await addMenu.then(() => {
       execa.stdout(deux, ['remove', 'menu', `--db=${dbPath}`, `--input=${JSON.stringify(menuConfig)}`]).then(() => {
         resolve()
       })
@@ -324,6 +382,12 @@ test('REMOVE COMMAND (MENU): config should be valid.', async t => {
   })
 })
 
+test('REMOVE COMMAND (MENU): nav-walker library should be deleted.', async t => {
+  await removeMenu.then(() => {
+    t.false(existsSync(path.join(themePath, 'includes', 'libraries', 'class-primary-menu-nav-walker.php')))
+  })
+})
+
 /**
  * Add and remove widgets.
  */
@@ -331,7 +395,7 @@ const addWidget = (() => {
   const widgetConfig = {
     widget: {
       name: 'New Widget',
-      description: 'New Description'
+      description: 'Example Description'
     }
   }
 
@@ -358,7 +422,7 @@ test('ADD COMMAND (WIDGET): config should be valid.', async t => {
       /* eslint-disable camelcase */
       'new-widget': {
         name: jsonar.literal('__( \'New Widget\', \'deux-theme\' )'),
-        description: jsonar.literal('__( \'New Description\', \'deux-theme\' )'),
+        description: jsonar.literal('__( \'Example Description\', \'deux-theme\' )'),
         class: '',
         before_widget: '<section id="%1$s" class="widget %2$s">',
         after_widget: '</section>',
@@ -376,7 +440,7 @@ const removeWidget = (() => {
   }
 
   return new Promise(async resolve => {
-    await addNewTheme.then(() => {
+    await addWidget.then(() => {
       execa.stdout(deux, ['remove', 'widget', `--db=${dbPath}`, `--input=${JSON.stringify(widgetConfig)}`]).then(() => {
         resolve()
       })
