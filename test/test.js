@@ -254,7 +254,7 @@ test('NEW COMMAND: Directory structures should be valid.', async t => {
 const addMenu = (() => {
   const menuConfig = {
     menu: {
-      name: 'New Menu',
+      name: 'Primary',
       description: 'New Description',
       walker: true
     }
@@ -281,9 +281,9 @@ test('ADD COMMAND (MENU): config should be valid.', async t => {
     t.deepEqual({
       /* eslint-disable quote-props */
       /* eslint-disable camelcase */
-      'new-menu': {
+      'primary': {
         walker: true,
-        name: jsonar.literal('__( \'New Menu\', \'deux-theme\' )'),
+        name: jsonar.literal('__( \'Primary\', \'deux-theme\' )'),
         description: jsonar.literal('__( \'New Description\', \'deux-theme\' )')
       }
       /* eslint-enable quote-props camelcase */
@@ -291,9 +291,15 @@ test('ADD COMMAND (MENU): config should be valid.', async t => {
   })
 })
 
+test('ADD COMMAND (MENU): nav-walker library should be exists.', async t => {
+  await addMenu.then(() => {
+    t.true(existsSync(path.join(themePath, 'includes', 'libraries', 'class-primary-menu-nav-walker.php')))
+  })
+})
+
 const removeMenu = (() => {
   const menuConfig = {
-    menus: ['new-menu']
+    menus: ['primary']
   }
 
   return new Promise(async resolve => {
