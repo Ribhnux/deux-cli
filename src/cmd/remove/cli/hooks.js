@@ -5,15 +5,14 @@ const uniq = require('lodash.uniq')
 const CLI = global.deuxcli.require('main')
 const messages = global.deuxcli.require('messages')
 const {hookTypes} = global.deuxcmd.require('add/cli/fixtures')
-const {exit, finish} = global.deuxhelpers.require('logger')
-const {happyExit, captchaMaker, separatorMaker} = global.deuxhelpers.require('util/cli')
+const {captchaMaker, separatorMaker} = global.deuxhelpers.require('util/cli')
 
 class RemoveHooks extends CLI {
-  constructor() {
+  constructor(options) {
     super()
     this.themeFilters = undefined
     this.themeActions = undefined
-    this.init()
+    this.init(false, options)
   }
 
   /**
@@ -25,19 +24,19 @@ class RemoveHooks extends CLI {
     this.themeActions = themeInfo.actions
 
     if (this.themeFilters.length + this.themeActions.length === 0) {
-      happyExit()
+      this.$logger.happyExit()
     }
 
     const getHookInfo = (items, type) => new Promise((resolve, reject) => {
       Promise.all(items.map(
-        value => new Promise((resolve, reject) => {
-          wpFileHeader(this.currentThemePath('includes', `${type}s`, `${value}.php`))
+        file => new Promise((resolve, reject) => {
+          wpFileHeader(this.currentThemePath('includes', `${type}s`, `${file}.php`))
           .then(info => {
             resolve({
               name: info[`${type}Name`],
               value: {
                 type,
-                value
+                file
               }
             })
           }).catch(reject)
@@ -50,8 +49,8 @@ class RemoveHooks extends CLI {
       }).catch(reject)
     })
 
-    this.title = 'Remove {Actions / Filters} Hooks'
-    this.prompts = [
+    this.$title = 'Remove {Actions / Filters} Hooks'
+    this.$prompts = [
       {
         type: 'checkbox',
         name: 'hooks',
@@ -112,18 +111,18 @@ class RemoveHooks extends CLI {
    * @param {Object} {hooks, confirm}
    */
   action({hooks, confirm}) {
-    if (hooks.length === 0 || !confirm) {
-      happyExit()
+    if (hooks.length === 0 || (!confirm && !this.$init.apiMode())) {
+      this.$logger.happyExit()
     }
 
     Promise.all(hooks.map(
       item => new Promise(resolve => {
-        rimraf.sync(this.currentThemePath('includes', `${item.type}s`, `${item.value}.php`))
+        rimraf.sync(this.currentThemePath('includes', `${item.type}s`, `${item.file}.php`))
 
         if (item.type === hookTypes.FILTER) {
-          this.themeFilters = this.themeFilters.filter(_item => _item !== item.value)
+          this.themeFilters = this.themeFilters.filter(_item => _item !== item.file)
         } else {
-          this.themeActions = this.themeActions.filter(_item => _item !== item.value)
+          this.themeActions = this.themeActions.filter(_item => _item !== item.file)
         }
 
         resolve()
@@ -138,9 +137,9 @@ class RemoveHooks extends CLI {
           resolve()
         })
       ]).then(
-        finish(messages.SUCCEED_REMOVED_HOOKS)
-      ).catch(exit)
-    }).catch(exit)
+        this.$logger.finish(messages.SUCCEED_REMOVED_HOOKS)
+      ).catch(this.$logger.exit)
+    }).catch(this.$logger.exit)
   }
 }
 

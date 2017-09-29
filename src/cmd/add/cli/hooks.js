@@ -7,21 +7,20 @@ const CLI = global.deuxcli.require('main')
 const messages = global.deuxcli.require('messages')
 const validator = global.deuxhelpers.require('util/validator')
 const {capitalize} = global.deuxhelpers.require('util/misc')
-const {exit, finish} = global.deuxhelpers.require('logger')
 const compileFile = global.deuxhelpers.require('compiler/single')
 
 class AddHooks extends CLI {
-  constructor() {
+  constructor(options) {
     super()
-    this.init()
+    this.init(false, options)
   }
 
   /**
    * Setup add hook prompts
    */
   prepare() {
-    this.title = 'Add {Action / Filter} Hooks'
-    this.prompts = [
+    this.$title = 'Add {Action / Filter} Hooks'
+    this.$prompts = [
       {
         type: 'list',
         name: 'hooks.type',
@@ -49,8 +48,8 @@ class AddHooks extends CLI {
       {
         name: 'hooks.description',
         message: ({hooks}) => `${capitalize(hooks.type)} description`,
-        default: faker.lorem.sentence(),
-        validate: value => validator(value, {minimum: 3, word: true, var: 'Description'})
+        default: faker.lorem.words(),
+        validate: value => validator(value, {minimum: 2, word: true, var: 'Description'})
       },
 
       {
@@ -71,7 +70,7 @@ class AddHooks extends CLI {
 
       {
         type: 'confirm',
-        name: 'hooks.overwrite',
+        name: 'overwrite',
         message: ({hooks}) => `${capitalize(hooks.type)} already exists. Continue to overwrite?`,
         default: true,
         when: ({hooks}) => new Promise(resolve => {
@@ -85,11 +84,11 @@ class AddHooks extends CLI {
   /**
    * Compile hooks file and config
    *
-   * @param {Object} {hooks, confirm}
+   * @param {Object} {hooks, overwrite}
    */
-  action({hooks}) {
-    if (hooks.overwrite === false) {
-      exit(messages.ERROR_HOOKS_ALREADY_EXISTS)
+  action({hooks, overwrite}) {
+    if (overwrite === false) {
+      this.$logger.exit(messages.ERROR_HOOKS_ALREADY_EXISTS)
     }
 
     hooks.slug = slugify(hooks.name)
@@ -116,8 +115,8 @@ class AddHooks extends CLI {
         resolve()
       })
     ]).then(
-      finish(messages.SUCCEED_HOOKS_ADDED)
-    ).catch(exit)
+      this.$logger.finish(messages.SUCCEED_HOOKS_ADDED)
+    ).catch(this.$logger.exit)
   }
 }
 

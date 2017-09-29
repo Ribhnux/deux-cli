@@ -825,3 +825,150 @@ test('`deux remove libclass`: file should be deleted.', async t => {
     t.false(existsSync(path.join(themePath, 'includes', 'libraries', 'class-example.php')))
   })
 })
+
+/**
+ * Add and remove php libraries.
+ */
+const addFilter = (() => {
+  const filterConfig = {
+    hooks: {
+      type: 'filter',
+      name: 'Example Content',
+      description: 'Example Description',
+      tag: 'the_content',
+      priority: 10
+    }
+  }
+
+  return new Promise(async resolve => {
+    await removeLibClass.then(() => {
+      execa.stdout(deux, ['add', 'hooks', `--db=${dbPath}`, `--input=${JSON.stringify(filterConfig)}`]).then(() => {
+        resolve()
+      })
+    })
+  })
+})()
+
+test('`deux add hooks` (FILTER): should be succeed.', async t => {
+  await addFilter.then(() => {
+    t.pass()
+  })
+})
+
+test('`deux add hooks` (FILTER): config should be valid.', async t => {
+  await addFilter.then(() => {
+    const _config = getConfig()
+    t.true(_config.phpConfig.filters.includes('example-content'))
+  })
+})
+
+test('`deux add hooks` (FILTER): file should be exists.', async t => {
+  await addFilter.then(() => {
+    t.true(existsSync(path.join(themePath, 'includes', 'filters', 'example-content.php')))
+  })
+})
+
+const removeFilter = (() => {
+  const filterConfig = {
+    hooks: [{type: 'filter', file: 'example-content'}]
+  }
+
+  return new Promise(async resolve => {
+    await addFilter.then(() => {
+      execa.stdout(deux, ['remove', 'hooks', `--db=${dbPath}`, `--input=${JSON.stringify(filterConfig)}`]).then(() => {
+        resolve()
+      })
+    })
+  })
+})()
+
+test('`deux remove hooks` (FILTER): should be succeed.', async t => {
+  await removeFilter.then(() => {
+    t.pass()
+  })
+})
+
+test('`deux remove hooks` (FILTER): config should be valid.', async t => {
+  await removeFilter.then(() => {
+    const _config = getConfig()
+    t.false(_config.phpConfig.filters.includes('example-content'))
+  })
+})
+
+test('`deux remove hooks` (FILTER): file should be deleted.', async t => {
+  await removeFilter.then(() => {
+    t.false(existsSync(path.join(themePath, 'includes', 'filters', 'example-content.php')))
+  })
+})
+
+const addAction = (() => {
+  const actionConfig = {
+    hooks: {
+      type: 'action',
+      name: 'Example Action',
+      description: 'Example Description',
+      tag: 'init',
+      priority: 10
+    }
+  }
+
+  return new Promise(async resolve => {
+    await removeFilter.then(() => {
+      execa.stdout(deux, ['add', 'hooks', `--db=${dbPath}`, `--input=${JSON.stringify(actionConfig)}`]).then(() => {
+        resolve()
+      })
+    })
+  })
+})()
+
+test('`deux add hooks` (ACTION): should be succeed.', async t => {
+  await addAction.then(() => {
+    t.pass()
+  })
+})
+
+test('`deux add hooks` (ACTION): config should be valid.', async t => {
+  await addAction.then(() => {
+    const _config = getConfig()
+    t.true(_config.phpConfig.actions.includes('example-action'))
+  })
+})
+
+test('`deux add hooks` (ACTION): file should be exists.', async t => {
+  await addAction.then(() => {
+    t.true(existsSync(path.join(themePath, 'includes', 'actions', 'example-action.php')))
+  })
+})
+
+const removeAction = (() => {
+  const actionConfig = {
+    hooks: [{type: 'action', file: 'example-action'}]
+  }
+
+  return new Promise(async resolve => {
+    await addAction.then(() => {
+      execa.stdout(deux, ['remove', 'hooks', `--db=${dbPath}`, `--input=${JSON.stringify(actionConfig)}`]).then(() => {
+        resolve()
+      })
+    })
+  })
+})()
+
+test('`deux remove hooks` (ACTION): should be succeed.', async t => {
+  await removeAction.then(() => {
+    t.pass()
+  })
+})
+
+test('`deux remove hooks` (ACTION): config should be valid.', async t => {
+  await removeAction.then(() => {
+    const _config = getConfig()
+    t.false(_config.phpConfig.actions.includes('example-action'))
+  })
+})
+
+test('`deux remove hooks` (ACTION): file should be deleted.', async t => {
+  await removeAction.then(() => {
+    t.false(existsSync(path.join(themePath, 'includes', 'actions', 'example-action.php')))
+  })
+})
