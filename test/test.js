@@ -603,6 +603,86 @@ test('`deux remove widget`: config should be valid.', async t => {
 })
 
 /**
+ * Add and remove img size
+ */
+const addImgSize = (() => {
+  /* eslint-disable quote-props */
+  /* eslint-disable camelcase */
+  const imgsizeConfig = {
+    imgsize: {
+      name: 'Example Size',
+      width: 250,
+      height: 250,
+      crop: true,
+      customcrop: true,
+      pos: {
+        x: 'center',
+        y: 'center'
+      }
+    }
+  }
+  /* eslint-enable quote-props camelcase */
+
+  return new Promise(async resolve => {
+    await removeWidget.then(() => {
+      execa.stdout(deux, ['add', 'imgsize', `--db=${dbPath}`, `--input=${JSON.stringify(imgsizeConfig)}`]).then(() => {
+        resolve()
+      })
+    })
+  })
+})()
+
+test('`deux add imgsize`: should be succeed.', async t => {
+  await addImgSize.then(() => {
+    t.pass()
+  })
+})
+
+test('`deux add imgsize`: config should be valid.', async t => {
+  await addImgSize.then(() => {
+    const _config = getConfig()
+    t.deepEqual({
+      'example-size': {
+        name: 'Example Size',
+        width: 250,
+        height: 250,
+        crop: {
+          x: 'center',
+          y: 'center'
+        }
+      }
+    }, _config.phpConfig.imgsize)
+  })
+})
+
+const removeImgSize = (() => {
+  const helperConfig = {
+    imgsize: ['example-size']
+  }
+
+  return new Promise(async resolve => {
+    await addImgSize.then(() => {
+      execa.stdout(deux, ['remove', 'imgsize', `--db=${dbPath}`, `--input=${JSON.stringify(helperConfig)}`]).then(() => {
+        resolve()
+      })
+    })
+  })
+})()
+
+test('`deux remove imgsize`: should be succeed.', async t => {
+  await removeImgSize.then(() => {
+    t.pass()
+  })
+})
+
+test('`deux remove imgsize`: config should be valid.', async t => {
+  await removeImgSize.then(() => {
+    const _config = getConfig()
+    t.deepEqual({}, _config.phpConfig.imgsize)
+  })
+})
+
+/**
  * Add and remove helper.
  */
 const addHelper = (() => {
@@ -614,7 +694,7 @@ const addHelper = (() => {
   }
 
   return new Promise(async resolve => {
-    await removeWidget.then(() => {
+    await removeImgSize.then(() => {
       execa.stdout(deux, ['add', 'helper', `--db=${dbPath}`, `--input=${JSON.stringify(helperConfig)}`]).then(() => {
         resolve()
       })

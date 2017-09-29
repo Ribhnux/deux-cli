@@ -5,20 +5,19 @@ const {positionTypes} = require('./fixtures')
 const CLI = global.deuxcli.require('main')
 const messages = global.deuxcli.require('messages')
 const validator = global.deuxhelpers.require('util/validator')
-const {exit, finish} = global.deuxhelpers.require('logger')
 
 class AddImageSize extends CLI {
-  constructor() {
+  constructor(options) {
     super()
-    this.init()
+    this.init(false, options)
   }
 
   /**
    * Setup add image size prompts
    */
   prepare() {
-    this.title = 'Add {Image Size}'
-    this.prompts = [
+    this.$title = 'Add {Image Size}'
+    this.$prompts = [
       {
         name: 'imgsize.name',
         message: 'Image Size Name',
@@ -141,7 +140,7 @@ class AddImageSize extends CLI {
 
       {
         type: 'confirm',
-        name: 'imgsize.overwrite',
+        name: 'overwrite',
         message: 'Image Size already exists. Continue to overwrite?',
         default: true,
         when: ({imgsize}) => new Promise(resolve => {
@@ -154,18 +153,18 @@ class AddImageSize extends CLI {
   /**
    * Compile image size file and config
    *
-   * @param {Object} imgsize
+   * @param {Object} {imgsize, overwrite}
    */
-  action({imgsize}) {
-    if (imgsize.overwrite === false) {
-      exit(messages.ERROR_IMGSIZE_ALREADY_EXISTS)
+  action({imgsize, overwrite}) {
+    if (overwrite === false) {
+      this.$logger.exit(messages.ERROR_IMGSIZE_ALREADY_EXISTS)
     }
 
     const slug = slugify(imgsize.name)
     const crop = imgsize.crop && imgsize.customcrop ? imgsize.pos : imgsize.crop
     const imageSize = this.themeInfo('imgsize')
 
-    Promise.all(
+    Promise.all([
       new Promise(resolve => {
         imageSize[slug] = {
           name: imgsize.name,
@@ -174,17 +173,19 @@ class AddImageSize extends CLI {
           crop
         }
         resolve()
-      }),
-
-      new Promise(resolve => {
-        this.setThemeConfig({
-          imgsize: imageSize
-        })
-        resolve()
       })
-    ).then(
-      finish(messages.SUCCEED_IMGSIZE_ADDED)
-    ).catch(exit)
+    ]).then(() => {
+      Promise.all([
+        new Promise(resolve => {
+          this.setThemeConfig({
+            imgsize: imageSize
+          })
+          resolve()
+        })
+      ]).then(
+        this.$logger.finish(messages.SUCCEED_IMGSIZE_ADDED)
+      ).catch(this.$logger.exit)
+    }).catch(this.$logger.exit)
   }
 }
 
