@@ -181,19 +181,37 @@ class NewCLI extends CLI {
       {
         title: 'Make theme directory',
         enabled: () => overwrite === false || overwrite === undefined,
-        task: () => new Promise(resolve => {
-          if (existsSync(themePath)) {
-            this.$logger.exit(messages.ERROR_THEME_ALREADY_EXISTS)
+        task: () => new Listr([
+          {
+            title: 'Create theme directory',
+            task: () => new Promise(resolve => {
+              if (existsSync(themePath)) {
+                this.$logger.exit(messages.ERROR_THEME_ALREADY_EXISTS)
+              }
+
+              mkdirp(themePath, err => {
+                if (err) {
+                  this.$logger.exit(err)
+                }
+
+                resolve()
+              })
+            })
+          },
+
+          {
+            title: 'Create .git directory',
+            task: () => new Promise(resolve => {
+              mkdirp(gitPath, err => {
+                if (err) {
+                  this.$logger.exit(err)
+                }
+
+                resolve()
+              })
+            })
           }
-
-          mkdirp(themePath, err => {
-            if (err) {
-              this.$logger.exit(err)
-            }
-
-            resolve()
-          })
-        })
+        ])
       },
 
       {
@@ -214,18 +232,6 @@ class NewCLI extends CLI {
           },
 
           {
-            title: 'Remove .git directory',
-            task: () => new Promise(resolve => {
-              rimraf(path.join(themePath, '.git'), err => {
-                if (err) {
-                  this.$logger.exit(err)
-                }
-                resolve()
-              })
-            })
-          },
-
-          {
             title: 'Create theme directory',
             task: () => new Promise(resolve => {
               mkdirp(themePath, err => {
@@ -233,6 +239,18 @@ class NewCLI extends CLI {
                   this.$logger.exit(err)
                 }
 
+                resolve()
+              })
+            })
+          },
+
+          {
+            title: 'Remove .git directory',
+            task: () => new Promise(resolve => {
+              rimraf(gitPath, err => {
+                if (err) {
+                  this.$logger.exit(err)
+                }
                 resolve()
               })
             })
