@@ -128,15 +128,13 @@ const themeConfig = {
   overwrite: true
 }
 
-const addNewTheme = (() => {
-  return new Promise(async resolve => {
-    await initTheme.then(() => {
-      execa.stdout(deux, ['new', `--db=${dbPath}`, `--input=${JSON.stringify(themeConfig)}`]).then(() => {
-        resolve()
-      })
+const addNewTheme = new Promise(async resolve => {
+  await initTheme.then(() => {
+    execa.stdout(deux, ['new', `--db=${dbPath}`, `--input=${JSON.stringify(themeConfig)}`]).then(() => {
+      resolve()
     })
   })
-})()
+})
 
 test('`deux new`: Add new theme should be succeed.', async t => {
   await addNewTheme.then(() => {
@@ -251,7 +249,7 @@ test('`deux new`: Directory structures should be valid.', async t => {
 /**
  * Add and remove page template.
  */
-const addPageTemplate = (() => {
+const addPageTemplate = new Promise(async resolve => {
   const templateConfig = {
     template: {
       type: 'page',
@@ -261,14 +259,12 @@ const addPageTemplate = (() => {
     }
   }
 
-  return new Promise(async resolve => {
-    await addNewTheme.then(() => {
-      execa.stdout(deux, ['add', 'template', `--db=${dbPath}`, `--input=${JSON.stringify(templateConfig)}`]).then(() => {
-        resolve()
-      })
+  await addNewTheme.then(() => {
+    execa.stdout(deux, ['add', 'template', `--db=${dbPath}`, `--input=${JSON.stringify(templateConfig)}`]).then(() => {
+      resolve()
     })
   })
-})()
+})
 
 test('`deux add template` (PAGE): should be succeed.', async t => {
   await addPageTemplate.then(() => {
@@ -282,7 +278,7 @@ test('`deux add template` (PAGE): template file should be exists.', async t => {
   })
 })
 
-const removePageTemplate = (() => {
+const removePageTemplate = new Promise(async resolve => {
   const templateConfig = {
     templates: [
       {
@@ -292,14 +288,12 @@ const removePageTemplate = (() => {
     ]
   }
 
-  return new Promise(async resolve => {
-    await addPageTemplate.then(() => {
-      execa.stdout(deux, ['remove', 'template', `--db=${dbPath}`, `--input=${JSON.stringify(templateConfig)}`]).then(() => {
-        resolve()
-      })
+  await addPageTemplate.then(() => {
+    execa.stdout(deux, ['remove', 'template', `--db=${dbPath}`, `--input=${JSON.stringify(templateConfig)}`]).then(() => {
+      resolve()
     })
   })
-})()
+})
 
 test('`deux remove template` (PAGE): should be succeed.', async t => {
   await removePageTemplate.then(() => {
@@ -313,7 +307,7 @@ test('`deux remove template` (PAGE): template file should be deleted.', async t 
   })
 })
 
-const addPartialTemplate = (() => {
+const addPartialTemplate = new Promise(async resolve => {
   const templateConfig = {
     template: {
       type: 'partial',
@@ -323,14 +317,12 @@ const addPartialTemplate = (() => {
     }
   }
 
-  return new Promise(async resolve => {
-    await removePageTemplate.then(() => {
-      execa.stdout(deux, ['add', 'template', `--db=${dbPath}`, `--input=${JSON.stringify(templateConfig)}`]).then(() => {
-        resolve()
-      })
+  await removePageTemplate.then(() => {
+    execa.stdout(deux, ['add', 'template', `--db=${dbPath}`, `--input=${JSON.stringify(templateConfig)}`]).then(() => {
+      resolve()
     })
   })
-})()
+})
 
 test('`deux add template` (PARTIAL): should be succeed.', async t => {
   await addPartialTemplate.then(() => {
@@ -344,7 +336,7 @@ test('`deux add template` (PARTIAL): template file should be exists.', async t =
   })
 })
 
-const removePartialTemplate = (() => {
+const removePartialTemplate = new Promise(async resolve => {
   const templateConfig = {
     templates: [
       {
@@ -354,14 +346,12 @@ const removePartialTemplate = (() => {
     ]
   }
 
-  return new Promise(async resolve => {
-    await addPartialTemplate.then(() => {
-      execa.stdout(deux, ['remove', 'template', `--db=${dbPath}`, `--input=${JSON.stringify(templateConfig)}`]).then(() => {
-        resolve()
-      })
+  await addPartialTemplate.then(() => {
+    execa.stdout(deux, ['remove', 'template', `--db=${dbPath}`, `--input=${JSON.stringify(templateConfig)}`]).then(() => {
+      resolve()
     })
   })
-})()
+})
 
 test('`deux remove template` (PARTIAL): should be succeed.', async t => {
   await removePartialTemplate.then(() => {
@@ -378,7 +368,7 @@ test('`deux remove template` (PARTIAL): template file should be deleted.', async
 /**
  * Add and remove components.
  */
-const addComponent = (() => {
+const addComponent = new Promise(async resolve => {
   const componentConfig = {
     component: {
       name: 'Example Component',
@@ -386,14 +376,12 @@ const addComponent = (() => {
     }
   }
 
-  return new Promise(async resolve => {
-    await removePartialTemplate.then(() => {
-      execa.stdout(deux, ['add', 'component', `--db=${dbPath}`, `--input=${JSON.stringify(componentConfig)}`]).then(() => {
-        resolve()
-      })
+  await removePartialTemplate.then(() => {
+    execa.stdout(deux, ['add', 'component', `--db=${dbPath}`, `--input=${JSON.stringify(componentConfig)}`]).then(() => {
+      resolve()
     })
   })
-})()
+})
 
 test('`deux add component`: should be succeed.', async t => {
   await addComponent.then(() => {
@@ -414,19 +402,17 @@ test('`deux add component`: component file should be exists.', async t => {
   })
 })
 
-const removeComponent = (() => {
+const removeComponent = new Promise(async resolve => {
   const componentConfig = {
     components: ['example-component']
   }
 
-  return new Promise(async resolve => {
-    await addComponent.then(() => {
-      execa.stdout(deux, ['remove', 'component', `--db=${dbPath}`, `--input=${JSON.stringify(componentConfig)}`]).then(() => {
-        resolve()
-      })
+  await addComponent.then(() => {
+    execa.stdout(deux, ['remove', 'component', `--db=${dbPath}`, `--input=${JSON.stringify(componentConfig)}`]).then(() => {
+      resolve()
     })
   })
-})()
+})
 
 test('`deux remove component`: should be succeed.', async t => {
   await removeComponent.then(() => {
@@ -450,7 +436,7 @@ test('`deux remove component`: component file should be deleted.', async t => {
 /**
  * Add and remove menus.
  */
-const addMenu = (() => {
+const addMenu = new Promise(async resolve => {
   const menuConfig = {
     menu: {
       name: 'Primary',
@@ -459,14 +445,12 @@ const addMenu = (() => {
     }
   }
 
-  return new Promise(async resolve => {
-    await removeComponent.then(() => {
-      execa.stdout(deux, ['add', 'menu', `--db=${dbPath}`, `--input=${JSON.stringify(menuConfig)}`]).then(() => {
-        resolve()
-      })
+  await removeComponent.then(() => {
+    execa.stdout(deux, ['add', 'menu', `--db=${dbPath}`, `--input=${JSON.stringify(menuConfig)}`]).then(() => {
+      resolve()
     })
   })
-})()
+})
 
 test('`deux add menu`: should be succeed.', async t => {
   await addMenu.then(() => {
@@ -496,19 +480,17 @@ test('`deux add menu`: nav-walker library should be exists.', async t => {
   })
 })
 
-const removeMenu = (() => {
+const removeMenu = new Promise(async resolve => {
   const menuConfig = {
     menus: ['primary']
   }
 
-  return new Promise(async resolve => {
-    await addMenu.then(() => {
-      execa.stdout(deux, ['remove', 'menu', `--db=${dbPath}`, `--input=${JSON.stringify(menuConfig)}`]).then(() => {
-        resolve()
-      })
+  await addMenu.then(() => {
+    execa.stdout(deux, ['remove', 'menu', `--db=${dbPath}`, `--input=${JSON.stringify(menuConfig)}`]).then(() => {
+      resolve()
     })
   })
-})()
+})
 
 test('`deux remove menu`: should be succeed.', async t => {
   await removeMenu.then(() => {
@@ -532,7 +514,7 @@ test('`deux remove menu`: nav-walker library should be deleted.', async t => {
 /**
  * Add and remove widgets.
  */
-const addWidget = (() => {
+const addWidget = new Promise(async resolve => {
   const widgetConfig = {
     widget: {
       name: 'New Widget',
@@ -540,14 +522,12 @@ const addWidget = (() => {
     }
   }
 
-  return new Promise(async resolve => {
-    await removeMenu.then(() => {
-      execa.stdout(deux, ['add', 'widget', `--db=${dbPath}`, `--input=${JSON.stringify(widgetConfig)}`]).then(() => {
-        resolve()
-      })
+  await removeMenu.then(() => {
+    execa.stdout(deux, ['add', 'widget', `--db=${dbPath}`, `--input=${JSON.stringify(widgetConfig)}`]).then(() => {
+      resolve()
     })
   })
-})()
+})
 
 test('`deux add widget`: should be succeed.', async t => {
   await addWidget.then(() => {
@@ -575,19 +555,17 @@ test('`deux add widget`: config should be valid.', async t => {
   })
 })
 
-const removeWidget = (() => {
+const removeWidget = new Promise(async resolve => {
   const widgetConfig = {
     widgets: ['new-widget']
   }
 
-  return new Promise(async resolve => {
-    await addWidget.then(() => {
-      execa.stdout(deux, ['remove', 'widget', `--db=${dbPath}`, `--input=${JSON.stringify(widgetConfig)}`]).then(() => {
-        resolve()
-      })
+  await addWidget.then(() => {
+    execa.stdout(deux, ['remove', 'widget', `--db=${dbPath}`, `--input=${JSON.stringify(widgetConfig)}`]).then(() => {
+      resolve()
     })
   })
-})()
+})
 
 test('`deux remove widget`: should be succeed.', async t => {
   await removeWidget.then(() => {
@@ -605,7 +583,7 @@ test('`deux remove widget`: config should be valid.', async t => {
 /**
  * Add and remove img size
  */
-const addImgSize = (() => {
+const addImgSize = new Promise(async resolve => {
   /* eslint-disable quote-props */
   /* eslint-disable camelcase */
   const imgsizeConfig = {
@@ -623,14 +601,12 @@ const addImgSize = (() => {
   }
   /* eslint-enable quote-props camelcase */
 
-  return new Promise(async resolve => {
-    await removeWidget.then(() => {
-      execa.stdout(deux, ['add', 'imgsize', `--db=${dbPath}`, `--input=${JSON.stringify(imgsizeConfig)}`]).then(() => {
-        resolve()
-      })
+  await removeWidget.then(() => {
+    execa.stdout(deux, ['add', 'imgsize', `--db=${dbPath}`, `--input=${JSON.stringify(imgsizeConfig)}`]).then(() => {
+      resolve()
     })
   })
-})()
+})
 
 test('`deux add imgsize`: should be succeed.', async t => {
   await addImgSize.then(() => {
@@ -655,19 +631,17 @@ test('`deux add imgsize`: config should be valid.', async t => {
   })
 })
 
-const removeImgSize = (() => {
+const removeImgSize = new Promise(async resolve => {
   const helperConfig = {
     imgsize: ['example-size']
   }
 
-  return new Promise(async resolve => {
-    await addImgSize.then(() => {
-      execa.stdout(deux, ['remove', 'imgsize', `--db=${dbPath}`, `--input=${JSON.stringify(helperConfig)}`]).then(() => {
-        resolve()
-      })
+  await addImgSize.then(() => {
+    execa.stdout(deux, ['remove', 'imgsize', `--db=${dbPath}`, `--input=${JSON.stringify(helperConfig)}`]).then(() => {
+      resolve()
     })
   })
-})()
+})
 
 test('`deux remove imgsize`: should be succeed.', async t => {
   await removeImgSize.then(() => {
@@ -685,7 +659,7 @@ test('`deux remove imgsize`: config should be valid.', async t => {
 /**
  * Add and remove helper.
  */
-const addHelper = (() => {
+const addHelper = new Promise(async resolve => {
   const helperConfig = {
     helper: {
       name: 'Example Helper',
@@ -693,14 +667,12 @@ const addHelper = (() => {
     }
   }
 
-  return new Promise(async resolve => {
-    await removeImgSize.then(() => {
-      execa.stdout(deux, ['add', 'helper', `--db=${dbPath}`, `--input=${JSON.stringify(helperConfig)}`]).then(() => {
-        resolve()
-      })
+  await removeImgSize.then(() => {
+    execa.stdout(deux, ['add', 'helper', `--db=${dbPath}`, `--input=${JSON.stringify(helperConfig)}`]).then(() => {
+      resolve()
     })
   })
-})()
+})
 
 test('`deux add helper`: should be succeed.', async t => {
   await addHelper.then(() => {
@@ -721,19 +693,17 @@ test('`deux add helper`: file should be exists.', async t => {
   })
 })
 
-const removeHelper = (() => {
+const removeHelper = new Promise(async resolve => {
   const helperConfig = {
     helpers: ['example-helper']
   }
 
-  return new Promise(async resolve => {
-    await addHelper.then(() => {
-      execa.stdout(deux, ['remove', 'helper', `--db=${dbPath}`, `--input=${JSON.stringify(helperConfig)}`]).then(() => {
-        resolve()
-      })
+  await addHelper.then(() => {
+    execa.stdout(deux, ['remove', 'helper', `--db=${dbPath}`, `--input=${JSON.stringify(helperConfig)}`]).then(() => {
+      resolve()
     })
   })
-})()
+})
 
 test('`deux remove helper`: should be succeed.', async t => {
   await removeHelper.then(() => {
@@ -757,7 +727,7 @@ test('`deux remove helper`: file should be deleted.', async t => {
 /**
  * Add and remove php libraries.
  */
-const addLibClass = (() => {
+const addLibClass = new Promise(async resolve => {
   const classConfig = {
     lib: {
       name: 'Example',
@@ -765,14 +735,12 @@ const addLibClass = (() => {
     }
   }
 
-  return new Promise(async resolve => {
-    await removeHelper.then(() => {
-      execa.stdout(deux, ['add', 'libclass', `--db=${dbPath}`, `--input=${JSON.stringify(classConfig)}`]).then(() => {
-        resolve()
-      })
+  await removeHelper.then(() => {
+    execa.stdout(deux, ['add', 'libclass', `--db=${dbPath}`, `--input=${JSON.stringify(classConfig)}`]).then(() => {
+      resolve()
     })
   })
-})()
+})
 
 test('`deux add libclass`: should be succeed.', async t => {
   await addLibClass.then(() => {
@@ -793,19 +761,17 @@ test('`deux add libclass`: file should be exists.', async t => {
   })
 })
 
-const removeLibClass = (() => {
+const removeLibClass = new Promise(async resolve => {
   const classConfig = {
     libraries: ['class-example']
   }
 
-  return new Promise(async resolve => {
-    await addLibClass.then(() => {
-      execa.stdout(deux, ['remove', 'libclass', `--db=${dbPath}`, `--input=${JSON.stringify(classConfig)}`]).then(() => {
-        resolve()
-      })
+  await addLibClass.then(() => {
+    execa.stdout(deux, ['remove', 'libclass', `--db=${dbPath}`, `--input=${JSON.stringify(classConfig)}`]).then(() => {
+      resolve()
     })
   })
-})()
+})
 
 test('`deux remove libclass`: should be succeed.', async t => {
   await removeLibClass.then(() => {
@@ -829,7 +795,7 @@ test('`deux remove libclass`: file should be deleted.', async t => {
 /**
  * Add and remove php libraries.
  */
-const addFilter = (() => {
+const addFilter = new Promise(async resolve => {
   const filterConfig = {
     hooks: {
       type: 'filter',
@@ -840,14 +806,12 @@ const addFilter = (() => {
     }
   }
 
-  return new Promise(async resolve => {
-    await removeLibClass.then(() => {
-      execa.stdout(deux, ['add', 'hooks', `--db=${dbPath}`, `--input=${JSON.stringify(filterConfig)}`]).then(() => {
-        resolve()
-      })
+  await removeLibClass.then(() => {
+    execa.stdout(deux, ['add', 'hooks', `--db=${dbPath}`, `--input=${JSON.stringify(filterConfig)}`]).then(() => {
+      resolve()
     })
   })
-})()
+})
 
 test('`deux add hooks` (FILTER): should be succeed.', async t => {
   await addFilter.then(() => {
@@ -868,19 +832,17 @@ test('`deux add hooks` (FILTER): file should be exists.', async t => {
   })
 })
 
-const removeFilter = (() => {
+const removeFilter = new Promise(async resolve => {
   const filterConfig = {
     hooks: [{type: 'filter', file: 'example-content'}]
   }
 
-  return new Promise(async resolve => {
-    await addFilter.then(() => {
-      execa.stdout(deux, ['remove', 'hooks', `--db=${dbPath}`, `--input=${JSON.stringify(filterConfig)}`]).then(() => {
-        resolve()
-      })
+  await addFilter.then(() => {
+    execa.stdout(deux, ['remove', 'hooks', `--db=${dbPath}`, `--input=${JSON.stringify(filterConfig)}`]).then(() => {
+      resolve()
     })
   })
-})()
+})
 
 test('`deux remove hooks` (FILTER): should be succeed.', async t => {
   await removeFilter.then(() => {
@@ -901,7 +863,7 @@ test('`deux remove hooks` (FILTER): file should be deleted.', async t => {
   })
 })
 
-const addAction = (() => {
+const addAction = new Promise(async resolve => {
   const actionConfig = {
     hooks: {
       type: 'action',
@@ -912,14 +874,12 @@ const addAction = (() => {
     }
   }
 
-  return new Promise(async resolve => {
-    await removeFilter.then(() => {
-      execa.stdout(deux, ['add', 'hooks', `--db=${dbPath}`, `--input=${JSON.stringify(actionConfig)}`]).then(() => {
-        resolve()
-      })
+  await removeFilter.then(() => {
+    execa.stdout(deux, ['add', 'hooks', `--db=${dbPath}`, `--input=${JSON.stringify(actionConfig)}`]).then(() => {
+      resolve()
     })
   })
-})()
+})
 
 test('`deux add hooks` (ACTION): should be succeed.', async t => {
   await addAction.then(() => {
@@ -940,19 +900,17 @@ test('`deux add hooks` (ACTION): file should be exists.', async t => {
   })
 })
 
-const removeAction = (() => {
+const removeAction = new Promise(async resolve => {
   const actionConfig = {
     hooks: [{type: 'action', file: 'example-action'}]
   }
 
-  return new Promise(async resolve => {
-    await addAction.then(() => {
-      execa.stdout(deux, ['remove', 'hooks', `--db=${dbPath}`, `--input=${JSON.stringify(actionConfig)}`]).then(() => {
-        resolve()
-      })
+  await addAction.then(() => {
+    execa.stdout(deux, ['remove', 'hooks', `--db=${dbPath}`, `--input=${JSON.stringify(actionConfig)}`]).then(() => {
+      resolve()
     })
   })
-})()
+})
 
 test('`deux remove hooks` (ACTION): should be succeed.', async t => {
   await removeAction.then(() => {
