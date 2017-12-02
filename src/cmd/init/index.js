@@ -1,5 +1,4 @@
 const program = require('caporal')
-const Table = require('cli-table2')
 
 const message = global.deuxcli.require('messages')
 const {exit, finish} = global.deuxhelpers.require('logger')
