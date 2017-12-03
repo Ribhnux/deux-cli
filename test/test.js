@@ -1239,3 +1239,163 @@ test('`deux remove feature` (WooCommerce): config should be removed.', async t =
     t.false('woocommerce' in getConfig('features'))
   })
 })
+
+/**
+ * Add and remove plugins.
+ */
+const addPluginWoocommerce = new Promise(async resolve => {
+  await removeWoocommerceFeature.then(() => {
+    runCli(['add', 'plugin'], {
+      plugin: {
+        srctype: 'wp',
+        search: 'woocommerce',
+        item: {
+           name: 'WooCommerce',
+           slug: 'woocommerce',
+           description: 'Description',
+           version: '3.2.5',
+           versions: {
+              '3.2.5': 'https://downloads.wordpress.org/plugin/woocommerce.3.2.5.zip',
+              trunk: 'https://downloads.wordpress.org/plugin/woocommerce.zip'
+            }
+          },
+        versions: {
+          value: '3.2.5',
+          source: 'https://downloads.wordpress.org/plugin/woocommerce.3.2.5.zip'
+        },
+        required: true,
+        force_activation: false,
+        force_deactivation: false,
+        init: true
+      }
+    }).then(() => {
+      resolve()
+    })
+  })
+})
+
+test('`deux add plugin` (WordPress Repository): should be succeed.', async t => {
+  await addPluginWoocommerce.then(() => {
+    t.pass()
+  })
+})
+
+test('`deux add plugin` (WordPress Repository): plugin related file should be exists.', async t => {
+  await addPluginWoocommerce.then(() => {
+    t.true(existsSync(path.join(themePath, 'includes', 'plugins', 'woocommerce.php')))
+  })
+})
+
+const addPluginPrivate = new Promise(async resolve => {
+  await addPluginWoocommerce.then(() => {
+    runCli(['add', 'plugin'], {
+      plugin: {
+        srctype: 'private',
+        name: 'Test',
+        source: 'https://downloads.wordpress.org/plugin/woocommerce.3.2.5.zip',
+        slug: 'test',
+        version: '1.0.0',
+        description: 'Description About Anything',
+        external_url: 'https://baba.com',
+        required: true,
+        force_activation: false,
+        force_deactivation: false,
+        init: true
+      }
+    }).then(() => {
+      resolve()
+    })
+  })
+})
+
+test('`deux add plugin` (Private Repository): should be succeed.', async t => {
+  await addPluginPrivate.then(() => {
+    t.pass()
+  })
+})
+
+test('`deux add plugin` (Private Repository): plugin related file should be exists.', async t => {
+  await addPluginPrivate.then(() => {
+    t.true(existsSync(path.join(themePath, 'includes', 'plugins', 'test.php')))
+  })
+})
+
+test('`deux add plugin`: config should be valid.', async t => {
+  await addPluginPrivate.then(() => {
+    t.deepEqual({
+      /* eslint-disable quote-props */
+      /* eslint-disable camelcase */
+      'woocommerce': {
+        'srctype': 'wp',
+        'required': true,
+        'force_activation': false,
+        'force_deactivation': false,
+        'init': true,
+        'name': 'Woocommerce',
+        'description': 'Description',
+        'source': 'https://downloads.wordpress.org/plugin/woocommerce.3.2.5.zip',
+        'version': '3.2.5',
+      },
+      'test': {
+        'srctype': 'private',
+        'name': 'Test',
+        'source': 'https://downloads.wordpress.org/plugin/woocommerce.3.2.5.zip',
+        'version': '1.0.0',
+        'description': 'Description About Anything',
+        'required': true,
+        'force_activation': false,
+        'force_deactivation': false,
+        'init': true,
+      }
+      /* eslint-enable quote-props camelcase */
+    }, getConfig('plugins'))
+  })
+})
+
+const removePluginWordPress = new Promise(async resolve => {
+  await addPluginPrivate.then(() => {
+    runCli(['remove', 'plugin'], {
+      plugins: [
+        'woocommerce'
+      ]
+    }).then(() => {
+      resolve()
+    })
+  })
+})
+
+test('`deux remove plugin` (WordPress Repository): should be succeed.', async t => {
+  await removePluginWordPress.then(() => {
+    t.pass()
+  })
+})
+
+test('`deux remove plugin` (WordPress Repository): config should be removed.', async t => {
+  await removePluginWordPress.then(() => {
+    t.false('woocommerce' in getConfig('plugins'))
+  })
+})
+
+const removePluginPrivate = new Promise(async resolve => {
+  await removePluginWordPress.then(() => {
+    runCli(['remove', 'plugin'], {
+      plugins: [
+        'test'
+      ]
+    }).then(() => {
+      resolve()
+    })
+  })
+})
+
+test('`deux remove plugin` (Private Repository): should be succeed.', async t => {
+  await removePluginPrivate.then(() => {
+    t.pass()
+  })
+})
+
+test('`deux remove plugin` (Private Repository): config should be removed.', async t => {
+  await removePluginPrivate.then(() => {
+    t.false('test' in getConfig('plugins'))
+  })
+})
