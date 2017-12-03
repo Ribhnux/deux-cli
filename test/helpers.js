@@ -68,7 +68,7 @@ exports.cleanupDb = () => {
 }
 
 exports.runCli = (cmd, config) => {
-  const input = typeof config === 'string'? config : JSON.stringify(config)
+  const input = typeof config === 'string' ? config : JSON.stringify(config)
   const options = cmd.concat([`--db=${dbPath}`, `--input=${input}`])
   return execa.stdout(deux, options)
 }
