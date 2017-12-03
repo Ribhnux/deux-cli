@@ -3,15 +3,14 @@ const rimraf = require('rimraf')
 const CLI = global.deuxcli.require('main')
 const {featureTypes, featureLabels} = global.deuxcmd.require('add/cli/fixtures')
 const messages = global.deuxcli.require('messages')
-const {exit, finish} = global.deuxhelpers.require('logger')
-const {happyExit, captchaMaker, separatorMaker} = global.deuxhelpers.require('util/cli')
+const {captchaMaker, separatorMaker} = global.deuxhelpers.require('util/cli')
 
 class RemoveFeature extends CLI {
-  constructor() {
+  constructor(options) {
     super()
     this.themeFeatures = undefined
     this.themeHelpers = undefined
-    this.init()
+    this.init(false, options)
   }
 
   /**
@@ -23,11 +22,11 @@ class RemoveFeature extends CLI {
     this.themeHelpers = themeInfo.helpers
 
     if (Object.keys(this.themeFeatures).length === 0) {
-      happyExit()
+      this.$logger.happyExit()
     }
 
-    this.title = 'Remove {Features}'
-    this.prompts = [
+    this.$title = 'Remove {Features}'
+    this.$prompts = [
       {
         type: 'checkbox',
         name: 'features',
@@ -106,8 +105,8 @@ class RemoveFeature extends CLI {
    * @param {Object} {features, confirm}
    */
   action({features, confirm}) {
-    if (features.length === 0 || !confirm) {
-      happyExit()
+    if (features.length === 0 || (!confirm && !this.$init.apiMode())) {
+      this.$logger.happyExit()
     }
 
     Promise.all(features.map(
@@ -146,18 +145,14 @@ class RemoveFeature extends CLI {
         }).catch(reject)
       })
     )).then(() => {
-      Promise.all([
-        new Promise(resolve => {
-          this.setThemeConfig({
-            features: this.themeFatures,
-            helpers: this.themeHelpers
-          })
-          resolve()
-        })
-      ]).then(
-        finish(messages.SUCCEED_REMOVED_FEATURE)
-      ).catch(exit)
-    }).catch(exit)
+      this.setThemeConfig({
+        features: this.themeFatures,
+        helpers: this.themeHelpers
+      })
+      return true
+    }).then(() => {
+      this.$logger.finish(messages.SUCCEED_REMOVED_FEATURE)
+    }).catch(this.$logger.exit)
   }
 }
 

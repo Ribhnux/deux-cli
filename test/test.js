@@ -1,9 +1,8 @@
 import path from 'path'
 import {existsSync} from 'fs'
 import test from 'ava'
-import execa from 'execa'
 import jsonar from 'jsonar'
-import {deux, dbPath, wpPath, themePath} from './fixtures'
+import {wpPath, themePath} from './fixtures'
 import {getConfig, cleanupTheme, cleanupDb, runCli} from './helpers'
 
 const config = {
@@ -34,7 +33,7 @@ test.after('Cleanup theme after init', async () => {
 /**
  * Init theme.
  */
-test('`deux` (INIT): Error config should be fail.', async t => {
+test('`deux` (Init): Error config should be fail.', async t => {
   const badConfig = JSON.stringify(config) + '}'
   await runCli([], badConfig).catch(() => t.pass())
 })
@@ -45,7 +44,7 @@ const initTheme = new Promise(async resolve => {
   })
 })
 
-test('`deux` (INIT): Correct config should be succeed.', async t => {
+test('`deux` (Init): Correct config should be succeed.', async t => {
   await initTheme.then(() => {
     t.pass()
   })
@@ -200,13 +199,13 @@ const addPageTemplate = new Promise(async resolve => {
   })
 })
 
-test('`deux add template` (PAGE): should be succeed.', async t => {
+test('`deux add template` (Page): should be succeed.', async t => {
   await addPageTemplate.then(() => {
     t.pass()
   })
 })
 
-test('`deux add template` (PAGE): template file should be exists.', async t => {
+test('`deux add template` (Page): template file should be exists.', async t => {
   await addPageTemplate.then(() => {
     t.true(existsSync(path.join(themePath, 'page-templates', 'full-width.php')))
   })
@@ -227,13 +226,13 @@ const removePageTemplate = new Promise(async resolve => {
   })
 })
 
-test('`deux remove template` (PAGE): should be succeed.', async t => {
+test('`deux remove template` (Page): should be succeed.', async t => {
   await removePageTemplate.then(() => {
     t.pass()
   })
 })
 
-test('`deux remove template` (PAGE): template file should be deleted.', async t => {
+test('`deux remove template` (Page): template file should be deleted.', async t => {
   await removePageTemplate.then(() => {
     t.false(existsSync(path.join(themePath, 'page-templates', 'full-width.php')))
   })
@@ -254,13 +253,13 @@ const addPartialTemplate = new Promise(async resolve => {
   })
 })
 
-test('`deux add template` (PARTIAL): should be succeed.', async t => {
+test('`deux add template` (Partial): should be succeed.', async t => {
   await addPartialTemplate.then(() => {
     t.pass()
   })
 })
 
-test('`deux add template` (PARTIAL): template file should be exists.', async t => {
+test('`deux add template` (Partial): template file should be exists.', async t => {
   await addPartialTemplate.then(() => {
     t.true(existsSync(path.join(themePath, 'partial-templates', 'header-navigation.php')))
   })
@@ -281,13 +280,13 @@ const removePartialTemplate = new Promise(async resolve => {
   })
 })
 
-test('`deux remove template` (PARTIAL): should be succeed.', async t => {
+test('`deux remove template` (Partial): should be succeed.', async t => {
   await removePartialTemplate.then(() => {
     t.pass()
   })
 })
 
-test('`deux remove template` (PARTIAL): template file should be deleted.', async t => {
+test('`deux remove template` (Partial): template file should be deleted.', async t => {
   await removePartialTemplate.then(() => {
     t.false(existsSync(path.join(themePath, 'partial-templates', 'header-navigation.php')))
   })
@@ -317,8 +316,7 @@ test('`deux add component`: should be succeed.', async t => {
 
 test('`deux add component`: config should be valid.', async t => {
   await addComponent.then(() => {
-    const _config = getConfig()
-    t.true(_config.phpConfig.components.includes('example-component'))
+    t.true(getConfig('components').includes('example-component'))
   })
 })
 
@@ -344,10 +342,9 @@ test('`deux remove component`: should be succeed.', async t => {
   })
 })
 
-test('`deux remove component`: config should be valid.', async t => {
+test('`deux remove component`: config should be removed.', async t => {
   await removeComponent.then(() => {
-    const _config = getConfig()
-    t.false(_config.phpConfig.components.includes('example-component'))
+    t.false(getConfig('components').includes('example-component'))
   })
 })
 
@@ -382,17 +379,16 @@ test('`deux add menu`: should be succeed.', async t => {
 
 test('`deux add menu`: config should be valid.', async t => {
   await addMenu.then(() => {
-    const _config = getConfig()
     t.deepEqual({
       /* eslint-disable quote-props */
       /* eslint-disable camelcase */
       'primary': {
         walker: true,
-        name: jsonar.literal('__( \'Primary\', \'deux-theme\' )'),
-        description: jsonar.literal('__( \'Example Description\', \'deux-theme\' )')
+        name: jsonar.literal(`__( 'Primary', 'deux-theme' )`),
+        description: jsonar.literal(`__( 'Example Description', 'deux-theme' )`)
       }
       /* eslint-enable quote-props camelcase */
-    }, _config.phpConfig.menus)
+    }, getConfig('menus'))
   })
 })
 
@@ -418,10 +414,9 @@ test('`deux remove menu`: should be succeed.', async t => {
   })
 })
 
-test('`deux remove menu`: config should be valid.', async t => {
+test('`deux remove menu`: config should be removed.', async t => {
   await removeMenu.then(() => {
-    const _config = getConfig()
-    t.deepEqual({}, _config.phpConfig.menus)
+    t.deepEqual({}, getConfig('menus'))
   })
 })
 
@@ -455,13 +450,12 @@ test('`deux add widget`: should be succeed.', async t => {
 
 test('`deux add widget`: config should be valid.', async t => {
   await addWidget.then(() => {
-    const _config = getConfig()
     t.deepEqual({
       /* eslint-disable quote-props */
       /* eslint-disable camelcase */
       'new-widget': {
-        name: jsonar.literal('__( \'New Widget\', \'deux-theme\' )'),
-        description: jsonar.literal('__( \'Example Description\', \'deux-theme\' )'),
+        name: jsonar.literal(`__( 'New Widget', 'deux-theme' )`),
+        description: jsonar.literal(`__( 'Example Description', 'deux-theme' )`),
         class: '',
         before_widget: '<section id="%1$s" class="widget %2$s">',
         after_widget: '</section>',
@@ -469,7 +463,7 @@ test('`deux add widget`: config should be valid.', async t => {
         after_title: '</h2>'
       }
       /* eslint-enable quote-props camelcase */
-    }, _config.phpConfig.widgets)
+    }, getConfig('widgets'))
   })
 })
 
@@ -489,10 +483,9 @@ test('`deux remove widget`: should be succeed.', async t => {
   })
 })
 
-test('`deux remove widget`: config should be valid.', async t => {
+test('`deux remove widget`: config should be removed.', async t => {
   await removeWidget.then(() => {
-    const _config = getConfig()
-    t.deepEqual({}, _config.phpConfig.widgets)
+    t.deepEqual({}, getConfig('widgets'))
   })
 })
 
@@ -530,7 +523,6 @@ test('`deux add imgsize`: should be succeed.', async t => {
 
 test('`deux add imgsize`: config should be valid.', async t => {
   await addImgSize.then(() => {
-    const _config = getConfig()
     t.deepEqual({
       'example-size': {
         name: 'Example Size',
@@ -541,7 +533,7 @@ test('`deux add imgsize`: config should be valid.', async t => {
           y: 'center'
         }
       }
-    }, _config.phpConfig.imgsize)
+    }, getConfig('imgsize'))
   })
 })
 
@@ -561,10 +553,9 @@ test('`deux remove imgsize`: should be succeed.', async t => {
   })
 })
 
-test('`deux remove imgsize`: config should be valid.', async t => {
+test('`deux remove imgsize`: config should be removed.', async t => {
   await removeImgSize.then(() => {
-    const _config = getConfig()
-    t.deepEqual({}, _config.phpConfig.imgsize)
+    t.deepEqual({}, getConfig('imgsize'))
   })
 })
 
@@ -592,8 +583,7 @@ test('`deux add helper`: should be succeed.', async t => {
 
 test('`deux add helper`: config should be valid.', async t => {
   await addHelper.then(() => {
-    const _config = getConfig()
-    t.true(_config.phpConfig.helpers.includes('example-helper'))
+    t.true(getConfig('helpers').includes('example-helper'))
   })
 })
 
@@ -619,10 +609,9 @@ test('`deux remove helper`: should be succeed.', async t => {
   })
 })
 
-test('`deux remove helper`: config should be valid.', async t => {
+test('`deux remove helper`: config should be removed.', async t => {
   await removeHelper.then(() => {
-    const _config = getConfig()
-    t.false(_config.phpConfig.helpers.includes('example-helper'))
+    t.false(getConfig('helpers').includes('example-helper'))
   })
 })
 
@@ -656,8 +645,7 @@ test('`deux add libclass`: should be succeed.', async t => {
 
 test('`deux add libclass`: config should be valid.', async t => {
   await addLibClass.then(() => {
-    const _config = getConfig()
-    t.true(_config.phpConfig.libraries.includes('class-example'))
+    t.true(getConfig('libraries').includes('class-example'))
   })
 })
 
@@ -683,10 +671,9 @@ test('`deux remove libclass`: should be succeed.', async t => {
   })
 })
 
-test('`deux remove libclass`: config should be valid.', async t => {
+test('`deux remove libclass`: config should be removed.', async t => {
   await removeLibClass.then(() => {
-    const _config = getConfig()
-    t.false(_config.phpConfig.libraries.includes('class-example'))
+    t.false(getConfig('libraries').includes('class-example'))
   })
 })
 
@@ -715,20 +702,19 @@ const addFilter = new Promise(async resolve => {
   })
 })
 
-test('`deux add hooks` (FILTER): should be succeed.', async t => {
+test('`deux add hooks` (Filter): should be succeed.', async t => {
   await addFilter.then(() => {
     t.pass()
   })
 })
 
-test('`deux add hooks` (FILTER): config should be valid.', async t => {
+test('`deux add hooks` (Filter): config should be valid.', async t => {
   await addFilter.then(() => {
-    const _config = getConfig()
-    t.true(_config.phpConfig.filters.includes('example-content'))
+    t.true(getConfig('filters').includes('example-content'))
   })
 })
 
-test('`deux add hooks` (FILTER): file should be exists.', async t => {
+test('`deux add hooks` (Filter): file should be exists.', async t => {
   await addFilter.then(() => {
     t.true(existsSync(path.join(themePath, 'includes', 'filters', 'example-content.php')))
   })
@@ -744,20 +730,19 @@ const removeFilter = new Promise(async resolve => {
   })
 })
 
-test('`deux remove hooks` (FILTER): should be succeed.', async t => {
+test('`deux remove hooks` (Filter): should be succeed.', async t => {
   await removeFilter.then(() => {
     t.pass()
   })
 })
 
-test('`deux remove hooks` (FILTER): config should be valid.', async t => {
+test('`deux remove hooks` (Filter): config should be removed.', async t => {
   await removeFilter.then(() => {
-    const _config = getConfig()
-    t.false(_config.phpConfig.filters.includes('example-content'))
+    t.false(getConfig('filters').includes('example-content'))
   })
 })
 
-test('`deux remove hooks` (FILTER): file should be deleted.', async t => {
+test('`deux remove hooks` (Filter): file should be deleted.', async t => {
   await removeFilter.then(() => {
     t.false(existsSync(path.join(themePath, 'includes', 'filters', 'example-content.php')))
   })
@@ -779,20 +764,19 @@ const addAction = new Promise(async resolve => {
   })
 })
 
-test('`deux add hooks` (ACTION): should be succeed.', async t => {
+test('`deux add hooks` (Action): should be succeed.', async t => {
   await addAction.then(() => {
     t.pass()
   })
 })
 
-test('`deux add hooks` (ACTION): config should be valid.', async t => {
+test('`deux add hooks` (Action): config should be valid.', async t => {
   await addAction.then(() => {
-    const _config = getConfig()
-    t.true(_config.phpConfig.actions.includes('example-action'))
+    t.true(getConfig('actions').includes('example-action'))
   })
 })
 
-test('`deux add hooks` (ACTION): file should be exists.', async t => {
+test('`deux add hooks` (Action): file should be exists.', async t => {
   await addAction.then(() => {
     t.true(existsSync(path.join(themePath, 'includes', 'actions', 'example-action.php')))
   })
@@ -813,20 +797,19 @@ const removeAction = new Promise(async resolve => {
   })
 })
 
-test('`deux remove hooks` (ACTION): should be succeed.', async t => {
+test('`deux remove hooks` (Action): should be succeed.', async t => {
   await removeAction.then(() => {
     t.pass()
   })
 })
 
-test('`deux remove hooks` (ACTION): config should be valid.', async t => {
+test('`deux remove hooks` (Action): config should be removed.', async t => {
   await removeAction.then(() => {
-    const _config = getConfig()
-    t.false(_config.phpConfig.actions.includes('example-action'))
+    t.false(getConfig('actions').includes('example-action'))
   })
 })
 
-test('`deux remove hooks` (ACTION): file should be deleted.', async t => {
+test('`deux remove hooks` (Action): file should be deleted.', async t => {
   await removeAction.then(() => {
     t.false(existsSync(path.join(themePath, 'includes', 'actions', 'example-action.php')))
   })
@@ -854,15 +837,191 @@ const addhtml5Feature = new Promise(async resolve => {
   })
 })
 
-test('`deux add feature` (HTML 5): should be succeed.', async t => {
+test('`deux add feature` (HTML5): should be succeed.', async t => {
   await addhtml5Feature.then(() => {
     t.pass()
   })
 })
 
-test('`deux add feature` (HTML 5): config should be valid.', async t => {
+const addPostFormatFeature = new Promise(async resolve => {
   await addhtml5Feature.then(() => {
-    const _config = getConfig()
+    runCli(['add', 'feature'], {
+      feature: {
+        type: 'post-formats',
+        options: [
+          'aside',
+          'gallery',
+          'link',
+          'image',
+          'quote',
+          'status',
+          'video',
+          'audio',
+          'chat'
+        ]
+      }
+    }).then(() => {
+      resolve()
+    })
+  })
+})
+
+test('`deux add feature` (Post Formats): should be succeed.', async t => {
+  await addPostFormatFeature.then(() => {
+    t.pass()
+  })
+})
+
+const addPostThumbnailFeature = new Promise(async resolve => {
+  await addPostFormatFeature.then(() => {
+    runCli(['add', 'feature'], {
+      feature: {
+        type: 'post-thumbnails',
+        posttype: false,
+        options: [
+          'post',
+          'book',
+          'custom-post-type'
+        ]
+      }
+    }).then(() => {
+      resolve()
+    })
+  })
+})
+
+test('`deux add feature` (Post Thumbnails): should be succeed.', async t => {
+  await addPostThumbnailFeature.then(() => {
+    t.pass()
+  })
+})
+
+const addCustomBackgroundFeature = new Promise(async resolve => {
+  await addPostThumbnailFeature.then(() => {
+    runCli(['add', 'feature'], {
+      feature: {
+        type: 'custom-background',
+        options: {
+          imageUrl: 'http://imageurl.com/image.jpg',
+          color: '#fff',
+          preset: 'custom',
+          position: {
+            x: 'center',
+            y: 'center'
+          },
+          imageSize: 'contain',
+          repeat: true,
+          attachment: 'fixed',
+          wpHeadCallback: true
+        },
+        advanced: true
+      }
+    }).then(() => {
+      resolve()
+    })
+  })
+})
+
+test('`deux add feature` (Custom Background): should be succeed.', async t => {
+  await addCustomBackgroundFeature.then(() => {
+    t.pass()
+  })
+})
+
+test('`deux add feature` (Custom Background): `wp_head` callback helper file should be exists.', async t => {
+  await addCustomBackgroundFeature.then(() => {
+    t.true(existsSync(path.join(themePath, 'includes', 'helpers', 'custom-background.php')))
+  })
+})
+
+const addCustomHeaderFeature = new Promise(async resolve => {
+  await addCustomBackgroundFeature.then(() => {
+    runCli(['add', 'feature'], {
+      feature: {
+        type: 'custom-header',
+        options: {
+          imageUrl: 'assets/images/header.jpg',
+          width: 2000,
+          height: 1200,
+          flexWidth: true,
+          flexHeight: true,
+          random: true,
+          headerText: true,
+          textColor: '#fff',
+          video: true,
+          videoAlwaysActive: false,
+          wpHeadCallback: true
+        },
+        advanced: true
+      }
+    }).then(() => {
+      resolve()
+    })
+  })
+})
+
+test('`deux add feature` (Custom Header): should be succeed.', async t => {
+  await addCustomHeaderFeature.then(() => {
+    t.pass()
+  })
+})
+
+test('`deux add feature` (Custom Header): `wp_head` callback helper file should be exists.', async t => {
+  await addCustomHeaderFeature.then(() => {
+    t.true(existsSync(path.join(themePath, 'includes', 'helpers', 'custom-header.php')))
+  })
+})
+
+test('`deux add feature` (Custom Header): video active callback helper file should be exists.', async t => {
+  await addCustomHeaderFeature.then(() => {
+    t.true(existsSync(path.join(themePath, 'includes', 'helpers', 'custom-header-video.php')))
+  })
+})
+
+const addCustomLogoFeature = new Promise(async resolve => {
+  await addCustomHeaderFeature.then(() => {
+    runCli(['add', 'feature'], {
+      feature: {
+        type: 'custom-logo',
+        options: {
+          width: 250,
+          height: 250,
+          flexWidth: true,
+          flexHeight: true
+        }
+      }
+    }).then(() => {
+      resolve()
+    })
+  })
+})
+
+test('`deux add feature` (Custom Logo): should be succeed.', async t => {
+  await addCustomLogoFeature.then(() => {
+    t.pass()
+  })
+})
+
+const addWoocommerceFeature = new Promise(async resolve => {
+  await addCustomLogoFeature.then(() => {
+    runCli(['add', 'feature'], {
+      feature: {
+        type: 'woocommerce'
+      }
+    }).then(() => {
+      resolve()
+    })
+  })
+})
+
+test('`deux add feature` (Woocommerce): should be succeed.', async t => {
+  await addWoocommerceFeature.then(() => {
+    t.pass()
+  })
+})
+
+test('`deux add feature`: config should be valid.', async t => {
+  await addWoocommerceFeature.then(() => {
     t.deepEqual({
       /* eslint-disable quote-props */
       /* eslint-disable camelcase */
@@ -872,8 +1031,211 @@ test('`deux add feature` (HTML 5): config should be valid.', async t => {
         'search-form',
         'gallery',
         'caption'
-      ]
+      ],
+      'post-formats': [
+        'aside',
+        'gallery',
+        'link',
+        'image',
+        'quote',
+        'status',
+        'video',
+        'audio',
+        'chat'
+      ],
+      'post-thumbnails': [
+        'post',
+        'book',
+        'custom-post-type'
+      ],
+      'custom-background': {
+        'default-image': 'http://imageurl.com/image.jpg',
+        'default-color': '#fff',
+        'default-preset': 'custom',
+        'default-position-x': 'center',
+        'default-position-y': 'center',
+        'default-size': 'contain',
+        'default-repeat': true,
+        'default-attachment': 'fixed',
+        'wp-head-callback': 'deux_theme_custom_background_callback'
+      },
+      'custom-header': {
+        'default-image': jsonar.literal(`get_parent_theme_file_uri( 'assets/images/header.jpg' )`),
+        'width': 2000,
+        'height': 1200,
+        'flex-width': true,
+        'flex-height': true,
+        'header-text': true,
+        'random-default': true,
+        'uploads': true,
+        'video': true,
+        'default-text-color': '#fff',
+        'video-active-callback': 'deux_theme_video_active_callback',
+        'wp-head-callback': 'deux_theme_custom_header_callback'
+      },
+      'custom-logo': {
+        'width': 250,
+        'height': 250,
+        'flex-width': true,
+        'flex-height': true,
+        'header-text': ''
+      },
+      'woocommerce': true
       /* eslint-enable quote-props camelcase */
-    }, _config.phpConfig.features)
+    }, getConfig('features'))
+  })
+})
+
+const removeHTML5Feature = new Promise(async resolve => {
+  await addWoocommerceFeature.then(() => {
+    runCli(['remove', 'feature'], {
+      features: ['html5']
+    }).then(() => {
+      resolve()
+    })
+  })
+})
+
+test('`deux remove feature` (HTML5): should be succeed.', async t => {
+  await removeHTML5Feature.then(() => {
+    t.pass()
+  })
+})
+
+test('`deux remove feature` (HTML5): config should be removed.', async t => {
+  await removeHTML5Feature.then(() => {
+    t.false('html5' in getConfig('features'))
+  })
+})
+
+const removePostFormatFeature = new Promise(async resolve => {
+  await removeHTML5Feature.then(() => {
+    runCli(['remove', 'feature'], {
+      features: ['post-formats']
+    }).then(() => {
+      resolve()
+    })
+  })
+})
+
+test('`deux remove feature` (Post Formats): should be succeed.', async t => {
+  await removePostFormatFeature.then(() => {
+    t.pass()
+  })
+})
+
+test('`deux remove feature` (Post Formats): config should be removed.', async t => {
+  await removePostFormatFeature.then(() => {
+    t.false('post-formats' in getConfig('features'))
+  })
+})
+
+const removePostThumbnailsFeature = new Promise(async resolve => {
+  await removePostFormatFeature.then(() => {
+    runCli(['remove', 'feature'], {
+      features: ['post-thumbnails']
+    }).then(() => {
+      resolve()
+    })
+  })
+})
+
+test('`deux remove feature` (Post Thumbnails): should be succeed.', async t => {
+  await removePostThumbnailsFeature.then(() => {
+    t.pass()
+  })
+})
+
+test('`deux remove feature` (Post Thumbnails): config should be removed.', async t => {
+  await removePostThumbnailsFeature.then(() => {
+    t.false('post-thumbnails' in getConfig('features'))
+  })
+})
+
+const removeCustomBackgroundFeature = new Promise(async resolve => {
+  await removePostThumbnailsFeature.then(() => {
+    runCli(['remove', 'feature'], {
+      features: ['custom-background']
+    }).then(() => {
+      resolve()
+    })
+  })
+})
+
+test('`deux remove feature` (Custom Background): should be succeed.', async t => {
+  await removeCustomBackgroundFeature.then(() => {
+    t.pass()
+  })
+})
+
+test('`deux remove feature` (Custom Background): config should be removed.', async t => {
+  await removeCustomBackgroundFeature.then(() => {
+    t.false('custom-background' in getConfig('features'))
+  })
+})
+
+const removeCustomHeaderFeature = new Promise(async resolve => {
+  await removeCustomBackgroundFeature.then(() => {
+    runCli(['remove', 'feature'], {
+      features: ['custom-header']
+    }).then(() => {
+      resolve()
+    })
+  })
+})
+
+test('`deux remove feature` (Custom Header): should be succeed.', async t => {
+  await removeCustomHeaderFeature.then(() => {
+    t.pass()
+  })
+})
+
+test('`deux remove feature` (Custom Header): config should be removed.', async t => {
+  await removeCustomHeaderFeature.then(() => {
+    t.false('custom-header' in getConfig('features'))
+  })
+})
+
+const removeCustomLogoFeature = new Promise(async resolve => {
+  await removeCustomHeaderFeature.then(() => {
+    runCli(['remove', 'feature'], {
+      features: ['custom-logo']
+    }).then(() => {
+      resolve()
+    })
+  })
+})
+
+test('`deux remove feature` (Custom Logo): should be succeed.', async t => {
+  await removeCustomLogoFeature.then(() => {
+    t.pass()
+  })
+})
+
+test('`deux remove feature` (Custom Logo): config should be removed.', async t => {
+  await removeCustomLogoFeature.then(() => {
+    t.false('custom-logo' in getConfig('features'))
+  })
+})
+
+const removeWoocommerceFeature = new Promise(async resolve => {
+  await removeCustomLogoFeature.then(() => {
+    runCli(['remove', 'feature'], {
+      features: ['woocommerce']
+    }).then(() => {
+      resolve()
+    })
+  })
+})
+
+test('`deux remove feature` (WooCommerce): should be succeed.', async t => {
+  await removeWoocommerceFeature.then(() => {
+    t.pass()
+  })
+})
+
+test('`deux remove feature` (WooCommerce): config should be removed.', async t => {
+  await removeWoocommerceFeature.then(() => {
+    t.false('woocommerce' in getConfig('features'))
   })
 })

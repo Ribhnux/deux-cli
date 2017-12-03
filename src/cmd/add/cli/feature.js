@@ -22,21 +22,20 @@ const {
 const CLI = global.deuxcli.require('main')
 const messages = global.deuxcli.require('messages')
 const validator = global.deuxhelpers.require('util/validator')
-const {exit, finish} = global.deuxhelpers.require('logger')
 const compileFile = global.deuxhelpers.require('compiler/single')
 
 class AddFeature extends CLI {
-  constructor() {
+  constructor(options) {
     super()
-    this.init()
+    this.init(false, options)
   }
 
   /**
    * Setup add feature prompts
    */
   prepare() {
-    this.title = 'Add {Theme Features}'
-    this.prompts = [
+    this.$title = 'Add {Theme Features}'
+    this.$prompts = [
       {
         type: 'list',
         name: 'feature.type',
@@ -61,8 +60,8 @@ class AddFeature extends CLI {
         type: 'checkbox',
         name: 'feature.options',
         message: 'Pick Supported Theme Markup',
-        validate: value => validator(value, {minimum: 1, array: true, var: 'Options'}),
         when: ({feature}) => feature.type === featureTypes.HTML5,
+        validate: value => validator(value, {minimum: 2, array: true, var: 'Options'}),
         choices: [new inquirer.Separator()].concat(html5markup)
       },
 
@@ -70,8 +69,8 @@ class AddFeature extends CLI {
         type: 'checkbox',
         name: 'feature.options',
         message: 'Pick Supported Post Formats',
-        validate: value => validator(value, {minimum: 1, array: true, var: 'Options'}),
         when: ({feature}) => feature.type === featureTypes.POST_FORMATS,
+        validate: value => validator(value, {minimum: 1, array: true, var: 'Options'}),
         choices: [new inquirer.Separator()].concat(postFormats)
       },
 
@@ -432,7 +431,7 @@ class AddFeature extends CLI {
 
       {
         type: 'confirm',
-        name: 'feature.overwrite',
+        name: 'overwrite',
         message: ({feature}) => {
           for (const type in featureTypes) {
             if (Object.prototype.hasOwnProperty.call(featureTypes, type) && featureTypes[type] === feature.type) {
@@ -453,12 +452,12 @@ class AddFeature extends CLI {
    *
    * @param {Object} {feature}
    */
-  action({feature}) {
-    if (feature.overwrite === false) {
-      exit(messages.ERROR_FEATURE_ALREADY_EXISTS)
+  action({feature, overwrite}) {
+    if (overwrite === false) {
+      this.$logger.exit(messages.ERROR_FEATURE_ALREADY_EXISTS)
     }
 
-    let featureOptions = feature.options
+    let {options: featureOptions} = feature
     const theme = this.themeInfo()
 
     const initHelper = (checker, options, key, helper) => {
@@ -610,8 +609,8 @@ class AddFeature extends CLI {
         resolve()
       })
     ]).then(
-      finish(messages.SUCCEED_FEATURE_ADDED)
-    ).catch(exit)
+      this.$logger.finish(messages.SUCCEED_FEATURE_ADDED)
+    ).catch(this.$logger.exit)
   }
 }
 
