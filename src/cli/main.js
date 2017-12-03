@@ -59,6 +59,8 @@ class CLI {
         logger.finish(message.DONE_NO_REMOVE, this.$init.apiMode())
       }
 
+      this.$logger.loader = msg => logger.loader(msg)
+
       this.$db = db
       this.prepare()
 
