@@ -1250,15 +1250,15 @@ const addPluginWoocommerce = new Promise(async resolve => {
         srctype: 'wp',
         search: 'woocommerce',
         item: {
-           name: 'WooCommerce',
-           slug: 'woocommerce',
-           description: 'Description',
-           version: '3.2.5',
-           versions: {
-              '3.2.5': 'https://downloads.wordpress.org/plugin/woocommerce.3.2.5.zip',
-              trunk: 'https://downloads.wordpress.org/plugin/woocommerce.zip'
-            }
-          },
+          name: 'WooCommerce',
+          slug: 'woocommerce',
+          description: 'Description',
+          version: '3.2.5',
+          versions: {
+            '3.2.5': 'https://downloads.wordpress.org/plugin/woocommerce.3.2.5.zip',
+            trunk: 'https://downloads.wordpress.org/plugin/woocommerce.zip'
+          }
+        },
         versions: {
           value: '3.2.5',
           source: 'https://downloads.wordpress.org/plugin/woocommerce.3.2.5.zip'
@@ -1334,7 +1334,7 @@ test('`deux add plugin`: config should be valid.', async t => {
         'name': 'Woocommerce',
         'description': 'Description',
         'source': 'https://downloads.wordpress.org/plugin/woocommerce.3.2.5.zip',
-        'version': '3.2.5',
+        'version': '3.2.5'
       },
       'test': {
         'srctype': 'private',
@@ -1345,7 +1345,7 @@ test('`deux add plugin`: config should be valid.', async t => {
         'required': true,
         'force_activation': false,
         'force_deactivation': false,
-        'init': true,
+        'init': true
       }
       /* eslint-enable quote-props camelcase */
     }, getConfig('plugins'))
