@@ -90,21 +90,12 @@ class RemoveComponent extends CLI {
         resolve(item)
       })
     )).then(list => {
-      Promise.all([
-        new Promise(resolve => {
-          this.themeComponents = this.themeComponents.filter(item => !list.includes(item))
-          resolve()
-        }),
-
-        new Promise(resolve => {
-          this.setThemeConfig({
-            components: uniq(this.themeComponents)
-          })
-          resolve()
-        })
-      ]).then(
-        this.$logger.finish(messages.SUCCEED_REMOVED_COMPONENT)
-      ).catch(this.$logger.exit)
+      this.themeComponents = this.themeComponents.filter(item => !list.includes(item))
+      this.setThemeConfig({
+        components: uniq(this.themeComponents)
+      })
+    }).then(() => {
+      this.$logger.finish(messages.SUCCEED_REMOVED_COMPONENT)
     }).catch(this.$logger.exit)
   }
 }

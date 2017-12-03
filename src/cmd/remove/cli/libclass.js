@@ -92,21 +92,12 @@ class RemoveLibClass extends CLI {
         resolve(item)
       })
     )).then(libraries => {
-      Promise.all([
-        new Promise(resolve => {
-          this.themeLibraries = this.themeLibraries.filter(item => !libraries.includes(item))
-          resolve()
-        }),
-
-        new Promise(resolve => {
-          this.setThemeConfig({
-            libraries: this.themeLibraries
-          })
-          resolve()
-        })
-      ]).then(
-        this.$logger.finish(messages.SUCCEED_REMOVED_LIBCLASS)
-      ).catch(this.$logger.exit)
+      this.themeLibraries = this.themeLibraries.filter(item => !libraries.includes(item))
+      this.setThemeConfig({
+        libraries: this.themeLibraries
+      })
+    }).then(() => {
+      this.$logger.finish(messages.SUCCEED_REMOVED_LIBCLASS)
     }).catch(this.$logger.exit)
   }
 }

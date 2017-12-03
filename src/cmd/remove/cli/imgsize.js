@@ -75,16 +75,11 @@ class RemoveImageSize extends CLI {
         resolve()
       })
     )).then(() => {
-      Promise.all([
-        new Promise(resolve => {
-          this.setThemeConfig({
-            imgsize: this.themeImageSize
-          })
-          resolve()
-        })
-      ]).then(
-        this.$logger.finish(messages.SUCCEED_REMOVED_IMGSIZE)
-      ).catch(this.$logger.exit)
+      this.setThemeConfig({
+        imgsize: this.themeImageSize
+      })
+    }).then(() => {
+      this.$logger.finish(messages.SUCCEED_REMOVED_IMGSIZE)
     }).catch(this.$logger.exit)
   }
 }

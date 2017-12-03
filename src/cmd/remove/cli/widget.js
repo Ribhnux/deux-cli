@@ -78,16 +78,11 @@ class RemoveWidget extends CLI {
         resolve()
       })
     )).then(() => {
-      Promise.all([
-        new Promise(resolve => {
-          this.setThemeConfig({
-            widgets: this.themeWidgets
-          })
-          resolve()
-        })
-      ]).then(
-        this.$logger.finish(messages.SUCCEED_REMOVED_WIDGET)
-      ).catch(this.$logger.exit)
+      this.setThemeConfig({
+        widgets: this.themeWidgets
+      })
+    }).then(() => {
+      this.$logger.finish(messages.SUCCEED_REMOVED_WIDGET)
     }).catch(this.$logger.exit)
   }
 }

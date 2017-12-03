@@ -88,17 +88,12 @@ class RemoveMenu extends CLI {
         resolve()
       })
     )).then(() => {
-      Promise.all([
-        new Promise(resolve => {
-          this.setThemeConfig({
-            menus: this.themeMenus,
-            libraries: uniq(this.themeLibraries)
-          })
-          resolve()
-        })
-      ]).then(
-        this.$logger.finish(messages.SUCCEED_REMOVED_MENU)
-      ).catch(this.$logger.exit)
+      this.setThemeConfig({
+        menus: this.themeMenus,
+        libraries: uniq(this.themeLibraries)
+      })
+    }).then(() => {
+      this.$logger.finish(messages.SUCCEED_REMOVED_MENU)
     }).catch(this.$logger.exit)
   }
 }

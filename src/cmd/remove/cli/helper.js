@@ -97,18 +97,12 @@ class RemoveHelper extends CLI {
         resolve(item)
       })
     )).then(helpers => {
-      Promise.all([
-        new Promise(resolve => {
-          this.themeHelpers = this.themeHelpers.filter(item => !helpers.includes(item))
-          this.setThemeConfig({
-            helpers: this.themeHelpers
-          })
-
-          resolve()
-        })
-      ]).then(
-        this.$logger.finish(messages.SUCCEED_REMOVED_HELPER)
-      ).catch(this.$logger.exit)
+      this.themeHelpers = this.themeHelpers.filter(item => !helpers.includes(item))
+      this.setThemeConfig({
+        helpers: this.themeHelpers
+      })
+    }).then(() => {
+      this.$logger.finish(messages.SUCCEED_REMOVED_HELPER)
     }).catch(this.$logger.exit)
   }
 }

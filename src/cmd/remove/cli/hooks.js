@@ -128,17 +128,12 @@ class RemoveHooks extends CLI {
         resolve()
       })
     )).then(() => {
-      Promise.all([
-        new Promise(resolve => {
-          this.setThemeConfig({
-            filters: uniq(this.themeFilters),
-            actions: uniq(this.themeActions)
-          })
-          resolve()
-        })
-      ]).then(
-        this.$logger.finish(messages.SUCCEED_REMOVED_HOOKS)
-      ).catch(this.$logger.exit)
+      this.setThemeConfig({
+        filters: uniq(this.themeFilters),
+        actions: uniq(this.themeActions)
+      })
+    }).then(() => {
+      this.$logger.finish(messages.SUCCEED_REMOVED_HOOKS)
     }).catch(this.$logger.exit)
   }
 }

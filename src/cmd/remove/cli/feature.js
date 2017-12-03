@@ -149,7 +149,6 @@ class RemoveFeature extends CLI {
         features: this.themeFatures,
         helpers: this.themeHelpers
       })
-      return true
     }).then(() => {
       this.$logger.finish(messages.SUCCEED_REMOVED_FEATURE)
     }).catch(this.$logger.exit)

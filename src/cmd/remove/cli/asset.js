@@ -182,17 +182,13 @@ class RemoveAsset extends CLI {
 
         resolve()
       })
-    )).then(() => {
-      Promise.all([
-        new Promise(resolve => {
-          this.setThemeConfig({
-            asset: this.themeAsset
-          })
-          resolve()
-        })
-      ]).then(
-        finish(messages.SUCCEED_REMOVED_ASSET)
-      ).catch(exit)
+    )).then(async () => {
+      await this.setThemeConfig({
+        asset: this.themeAsset
+      })
+      return true
+    }).then(() => {
+      finish(messages.SUCCEED_REMOVED_ASSET)
     }).catch(exit)
   }
 }
