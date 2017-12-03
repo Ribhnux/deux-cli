@@ -63,3 +63,6 @@ typings/
 
 # deuxproject config
 .deuxproject
+
+# wordpress test theme
+test/wordpress/wp-content/themes/*
