@@ -6,7 +6,7 @@ const jsonar = require('jsonar')
 const arrandel = require('arrandel')
 const {deux, dbPath, dbTypes, themePath} = require('./fixtures')
 
-exports.getConfig = () => {
+exports.getConfig = (configStr = '') => {
   const db = jsonr(dbPath)
   const slug = db[dbTypes.CURRENT].slug
   const currentTheme = Object.assign({}, db[dbTypes.THEMES][slug])
@@ -49,6 +49,10 @@ exports.getConfig = () => {
   const phpConfig = jsonar.parse(phpArray.deux_theme_config, {
     emptyRules
   })
+
+  if (configStr !== '') {
+    return phpConfig[configStr]
+  }
 
   return {
     db,
