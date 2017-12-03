@@ -10,7 +10,7 @@ class RemoveFeature extends CLI {
     super()
     this.themeFeatures = undefined
     this.themeHelpers = undefined
-    this.init(false, options)
+    this.init(options)
   }
 
   /**

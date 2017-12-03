@@ -22,7 +22,7 @@ const compileFiles = global.deuxhelpers.require('compiler/bulk')
 class NewCLI extends CLI {
   constructor(options = {}) {
     super()
-    this.init(true, options)
+    this.init(options, true)
   }
 
   prepare() {

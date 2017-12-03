@@ -11,7 +11,7 @@ class RemoveMenu extends CLI {
     super()
     this.themeMenus = undefined
     this.themeLibraries = undefined
-    this.init(false, options)
+    this.init(options)
   }
 
   /**

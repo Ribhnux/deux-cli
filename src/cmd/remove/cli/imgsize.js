@@ -6,7 +6,7 @@ class RemoveImageSize extends CLI {
   constructor(options) {
     super()
     this.themeImageSize = undefined
-    this.init(false, options)
+    this.init(options)
   }
 
   /**

@@ -10,7 +10,7 @@ const compileFile = global.deuxhelpers.require('compiler/single')
 class AddComponent extends CLI {
   constructor(options) {
     super()
-    this.init(false, options)
+    this.init(options)
   }
 
   /**

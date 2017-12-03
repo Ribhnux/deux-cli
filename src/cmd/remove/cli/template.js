@@ -15,7 +15,7 @@ const {captchaMaker, separatorMaker} = global.deuxhelpers.require('util/cli')
 class RemoveTemplate extends CLI {
   constructor(options) {
     super()
-    this.init(false, options)
+    this.init(options)
   }
 
   /**

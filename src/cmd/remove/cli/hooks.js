@@ -12,7 +12,7 @@ class RemoveHooks extends CLI {
     super()
     this.themeFilters = undefined
     this.themeActions = undefined
-    this.init(false, options)
+    this.init(options)
   }
 
   /**

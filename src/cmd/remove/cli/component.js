@@ -11,7 +11,7 @@ class RemoveComponent extends CLI {
   constructor(options) {
     super()
     this.themeComponents = undefined
-    this.init(false, options)
+    this.init(options)
   }
 
   /**

@@ -23,7 +23,7 @@ class CLI {
   /**
    * Initializing cli
    */
-  init(skip = false, options) {
+  init(options = {}, skip = false) {
     if (options.input) {
       const json = isJSON(options.input)
       if (json) {

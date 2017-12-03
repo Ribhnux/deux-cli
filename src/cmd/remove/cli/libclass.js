@@ -10,7 +10,7 @@ class RemoveLibClass extends CLI {
   constructor(options) {
     super()
     this.themeLibraries = undefined
-    this.init(false, options)
+    this.init(options)
   }
 
   /**

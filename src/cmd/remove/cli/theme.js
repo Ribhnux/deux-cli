@@ -6,9 +6,9 @@ const {exit, finish} = global.deuxhelpers.require('logger')
 const {happyExit, captchaMaker} = global.deuxhelpers.require('util/cli')
 
 class RemoveTheme extends CLI {
-  constructor() {
+  constructor(options) {
     super()
-    this.init()
+    this.init(options)
   }
 
   /**

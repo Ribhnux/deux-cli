@@ -8,7 +8,7 @@ class RemoveWidget extends CLI {
   constructor(options) {
     super()
     this.themeWidgets = undefined
-    this.init(false, options)
+    this.init(options)
   }
 
   /**

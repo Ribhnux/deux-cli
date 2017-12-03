@@ -28,7 +28,7 @@ class AddTemplate extends CLI {
   constructor(options) {
     super()
     this.woocommerce = undefined
-    this.init(false, options)
+    this.init(options)
   }
 
   /**

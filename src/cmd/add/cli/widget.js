@@ -9,7 +9,7 @@ const validator = global.deuxhelpers.require('util/validator')
 class AddWidget extends CLI {
   constructor(options) {
     super()
-    this.init(false, options)
+    this.init(options)
   }
 
   /**

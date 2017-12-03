@@ -12,7 +12,7 @@ class AddCLI extends CLI {
     super()
     this.$subcmd = subcmd
     this.$options = options
-    this.init(false, options)
+    this.init(options)
   }
 
   /**

@@ -10,7 +10,7 @@ class RemoveHelper extends CLI {
   constructor(options) {
     super()
     this.themeHelpers = undefined
-    this.init(false, options)
+    this.init(options)
   }
 
   /**

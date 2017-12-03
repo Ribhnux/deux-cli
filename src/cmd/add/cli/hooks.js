@@ -12,7 +12,7 @@ const compileFile = global.deuxhelpers.require('compiler/single')
 class AddHooks extends CLI {
   constructor(options) {
     super()
-    this.init(false, options)
+    this.init(options)
   }
 
   /**
