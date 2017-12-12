@@ -1426,15 +1426,346 @@ const addAssetCDN = new Promise(async resolve => {
   })
 })
 
-test('`deux add asset` (CDN Bootstrap): should be succeed.', async t => {
+test('`deux add asset` (Bootstrap from CDN): should be succeed.', async t => {
   await addAssetCDN.then(() => {
     t.pass()
   })
 })
 
-test('`deux add asset` (CDN Bootstrap): asset file should be exists.', async t => {
+test('`deux add asset` (Bootstrap from CDN): asset file should be exists.', async t => {
   await addAssetCDN.then(() => {
     t.true(existsSync(path.join(themePath, 'assets-src', 'libs', 'twitter-bootstrap@4.0.0-beta.2', 'css', 'bootstrap.min.css')))
     t.true(existsSync(path.join(themePath, 'assets-src', 'libs', 'twitter-bootstrap@4.0.0-beta.2', 'js', 'bootstrap.min.js')))
+  })
+})
+
+const addAssetWP = new Promise(async resolve => {
+  await addAssetCDN.then(() => {
+    runCli(['add', 'asset'], {
+      asset: {
+        type: 'lib'
+      },
+
+      lib: {
+        source: 'wp',
+        name: {
+          handle: 'jquery'
+        }
+      }
+    }).then(() => {
+      resolve()
+    })
+  })
+})
+
+test('`deux add asset` (jQuery from WordPress): should be succeed.', async t => {
+  await addAssetWP.then(() => {
+    t.pass()
+  })
+})
+
+const addAssetURL = new Promise(async resolve => {
+  await addAssetWP.then(() => {
+    runCli(['add', 'asset'], {
+      asset: {
+        type: 'lib'
+      },
+
+      lib: {
+        source: 'url',
+        name: 'Hint CSS',
+        version: '2.5.0',
+        url: 'https://raw.githubusercontent.com/chinchang/hint.css/ee20a62cca41e501de21d28d36eef92b9bf10bed/hint.min.css',
+        deps: ''
+      }
+    }).then(() => {
+      resolve()
+    })
+  })
+})
+
+test('`deux add asset` (hint.css from Custom URL): should be succeed.', async t => {
+  await addAssetURL.then(() => {
+    t.pass()
+  })
+})
+
+test('`deux add asset` (hint.css from Custom URL): asset file should be exists.', async t => {
+  await addAssetURL.then(() => {
+    t.true(existsSync(path.join(themePath, 'assets-src', 'libs', 'hint-css@2.5.0', 'hint.min.css')))
+  })
+})
+
+const addSASSComponent = new Promise(async resolve => {
+  await addAssetURL.then(() => {
+    runCli(['add', 'asset'], {
+      asset: {
+        type: 'sass'
+      },
+
+      sass: {
+        type: 'component',
+        name: 'button',
+        description: 'Test description.'
+      }
+    }).then(() => {
+      resolve()
+    })
+  })
+})
+
+test('`deux add asset` (sass component): should be succeed.', async t => {
+  await addSASSComponent.then(() => {
+    t.pass()
+  })
+})
+
+test('`deux add asset` (sass component): asset file should be exists.', async t => {
+  await addSASSComponent.then(() => {
+    t.true(existsSync(path.join(themePath, 'assets-src', 'sass', 'components', '_button.scss')))
+  })
+})
+
+const addSASSLayout = new Promise(async resolve => {
+  await addSASSComponent.then(() => {
+    runCli(['add', 'asset'], {
+      asset: {
+        type: 'sass'
+      },
+
+      sass: {
+        type: 'layout',
+        name: 'grid',
+        description: 'Test description.'
+      }
+    }).then(() => {
+      resolve()
+    })
+  })
+})
+
+test('`deux add asset` (sass layout): should be succeed.', async t => {
+  await addSASSLayout.then(() => {
+    t.pass()
+  })
+})
+
+test('`deux add asset` (sass layout): asset file should be exists.', async t => {
+  await addSASSLayout.then(() => {
+    t.true(existsSync(path.join(themePath, 'assets-src', 'sass', 'layouts', '_grid.scss')))
+  })
+})
+
+const addWebFont = new Promise(async resolve => {
+  await addSASSLayout.then(() => {
+    runCli(['add', 'asset'], {
+      asset: {
+        type: 'font'
+      },
+
+      font: {
+        source: 'search',
+        search: 'montserrat',
+        selected: {
+          family: 'Montserrat',
+          variantsFormat: [
+            {
+              value: 100,
+              name: 'Thin',
+              camelcase: 'thin',
+              mini: 100,
+              key: '100'
+            },
+            {
+              value: 100,
+              italic: true,
+              name: 'Thin Italic',
+              camelcase: 'thinItalic',
+              mini: '100i',
+              key: '100italic'
+            },
+            {
+              value: 200,
+              name: 'Extra Light',
+              camelcase: 'extraLight',
+              mini: 200,
+              key: '200'
+            },
+            {
+              value: 200,
+              italic: true,
+              name: 'Extra Light Italic',
+              camelcase: 'extraLightItalic',
+              mini: '200i',
+              key: '200italic'
+            },
+            {
+              value: 300,
+              name: 'Light',
+              camelcase: 'light',
+              mini: 300,
+              key: '300'
+            },
+            {
+              value: 300,
+              italic: true,
+              name: 'Light Italic',
+              camelcase: 'lightItalic',
+              mini: '300i',
+              key: '300italic'
+            },
+            {
+              value: 400,
+              alias: 'regular',
+              name: 'Regular',
+              camelcase: 'regular',
+              mini: 400,
+              key: 'regular'
+            },
+            {
+              value: 400,
+              italic: true,
+              alias: 'italic',
+              name: 'Italic',
+              camelcase: 'italic',
+              mini: 400,
+              key: 'italic'
+            },
+            {
+              value: 500,
+              name: 'Medium',
+              camelcase: 'medium',
+              mini: 500,
+              key: '500'
+            },
+            {
+              value: 500,
+              italic: true,
+              name: 'Medium Italic',
+              camelcase: 'mediumItalic',
+              mini: '500i',
+              key: '500italic'
+            },
+            {
+              value: 600,
+              name: 'Semi Bold',
+              camelcase: 'semiBold',
+              mini: 600,
+              key: '600'
+            },
+            {
+              value: 600,
+              italic: true,
+              name: 'Semi Bold Italic',
+              camelcase: 'semiBoldItalic',
+              mini: '600i',
+              key: '600italic'
+            },
+            {
+              value: 700,
+              name: 'Bold',
+              camelcase: 'bold',
+              mini: 700,
+              key: '700'
+            },
+            {
+              value: 700,
+              italic: true,
+              name: 'Bold Italic',
+              camelcase: 'boldItalic',
+              mini: '700i',
+              key: '700italic'
+            },
+            {
+              value: 800,
+              name: 'Extra Bold',
+              camelcase: 'extraBold',
+              mini: 800,
+              key: '800'
+            },
+            {
+              value: 800,
+              italic: true,
+              name: 'Extra Bold Italic',
+              camelcase: 'extraBoldItalic',
+              mini: '800i',
+              key: '800italic'
+            },
+            {
+              value: 900,
+              name: 'Black',
+              camelcase: 'black',
+              mini: 900,
+              key: '900'
+            },
+            {
+              value: 900,
+              italic: true,
+              name: 'Black Italic',
+              camelcase: 'blackItalic',
+              mini: '900i',
+              key: '900italic'
+            }
+          ],
+          subsets: [
+            'latin',
+            'cyrillic',
+            'cyrillic-ext',
+            'vietnamese',
+            'latin-ext'
+          ]
+        },
+        variants: [
+          {
+            value: 100,
+            name: 'Thin',
+            camelcase: 'thin',
+            mini: 100,
+            key: '100'
+          },
+          {
+            value: 300,
+            name: 'Light',
+            camelcase: 'light',
+            mini: 300,
+            key: '300'
+          },
+          {
+            value: 400,
+            alias: 'regular',
+            name: 'Regular',
+            camelcase: 'regular',
+            mini: 400,
+            key: 'regular'
+          },
+          {
+            value: 600,
+            name: 'Semi Bold',
+            camelcase: 'semiBold',
+            mini: 600,
+            key: '600'
+          },
+          {
+            value: 700,
+            name: 'Bold',
+            camelcase: 'bold',
+            mini: 700,
+            key: '700'
+          }
+        ],
+        subsets: [
+          'latin',
+          'latin-ext'
+        ]
+      }
+    }).then(() => {
+      resolve()
+    })
+  })
+})
+
+test('`deux add asset` (Montserrat webfont): should be succeed.', async t => {
+  await addWebFont.then(() => {
+    t.pass()
   })
 })
