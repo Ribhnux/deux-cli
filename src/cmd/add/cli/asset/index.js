@@ -484,39 +484,25 @@ class AddAsset extends CLI {
           })
         }
 
-        rimraf(path.join(libpath, '*'), err => {
-          if (err) {
-            throw err
-          }
+        rimraf.sync(path.join(libpath, '*'))
+        mkdirp.sync(libpath)
 
-          mkdirp(libpath, err => {
-            if (err) {
-              throw err
-            }
+        Promise.all(files.map(
+          file => new Promise(resolve => {
+            const fileUrl = lib.source === libSource.CDN ? file.url : file
+            const filePath = lib.source === libSource.CDN ? path.join(libpath, file.path) : libpath
 
-            Promise.all(files.map(
-              file => new Promise(resolve => {
-                const fileUrl = lib.source === libSource.CDN ? file.url : file
-                const filePath = lib.source === libSource.CDN ? path.join(libpath, file.path) : libpath
-
-                mkdirp(filePath, err => {
-                  if (err) {
-                    throw err
-                  }
-
-                  download(fileUrl, filePath).then(() => {
-                    resolve()
-                  }).catch(this.$logger.exit)
-                })
-              })
-            )).then(() => {
-              downloadLoader.succeed(`${lib.files.length} file(s) downloaded.`)
+            mkdirp.sync(filePath)
+            download(fileUrl, filePath).then(() => {
               resolve()
-            }).catch(err => {
-              rimraf.sync(libpath)
-              reject(err)
-            })
+            }).catch(this.$logger.exit)
           })
+        )).then(() => {
+          downloadLoader.succeed(`${lib.files.length} file(s) downloaded.`)
+          resolve()
+        }).catch(err => {
+          rimraf.sync(libpath)
+          reject(err)
         })
       })
     }
