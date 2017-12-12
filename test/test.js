@@ -1431,3 +1431,10 @@ test('`deux add asset` (CDN Bootstrap): should be succeed.', async t => {
     t.pass()
   })
 })
+
+test('`deux add asset` (CDN Bootstrap): asset file should be exists.', async t => {
+  await addAssetCDN.then(() => {
+    t.true(existsSync(path.join(themePath, 'assets-src', 'libs', 'twitter-bootstrap@4.0.0-beta.2', 'css', 'bootstrap.min.css')))
+    t.true(existsSync(path.join(themePath, 'assets-src', 'libs', 'twitter-bootstrap@4.0.0-beta.2', 'js', 'bootstrap.min.js')))
+  })
+})
