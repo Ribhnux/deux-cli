@@ -1399,3 +1399,35 @@ test('`deux remove plugin` (Private Repository): config should be removed.', asy
     t.false('test' in getConfig('plugins'))
   })
 })
+
+const addAssetCDN = new Promise(async resolve => {
+  await removePluginPrivate.then(() => {
+    runCli(['add', 'asset'], {
+      asset: {
+        type: 'lib'
+      },
+
+      lib: {
+        source: 'cdn',
+        search: 'bootstrap',
+        name: {
+          handle: 'twitter-bootstrap'
+        },
+        version: '4.0.0-beta.2',
+        files: [
+          'css/bootstrap.min.css',
+          'js/bootstrap.min.js'
+        ],
+        deps: 'jquery'
+      }
+    }).then(() => {
+      resolve()
+    })
+  })
+})
+
+test('`deux add asset` (CDN Bootstrap): should be succeed.', async t => {
+  await addAssetCDN.then(() => {
+    t.pass()
+  })
+})
