@@ -453,16 +453,18 @@ class AddAsset extends CLI {
     const themeInfo = this.themeInfo()
 
     let task = new Promise(resolve => resolve())
-    let libname = lib.name.handle
-
-    if (lib.source === libSource.URL) {
-      libname = slugify(lib.name)
-      lib.files = [lib.url]
-      delete lib.url
-    }
+    let libname
 
     // Download Assets
     if (asset.type === assetTypes.LIB && (lib.source === libSource.CDN || lib.source === libSource.URL)) {
+      libname = lib.name.handle
+
+      if (lib.source === libSource.URL) {
+        libname = slugify(lib.name)
+        lib.files = [lib.url]
+        delete lib.url
+      }
+
       let libsemver = libname
 
       if (lib.version) {
