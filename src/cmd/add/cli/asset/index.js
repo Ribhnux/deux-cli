@@ -20,22 +20,21 @@ const {
 const CLI = global.deuxcli.require('main')
 const messages = global.deuxcli.require('messages')
 const validator = global.deuxhelpers.require('util/validator')
-const {loader, exit, finish} = global.deuxhelpers.require('logger')
 const {capitalize} = global.deuxhelpers.require('util/misc')
 const compileFile = global.deuxhelpers.require('compiler/single')
 
 class AddAsset extends CLI {
-  constructor() {
+  constructor(options) {
     super()
-    this.init()
+    this.init(options)
   }
 
   /**
    * Setup add asset prompts
    */
   prepare() {
-    this.title = 'Add a {New Asset} dependencies'
-    this.prompts = [
+    this.$title = 'Add a {New Asset} dependencies'
+    this.$prompts = [
       {
         type: 'list',
         name: 'asset.type',
@@ -120,7 +119,7 @@ class AddAsset extends CLI {
           return asset.type === assetTypes.LIB && lib.source === libSource.CDN && lib.search.length > 0
         },
         choices: ({lib}) => new Promise((resolve, reject) => {
-          const searchLoader = loader(`Searching "${lib.search}" from CDN...`)
+          const searchLoader = this.$logger.loader(`Searching "${lib.search}" from CDN...`)
 
           cdnjs.search(lib.search, {fields: {author: true}}).then(result => {
             searchLoader.succeed(`Found ${result.length} item(s)`)
@@ -159,7 +158,7 @@ class AddAsset extends CLI {
           return asset.type === assetTypes.LIB && lib.source === libSource.CDN && lib.name.handle
         },
         choices: ({lib}) => new Promise((resolve, reject) => {
-          const versionLoader = loader(`Get "${lib.name.handle}" versions...`)
+          const versionLoader = this.$logger.loader(`Get "${lib.name.handle}" versions...`)
 
           cdnjs.versions(lib.name.handle).then(result => {
             versionLoader.succeed(`${lib.name.handle} has ${result.length} versions`)
@@ -186,7 +185,7 @@ class AddAsset extends CLI {
           return asset.type === assetTypes.LIB && lib.source === libSource.CDN && lib.name.handle
         },
         choices: ({lib}) => new Promise((resolve, reject) => {
-          const filesLoader = loader(`Fetch "${lib.name.handle}@${lib.version}" files...`)
+          const filesLoader = this.$logger.loader(`Fetch "${lib.name.handle}@${lib.version}" files...`)
 
           cdnjs.files(`${lib.name.handle}@${lib.version}`).then(result => {
             filesLoader.succeed(`Succeed, fetched ${lib.name.handle}@${lib.version} files`)
@@ -318,7 +317,7 @@ class AddAsset extends CLI {
           const apiKey = font.api || this.getConfig('fontApiKey')
 
           if (!apiKey) {
-            exit(messages.ERROR_INVALID_API_KEY)
+            this.$logger.exit(messages.ERROR_INVALID_API_KEY)
           }
 
           const searchOptions = {
@@ -328,7 +327,7 @@ class AddAsset extends CLI {
             }
           }
 
-          const searchLoader = loader(`Searching "${font.search}" from Google Fonts Directory...`)
+          const searchLoader = this.$logger.loader(`Searching "${font.search}" from Google Fonts Directory...`)
 
           weft.apiKey(apiKey)
           weft.search(font.search.toLowerCase(), searchOptions).then(result => {
@@ -363,7 +362,7 @@ class AddAsset extends CLI {
           const apiKey = font.api || this.getConfig('fontApiKey')
 
           if (!apiKey) {
-            exit(messages.ERROR_INVALID_API_KEY)
+            this.$logger.exit(messages.ERROR_INVALID_API_KEY)
           }
 
           const fields = {
@@ -371,7 +370,7 @@ class AddAsset extends CLI {
             variants: true,
             subsets: true
           }
-          const searchLoader = loader('Load list...')
+          const searchLoader = this.$logger.loader('Load list...')
 
           weft.apiKey(apiKey)
           weft.list(fields).then(result => {
@@ -471,7 +470,7 @@ class AddAsset extends CLI {
       }
 
       const libpath = this.currentThemePath('assets-src', 'libs', libsemver)
-      const downloadLoader = loader('Downloading assets...')
+      const downloadLoader = this.$logger.loader('Downloading assets...')
 
       task = new Promise((resolve, reject) => {
         rimraf(path.join(libpath, '*'), err => {
@@ -543,7 +542,7 @@ class AddAsset extends CLI {
           // Save SASS
           if (asset.type === assetTypes.SASS) {
             if (sass.overwrite === false) {
-              exit(messages.ERROR_SASS_FILE_ALREADY_EXISTS)
+              this.$logger.exit(messages.ERROR_SASS_FILE_ALREADY_EXISTS)
             }
 
             const structName = `${sass.type}s`
@@ -586,7 +585,7 @@ class AddAsset extends CLI {
           }
 
           resolve()
-        }).catch(exit),
+        }).catch(this.$logger.exit),
 
         new Promise(resolve => {
           this.setThemeConfig({
@@ -595,8 +594,8 @@ class AddAsset extends CLI {
           resolve()
         })
       ]).then(
-        finish(messages.SUCCEED_ASSET_ADDED)
-      ).catch(exit)
+        this.$logger.finish(messages.SUCCEED_ASSET_ADDED)
+      ).catch(this.$logger.exit)
     })
   }
 }

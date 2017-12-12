@@ -59,7 +59,9 @@ class CLI {
         logger.finish(message.DONE_NO_REMOVE, this.$init.apiMode())
       }
 
-      this.$logger.loader = msg => logger.loader(msg)
+      this.$logger.loader = (msg, color = 'cyan') => {
+        return logger.loader(msg, color, this.$init.apiMode())
+      }
 
       this.$db = db
       this.prepare()
