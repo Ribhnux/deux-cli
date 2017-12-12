@@ -473,6 +473,17 @@ class AddAsset extends CLI {
       const downloadLoader = this.$logger.loader('Downloading assets...')
 
       task = new Promise((resolve, reject) => {
+        let files = lib.files
+
+        if (lib.source === libSource.CDN) {
+          files = files.map(filepath => {
+            return {
+              url: cdnjs.url(libsemver, filepath),
+              path: path.dirname(filepath)
+            }
+          })
+        }
+
         rimraf(path.join(libpath, '*'), err => {
           if (err) {
             throw err
@@ -483,14 +494,21 @@ class AddAsset extends CLI {
               throw err
             }
 
-            let files = lib.files
-
-            if (lib.source === libSource.CDN) {
-              files = cdnjs.url(libsemver, lib.files)
-            }
-
             Promise.all(files.map(
-              filename => download(filename, libpath)
+              file => new Promise(resolve => {
+                const fileUrl = lib.source === libSource.CDN ? file.url : file
+                const filePath = lib.source === libSource.CDN ? path.join(libpath, file.path) : libpath
+
+                mkdirp(filePath, err => {
+                  if (err) {
+                    throw err
+                  }
+
+                  download(fileUrl, filePath).then(() => {
+                    resolve()
+                  }).catch(this.$logger.exit)
+                })
+              })
             )).then(() => {
               downloadLoader.succeed(`${lib.files.length} file(s) downloaded.`)
               resolve()
