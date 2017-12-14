@@ -1766,6 +1766,13 @@ const addWebFont = new Promise(async resolve => {
 
 test('`deux add asset` (Montserrat webfont): should be succeed.', async t => {
   await addWebFont.then(() => {
-    t.pass()
+    t.fail()
   })
 })
+
+// A
+// test('`deux add asset`: config should be valid', async t => {
+//   await addWebFont.then(() => {
+
+//   })
+// })

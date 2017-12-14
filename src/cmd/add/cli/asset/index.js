@@ -450,15 +450,17 @@ class AddAsset extends CLI {
    */
   action({asset, lib, sass, font}) {
     const themeDetails = this.themeDetails()
-    const themeInfo = this.themeInfo()
+    const theme = this.themeInfo()
 
     let task = new Promise(resolve => resolve())
     let libname
 
+    if (asset.type === assetTypes.LIB) {
+      libname = lib.name.handle
+    }
+
     // Download Assets
     if (asset.type === assetTypes.LIB && (lib.source === libSource.CDN || lib.source === libSource.URL)) {
-      libname = lib.name.handle
-
       if (lib.source === libSource.URL) {
         libname = slugify(lib.name)
         lib.files = [lib.url]
@@ -516,6 +518,7 @@ class AddAsset extends CLI {
           if (asset.type === assetTypes.LIB) {
             if (lib.source === libSource.WP) {
               lib.deps = lib.name.deps || []
+              delete lib.name
             }
 
             if (lib.source === libSource.CDN || lib.source === libSource.URL) {
@@ -541,8 +544,8 @@ class AddAsset extends CLI {
               delete lib.deps
             }
 
-            themeInfo.asset.libs[libname] = lib
-            delete themeInfo.asset.libs[libname].name
+            theme.asset.libs[libname] = lib
+            delete theme.asset.libs[libname].name
           }
 
           // Save SASS
@@ -553,12 +556,12 @@ class AddAsset extends CLI {
 
             const structName = `${sass.type}s`
 
-            themeInfo.asset.sass[structName] = uniq(themeInfo.asset.sass[structName].concat(sass.name))
-            sass.components = themeInfo.asset.sass.components.map(item => `'components/${item}'`).join(',\n  ')
-            sass.layouts = themeInfo.asset.sass.layouts.map(item => `'layouts/${item}'`).join(',\n  ')
-            sass.pages = themeInfo.asset.sass.pages.map(item => `'pages/${item}'`).join(',\n  ')
-            sass.themes = themeInfo.asset.sass.themes.map(item => `'themes/${item}'`).join(',\n  ')
-            sass.vendors = themeInfo.asset.sass.vendors.map(item => `'vendors/${item}'`).join(',\n  ')
+            theme.asset.sass[structName] = uniq(theme.asset.sass[structName].concat(sass.name))
+            sass.components = theme.asset.sass.components.map(item => `'components/${item}'`).join(',\n  ')
+            sass.layouts = theme.asset.sass.layouts.map(item => `'layouts/${item}'`).join(',\n  ')
+            sass.pages = theme.asset.sass.pages.map(item => `'pages/${item}'`).join(',\n  ')
+            sass.themes = theme.asset.sass.themes.map(item => `'themes/${item}'`).join(',\n  ')
+            sass.vendors = theme.asset.sass.vendors.map(item => `'vendors/${item}'`).join(',\n  ')
 
             compileFile({
               srcPath: this.templateSourcePath('_partials', 'sass.scss'),
@@ -583,7 +586,7 @@ class AddAsset extends CLI {
           if (asset.type === assetTypes.FONT) {
             const fontName = slugify(font.selected.family)
 
-            themeInfo.asset.fonts[fontName] = {
+            theme.asset.fonts[fontName] = {
               name: font.selected.family,
               variants: font.variants.map(item => item.mini.toString()),
               subsets: font.subsets
@@ -591,11 +594,11 @@ class AddAsset extends CLI {
           }
 
           resolve()
-        }).catch(this.$logger.exit),
+        }),
 
         new Promise(resolve => {
           this.setThemeConfig({
-            asset: themeInfo.asset
+            asset: theme.asset
           })
           resolve()
         })
