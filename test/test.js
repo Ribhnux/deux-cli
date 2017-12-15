@@ -1439,7 +1439,7 @@ test('`deux add asset` (Bootstrap from CDN): asset file should be exists.', asyn
   })
 })
 
-const addAssetWP = new Promise(async resolve => {
+const addAssetjQuery = new Promise(async resolve => {
   await addAssetCDN.then(() => {
     runCli(['add', 'asset'], {
       asset: {
@@ -1459,13 +1459,41 @@ const addAssetWP = new Promise(async resolve => {
 })
 
 test('`deux add asset` (jQuery from WordPress): should be succeed.', async t => {
-  await addAssetWP.then(() => {
+  await addAssetjQuery.then(() => {
+    t.pass()
+  })
+})
+
+const addAssetjQueryMasonry = new Promise(async resolve => {
+  await addAssetjQuery.then(() => {
+    runCli(['add', 'asset'], {
+      asset: {
+        type: 'lib'
+      },
+
+      lib: {
+        source: 'wp',
+        name: {
+          handle: 'jquery-masonry',
+          deps: [
+            'jquery'
+          ]
+        }
+      }
+    }).then(() => {
+      resolve()
+    })
+  })
+})
+
+test('`deux add asset` (jQuery Masonry from WordPress): should be succeed.', async t => {
+  await addAssetjQueryMasonry.then(() => {
     t.pass()
   })
 })
 
 const addAssetURL = new Promise(async resolve => {
-  await addAssetWP.then(() => {
+  await addAssetjQueryMasonry.then(() => {
     runCli(['add', 'asset'], {
       asset: {
         type: 'lib'
@@ -1766,13 +1794,253 @@ const addWebFont = new Promise(async resolve => {
 
 test('`deux add asset` (Montserrat webfont): should be succeed.', async t => {
   await addWebFont.then(() => {
-    t.fail()
+    t.pass()
   })
 })
 
-// A
-// test('`deux add asset`: config should be valid', async t => {
-//   await addWebFont.then(() => {
+test('`deux add asset`: config should be valid', async t => {
+  await addWebFont.then(() => {
+    t.deepEqual({
+      libs: {
+        'twitter-bootstrap': {
+          source: 'cdn',
+          search: 'bootstrap',
+          version: '4.0.0-beta.2',
+          files: [
+            {
+              ext: 'css',
+              path: 'css/bootstrap.min.css',
+              is_active: true,
+              deps: []
+            },
+            {
+              ext: 'js',
+              path: 'js/bootstrap.min.js',
+              is_active: true,
+              deps: [
+                'jquery'
+              ]
+            }
+          ]
+        },
+        jquery: {
+          source: 'wp',
+          deps: []
+        },
+        'jquery-masonry': {
+          source: 'wp',
+          deps: [
+            'jquery'
+          ]
+        },
+        'hint-css': {
+          source: 'url',
+          version: '2.5.0',
+          files: [
+            {
+              ext: 'css',
+              path: 'https://raw.githubusercontent.com/chinchang/hint.css/ee20a62cca41e501de21d28d36eef92b9bf10bed/hint.min.css',
+              is_active: true,
+              deps: []
+            }
+          ]
+        }
+      },
+      fonts: {
+        montserrat: {
+          name: 'Montserrat',
+          variants: [
+            '100',
+            '300',
+            '400',
+            '600',
+            '700'
+          ],
+          subsets: [
+            'latin',
+            'latin-ext'
+          ]
+        }
+      }
+    }, getConfig('asset'))
+  })
+})
 
-//   })
-// })
+const removeAssetBootstrap = new Promise(async resolve => {
+  await addWebFont.then(() => {
+    runCli(['remove', 'asset'], {
+      assets: [
+        {
+          key: 'lib',
+          semver: 'twitter-bootstrap@4.0.0-beta.2',
+          value: 'twitter-bootstrap'
+        }
+      ]
+    }).then(() => {
+      resolve()
+    })
+  })
+})
+
+test('`deux remove asset` (Bootstrap from CDN): should be succeed.', async t => {
+  await removeAssetBootstrap.then(() => {
+    t.pass()
+  })
+})
+
+test('`deux remove asset` (Bootstrap from CDN): asset file should be deleted.', async t => {
+  await removeAssetBootstrap.then(() => {
+    t.false(existsSync(path.join(themePath, 'assets-src', 'libs', 'twitter-bootstrap@4.0.0-beta.2')))
+  })
+})
+
+test('`deux remove asset` (Bootstrap from CDN): config should be removed.', async t => {
+  await removeAssetBootstrap.then(() => {
+    t.false('twitter-bootstrap' in getConfig('asset').libs)
+  })
+})
+
+const removeAssetjQuery = new Promise(async resolve => {
+  await removeAssetBootstrap.then(() => {
+    runCli(['remove', 'asset'], {
+      assets: [
+        {
+          key: 'lib',
+          semver: 'jquery',
+          value: 'jquery'
+        }
+      ]
+    }).then(() => {
+      resolve()
+    })
+  })
+})
+
+test('`deux remove asset` (jQuery from WordPress): should be succeed.', async t => {
+  await removeAssetjQuery.then(() => {
+    t.pass()
+  })
+})
+
+test('`deux remove asset` (jQuery from WordPress): config should be removed.', async t => {
+  await removeAssetjQuery.then(() => {
+    t.false('jquery' in getConfig('asset').libs)
+  })
+})
+
+const removeAssetHintCSS = new Promise(async resolve => {
+  await removeAssetjQuery.then(() => {
+    runCli(['remove', 'asset'], {
+      assets: [
+        {
+          key: 'lib',
+          semver: 'hint-css@2.5.0',
+          value: 'hint-css'
+        }
+      ]
+    }).then(() => {
+      resolve()
+    })
+  })
+})
+
+test('`deux remove asset` (hint.css from Custom URL): should be succeed.', async t => {
+  await removeAssetHintCSS.then(() => {
+    t.pass()
+  })
+})
+
+test('`deux remove asset` (hint.css from Custom URL): asset file should be deleted.', async t => {
+  await removeAssetHintCSS.then(() => {
+    t.false(existsSync(path.join(themePath, 'assets-src', 'libs', 'hint-css@2.5.0')))
+  })
+})
+
+test('`deux remove asset` (hint.css from Custom URL): config should be removed.', async t => {
+  await removeAssetHintCSS.then(() => {
+    t.false('jquery' in getConfig('asset').libs)
+  })
+})
+
+const removeSASSComponent = new Promise(async resolve => {
+  await removeAssetHintCSS.then(() => {
+    runCli(['remove', 'asset'], {
+      assets: [
+        {
+          key: 'sass',
+          type: 'components',
+          value: 'button'
+        }
+      ]
+    }).then(() => {
+      resolve()
+    })
+  })
+})
+
+test('`deux remove asset` (sass component): should be succeed.', async t => {
+  await removeSASSComponent.then(() => {
+    t.pass()
+  })
+})
+
+test('`deux remove asset` (sass component): asset file should be deleted.', async t => {
+  await removeSASSComponent.then(() => {
+    t.false(existsSync(path.join(themePath, 'assets-src', 'sass', 'components', '_button.scss')))
+  })
+})
+
+const removeSASSLayout = new Promise(async resolve => {
+  await removeSASSComponent.then(() => {
+    runCli(['remove', 'asset'], {
+      assets: [
+        {
+          key: 'sass',
+          type: 'layouts',
+          value: 'grid'
+        }
+      ]
+    }).then(() => {
+      resolve()
+    })
+  })
+})
+
+test('`deux remove asset` (sass layout): should be succeed.', async t => {
+  await removeSASSLayout.then(() => {
+    t.pass()
+  })
+})
+
+test('`deux remove asset` (sass layout): asset file should be deleted.', async t => {
+  await removeSASSLayout.then(() => {
+    t.false(existsSync(path.join(themePath, 'assets-src', 'sass', 'layouts', '_grid.scss')))
+  })
+})
+
+const removeAssetWebFont = new Promise(async resolve => {
+  await removeSASSLayout.then(() => {
+    runCli(['remove', 'asset'], {
+      assets: [
+        {
+          key: 'font',
+          value: 'montserrat'
+        }
+      ]
+    }).then(() => {
+      resolve()
+    })
+  })
+})
+
+test('`deux remove asset` (Montserrat webfont): should be succeed.', async t => {
+  await removeAssetWebFont.then(() => {
+    t.pass()
+  })
+})
+
+test('`deux remove asset` (Montserrat webfont): config should be removed.', async t => {
+  await removeAssetWebFont.then(() => {
+    t.false('montserrat' in getConfig('asset').fonts)
+  })
+})

@@ -2,17 +2,16 @@ const rimraf = require('rimraf')
 
 const CLI = global.deuxcli.require('main')
 const messages = global.deuxcli.require('messages')
-const {exit, finish} = global.deuxhelpers.require('logger')
 const {assetTypes} = global.deuxcmd.require('add/cli/asset/fixtures')
 const {capitalize} = global.deuxhelpers.require('util/misc')
 const compileFile = global.deuxhelpers.require('compiler/single')
-const {happyExit, captchaMaker, separatorMaker} = global.deuxhelpers.require('util/cli')
+const {captchaMaker, separatorMaker} = global.deuxhelpers.require('util/cli')
 
 class RemoveAsset extends CLI {
-  constructor() {
+  constructor(options) {
     super()
     this.themeAsset = undefined
-    this.init()
+    this.init(options)
   }
 
   /**
@@ -32,11 +31,11 @@ class RemoveAsset extends CLI {
     }
 
     if (assetLength === 0) {
-      happyExit()
+      this.$logger.happyExit()
     }
 
-    this.title = 'Remove {Assets}'
-    this.prompts = [
+    this.$title = 'Remove {Assets}'
+    this.$prompts = [
       {
         type: 'checkbox',
         name: 'assets',
@@ -134,8 +133,8 @@ class RemoveAsset extends CLI {
    * @param {Object} {assets, confirm}
    */
   action({assets, confirm}) {
-    if (assets.length === 0 || !confirm) {
-      happyExit()
+    if (assets.length === 0 || (!confirm && !this.$init.apiMode())) {
+      this.$logger.happyExit()
     }
 
     const themeDetails = this.themeDetails()
@@ -182,14 +181,14 @@ class RemoveAsset extends CLI {
 
         resolve()
       })
-    )).then(async () => {
-      await this.setThemeConfig({
+    )).then(() => {
+      this.setThemeConfig({
         asset: this.themeAsset
       })
       return true
     }).then(() => {
-      finish(messages.SUCCEED_REMOVED_ASSET)
-    }).catch(exit)
+      this.$logger.finish(messages.SUCCEED_REMOVED_ASSET)
+    }).catch(this.$logger.exit)
   }
 }
 
