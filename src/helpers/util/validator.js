@@ -126,9 +126,9 @@ module.exports = (value, options) => {
   }
 
   if (options.slug) {
-    let slugMessage = 'is slug, only contains lowercase alphabet, number, and -'
+    let slugMessage = 'should be a slug, only contains lowercase alphabet, number, and -'
     if (options.slugPattern !== allowedSlugs) {
-      slugMessage = `is slug, only contains ${options.slugPattern}`
+      slugMessage = `should be a slug, only contains ${options.slugPattern}`
     }
 
     rules.value.format = {
