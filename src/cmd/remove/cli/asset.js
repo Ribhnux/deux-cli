@@ -50,10 +50,8 @@ class RemoveAsset extends CLI {
           for (const value in this.themeAsset.libs) {
             if (Object.prototype.hasOwnProperty.call(this.themeAsset.libs, value)) {
               let version = ''
-              let semver = value
 
               if (this.themeAsset.libs[value].version) {
-                semver += `@${this.themeAsset.libs[value].version}`
                 version = `v${this.themeAsset.libs[value].version}`
               }
 
@@ -61,8 +59,7 @@ class RemoveAsset extends CLI {
                 name: `${value} ${version}`,
                 value: {
                   key: assetTypes.LIB,
-                  semver,
-                  value
+                  slug: value
                 }
               })
             }
@@ -143,8 +140,9 @@ class RemoveAsset extends CLI {
       item => new Promise(resolve => {
         switch (item.key) {
           case assetTypes.LIB:
-            rimraf.sync(this.currentThemePath('assets-src', 'libs', item.semver))
-            delete this.themeAsset.libs[item.value]
+            rimraf.sync(this.currentThemePath('assets', 'vendors', item.slug))
+            rimraf.sync(this.currentThemePath('assets-src', 'sass', 'vendors', `_${item.slug}.scss`))
+            delete this.themeAsset.libs[item.slug]
             break
 
           case assetTypes.SASS:

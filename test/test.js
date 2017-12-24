@@ -156,12 +156,12 @@ test('`deux new`: Directory structures should be valid.', async t => {
     t.true(existsSync(path.join(themePath, 'assets', 'js')))
     t.true(existsSync(path.join(themePath, 'assets', 'css')))
     t.true(existsSync(path.join(themePath, 'assets', 'images')))
+    t.true(existsSync(path.join(themePath, 'assets', 'vendors')))
 
     // Assets source.
     t.true(existsSync(path.join(themePath, 'assets-src')))
     t.true(existsSync(path.join(themePath, 'assets-src', 'sass')))
     t.true(existsSync(path.join(themePath, 'assets-src', 'js')))
-    t.true(existsSync(path.join(themePath, 'assets-src', 'libs')))
 
     // Templates
     t.true(existsSync(path.join(themePath, 'components')))
@@ -1435,8 +1435,9 @@ test('`deux add asset` (Bootstrap from CDN): should be succeed.', async t => {
 
 test('`deux add asset` (Bootstrap from CDN): asset file should be exists.', async t => {
   await addAssetCDN.then(() => {
-    t.true(existsSync(path.join(themePath, 'assets-src', 'libs', 'twitter-bootstrap@4.0.0-beta.2', 'css', 'bootstrap.min.css')))
-    t.true(existsSync(path.join(themePath, 'assets-src', 'libs', 'twitter-bootstrap@4.0.0-beta.2', 'js', 'bootstrap.min.js')))
+    t.true(existsSync(path.join(themePath, 'assets', 'vendors', 'twitter-bootstrap', 'css', 'bootstrap.min.css')))
+    t.true(existsSync(path.join(themePath, 'assets', 'vendors', 'twitter-bootstrap', 'js', 'bootstrap.min.js')))
+    t.true(existsSync(path.join(themePath, 'assets-src', 'sass', 'vendors', '_twitter-bootstrap.scss')))
   })
 })
 
@@ -1521,7 +1522,8 @@ test('`deux add asset` (hint.css from Custom URL): should be succeed.', async t 
 
 test('`deux add asset` (hint.css from Custom URL): asset file should be exists.', async t => {
   await addAssetURL.then(() => {
-    t.true(existsSync(path.join(themePath, 'assets-src', 'libs', 'hint-css@2.5.0', 'hint.min.css')))
+    t.true(existsSync(path.join(themePath, 'assets', 'vendors', 'hint-css', 'hint.min.css')))
+    t.true(existsSync(path.join(themePath, 'assets-src', 'sass', 'vendors', '_hint-css.scss')))
   })
 })
 
@@ -1873,8 +1875,7 @@ const removeAssetBootstrap = new Promise(async resolve => {
       assets: [
         {
           key: 'lib',
-          semver: 'twitter-bootstrap@4.0.0-beta.2',
-          value: 'twitter-bootstrap'
+          slug: 'twitter-bootstrap'
         }
       ]
     }).then(() => {
@@ -1891,7 +1892,8 @@ test('`deux remove asset` (Bootstrap from CDN): should be succeed.', async t => 
 
 test('`deux remove asset` (Bootstrap from CDN): asset file should be deleted.', async t => {
   await removeAssetBootstrap.then(() => {
-    t.false(existsSync(path.join(themePath, 'assets-src', 'libs', 'twitter-bootstrap@4.0.0-beta.2')))
+    t.false(existsSync(path.join(themePath, 'assets', 'vendors', 'twitter-bootstrap')))
+    t.false(existsSync(path.join(themePath, 'assets-src', 'sass', '_twitter-bootstrap.scss')))
   })
 })
 
@@ -1907,8 +1909,7 @@ const removeAssetjQuery = new Promise(async resolve => {
       assets: [
         {
           key: 'lib',
-          semver: 'jquery',
-          value: 'jquery'
+          slug: 'jquery'
         }
       ]
     }).then(() => {
@@ -1935,8 +1936,7 @@ const removeAssetHintCSS = new Promise(async resolve => {
       assets: [
         {
           key: 'lib',
-          semver: 'hint-css@2.5.0',
-          value: 'hint-css'
+          slug: 'hint-css'
         }
       ]
     }).then(() => {
@@ -1953,13 +1953,14 @@ test('`deux remove asset` (hint.css from Custom URL): should be succeed.', async
 
 test('`deux remove asset` (hint.css from Custom URL): asset file should be deleted.', async t => {
   await removeAssetHintCSS.then(() => {
-    t.false(existsSync(path.join(themePath, 'assets-src', 'libs', 'hint-css@2.5.0')))
+    t.false(existsSync(path.join(themePath, 'assets', 'vendors', 'hint-css')))
+    t.false(existsSync(path.join(themePath, 'assets-src', 'sass', 'vendors', '_hint-css.scss')))
   })
 })
 
 test('`deux remove asset` (hint.css from Custom URL): config should be removed.', async t => {
   await removeAssetHintCSS.then(() => {
-    t.false('jquery' in getConfig('asset').libs)
+    t.false('hint-css' in getConfig('asset').libs)
   })
 })
 

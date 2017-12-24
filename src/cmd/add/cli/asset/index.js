@@ -454,6 +454,7 @@ class AddAsset extends CLI {
 
     let task = new Promise(resolve => resolve())
     let libname
+    let libsemver
 
     if (asset.type === assetTypes.LIB) {
       libname = lib.name.handle
@@ -467,13 +468,13 @@ class AddAsset extends CLI {
         delete lib.url
       }
 
-      let libsemver = libname
+      libsemver = libname
 
       if (lib.version) {
         libsemver += `@${lib.version}`
       }
 
-      const libpath = this.currentThemePath('assets-src', 'libs', libsemver)
+      const libpath = this.currentThemePath('assets', 'vendors', libname)
       const downloadLoader = this.$logger.loader('Downloading assets...')
 
       task = new Promise((resolve, reject) => {
@@ -542,6 +543,17 @@ class AddAsset extends CLI {
                 return fileObj
               })
               delete lib.deps
+
+              compileFile({
+                srcPath: this.templateSourcePath('_partials', 'sass.scss'),
+                dstPath: this.currentThemePath('assets-src', 'sass', 'vendors', `_${libname}.scss`),
+                syntax: {
+                  sass: {
+                    description: libsemver
+                  },
+                  theme: themeDetails
+                }
+              })
             }
 
             theme.asset.libs[libname] = lib

@@ -83,11 +83,11 @@ if ( ! function_exists( '{{theme.slugfn}}_enqueue_dependencies' ) ) :
 
 					switch ( $file['ext'] ) {
 						case 'css':
-							wp_enqueue_style( $name, $assets_path . $file['path'], $file['deps'], $libs['version'] );
+							wp_enqueue_style( $name, $assets_path . $name . '/' . $file['path'], $file['deps'], $libs['version'] );
 							break;
 
 						case 'js':
-							wp_enqueue_script( $name, $assets_path . $file['path'], $file['deps'], $libs['version'], true );
+							wp_enqueue_script( $name, $assets_path . $name . '/' . $file['path'], $file['deps'], $libs['version'], true );
 							break;
 					}
 				}
