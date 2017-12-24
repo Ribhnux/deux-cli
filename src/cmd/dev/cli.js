@@ -1,31 +1,31 @@
-const {existsSync} = require('fs')
+const path = require('path')
 const gulp = require('gulp')
 const browserSync = require('browser-sync')
-const watch = require('gulp-watch')
 const plumber = require('gulp-plumber')
 const sass = require('gulp-sass')
 const rename = require('gulp-rename')
-const srcmap = require('gulp-sourcemaps')
-const cssbeautify = require('gulp-cssbeautify')
-const stripComments = require('gulp-strip-css-comments')
 const merge = require('merge2')
 const clone = require('gulp-clone')
-const replacer = require('gulp-replace')
+const sourceMaps = require('gulp-sourcemaps')
 const rtlcss = require('gulp-rtlcss')
+const cleanCSS = require('gulp-clean-css')
+const rollup = require('rollup-stream')
+const source = require('vinyl-source-stream')
+const buffer = require('vinyl-buffer')
+const babel = require('rollup-plugin-babel')
+const autoPrefixr = require('gulp-autoprefixer')
+const uglify = require('gulp-uglify')
 const wpPot = require('gulp-wp-pot')
 const gettext = require('gulp-gettext')
-const extend = require('extend')
-const webpack = require('webpack')
-const webpackStream = require('webpack-stream')
+const replacer = require('gulp-replace')
+const cssbeautify = require('gulp-cssbeautify')
+const stripComments = require('gulp-strip-css-comments')
 
 const CLI = global.deuxcli.require('main')
-const error = global.deuxhelpers.require('logger/error')
 
 class DevCLI extends CLI {
   constructor() {
     super()
-    this.task = undefined
-    this.defaultWebpackConfig = undefined
     this.init()
   }
 
@@ -33,144 +33,113 @@ class DevCLI extends CLI {
    * Setup gulp task
    */
   prepare() {
-    this.title = 'Start {development} mode'
+    this.$title = 'Start {development} mode'
 
-    this.tasklist = [
-      'build:style',
-      'build:customizer-style',
-      'build:editor-style',
-      'build:js',
-      'build:customizer-js',
-      'build:translation',
-      'sync:config',
-      'start:server'
-    ]
-
-    this.defaultWebpackConfig = {
-      module: {
-        rules: [
-          {
-            test: /\.js?$/,
-            use: {
-              loader: require.resolve('babel-loader'),
-              options: {
-                presets: [
-                  require('babel-preset-es2015')
-                ]
-              }
-            }
-          }
-        ]
-      },
-
-      externals: {},
-
-      plugins: [
-        new webpack.optimize.UglifyJsPlugin({
-          compress: {
-            warnings: false
-          }
-        })
-      ]
+    // Source Path
+    this.srcPath = {
+      ASSET_SASS: this.currentThemePath('assets-src', 'sass'),
+      ASSET_JS: this.currentThemePath('assets-src', 'js'),
+      CUSTOMIZER_ASSET_SASS: this.currentThemePath('includes', 'customizers', 'assets-src', 'sass'),
+      CUSTOMIZER_ASSET_JS: this.currentThemePath('includes', 'customizers', 'assets-src', 'js')
     }
 
-    const themeDetails = this.themeDetails()
-
-    /**
-     * Start browser-sync server
-     */
-    gulp.task('start:server', () => {
-      const watchFileList = [
-        ['**', '*.php'],
-        ['**', '*.css'],
-        ['**', '*.js']
-      ].map(
-        item => this.currentThemePath(item)
-      )
-
-      browserSync.init(watchFileList, {
-        proxy: this.getConfig('devUrl'),
-        logLevel: 'info',
-        logPrefix: themeDetails.slug,
-        open: false,
-        notify: false
-      }, () => {
-        // Run some startup after browsersync completely initialized.
-        this.compileMainStyle()
-        this.compileEditorStyle()
-        this.compileCustomizerStyle()
-        this.compileJS()
-        this.compileCustomizerJS()
-        this.compilePot()
-      })
-    })
+    // Destination Path
+    this.dstPath = {
+      ASSET_CSS: this.currentThemePath('assets', 'css'),
+      ASSET_JS: this.currentThemePath('assets', 'js'),
+      CUSTOMIZER_ASSET_CSS: this.currentThemePath('includes', 'customizers', 'assets', 'css'),
+      CUSTOMIZER_ASSET_JS: this.currentThemePath('includes', 'customizers', 'assets', 'js')
+    }
 
     // Main stylesheet compiler
-    gulp.task('build:style', () => {
-      return watch([
-        this.currentThemePath('assets-src', 'sass', '**', '*.scss'),
-        this.currentThemePath('assets-src', 'sass', 'main.scss')
-      ], () => {
-        this.compileMainStyle()
-      })
-    })
+    gulp.task('build:style', this.sassCompiler('theme.scss', {
+      srcPath: this.srcPath.ASSET_SASS,
+      dstPath: this.dstPath.ASSET_CSS,
+      rtl: true
+    }))
 
     // Customizer stylesheet compiler
-    gulp.task('build:customizer-style', () => {
-      return watch([
-        this.currentThemePath('includes', 'customizers', 'assets-src', 'sass', '**', '*.scss'),
-        this.currentThemePath('includes', 'customizers', 'assets-src', 'sass', 'customizer.scss')
-      ], () => {
-        this.compileCustomizerStyle()
-      })
-    })
+    gulp.task('build:customizer-style', this.sassCompiler('customizer.scss', {
+      srcPath: this.srcPath.CUSTOMIZER_ASSET_SASS,
+      dstPath: this.dstPath.CUSTOMIZER_ASSET_CSS,
+      rtl: true
+    }))
 
     // Editor stylesheet compiler
-    gulp.task('build:editor-style', () => {
-      return watch([
-        this.currentThemePath('assets-src', 'sass', 'editor-style.scss')
-      ], () => {
-        this.compileEditorStyle()
-      })
-    })
+    gulp.task('build:editor-style', this.sassCompiler('editor-style.scss', {
+      srcPath: this.srcPath.ASSET_SASS,
+      dstPath: this.dstPath.ASSET_CSS
+    }))
 
     // Javascript bundler
-    gulp.task('build:js', () => {
-      return watch([
-        this.currentThemePath('assets-src', 'js', '**', '*.js'),
-        '!' + this.currentThemePath('assets-src', 'js', 'node_modules', '**', '*.js')
-      ], () => {
-        this.compileJS()
-      })
-    })
+    gulp.task('build:js', this.jsCompiler('theme.js', {
+      srcPath: this.srcPath.ASSET_JS,
+      dstPath: this.dstPath.ASSET_JS
+    }))
 
-    // Customizer Javascript bundler
-    gulp.task('build:customizer-js', () => {
-      return watch([
-        this.currentThemePath('includes', 'customizers', 'assets-src', 'js', '**', '*.js'),
-        '!' + this.currentThemePath('includes', 'customizers', 'assets-src', 'js', 'node_modules', '**', '*.js')
-      ], () => {
-        this.compileCustomizerJS()
-      })
-    })
+    // Customizer Control Javascript bundler
+    gulp.task('build:customizer-control', this.jsCompiler('customizer-control.js', {
+      srcPath: this.srcPath.CUSTOMIZER_ASSET_JS,
+      dstPath: this.dstPath.CUSTOMIZER_ASSET_JS
+    }))
+
+    // Customizer Control Javascript bundler
+    gulp.task('build:customizer-preview', this.jsCompiler('customizer-preview.js', {
+      srcPath: this.srcPath.CUSTOMIZER_ASSET_JS,
+      dstPath: this.dstPath.CUSTOMIZER_ASSET_JS
+    }))
 
     // Watch theme-config.php
     gulp.task('sync:config', () => {
-      return watch([
-        this.currentThemeConfigPath()
-      ], () => {
-        this.sync()
-      })
+      this.sync()
     })
 
     // Auto compile pot file
     gulp.task('build:translation', () => {
-      return watch([
+      this.compilePot()
+    })
+
+    // Files watcher
+    gulp.task('watch:files', () => {
+      // Build assets/css/theme.css
+      gulp.watch([
+        path.join(this.srcPath.ASSET_SASS, '**', '*.scss'),
+        path.join(this.srcPath.ASSET_SASS, 'theme.scss'),
+      ], ['build:style'])
+
+      gulp.watch([
+        path.join(this.srcPath.ASSET_SASS, 'editor-style.scss')
+      ], ['build:editor-style'])
+
+      // Build includes/customizers/assets/customizer.css
+      gulp.watch([
+        path.join(this.srcPath.CUSTOMIZER_ASSET_SASS, 'sass', '**', '*.scss'),
+        path.join(this.srcPath.CUSTOMIZER_ASSET_SASS, 'sass', 'customizer.scss')
+      ], ['build:customizer-style'])
+
+      // Build assets/js/theme.js
+      gulp.watch([
+        path.join(this.srcPath.ASSET_JS, 'theme.js'),
+        '!' + path.join(this.srcPath.ASSET_JS, 'node_modules', '**', '*.js')
+      ], ['build:js'])
+
+      // Build customizer-control.js and customizer-preview.js
+      gulp.watch([
+        path.join(this.srcPath.CUSTOMIZER_ASSET_JS, 'customizer-control.js'),
+        path.join(this.srcPath.CUSTOMIZER_ASSET_JS, 'customizer-preview.js'),
+        '!' + path.join(this.srcPath.ASSET_JS, 'node_modules', '**', '*.js')
+      ], ['build:customizer-control', 'build:customizer-preview'])
+
+      // Synchronize config
+      gulp.watch([
+        this.currentThemeConfigPath()
+      ], ['sync:config'])
+
+      // Build translation
+      gulp.watch([
         this.currentThemePath('**', '*.php'),
         this.currentThemePath('*.php')
-      ], () => {
-        this.compilePot()
-      })
+      ], ['build:translation'])
     })
   }
 
@@ -178,144 +147,143 @@ class DevCLI extends CLI {
    * Start gulp
    */
   action() {
-    gulp.start.apply(gulp, this.tasklist)
+    const watchFileList = [
+      ['**', '*.php'],
+      ['**', '*.css'],
+      ['**', '*.js']
+    ].map(item => this.currentThemePath(item))
+
+    const startServer = new Promise(resolve => {
+      browserSync.init(watchFileList, {
+        proxy: this.getConfig('devUrl'),
+        logLevel: 'info',
+        logPrefix: this.themeDetails('slug'),
+        open: false,
+        notify: false
+      }, () => resolve())
+    })
+
+    // Compile all before watching files.
+    startServer.then(() => {
+      gulp.start([
+        'build:style',
+        'build:customizer-style',
+        'build:editor-style',
+        'build:js',
+        'build:customizer-control',
+        'build:customizer-preview',
+        'build:translation',
+        'sync:config'
+      ])
+    }).then(() => {
+      gulp.start(['watch:files'])
+    }).catch(this.$logger.exit)
   }
 
   /**
+   * SASS Compiler
    *
+   * @param {String} inputFile
+   * @param {Object} options
    */
-  sassCompiler(options) {
-    const rtlRegx = /;\/\*!rtl(.[^/]*)\*\//g
+  sassCompiler(inputFile, options) {
+    return () => {
+      // Compile Default Style
+      const defaultStyle = gulp.src(path.join(options.srcPath, inputFile))
+        .pipe(plumber())
+        .pipe(sass({
+          outputStyle: 'compressed'
+        }))
+        .pipe(autoPrefixr({
+          browsers: ['last 2 versions', 'Firefox < 20'],
+          cascade: true
+        }))
 
-    const gulpPlumber = plumber({
-      errorHandler(err) {
-        error({
-          message: err.message,
-          padding: true
-        })
-        this.emit('end')
+      // Compile RTL only when options.rtl is given
+      let RTLStyle
+      let RTLMinStyle
+
+      if (options.rtl === true) {
+        // Compile RTL Style
+        RTLStyle = defaultStyle.pipe(clone())
+          .pipe(rtlcss())
+          .pipe(cssbeautify({indent: '  ', autosemicolon: true}))
+          .pipe(replacer(/}\/\*!/g, '}\n\n/*!'))
+          .pipe(replacer(/\*\//g, '*/\n'))
+          .pipe(rename({
+            suffix: '-rtl'
+          }))
+          .pipe(gulp.dest(options.dstPath))
+
+        // Compile RTL Minified Style
+        RTLMinStyle = RTLStyle.pipe(clone())
+          .pipe(cleanCSS({
+            compatibility: 'ie8'
+          }))
+          .pipe(stripComments({preserve: false}))
+          .pipe(sourceMaps.init())
+          .pipe(rename({
+            suffix: '.min'
+          }))
+          .pipe(sourceMaps.write('./'))
+          .pipe(gulp.dest(options.dstPath))
       }
-    })
 
-    options = extend({
-      source: undefined,
-      basename: 'main',
-      rtl: false,
-      beautify: true,
-      destPath: this.currentThemePath('assets', 'css')
-    }, options)
-
-    const {
-      source,
-      basename,
-      rtl,
-      beautify
-    } = options
-
-    if (!source) {
-      throw new Error('No source defined.')
-    }
-
-    let output = source
-      .pipe(gulpPlumber)
-      .pipe(sass({
-        outputStyle: 'compressed'
-      }))
-      .pipe(clone())
-      .pipe(replacer(rtlRegx, rtl ? '/*rtl$1*/;' : ';'))
-
-    if (rtl) {
-      output = output.pipe(rtlcss())
-    }
-
-    if (beautify) {
-      output = output
+      const style = defaultStyle
+        .pipe(replacer(/\/\*rtl(.[^/]*)\*\//g, ''))
         .pipe(cssbeautify({indent: '  ', autosemicolon: true}))
         .pipe(replacer(/}\/\*!/g, '}\n\n/*!'))
         .pipe(replacer(/\*\//g, '*/\n'))
-    } else {
-      output = output
-        .pipe(stripComments({preserve: false}))
-        .pipe(srcmap.init({
-          loadMaps: true
+        .pipe(gulp.dest(options.dstPath))
+
+       // Compile Minified Style
+      const minStyle = style.pipe(clone())
+        .pipe(cleanCSS({
+          compatibility: 'ie8'
+        }))
+        .pipe(rename({
+          suffix: '.min'
         }))
         .pipe(stripComments({preserve: false}))
+        .pipe(sourceMaps.init())
+        .pipe(sourceMaps.write('./'))
+        .pipe(gulp.dest(options.dstPath))
+
+      return merge([style, minStyle], options.rtl === true ? [RTLStyle, RTLMinStyle] : [])
     }
-
-    output = output.pipe(rename({basename}))
-
-    if (beautify === false) {
-      output = output
-        .pipe(srcmap.write('./'))
-    }
-
-    return output.pipe(gulp.dest(options.destPath))
   }
 
   /**
-   * Compile main.css
+   * Javascript Compiler
+   *
+   * @param {String} inputFile
+   * @param {Object} options
    */
-  compileMainStyle() {
-    const mainCSS = gulp.src(this.currentThemePath('assets-src', 'sass', 'main.scss'))
-
-    // Compile main.css
-    const style = this.sassCompiler({
-      source: mainCSS
+  jsCompiler(inputFile, options) {
+    return () => rollup({
+      input: path.join(options.srcPath, inputFile),
+      sourcemap: false,
+      format: 'iife',
+      plugins: babel({
+        presets: [
+          [require.resolve('babel-preset-env'), {modules: false}]
+        ],
+        babelrc: false
+      })
     })
-
-    // Compile RTL Stylesheet main-rtl.css
-    const rtlStyle = this.sassCompiler({
-      source: mainCSS,
-      basename: 'main-rtl',
-      rtl: true
-    })
-
-    // Compile main.min.css
-    const minStyle = this.sassCompiler({
-      source: mainCSS,
-      basename: 'main.min',
-      beautify: false
-    })
-
-    // Compile RTL Stylesheet minified main.min-rtl.css
-    const rtlMinStyle = this.sassCompiler({
-      source: mainCSS,
-      basename: 'main.min-rtl',
-      rtl: true,
-      beautify: false
-    })
-
-    return merge([
-      style,
-      rtlStyle,
-      minStyle,
-      rtlMinStyle
-    ])
-  }
-
-  /**
-   * Compile customizer styles
-   */
-  compileCustomizerStyle() {
-    const customizerCSS = gulp.src(this.currentThemePath('includes', 'customizers', 'assets-src', 'sass', 'customizer.scss'))
-    return this.sassCompiler({
-      source: customizerCSS,
-      basename: 'customizer',
-      destPath: this.currentThemePath('includes', 'customizers', 'assets', 'css'),
-      rtl: false
-    })
-  }
-
-  /**
-   * Compile editor-style.css
-   */
-  compileEditorStyle() {
-    const editorCSS = gulp.src(this.currentThemePath('assets-src', 'sass', 'editor-style.scss'))
-    return this.sassCompiler({
-      source: editorCSS,
-      basename: 'editor-style',
-      rtl: false
-    })
+      // Beautify
+      .pipe(source(inputFile, options.srcPath))
+      .pipe(plumber())
+      .pipe(buffer())
+      .pipe(gulp.dest(options.dstPath))
+      // Minify
+      .pipe(rename({
+        suffix: '.min'
+      }))
+      .pipe(uglify())
+      .pipe(sourceMaps.init())
+      .pipe(sourceMaps.write('./'))
+      .pipe(gulp.dest(options.dstPath))
   }
 
   /**
@@ -340,83 +308,6 @@ class DevCLI extends CLI {
       .pipe(gulp.dest(this.currentThemePath('languages')))
 
     return merge(compilePotFile, compilePotToMo)
-  }
-
-  /**
-   * Auto bundling javascript using webpack
-   */
-  compileJS() {
-    const srcDir = this.currentThemePath('assets-src', 'js')
-    const srcPath = this.currentThemePath('assets-src', 'js', 'main.js')
-    const destDir = this.currentThemePath('assets', 'js')
-    const customWebpackConfigPath = this.currentThemePath('assets', 'js', 'webpack.config.js')
-
-    let webpackConfig = extend(this.defaultWebpackConfig, {
-      context: srcDir,
-
-      entry: {
-        main: srcPath
-      },
-
-      output: {
-        library: this.themeDetails('slug'),
-        libraryTarget: 'umd',
-        filename: '[name].js',
-        sourceMapFilename: '[name].map'
-      }
-    })
-
-    if (existsSync(customWebpackConfigPath)) {
-      webpackConfig = extend(webpackConfig, require(customWebpackConfigPath))
-    }
-
-    return gulp
-      .src(srcPath)
-      .pipe(webpackStream(webpackConfig, webpack))
-      .pipe(gulp.dest(destDir))
-  }
-
-  /**
-   * Auto bundling customizer javascript using webpack
-   */
-  compileCustomizerJS() {
-    const srcDir = this.currentThemePath('includes', 'customizers', 'assets-src', 'js')
-    const destDir = this.currentThemePath('includes', 'customizers', 'assets', 'js')
-    const customWebpackConfigPath = this.currentThemePath('includes', 'customizers', 'assets', 'js', 'webpack.config.js')
-    const controlPath = this.currentThemePath('includes', 'customizers', 'assets-src', 'js', 'control.js')
-    const previewPath = this.currentThemePath('includes', 'customizers', 'assets-src', 'js', 'preview.js')
-
-    let webpackConfig = extend(this.defaultWebpackConfig, {
-      context: srcDir,
-
-      entry: {
-        control: controlPath,
-        preview: previewPath
-      },
-
-      output: {
-        library: this.themeDetails('slug'),
-        libraryTarget: 'umd',
-        filename: '[name].js',
-        sourceMapFilename: '[name].map'
-      }
-    })
-
-    if (existsSync(customWebpackConfigPath)) {
-      webpackConfig = extend(webpackConfig, require(customWebpackConfigPath))
-    }
-
-    const controlJsBuild = gulp
-      .src(controlPath)
-      .pipe(webpackStream(webpackConfig, webpack))
-      .pipe(gulp.dest(destDir))
-
-    const previewJsBuild = gulp
-      .src(previewPath)
-      .pipe(webpackStream(webpackConfig, webpack))
-      .pipe(gulp.dest(destDir))
-
-    return merge(controlJsBuild, previewJsBuild)
   }
 }
 

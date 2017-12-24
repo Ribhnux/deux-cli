@@ -110,11 +110,11 @@ if ( ! function_exists( '{{theme.slugfn}}_enqueue_scripts' ) ) :
 		$theme_version = $theme_info->get( 'Version' );
 		$css_dir = '/assets/css/';
 		$js_dir = '/assets/js/';
-		$style_filename = 'main.css';
-		$script_filename = 'main.min.js';
+		$style_filename = 'theme.css';
+		$script_filename = 'theme.min.js';
 
 		if ( true === ${{theme.slugfn}}_config['optimize'] ) {
-			$style_filename = 'main.min.css';
+			$style_filename = 'theme.min.css';
 		}
 
 		// Load dependencies.
