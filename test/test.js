@@ -243,8 +243,8 @@ const addPartialTemplate = new Promise(async resolve => {
     runCli(['add', 'template'], {
       template: {
         type: 'partial',
-        prefix: 'header',
-        name: 'Navigation',
+        dir: 'header',
+        name: 'Topbar',
         description: 'Example Description'
       }
     }).then(() => {
@@ -261,7 +261,7 @@ test('`deux add template` (Partial): should be succeed.', async t => {
 
 test('`deux add template` (Partial): template file should be exists.', async t => {
   await addPartialTemplate.then(() => {
-    t.true(existsSync(path.join(themePath, 'partial-templates', 'header-navigation.php')))
+    t.true(existsSync(path.join(themePath, 'partial-templates', 'header', 'topbar.php')))
   })
 })
 
@@ -271,7 +271,8 @@ const removePartialTemplate = new Promise(async resolve => {
       templates: [
         {
           type: 'partial',
-          file: 'header-navigation.php'
+          dir: 'header',
+          file: 'topbar.php'
         }
       ]
     }).then(() => {
@@ -288,7 +289,7 @@ test('`deux remove template` (Partial): should be succeed.', async t => {
 
 test('`deux remove template` (Partial): template file should be deleted.', async t => {
   await removePartialTemplate.then(() => {
-    t.false(existsSync(path.join(themePath, 'partial-templates', 'header-navigation.php')))
+    t.false(existsSync(path.join(themePath, 'partial-templates', 'header', 'topbar.php')))
   })
 })
 

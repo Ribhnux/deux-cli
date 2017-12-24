@@ -8,7 +8,7 @@ const wpFileHeader = require('wp-get-file-header')
 const CLI = global.deuxcli.require('main')
 const messages = global.deuxcli.require('messages')
 const {templateTypes} = global.deuxcmd.require('add/cli/fixtures')
-const {scandir} = global.deuxhelpers.require('util/file')
+const {scandir, dirlist, filelist} = global.deuxhelpers.require('util/file')
 const {capitalize} = global.deuxhelpers.require('util/misc')
 const {captchaMaker, separatorMaker} = global.deuxhelpers.require('util/cli')
 
@@ -59,16 +59,29 @@ class RemoveTemplate extends CLI {
 
         // Partial templates.
         new Promise((resolve, reject) => {
-          const partialTemplates = scandir(this.currentThemePath('partial-templates'))
+          let partialTemplates = []
+
+          dirlist(this.currentThemePath('partial-templates'))
+            .map(
+              dir => filelist(this.currentThemePath('partial-templates', dir)).map(file => {
+                return {file, dir}
+              })
+            )
+            .forEach(item => {
+              partialTemplates = partialTemplates.concat(item)
+            })
+
           Promise.all(partialTemplates.map(
-            file => new Promise((resolve, reject) => {
-              wpFileHeader(this.currentThemePath('partial-templates', file)).then(info => {
+            item => new Promise((resolve, reject) => {
+              wpFileHeader(this.currentThemePath('partial-templates', item.dir, item.file))
+              .then(info => {
                 if (info.partialTemplateName) {
                   resolve({
-                    name: info.partialTemplateName,
+                    name: `${item.dir}: ${info.partialTemplateName}`,
                     value: {
                       type: templateTypes.PARTIAL,
-                      file
+                      file: item.file,
+                      dir: item.dir
                     }
                   })
                 } else {
@@ -189,7 +202,7 @@ class RemoveTemplate extends CLI {
             break
 
           case templateTypes.PARTIAL:
-            rimraf.sync(this.currentThemePath('partial-templates', item.file))
+            rimraf.sync(this.currentThemePath('partial-templates', item.dir, item.file))
             break
 
           case templateTypes.WOOCOMMERCE:
