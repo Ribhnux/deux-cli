@@ -272,7 +272,7 @@ class NewCLI extends CLI {
       },
 
       {
-        title: 'Init Config',
+        title: 'Setup Config',
         task: () => new Promise((resolve, reject) => {
           const phpRegx = /\.php$/g
           const notHiddenFile = item => item && item !== '.gitkeep'
@@ -286,7 +286,6 @@ class NewCLI extends CLI {
 
           const info = {
             details: themeDetails,
-            develop: false,
             optimize: true,
             asset: {
               libs: {},
@@ -346,7 +345,7 @@ class NewCLI extends CLI {
       },
 
       {
-        title: 'Init WordPress Theme',
+        title: 'Setup WordPress Theme',
         task: () => new Listr([
           {
             title: 'Compiles theme',
@@ -421,7 +420,7 @@ class NewCLI extends CLI {
       },
 
       {
-        title: 'Init Repository',
+        title: 'Setup Repository',
         task: () => new Listr([
           {
             title: 'Init repository url',
