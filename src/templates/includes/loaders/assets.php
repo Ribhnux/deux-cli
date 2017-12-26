@@ -110,20 +110,21 @@ if ( ! function_exists( '{{theme.slugfn}}_enqueue_scripts' ) ) :
 		$theme_version = $theme_info->get( 'Version' );
 		$css_dir = '/assets/css/';
 		$js_dir = '/assets/js/';
-		$style_filename = 'theme.css';
-		$script_filename = 'theme.min.js';
+		$theme_css = 'theme.css';
+		$theme_js = 'theme.js';
 
 		if ( true === ${{theme.slugfn}}_config['optimize'] ) {
-			$style_filename = 'theme.min.css';
+			$theme_css = 'theme.min.css';
+			$theme_js = 'theme.min.js';
 		}
 
 		// Load dependencies.
 		{{theme.slugfn}}_load_dependencies();
 
-		// Main stylesheets.
-		$style_path = get_theme_file_path( $css_dir . $style_filename );
+		// Load theme styles.
+		$style_path = get_theme_file_path( $css_dir . $theme_css );
 		if ( file_exists( $style_path ) ) {
-			wp_enqueue_style( '{{theme.slug}}-style', get_theme_file_uri( $css_dir . $style_filename ), array(), $theme_version );
+			wp_enqueue_style( '{{theme.slug}}-style', get_theme_file_uri( $css_dir . $theme_css ), array(), $theme_version );
 
 			// RTL Stylesheets.
 			if ( is_rtl() ) {
@@ -131,10 +132,10 @@ if ( ! function_exists( '{{theme.slugfn}}_enqueue_scripts' ) ) :
 			}
 		}
 
-		// Main script.
-		$script_path = get_theme_file_path( $js_dir . $script_filename );
+		// Load theme script.
+		$script_path = get_theme_file_path( $js_dir . $theme_js );
 		if ( file_exists( $script_path ) ) {
-			wp_enqueue_script( '{{theme.slug}}-script', get_theme_file_uri( $js_dir . $script_filename ), array(), $theme_version, true );
+			wp_enqueue_script( '{{theme.slug}}-script', get_theme_file_uri( $js_dir . $theme_js ), array(), $theme_version, true );
 		}
 
 		// Enable nested comments reply.
