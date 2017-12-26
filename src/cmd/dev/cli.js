@@ -113,8 +113,8 @@ class DevCLI extends CLI {
 
       // Build includes/customizers/assets/customizer.css
       gulp.watch([
-        path.join(this.srcPath.CUSTOMIZER_ASSET_SASS, 'sass', '**', '*.scss'),
-        path.join(this.srcPath.CUSTOMIZER_ASSET_SASS, 'sass', 'customizer.scss')
+        path.join(this.srcPath.CUSTOMIZER_ASSET_SASS, '**', '*.scss'),
+        path.join(this.srcPath.CUSTOMIZER_ASSET_SASS, 'customizer.scss')
       ], ['build:customizer-style'])
 
       // Build assets/js/theme.js
