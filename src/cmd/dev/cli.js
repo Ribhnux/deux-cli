@@ -104,7 +104,7 @@ class DevCLI extends CLI {
       // Build assets/css/theme.css
       gulp.watch([
         path.join(this.srcPath.ASSET_SASS, '**', '*.scss'),
-        path.join(this.srcPath.ASSET_SASS, 'theme.scss'),
+        path.join(this.srcPath.ASSET_SASS, 'theme.scss')
       ], ['build:style'])
 
       gulp.watch([
