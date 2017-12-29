@@ -97,7 +97,6 @@ test('`deux new`: Config should be valid.', async t => {
           year: new Date().getFullYear()
         }
       },
-      develop: false,
       optimize: true,
       asset: {
         libs: {},

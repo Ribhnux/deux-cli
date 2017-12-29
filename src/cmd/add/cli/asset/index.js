@@ -585,8 +585,8 @@ class AddAsset extends CLI {
             })
 
             compileFile({
-              srcPath: this.templateSourcePath('assets-src', 'sass', 'main.scss'),
-              dstPath: this.currentThemePath('assets-src', 'sass', 'main.scss'),
+              srcPath: this.templateSourcePath('assets-src', 'sass', 'theme.scss'),
+              dstPath: this.currentThemePath('assets-src', 'sass', 'theme.scss'),
               syntax: {
                 sass,
                 theme: themeDetails

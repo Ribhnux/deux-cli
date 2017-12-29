@@ -155,8 +155,8 @@ class RemoveAsset extends CLI {
             )
 
             compileFile({
-              srcPath: this.templateSourcePath('assets-src', 'sass', 'main.scss'),
-              dstPath: this.currentThemePath('assets-src', 'sass', 'main.scss'),
+              srcPath: this.templateSourcePath('assets-src', 'sass', 'theme.scss'),
+              dstPath: this.currentThemePath('assets-src', 'sass', 'theme.scss'),
               syntax: {
                 sass: {
                   components: this.themeAsset.sass.components.map(item => `'components/${item}'`).join(',\n  '),
