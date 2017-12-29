@@ -9,7 +9,7 @@
 // Register custom control types.
 if ( isset( ${{theme.slugfn}}_config['customizer']['control_types'] ) ) {
 	foreach ( ${{theme.slugfn}}_config['customizer']['control_types'] as $name => $control ) {
-		$customizer_control_path = get_template_directory() . '/includes/customizers/controls/class-wp-customize-' . $name . '-control.php';
+		$customizer_control_path = get_template_directory() . '/includes/customizer/controls/class-wp-customize-' . $name . '-control.php';
 
 		if ( file_exists( $customizer_control_path ) ) {
 			require $customizer_control_path;
@@ -94,7 +94,7 @@ if ( ! function_exists( '{{theme.slugfn}}_preview_init' ) ) :
 		global ${{theme.slugfn}}_config;
 
 		$theme_info = wp_get_theme();
-		$js_dir = '/includes/customizers/assets/js/';
+		$js_dir = '/includes/customizer/assets/js/';
 		$customizer_preview = 'customizer-preview.js';
 
 		if ( true === ${{theme.slugfn}}_config['optimize'] ) {
@@ -118,8 +118,8 @@ if ( ! function_exists( '{{theme.slugfn}}_customizer_control_scripts' ) ) :
 
 		$theme_info = wp_get_theme();
 		$theme_version = $theme_info->get( 'Version' );
-		$css_dir = '/includes/customizers/assets/css/';
-		$js_dir = '/includes/customizers/assets/js/';
+		$css_dir = '/includes/customizer/assets/css/';
+		$js_dir = '/includes/customizer/assets/js/';
 		$customizer_css = 'customizer.css';
 		$customizer_control_js = 'customizer-control.js';
 

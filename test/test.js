@@ -170,7 +170,7 @@ test('`deux new`: Directory structures should be valid.', async t => {
     // Includes.
     t.true(existsSync(path.join(themePath, 'includes')))
     t.true(existsSync(path.join(themePath, 'includes', 'actions')))
-    t.true(existsSync(path.join(themePath, 'includes', 'customizers')))
+    t.true(existsSync(path.join(themePath, 'includes', 'customizer')))
     t.true(existsSync(path.join(themePath, 'includes', 'filters')))
     t.true(existsSync(path.join(themePath, 'includes', 'helpers')))
     t.true(existsSync(path.join(themePath, 'includes', 'libraries')))

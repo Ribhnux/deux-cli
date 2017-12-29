@@ -390,7 +390,7 @@ class NewCLI extends CLI {
                 }),
 
                 new Promise((resolve, reject) => {
-                  mkdirp(this.currentThemePath('includes', 'customizers', 'assets-src', 'js', 'node_modules'), err => {
+                  mkdirp(this.currentThemePath('includes', 'customizer', 'assets-src', 'js', 'node_modules'), err => {
                     if (err) {
                       reject(err)
                     }

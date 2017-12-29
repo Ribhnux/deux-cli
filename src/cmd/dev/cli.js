@@ -39,16 +39,16 @@ class DevCLI extends CLI {
     this.srcPath = {
       ASSET_SASS: this.currentThemePath('assets-src', 'sass'),
       ASSET_JS: this.currentThemePath('assets-src', 'js'),
-      CUSTOMIZER_ASSET_SASS: this.currentThemePath('includes', 'customizers', 'assets-src', 'sass'),
-      CUSTOMIZER_ASSET_JS: this.currentThemePath('includes', 'customizers', 'assets-src', 'js')
+      CUSTOMIZER_ASSET_SASS: this.currentThemePath('includes', 'customizer', 'assets-src', 'sass'),
+      CUSTOMIZER_ASSET_JS: this.currentThemePath('includes', 'customizer', 'assets-src', 'js')
     }
 
     // Destination Path
     this.dstPath = {
       ASSET_CSS: this.currentThemePath('assets', 'css'),
       ASSET_JS: this.currentThemePath('assets', 'js'),
-      CUSTOMIZER_ASSET_CSS: this.currentThemePath('includes', 'customizers', 'assets', 'css'),
-      CUSTOMIZER_ASSET_JS: this.currentThemePath('includes', 'customizers', 'assets', 'js')
+      CUSTOMIZER_ASSET_CSS: this.currentThemePath('includes', 'customizer', 'assets', 'css'),
+      CUSTOMIZER_ASSET_JS: this.currentThemePath('includes', 'customizer', 'assets', 'js')
     }
 
     // Main stylesheet compiler
@@ -111,7 +111,7 @@ class DevCLI extends CLI {
         path.join(this.srcPath.ASSET_SASS, 'editor-style.scss')
       ], ['build:editor-style'])
 
-      // Build includes/customizers/assets/customizer.css
+      // Build includes/customizer/assets/customizer.css
       gulp.watch([
         path.join(this.srcPath.CUSTOMIZER_ASSET_SASS, '**', '*.scss'),
         path.join(this.srcPath.CUSTOMIZER_ASSET_SASS, 'customizer.scss')
