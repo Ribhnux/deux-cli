@@ -13,9 +13,11 @@
   'abstracts/variables',
   'abstracts/functions',
   'abstracts/mixins';
+{{#if sass.base}}
 
 @import
-  'base/general';
+  {{{sass.base}}};
+{{/if}}
 {{#if sass.controls}}
 
 @import
