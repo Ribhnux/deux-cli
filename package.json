@@ -41,6 +41,7 @@
     "gulp-clone": "^1.0.0",
     "gulp-cssbeautify": "^1.0.0",
     "gulp-gettext": "^0.3.0",
+    "gulp-if": "^2.0.2",
     "gulp-plumber": "^1.1.0",
     "gulp-rename": "^1.2.2",
     "gulp-replace": "^0.6.1",
