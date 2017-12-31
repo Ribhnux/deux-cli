@@ -67,6 +67,7 @@ exports.SUCCEED_REMOVED_MENU = `${okayRandomizer()}, you've just removed some me
 exports.SUCCEED_REMOVED_IMGSIZE = `${okayRandomizer()}, you've just removed some image size from theme.`
 exports.SUCCEED_REMOVED_HOOKS = `${okayRandomizer()}, you've just removed some hooks from theme.`
 exports.SUCCEED_REMOVED_CUSTOMIZER = `${okayRandomizer()}, you've just removed some customizers from theme.`
+exports.SUCCEED_BUILD_ASSET = 'Asset files are ready to use.'
 exports.SUCCEED_VALID_THEME = 'Your theme is valid and ready to release'
 exports.SUCCEED_UPDATED = 'Your assets or plugins are updated.'
 exports.SUCCEED_ALL_UPDATED = 'All of your assets or plugins are up to date.'
