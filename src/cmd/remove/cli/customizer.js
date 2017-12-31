@@ -1,3 +1,4 @@
+const path = require('path')
 const inquirer = require('inquirer')
 const rimraf = require('rimraf')
 const getL10n = require('wp-get-l10n')
@@ -8,6 +9,8 @@ const {customizerTypes} = global.deuxcmd.require('add/cli/fixtures')
 const messages = global.deuxcli.require('messages')
 const {captchaMaker} = global.deuxhelpers.require('util/cli')
 const {capitalize} = global.deuxhelpers.require('util/misc')
+const {filelist} = global.deuxhelpers.require('util/file')
+const compileFile = global.deuxhelpers.require('compiler/single')
 
 class RemoveCustomizer extends CLI {
   constructor(options) {
@@ -21,6 +24,15 @@ class RemoveCustomizer extends CLI {
    */
   prepare() {
     this.customizer = this.themeInfo('customizer')
+    const panels = Object.keys(this.customizer.panels).length
+    const sections = Object.keys(this.customizer.sections).length
+    const settings = Object.keys(this.customizer.settings).length
+    const controlTypes = Object.keys(this.customizer.control_types).length
+
+    if ((panels + sections + settings + controlTypes) === 0) {
+      this.$logger.happyExit()
+    }
+
     this.$title = 'Remove {Customizer}'
     this.$prompts = [
       {
@@ -307,7 +319,32 @@ class RemoveCustomizer extends CLI {
 
         resolve()
       })
-    )).then(() => {
+    ).concat([
+      new Promise(resolve => {
+        const scssPath = ['includes', 'customizer', 'assets-src', 'sass']
+
+        const sassControls = Object.keys(this.customizer.control_types)
+          .map(item => `'controls/${item}'`)
+          .join(',\n  ')
+
+        const sassBase = filelist(this.currentThemePath(...scssPath.concat('base')))
+          .filter(item => path.extname(item) === '.scss')
+          .map(item => `'base/${item.replace('_', '')}'`)
+          .join(',\n  ')
+
+        compileFile({
+          srcPath: this.templateSourcePath(...scssPath.concat('customizer.scss')),
+          dstPath: this.currentThemePath(...scssPath.concat('customizer.scss')),
+          syntax: {
+            sass: {
+              base: sassBase,
+              controls: sassControls
+            }
+          }
+        })
+        resolve()
+      })
+    ])).then(() => {
       Promise.all([
         new Promise(resolve => {
           this.setThemeConfig({
