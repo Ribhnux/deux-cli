@@ -6,15 +6,14 @@ const getFileHeader = require('wp-get-file-header')
 const CLI = global.deuxcli.require('main')
 const {customizerTypes} = global.deuxcmd.require('add/cli/fixtures')
 const messages = global.deuxcli.require('messages')
-const {exit, finish} = global.deuxhelpers.require('logger')
-const {happyExit, captchaMaker} = global.deuxhelpers.require('util/cli')
+const {captchaMaker} = global.deuxhelpers.require('util/cli')
 const {capitalize} = global.deuxhelpers.require('util/misc')
 
 class RemoveCustomizer extends CLI {
-  constructor() {
+  constructor(options) {
     super()
     this.customizer = undefined
-    this.init()
+    this.init(options)
   }
 
   /**
@@ -22,24 +21,8 @@ class RemoveCustomizer extends CLI {
    */
   prepare() {
     this.customizer = this.themeInfo('customizer')
-    let hasCustomizers = false
-
-    for (const key in this.customizer) {
-      if (Object.prototype.hasOwnProperty.call(this.customizer, key)) {
-        if (key !== `${customizerTypes.CONTROL}s`) {
-          continue
-        }
-
-        hasCustomizers = Object.keys(this.customizer[key]).length > 0
-      }
-    }
-
-    if (hasCustomizers === false) {
-      happyExit()
-    }
-
-    this.title = 'Remove {Customizer}'
-    this.prompts = [
+    this.$title = 'Remove {Customizer}'
+    this.$prompts = [
       {
         type: 'list',
         name: 'customizer.type',
@@ -70,7 +53,7 @@ class RemoveCustomizer extends CLI {
 
           if (Object.keys(this.customizer.control_types).length > 0) {
             list.push({
-              name: `Custom ${capitalize(customizerTypes.CONTROL_TYPE.replace(/_/g, ' '))}s`,
+              name: `${capitalize(customizerTypes.CONTROL_TYPE.replace(/_/g, ' '))}s`,
               value: customizerTypes.CONTROL_TYPE
             })
           }
@@ -106,7 +89,7 @@ class RemoveCustomizer extends CLI {
       {
         type: 'confirm',
         name: 'customizer.panelsChild',
-        default: false,
+        default: true,
         message: 'Remove all sections and settings under selected panels?',
         when: ({customizer}) => {
           return Object.keys(this.customizer.panels).length > 0 &&
@@ -141,7 +124,7 @@ class RemoveCustomizer extends CLI {
       {
         type: 'confirm',
         name: 'customizer.sectionsChild',
-        default: false,
+        default: true,
         message: 'Remove all settings under selected sections?',
         when: ({customizer}) => {
           return Object.keys(this.customizer.sections).length > 0 &&
@@ -186,7 +169,7 @@ class RemoveCustomizer extends CLI {
 
           Promise.all(Object.keys(this.customizer.control_types).map(
             value => new Promise((resolve, reject) => {
-              const controlPath = this.currentThemePath('includes', 'customizers', 'controls', value, `class-wp-customize-${value}-control.php`)
+              const controlPath = this.currentThemePath('includes', 'customizer', 'controls', `class-wp-customize-${value}-control.php`)
               getFileHeader(controlPath).then(info => {
                 if (info.controlName) {
                   resolve({
@@ -205,7 +188,7 @@ class RemoveCustomizer extends CLI {
             }
 
             resolve(list)
-          }).catch(exit)
+          }).catch(this.$logger.exit)
         })
       },
 
@@ -244,8 +227,8 @@ class RemoveCustomizer extends CLI {
     (customizer.settings && customizer.settings.length > 0) ||
     (customizer.control_types && customizer.control_types.length > 0))
 
-    if (anySelected === false || !confirm) {
-      happyExit()
+    if (anySelected === false || (!confirm && !this.$init.apiMode())) {
+      this.$logger.happyExit()
     }
 
     let items
@@ -310,13 +293,15 @@ class RemoveCustomizer extends CLI {
         }
 
         if (customizer.type === customizerTypes.SETTING) {
-          const settingName = this.customizer.controls[item].settings
+          const controlName = `${item}_control`
+          const settingName = this.customizer.controls[controlName].settings
           delete this.customizer.settings[settingName]
-          delete this.customizer.controls[item]
+          delete this.customizer.controls[controlName]
         }
 
         if (customizer.type === customizerTypes.CONTROL_TYPE) {
-          rimraf.sync(this.currentThemePath('includes', 'customizers', 'controls', item))
+          rimraf.sync(this.currentThemePath('includes', 'customizer', 'controls', `class-wp-customize-${item}-control.php`))
+          rimraf.sync(this.currentThemePath('includes', 'customizer', 'assets-src', 'sass', 'controls', `_${item}.scss`))
           delete this.customizer.control_types[item]
         }
 
@@ -331,9 +316,9 @@ class RemoveCustomizer extends CLI {
           resolve()
         })
       ]).then(
-        finish(messages.SUCCEED_REMOVED_CUSTOMIZER)
-      ).catch(exit)
-    }).catch(exit)
+        this.$logger.finish(messages.SUCCEED_REMOVED_CUSTOMIZER)
+      ).catch(this.$logger.exit)
+    }).catch(this.$logger.exit)
   }
 }
 

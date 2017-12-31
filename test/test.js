@@ -1929,8 +1929,35 @@ test('`deux remove asset` (jQuery from WordPress): config should be removed.', a
   })
 })
 
+const removeAssetjQueryMasonry = new Promise(async resolve => {
+  await removeAssetBootstrap.then(() => {
+    runCli(['remove', 'asset'], {
+      assets: [
+        {
+          key: 'lib',
+          slug: 'jquery-masonry'
+        }
+      ]
+    }).then(() => {
+      resolve()
+    })
+  })
+})
+
+test('`deux remove asset` (jQuery Masonry from WordPress): should be succeed.', async t => {
+  await removeAssetjQueryMasonry.then(() => {
+    t.pass()
+  })
+})
+
+test('`deux remove asset` (jQuery Masonry from WordPress): config should be removed.', async t => {
+  await removeAssetjQueryMasonry.then(() => {
+    t.false('jquery-masonry' in getConfig('asset').libs)
+  })
+})
+
 const removeAssetHintCSS = new Promise(async resolve => {
-  await removeAssetjQuery.then(() => {
+  await removeAssetjQueryMasonry.then(() => {
     runCli(['remove', 'asset'], {
       assets: [
         {
@@ -2043,5 +2070,340 @@ test('`deux remove asset` (Montserrat webfont): should be succeed.', async t => 
 test('`deux remove asset` (Montserrat webfont): config should be removed.', async t => {
   await removeAssetWebFont.then(() => {
     t.false('montserrat' in getConfig('asset').fonts)
+  })
+})
+
+const addCustomizerSection = new Promise(async resolve => {
+  await removeAssetWebFont.then(() => {
+    runCli(['add', 'customizer'], {
+      customizer: {
+        setting: {
+          name: 'Test',
+          transport: 'refresh',
+          default: ''
+        },
+        control: {
+          description: 'Test Description',
+          type: 'text',
+          section: 'custom'
+        },
+        section: {
+          title: 'Universe',
+          description: 'Section Description',
+          priority: 160,
+          inPanel: false
+        }
+      }
+    }).then(() => {
+      resolve()
+    })
+  })
+})
+
+test('`deux add customizer` (Section): should be succeed.', async t => {
+  await addCustomizerSection.then(() => {
+    t.pass()
+  })
+})
+
+const addCustomizerColor = new Promise(async resolve => {
+  await addCustomizerSection.then(() => {
+    runCli(['add', 'customizer'], {
+      customizer: {
+        setting: {
+          name: 'Primary Color',
+          transport: 'refresh',
+          default: '#cc0000'
+        },
+        control: {
+          description: 'Theme Primary Color',
+          type: 'color-picker',
+          section: 'colors'
+        }
+      }
+    }).then(() => {
+      resolve()
+    })
+  })
+})
+
+test('`deux add customizer` (Existing Section): should be succeed.', async t => {
+  await addCustomizerColor.then(() => {
+    t.pass()
+  })
+})
+
+const addCustomizerPanel = new Promise(async resolve => {
+  await addCustomizerColor.then(() => {
+    runCli(['add', 'customizer'], {
+      customizer: {
+        setting: {
+          name: 'New Setting',
+          transport: 'refresh',
+          default: ''
+        },
+        control: {
+          description: 'Setting Description',
+          type: 'text',
+          section: 'custom'
+        },
+        section: {
+          title: 'New Section',
+          description: 'labore voluptatibus consectetur',
+          priority: 160,
+          inPanel: true,
+          panel: 'custom'
+        },
+        panel: {
+          title: 'New Panel',
+          description: 'Panel Description',
+          priority: 160
+        }
+      }
+    }).then(() => {
+      resolve()
+    })
+  })
+})
+
+test('`deux add customizer` (New Section and New Panel): should be succeed.', async t => {
+  await addCustomizerPanel.then(() => {
+    t.pass()
+  })
+})
+
+const addCustomizerControl = new Promise(async resolve => {
+  await addCustomizerPanel.then(() => {
+    runCli(['add', 'customizer'], {
+      customizer: {
+        setting: {
+          name: 'Multiverse',
+          transport: 'refresh',
+          default: ''
+        },
+        control: {
+          description: 'Setting Description',
+          type: 'custom',
+          section: 'new_section'
+        },
+        customControl: {
+          name: 'Greeting',
+          description: 'Control Description'
+        }
+      }
+    }).then(() => {
+      resolve()
+    })
+  })
+})
+
+test('`deux add customizer` (Control Type): should be succeed.', async t => {
+  await addCustomizerControl.then(() => {
+    t.pass()
+  })
+})
+
+test('`deux add customizer` (Control Type): control file be exists.', async t => {
+  await addCustomizerControl.then(() => {
+    t.true(existsSync(path.join(themePath, 'includes', 'customizer', 'controls', 'class-wp-customize-greeting-control.php')))
+    t.true(existsSync(path.join(themePath, 'includes', 'customizer', 'assets-src', 'sass', 'controls', '_greeting.scss')))
+  })
+})
+
+test('`deux add customizer`: config should be valid.', async t => {
+  await addCustomizerControl.then(() => {
+    t.deepEqual({
+      /* eslint-disable camelcase */
+      panels: {
+        new_panel: {
+          title: jsonar.literal(`__( 'New Panel', 'deux-theme' )`),
+          description: jsonar.literal(`__( 'Panel Description', 'deux-theme' )`),
+          priority: 160
+        }
+      },
+      sections: {
+        universe: {
+          title: jsonar.literal(`__( 'Universe', 'deux-theme' )`),
+          description_hidden: true,
+          description: jsonar.literal(`__( 'Section Description', 'deux-theme' )`),
+          priority: 160
+        },
+        new_section: {
+          title: jsonar.literal(`__( 'New Section', 'deux-theme' )`),
+          description_hidden: true,
+          description: jsonar.literal(`__( 'labore voluptatibus consectetur', 'deux-theme' )`),
+          priority: 160,
+          panel: 'new_panel'
+        }
+      },
+      settings: {
+        test: {
+          transport: 'refresh',
+          default: ''
+        },
+        primary_color: {
+          transport: 'refresh',
+          default: '#cc0000'
+        },
+        new_setting: {
+          transport: 'refresh',
+          default: ''
+        },
+        multiverse: {
+          transport: 'refresh',
+          default: ''
+        }
+      },
+      control_types: {
+        'greeting': 'WP_Customize_Greeting_Control'
+      },
+      controls: {
+        test_control: {
+          settings: 'test',
+          label: jsonar.literal(`__( 'Test', 'deux-theme' )`),
+          description: jsonar.literal(`__( 'Test Description', 'deux-theme' )`),
+          type: 'text',
+          section: 'universe'
+        },
+        primary_color_control: {
+          settings: 'primary_color',
+          label: jsonar.literal(`__( 'Primary Color', 'deux-theme' )`),
+          description: jsonar.literal(`__( 'Theme Primary Color', 'deux-theme' )`),
+          type: 'color-picker',
+          section: 'colors'
+        },
+        new_setting_control: {
+          settings: 'new_setting',
+          label: jsonar.literal(`__( 'New Setting', 'deux-theme' )`),
+          description: jsonar.literal(`__( 'Setting Description', 'deux-theme' )`),
+          type: 'text',
+          section: 'new_section'
+        },
+        multiverse_control: {
+          settings: 'multiverse',
+          label: jsonar.literal(`__( 'Multiverse', 'deux-theme' )`),
+          description: jsonar.literal(`__( 'Setting Description', 'deux-theme' )`),
+          type: 'custom',
+          section: 'new_section',
+          custom_control: 'greeting'
+        }
+      }
+      /* eslint-enable camelcase */
+    }, getConfig('customizer'))
+  })
+})
+
+const removeCustomizerPanel = new Promise(async resolve => {
+  await addCustomizerControl.then(() => {
+    runCli(['remove', 'customizer'], {
+      customizer: {
+        type: 'panel',
+        panels: ['new_panel'],
+        panelsChild: true
+      }
+    }).then(() => {
+      resolve()
+    })
+  })
+})
+
+test('`deux remove customzier` (Panel): should be succeed.', async t => {
+  await removeCustomizerPanel.then(() => {
+    t.pass()
+  })
+})
+
+test('`deux remove customizer` (Panel): config should be removed.', async t => {
+  await removeCustomizerPanel.then(() => {
+    t.false('new_panel' in getConfig('customizer').panels)
+    t.false('new_section' in getConfig('customizer').sections)
+    t.false('new_setting_control' in getConfig('customizer').controls)
+    t.false('multiverse_control' in getConfig('customizer').controls)
+    t.false('new_setting' in getConfig('customizer').settings)
+    t.false('multiverse' in getConfig('customizer').settings)
+  })
+})
+
+const removeCustomizerSection = new Promise(async resolve => {
+  await removeCustomizerPanel.then(() => {
+    runCli(['remove', 'customizer'], {
+      customizer: {
+        type: 'section',
+        sections: ['universe'],
+        sectionsChild: true
+      }
+    }).then(() => {
+      resolve()
+    })
+  })
+})
+
+test('`deux remove customzier` (Section): should be succeed.', async t => {
+  await removeCustomizerSection.then(() => {
+    t.pass()
+  })
+})
+
+test('`deux remove customizer` (Section): config should be removed.', async t => {
+  await removeCustomizerSection.then(() => {
+    t.false('universe' in getConfig('customizer').sections)
+  })
+})
+
+const removeCustomizerSetting = new Promise(async resolve => {
+  await removeCustomizerSection.then(() => {
+    runCli(['remove', 'customizer'], {
+      customizer: {
+        type: 'setting',
+        settings: ['primary_color']
+      }
+    }).then(() => {
+      resolve()
+    })
+  })
+})
+
+test('`deux remove customzier` (Setting): should be succeed.', async t => {
+  await removeCustomizerSetting.then(() => {
+    t.pass()
+  })
+})
+
+test('`deux remove customizer` (Setting): config should be removed.', async t => {
+  await removeCustomizerSetting.then(() => {
+    t.false('primary_color' in getConfig('customizer').settings)
+    t.false('primary_color_control' in getConfig('customizer').controls)
+  })
+})
+
+const removeCustomizerControlType = new Promise(async resolve => {
+  await removeCustomizerSetting.then(() => {
+    runCli(['remove', 'customizer'], {
+      customizer: {
+        type: 'control_type',
+        control_types: ['greeting']
+      }
+    }).then(() => {
+      resolve()
+    })
+  })
+})
+
+test('`deux remove customzier` (Control Type): should be succeed.', async t => {
+  await removeCustomizerControlType.then(() => {
+    t.pass()
+  })
+})
+
+test('`deux remove customizer` (Control Type): config should be removed.', async t => {
+  await removeCustomizerControlType.then(() => {
+    t.false('greeting' in getConfig('customizer').control_types)
+  })
+})
+
+test('`deux remove customizer` (Control Type): control file should be removed.', async t => {
+  await removeCustomizerControlType.then(() => {
+    t.false(existsSync(path.join(themePath, 'includes', 'customizer', 'controls', 'class-wp-customize-greeting-control.php')))
+    t.false(existsSync(path.join(themePath, 'includes', 'customizer', 'assets-src', 'sass', 'controls', '_greeting.scss')))
   })
 })
