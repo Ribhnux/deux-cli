@@ -2307,7 +2307,7 @@ const removeCustomizerPanel = new Promise(async resolve => {
   })
 })
 
-test('`deux remove customzier` (Panel): should be succeed.', async t => {
+test('`deux remove customizer` (Panel): should be succeed.', async t => {
   await removeCustomizerPanel.then(() => {
     t.pass()
   })
@@ -2338,7 +2338,7 @@ const removeCustomizerSection = new Promise(async resolve => {
   })
 })
 
-test('`deux remove customzier` (Section): should be succeed.', async t => {
+test('`deux remove customizer` (Section): should be succeed.', async t => {
   await removeCustomizerSection.then(() => {
     t.pass()
   })
@@ -2363,7 +2363,7 @@ const removeCustomizerSetting = new Promise(async resolve => {
   })
 })
 
-test('`deux remove customzier` (Setting): should be succeed.', async t => {
+test('`deux remove customizer` (Setting): should be succeed.', async t => {
   await removeCustomizerSetting.then(() => {
     t.pass()
   })
@@ -2389,7 +2389,7 @@ const removeCustomizerControlType = new Promise(async resolve => {
   })
 })
 
-test('`deux remove customzier` (Control Type): should be succeed.', async t => {
+test('`deux remove customizer` (Control Type): should be succeed.', async t => {
   await removeCustomizerControlType.then(() => {
     t.pass()
   })
@@ -2405,5 +2405,50 @@ test('`deux remove customizer` (Control Type): control file should be removed.',
   await removeCustomizerControlType.then(() => {
     t.false(existsSync(path.join(themePath, 'includes', 'customizer', 'controls', 'class-wp-customize-greeting-control.php')))
     t.false(existsSync(path.join(themePath, 'includes', 'customizer', 'assets-src', 'sass', 'controls', '_greeting.scss')))
+  })
+})
+
+const devBuildAsset = new Promise(async resolve => {
+  await removeCustomizerControlType.then(() => {
+    runCli(['dev', '--build'], {}).then(() => {
+      resolve()
+    }).catch(err => {
+      console.log(err)
+    })
+  })
+})
+
+test('`deux dev --build`: should be succeed.', async t => {
+  await devBuildAsset.then(() => {
+    t.pass()
+  })
+})
+
+test('`deux dev --build`: asset files should be compiled.', async t => {
+  await devBuildAsset.then(() => {
+    t.true(existsSync(path.join(themePath, 'assets', 'css', 'theme.css')))
+    t.true(existsSync(path.join(themePath, 'assets', 'css', 'theme.min.css')))
+    t.true(existsSync(path.join(themePath, 'assets', 'css', 'theme.min.css.map')))
+    t.true(existsSync(path.join(themePath, 'assets', 'css', 'theme-rtl.css')))
+    t.true(existsSync(path.join(themePath, 'assets', 'css', 'theme-rtl.min.css')))
+    t.true(existsSync(path.join(themePath, 'assets', 'css', 'theme-rtl.min.css.map')))
+    t.true(existsSync(path.join(themePath, 'assets', 'css', 'editor-style.css')))
+    t.true(existsSync(path.join(themePath, 'assets', 'css', 'editor-style.min.css')))
+    t.true(existsSync(path.join(themePath, 'assets', 'css', 'editor-style.min.css.map')))
+    t.true(existsSync(path.join(themePath, 'assets', 'js', 'theme.js')))
+    t.true(existsSync(path.join(themePath, 'assets', 'js', 'theme.min.js')))
+    t.true(existsSync(path.join(themePath, 'assets', 'js', 'theme.min.js.map')))
+    t.true(existsSync(path.join(themePath, 'includes', 'customizer', 'assets', 'css', 'customizer.css')))
+    t.true(existsSync(path.join(themePath, 'includes', 'customizer', 'assets', 'css', 'customizer.min.css')))
+    t.true(existsSync(path.join(themePath, 'includes', 'customizer', 'assets', 'css', 'customizer.min.css.map')))
+    t.true(existsSync(path.join(themePath, 'includes', 'customizer', 'assets', 'css', 'customizer-rtl.css')))
+    t.true(existsSync(path.join(themePath, 'includes', 'customizer', 'assets', 'css', 'customizer-rtl.min.css')))
+    t.true(existsSync(path.join(themePath, 'includes', 'customizer', 'assets', 'css', 'customizer-rtl.min.css.map')))
+    t.true(existsSync(path.join(themePath, 'includes', 'customizer', 'assets', 'js', 'customizer-preview.js')))
+    t.true(existsSync(path.join(themePath, 'includes', 'customizer', 'assets', 'js', 'customizer-preview.min.js')))
+    t.true(existsSync(path.join(themePath, 'includes', 'customizer', 'assets', 'js', 'customizer-preview.min.js.map')))
+    t.true(existsSync(path.join(themePath, 'includes', 'customizer', 'assets', 'js', 'customizer-control.js')))
+    t.true(existsSync(path.join(themePath, 'includes', 'customizer', 'assets', 'js', 'customizer-control.min.js')))
+    t.true(existsSync(path.join(themePath, 'includes', 'customizer', 'assets', 'js', 'customizer-control.min.js.map')))
   })
 })
