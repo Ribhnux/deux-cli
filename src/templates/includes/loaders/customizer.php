@@ -61,16 +61,21 @@ if ( ! function_exists( '{{theme.slugfn}}_customize_register' ) ) :
 							break;
 
 						case 'custom':
-							$class_name = ${{theme.slugfn}}_config['customizer']['control_types'][ $args['custom_control'] ];
+							$control_types = ${{theme.slugfn}}_config['customizer']['control_types'];
+							$control_name = $args['custom_control'];
 
-							if ( $class_name ) {
-								$control = new ReflectionClass( $class_name );
+							if ( isset( $control_types[ $control_name ] ) ) {
+								$class_name = $control_types[ $control_name ];
 
-								unset( $args['type'] );
-								unset( $args['custom_control'] );
+								if ( class_exists( $class_name ) ) {
+									$control = new ReflectionClass( $class_name );
 
-								$new_control = $control->newInstanceArgs( array( $wp_customize, $id, $args ) );
-								$wp_customize->add_control( $new_control );
+									unset( $args['type'] );
+									unset( $args['custom_control'] );
+
+									$new_control = $control->newInstanceArgs( array( $wp_customize, $id, $args ) );
+									$wp_customize->add_control( $new_control );
+								}
 							}
 							break;
 
