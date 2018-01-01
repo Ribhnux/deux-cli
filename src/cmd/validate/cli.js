@@ -12,20 +12,20 @@ const themeCheck = path.join(path.dirname(require.resolve('wp-theme-check')), 'b
 const w3Validator = path.join(path.dirname(require.resolve('html5-validator')), 'bin', 'html5v')
 
 class ValidateCLI extends CLI {
-  constructor(subcmd) {
+  constructor(subcmd, options) {
     super()
-    this.cmdoptions = {}
-    this.subcmd = subcmd
-    this.init()
+    this.$clioptions = {}
+    this.$subcmd = subcmd
+    this.init(options)
   }
 
   prepare() {
-    this.cmdoptions.wpcs = [this.currentThemePath(), '--excludes=woocommerce']
-    this.cmdoptions.themeCheck = []
-    this.cmdoptions.w3 = [this.getConfig('devUrl')]
+    this.$clioptions.wpcs = [this.currentThemePath(), '--excludes=woocommerce']
+    this.$clioptions.themeCheck = []
+    this.$clioptions.w3 = [this.getConfig('devUrl')]
 
-    if (this.subcmd) {
-      this.initSubCommands(this.subcmd)
+    if (this.$subcmd) {
+      this.initSubCommands(this.$subcmd)
     } else {
       this.title = '{Theme Validation}'
     }
@@ -39,7 +39,7 @@ class ValidateCLI extends CLI {
       {
         title: 'WordPress Coding Standard',
         task: () => new Promise((resolve, reject) => {
-          execa(wpcs, this.cmdoptions.wpcs)
+          execa(wpcs, this.$clioptions.wpcs)
             .then(() => {
               resolve()
             }).catch(() => {
@@ -51,7 +51,7 @@ class ValidateCLI extends CLI {
       {
         title: 'Theme Check and Theme Mentor',
         task: () => new Promise((resolve, reject) => {
-          execa(themeCheck, this.cmdoptions.themeCheck)
+          execa(themeCheck, this.$clioptions.themeCheck)
             .then(() => {
               resolve()
             }).catch(() => {
@@ -63,7 +63,7 @@ class ValidateCLI extends CLI {
       {
         title: 'W3 HTML5 Markup',
         task: () => new Promise((resolve, reject) => {
-          execa(w3Validator, this.cmdoptions.w3)
+          execa(w3Validator, this.$clioptions.w3)
             .then(() => {
               resolve()
             }).catch(() => {
@@ -86,15 +86,15 @@ class ValidateCLI extends CLI {
   initSubCommands(subcmd) {
     switch (subcmd) {
       case commandList.STANDARD:
-        execa(wpcs, this.cmdoptions.wpcs, {stdio: 'inherit'})
+        execa(wpcs, this.$clioptions.wpcs, {stdio: 'inherit'})
         break
 
       case commandList.THEME:
-        execa(themeCheck, this.cmdoptions.themeCheck, {stdio: 'inherit'})
+        execa(themeCheck, this.$clioptions.themeCheck, {stdio: 'inherit'})
         break
 
       case commandList.MARKUP:
-        execa(w3Validator, this.cmdoptions.w3, {stdio: 'inherit'})
+        execa(w3Validator, this.$clioptions.w3, {stdio: 'inherit'})
         break
 
       default:
