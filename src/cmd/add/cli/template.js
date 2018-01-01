@@ -91,13 +91,14 @@ class AddTemplate extends CLI {
       {
         name: 'template.newdir',
         message: 'Directory Name',
-        when: ({template}) => template.dir === '$newdir',
+        when: ({template}) => template.type === templateTypes.PARTIAL && template.dir === '$newdir',
         validate: value => validator(value, {minimum: 3, slug: true, var: `"${value}"`})
       },
 
       {
         name: 'template.name',
         message: 'Template Name',
+        when: ({template}) =>  template.type !== templateTypes.WOOCOMMERCE,
         validate: value => validator(value, {minimum: 3, var: `"${value}"`})
       },
 

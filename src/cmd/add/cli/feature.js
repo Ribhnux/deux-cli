@@ -596,7 +596,6 @@ class AddFeature extends CLI {
         }
 
         theme.features[feature.type] = featureOptions
-
         resolve()
       }),
 
