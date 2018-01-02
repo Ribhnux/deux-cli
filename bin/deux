@@ -32,6 +32,7 @@ global.deuxcmd.require('upgrade')
 global.deuxcmd.require('sync')
 global.deuxcmd.require('validate')
 global.deuxcmd.require('dev')
+global.deuxcmd.require('release')
 program.parse(process.argv)
 
 // Update notify code.
