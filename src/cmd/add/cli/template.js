@@ -98,7 +98,7 @@ class AddTemplate extends CLI {
       {
         name: 'template.name',
         message: 'Template Name',
-        when: ({template}) =>  template.type !== templateTypes.WOOCOMMERCE,
+        when: ({template}) => template.type !== templateTypes.WOOCOMMERCE,
         validate: value => validator(value, {minimum: 3, var: `"${value}"`})
       },
 
