@@ -45,12 +45,16 @@ test('`deux` (Init): Error config should be fail.', async t => {
 const initTheme = new Promise(async resolve => {
   await runCli([], config).then(() => {
     resolve()
+  }).catch(err => {
+    console.log(err)
   })
 })
 
 test('`deux` (Init): Correct config should be succeed.', async t => {
   await initTheme.then(() => {
     t.pass()
+  }).catch(err => {
+    console.log(err)
   })
 })
 
