@@ -15,6 +15,10 @@ if (process.env.GOOGLE_API_KEY) {
 }
 
 test.before('Cleanup db before init', async () => {
+  if (!process.env.GIT_USERNAME && !process.env.GIT_PASSWORD) {
+    throw new Error('Need Git Credentials from Environment: GIT_USERNAME and GIT_PASSWORD.')
+  }
+
   await cleanupDb()
 })
 
