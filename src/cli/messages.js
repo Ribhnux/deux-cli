@@ -107,3 +107,4 @@ exports.ERROR_INVALID_INPUT = 'Invalid input.'
 exports.ERROR_INVALID_THEME = `Invalid theme, type: ${chalk.bold.cyan('deux validate theme')} to see the details`
 exports.ERROR_INVALID_WPCS = `Invalid coding standard, type: ${chalk.bold.cyan('deux validate standard')} to see the details`
 exports.ERROR_INVALID_W3 = `Invalid html5 theme, type: ${chalk.bold.cyan('deux validate markup')} to see the details`
+exports.CANCEL_RELEASE = 'Worry not. You can release when theme is ready.'
