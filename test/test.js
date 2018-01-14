@@ -1874,7 +1874,7 @@ test('`deux add asset`: config should be valid', async t => {
   })
 })
 
-const removeAssetBootstrap = new Promise(async resolve => {
+const removeAssetCDN = new Promise(async resolve => {
   await addWebFont.then(() => {
     runCli(['remove', 'asset'], {
       assets: [
@@ -1890,26 +1890,26 @@ const removeAssetBootstrap = new Promise(async resolve => {
 })
 
 test('`deux remove asset` (Bootstrap from CDN): should be succeed.', async t => {
-  await removeAssetBootstrap.then(() => {
+  await removeAssetCDN.then(() => {
     t.pass()
   })
 })
 
 test('`deux remove asset` (Bootstrap from CDN): asset file should be deleted.', async t => {
-  await removeAssetBootstrap.then(() => {
+  await removeAssetCDN.then(() => {
     t.false(existsSync(path.join(themePath, 'assets', 'vendors', 'twitter-bootstrap')))
     t.false(existsSync(path.join(themePath, 'assets-src', 'sass', '_twitter-bootstrap.scss')))
   })
 })
 
 test('`deux remove asset` (Bootstrap from CDN): config should be removed.', async t => {
-  await removeAssetBootstrap.then(() => {
+  await removeAssetCDN.then(() => {
     t.false('twitter-bootstrap' in getConfig('asset').libs)
   })
 })
 
 const removeAssetjQuery = new Promise(async resolve => {
-  await removeAssetBootstrap.then(() => {
+  await removeAssetCDN.then(() => {
     runCli(['remove', 'asset'], {
       assets: [
         {
@@ -1936,7 +1936,7 @@ test('`deux remove asset` (jQuery from WordPress): config should be removed.', a
 })
 
 const removeAssetjQueryMasonry = new Promise(async resolve => {
-  await removeAssetBootstrap.then(() => {
+  await removeAssetjQuery.then(() => {
     runCli(['remove', 'asset'], {
       assets: [
         {
