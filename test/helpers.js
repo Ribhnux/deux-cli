@@ -16,13 +16,6 @@ exports.getConfig = (configStr = '') => {
   const emptyRules = {
     asset: {
       libs: {},
-      sass: {
-        components: [],
-        layouts: [],
-        pages: [],
-        themes: [],
-        vendors: []
-      },
       fonts: {}
     },
     plugins: {},

@@ -63,8 +63,12 @@ const addNewTheme = new Promise(async resolve => {
         authorUri: 'https://github.com/RibhnuxDesign',
         description: 'Example description',
         version: '1.0.0',
-        tags: 'full-width-template, blog',
-        repoUrl: 'https://github.com/RibhnuxDesign/ramen-theme.git'
+        tags: 'full-width-template, blog'
+      },
+      git: {
+        url: 'https://github.com/RibhnuxDesign/ramen-theme.git',
+        username: process.env.GIT_USERNAME,
+        password: process.env.GIT_PASSWORD
       },
       overwrite: true
     }).then(() => {
@@ -80,71 +84,65 @@ test('`deux new`: Add new theme should be succeed.', async t => {
 })
 
 test('`deux new`: Config should be valid.', async t => {
-  await addNewTheme.then(() => {
-    /* eslint-disable camelcase */
-    const config = {
-      details: {
-        name: 'Deux Theme',
-        uri: 'https://github.com/RibhnuxDesign/ramen-theme',
-        author: 'Ribhnux Design',
-        authorUri: 'https://github.com/RibhnuxDesign',
-        description: 'Example description',
-        version: '1.0.0',
-        tags: 'full-width-template, blog',
-        slug: 'deux-theme',
-        slugfn: 'deux_theme',
-        created: {
-          year: new Date().getFullYear()
-        }
-      },
-      optimize: true,
-      asset: {
-        libs: {},
-        sass: {
-          components: [],
-          layouts: [],
-          pages: [],
-          themes: [],
-          vendors: []
-        },
-        fonts: {}
-      },
-      plugins: {},
-      components: [
-        'pagination',
-        'post-meta',
-        'posted-on'
-      ],
-      imgsize: {},
-      filters: [],
-      actions: [],
-      libraries: [
-        'class-tgm-plugin-activation'
-      ],
-      helpers: [],
-      menus: {},
-      widgets: {},
-      features: {},
-      customizer: {
-        panels: {},
-        sections: {},
-        settings: {},
-        control_types: {},
-        controls: {}
+  /* eslint-disable camelcase */
+  const config = {
+    details: {
+      name: 'Deux Theme',
+      uri: 'https://github.com/RibhnuxDesign/ramen-theme',
+      author: 'Ribhnux Design',
+      authorUri: 'https://github.com/RibhnuxDesign',
+      description: 'Example description',
+      version: '1.0.0',
+      tags: 'full-width-template, blog',
+      slug: 'deux-theme',
+      slugfn: 'deux_theme',
+      created: {
+        year: new Date().getFullYear()
       }
+    },
+    optimize: true,
+    asset: {
+      libs: {},
+      fonts: {}
+    },
+    plugins: {},
+    components: [
+      'pagination',
+      'post-meta',
+      'posted-on'
+    ],
+    imgsize: {},
+    filters: [],
+    actions: [],
+    libraries: [
+      'class-tgm-plugin-activation'
+    ],
+    helpers: [],
+    menus: {},
+    widgets: {},
+    features: {},
+    customizer: {
+      panels: {},
+      sections: {},
+      settings: {},
+      control_types: {},
+      controls: {}
     }
-    /* eslint-enable camelcase */
+  }
+  /* eslint-enable camelcase */
 
+  await addNewTheme.then(() => {
     const _config = getConfig()
+    t.is(_config.slug, 'deux-theme')
     t.true(existsSync(_config.path))
 
+    delete _config.themeConfig.asset.sass
     delete _config.themeConfig.releases
-    t.deepEqual(_config.themeConfig, config)
+    delete _config.themeConfig.repo
+    t.deepEqual(config, _config.themeConfig)
 
     delete config.details
     t.deepEqual(config, _config.phpConfig)
-
-    t.is(_config.slug, 'deux-theme')
   })
 })
 
