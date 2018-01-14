@@ -55,8 +55,8 @@ class CLI {
         logger.finish(msg, this.$init.apiMode())
       }
 
-      this.$logger.happyExit = () => {
-        logger.finish(message.DONE_NO_REMOVE, this.$init.apiMode())
+      this.$logger.happyExit = (msg = message.DONE_NO_REMOVE) => {
+        logger.finish(msg, this.$init.apiMode())
       }
 
       this.$logger.loader = (msg, color = 'cyan') => {
