@@ -1,6 +1,7 @@
 const path = require('path')
 const {createReadStream, createWriteStream} = require('fs')
 const {existsSync} = require('fs')
+const url = require('url')
 const inquirer = require('inquirer')
 const faker = require('faker')
 const Listr = require('listr')
@@ -25,6 +26,23 @@ class NewCLI extends CLI {
     this.init(options, true)
   }
 
+  /**
+   * Get git credentials.
+   * @param {String} url
+   */
+  getGitAuth(gitUrl) {
+    const giturl = url.parse(gitUrl)
+    const gitauth = giturl.auth ? giturl.auth.split(':') : ''
+
+    return {
+      username: gitauth[0],
+      password: gitauth[1]
+    }
+  }
+
+  /**
+   * Prompts
+   */
   prepare() {
     this.$title = 'Create {New Theme}'
     this.$prompts = [
@@ -132,10 +150,32 @@ class NewCLI extends CLI {
       },
 
       {
-        name: 'theme.repoUrl',
+        name: 'git.url',
         message: 'Repository',
         default: 'https://github.com/example/my-theme.git',
-        validate: value => validator(value, {url: 2, git: true, var: `"${value}"`})
+        validate: value => validator(value, {url: true, git: true, var: `"${value}"`})
+      },
+
+      {
+        name: 'git.username',
+        message: 'Git Username',
+        default: ({git}) => new Promise(resolve => {
+          const {username} = this.getGitAuth(git.url)
+          resolve(username)
+        }),
+        validate: value => validator(value, {min: 3, var: 'Username'})
+      },
+
+      {
+        type: 'password',
+        name: 'git.password',
+        message: 'Git Password',
+        when: ({git}) => git.username,
+        default: ({git}) => new Promise(resolve => {
+          const {password} = this.getGitAuth(git.url)
+          resolve(password)
+        }),
+        validate: value => validator(value, {min: 2, var: 'Password'})
       },
 
       {
@@ -152,26 +192,27 @@ class NewCLI extends CLI {
       {
         type: 'confirm',
         name: 'confirm',
-        message: 'Are you sure?'
+        message: 'Are you sure want to create new theme with this config?'
       }
     ]
   }
 
-  action({theme, overwrite, confirm}) {
+  action({theme, git, overwrite, confirm}) {
     if (!this.$init.apiMode() && !confirm) {
       this.$logger.exit(messages.ERROR_THEME_CREATION_CANCELED)
     }
 
     const themeNameLower = theme.name.toLowerCase()
-    theme.slug = slugify(themeNameLower)
+    const themeSlug = slugify(themeNameLower)
+    const themePath = this.themePath(themeSlug)
+    const gitPath = path.join(themePath, '.git')
+    const listrOpts = {}
+
+    theme.slug = themeSlug
     theme.slugfn = slugify(themeNameLower, {replacement: '_'})
     theme.created = {
       year: new Date().getFullYear()
     }
-
-    const themePath = this.themePath(theme.slug)
-    const gitPath = path.join(themePath, '.git')
-    const listrOpts = {}
 
     if (this.$init.apiMode()) {
       listrOpts.renderer = ApiRenderer
@@ -282,7 +323,6 @@ class NewCLI extends CLI {
             .filter(notHiddenFile)
 
           const themeDetails = Object.assign({}, theme)
-          delete themeDetails.repoUrl
 
           const info = {
             details: themeDetails,
@@ -317,7 +357,7 @@ class NewCLI extends CLI {
               settings: {},
               control_types: {},
               controls: {}
-              /* eslint-enable */
+              /* eslint-enable camelcase */
             },
             releases: [
               {
@@ -327,7 +367,14 @@ class NewCLI extends CLI {
                   'Initial Release'
                 ]
               }
-            ]
+            ],
+            repo: {
+              credentials: {
+                username: git.username,
+                password: git.password
+              },
+              trylogin: false
+            }
           }
 
           try {
@@ -355,6 +402,7 @@ class NewCLI extends CLI {
 
               delete themeInfo.details
               delete themeInfo.releases
+              delete themeInfo.repo
 
               const config = jsonar.arrify(themeInfo, {
                 prettify: true,
@@ -421,33 +469,53 @@ class NewCLI extends CLI {
 
       {
         title: 'Setup Repository',
-        task: () => new Listr([
-          {
-            title: 'Init repository url',
-            task: () => execa.stdout('git', [`--git-dir=${gitPath}`, `--work-tree=${gitPath}`, 'init', '-q'])
-          },
+        task: () => {
+          const gitUrlObject = url.parse(git.url)
+          gitUrlObject.auth = `${git.username}:${git.password}`
 
-          {
-            title: `Add remote url '${theme.repoUrl}'`,
-            task: () => execa.stdout('git', [`--git-dir=${gitPath}`, 'remote', 'add', 'origin', theme.repoUrl])
-          },
+          const gitUrl = url.format(gitUrlObject)
 
-          {
-            title: `Validate remote url '${theme.repoUrl}'`,
-            task: () => execa.stdout('git', [`--git-dir=${gitPath}`, 'pull', 'origin', 'master'])
-          },
+          return new Listr([
+            {
+              title: 'Init repository url',
+              task: () => execa.stdout('git', [`--git-dir=${gitPath}`, 'init', '-q'], {
+                cwd: this.currentThemePath()
+              })
+            },
 
-          {
-            title: `Download git objects and refs from '${theme.repoUrl}'`,
-            task: () => execa.stdout('git', [`--git-dir=${gitPath}`, 'fetch'])
-          }
-        ])
+            {
+              title: `Add remote url '${git.url}'`,
+              task: () => execa.stdout('git', [`--git-dir=${gitPath}`, 'remote', 'add', 'origin', gitUrl])
+            },
+
+            {
+              title: `Download git objects and refs from '${git.url}'`,
+              task: () => execa.stdout('git', [`--git-dir=${gitPath}`, 'fetch'])
+            },
+
+            {
+              title: `Pull master branch (if any) from '${git.url}'`,
+              task: () => new Promise(resolve => {
+                execa.stdout('git', [`--git-dir=${gitPath}`, 'pull', 'origin', 'master']).then(() => {
+                  resolve()
+                }).catch(() => {
+                  resolve()
+                })
+              })
+            }
+          ])
+        }
       }
     ], listrOpts)
 
     this.$logger.title(`Initializing {${theme.name}}`)
 
     task.run()
+      .then(() => {
+        const repo = this.themeInfo('repo')
+        repo.trylogin = true
+        this.setThemeConfig({repo})
+      })
       .then(() => {
         this.$logger.finish(messages.SUCCEED_CREATE_NEW_THEME)
       })
