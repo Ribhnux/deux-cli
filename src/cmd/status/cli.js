@@ -5,6 +5,7 @@ const slugify = require('node-slugify')
 const CLI = global.deuxcli.require('main')
 const {finish, colorlog} = global.deuxhelpers.require('logger')
 const {dirlist, filelist} = global.deuxhelpers.require('util/file')
+const {featureTypes, featureLabels} = global.deuxcmd.require('add/cli/fixtures')
 
 class StatusCLI extends CLI {
   constructor(options) {
@@ -72,20 +73,20 @@ class StatusCLI extends CLI {
       })
 
       this.status.push({
-        label: 'Page Templates',
+        label: 'Templates',
         value: filelist(this.currentThemePath('page-templates')).length,
-        suffix: 'Templates',
-        tab: 1
+        suffix: 'Page Templates',
+        tab: 2
       })
 
       this.status.push({
-        label: 'Partial Templates',
+        label: '',
         value: dirlist(this.currentThemePath('partial-templates'))
           .map(dir => {
             return filelist(this.currentThemePath('partial-templates', dir)).map(file => file).length
           }).reduce((a, b) => a + b),
-        suffix: 'Templates',
-        tab: 1
+        suffix: 'Parital Templates',
+        tab: 3
       })
 
       this.status.push({
@@ -103,43 +104,61 @@ class StatusCLI extends CLI {
       })
 
       this.status.push({
-        label: 'CSS / JS Libraries',
+        label: 'Assets',
         value: Object.keys(this.theme.asset.libs).length,
-        suffix: 'Dependencies',
-        tab: 1
-      })
-
-      this.status.push({
-        label: `SASS`,
-        value: this.sassCount,
-        suffix: 'Files',
-        tab: 3
-      })
-
-      this.status.push({
-        label: 'Web Fonts',
-        value: Object.keys(this.theme.asset.fonts).length,
-        suffix: 'Fonts',
+        suffix: 'CSS / JS Libraries',
         tab: 2
       })
 
       this.status.push({
-        label: 'Customizer Settings',
+        label: ``,
+        value: this.sassCount,
+        suffix: 'SASS',
+        tab: 3
+      })
+
+      this.status.push({
+        label: '',
+        value: Object.keys(this.theme.asset.fonts).length,
+        suffix: 'Web Fonts',
+        tab: 3
+      })
+
+      this.status.push({
+        label: 'Customizer',
         value: Object.keys(this.theme.customizer.settings).length,
-        tab: 1
+        suffix: 'Settings',
+        tab: 2
       })
 
       this.status.push({
-        label: 'Customizer Panels',
+        label: '',
         value: Object.keys(this.theme.customizer.panels).length,
-        tab: 1
+        suffix: 'Panels',
+        tab: 3
       })
 
       this.status.push({
-        label: 'Customizer Sections',
+        label: '',
         value: Object.keys(this.theme.customizer.sections).length,
-        tab: 1
+        suffix: 'Sections',
+        tab: 3
       })
+
+      const features = []
+      for (const type in featureTypes) {
+        if (Object.prototype.hasOwnProperty.call(featureTypes, type) && this.theme.features[featureTypes[type]] !== undefined) {
+          features.push({
+            value: featureLabels[type]
+          })
+        }
+      }
+
+      this.status = this.status.concat(features.map((item, index) => {
+        item.label = (index === 0) ? 'Features' : ''
+        item.tab = (index === 0) ? 2 : 3
+        return item
+      }))
 
       this.status = this.status.map(item => {
         item.slug = slugify(item.label)
@@ -148,7 +167,7 @@ class StatusCLI extends CLI {
     }).then(() => {
       const status = this.status.map(item => {
         const suffix = item.suffix ? ` ${item.suffix}` : ''
-        return `   ${item.label}${'\t'.repeat(item.tab)}: {${item.value}${suffix}}`
+        return `   ${item.label}${'\t'.repeat(item.tab)} {${item.value}${suffix}}`
       })
 
       if (this.$init.apiMode()) {
