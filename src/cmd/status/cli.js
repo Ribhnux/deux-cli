@@ -1,3 +1,4 @@
+const url = require('url')
 const chalk = require('chalk')
 const execa = require('execa')
 const slugify = require('node-slugify')
@@ -32,7 +33,10 @@ class StatusCLI extends CLI {
 
   action() {
     execa('git', ['remote', 'get-url', 'origin'], {cwd: this.currentThemePath()}).then(output => {
-      const gitUrl = output.stdout
+      let gitUrl = url.parse(output.stdout)
+      delete gitUrl.auth
+
+      gitUrl = url.format(gitUrl)
 
       this.status.push({
         label: 'Theme URI',
