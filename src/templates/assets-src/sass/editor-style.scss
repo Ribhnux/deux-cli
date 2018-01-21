@@ -18,16 +18,18 @@
 
 /** Color Variables
  ========================================================================== */
-$white: #ffffff;
-$black: #000000;
-$gallery: #eeeeee;
-$mine-shaft: #333333;
-$mine-shaft-two: #222222;
-$emperor: #555555;
-$dove-gray: #666666;
+/* stylelint-disable color-no-hex */
+$white: #fff;
+$black: #000;
+$gallery: #eee;
+$mine-shaft: #333;
+$mine-shaft-two: #222;
+$emperor: #555;
+$dove-gray: #666;
 $boulder: #767676;
-$silver: #bbbbbb;
-$silver-chalice: #aaaaaa;
+$silver: #bbb;
+$silver-chalice: #aaa;
+/* stylelint-enable */
 
 /*! 1 - Body
  ========================================================================== */
@@ -45,7 +47,10 @@ body {
 
 /*! 2 - Typography
  ========================================================================== */
-button, input, select, textarea {
+button,
+input,
+select,
+textarea {
   font-family: 'Helvetica Neue', helvetica, arial, sans-serif;
   font-size: 16px;
   font-size: 1rem;
@@ -53,15 +58,16 @@ button, input, select, textarea {
   line-height: 1.66;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   clear: both;
   line-height: 1.4;
   margin: 0 0 0.75em;
   padding: 1.5em 0 0;
-}
-
-h1:first-child, h2:first-child, h3:first-child, h4:first-child, h5:first-child, h6:first-child {
-  padding-top: 0;
 }
 
 h1 {
@@ -107,12 +113,24 @@ h6 {
   font-weight: 800;
 }
 
+h1:first-child,
+h2:first-child,
+h3:first-child,
+h4:first-child,
+h5:first-child,
+h6:first-child {
+  padding-top: 0;
+}
+
 p {
   margin: 0 0 1.5em;
   padding: 0;
 }
 
-dfn, cite, em, i {
+dfn,
+cite,
+em,
+i {
   font-style: italic;
 }
 
@@ -125,7 +143,14 @@ blockquote {
   margin: 0;
   overflow: hidden;
   padding: 0;
-  &.alignleft, &.alignright {
+
+  &:before,
+  &:after {
+    content: '';
+  }
+
+  &.alignleft,
+  &.alignright {
     font-size: 14px;
     font-size: 0.875rem;
     width: 34%;
@@ -138,7 +163,7 @@ address {
 
 pre {
   background: $gallery;
-  font-family: "Courier 10 Pitch", Courier, monospace;
+  font-family: 'Courier 10 Pitch', Courier, monospace;
   font-size: 15px;
   font-size: 0.9375rem;
   line-height: 1.6;
@@ -148,18 +173,23 @@ pre {
   padding: 1.6em;
 }
 
-code, kbd, tt, var {
-  font-family: Monaco, Consolas, "Andale Mono", "DejaVu Sans Mono", monospace;
+code,
+kbd,
+tt,
+var {
+  font-family: Monaco, Consolas, 'Andale Mono', 'DejaVu Sans Mono', monospace;
   font-size: 15px;
   font-size: 0.9375rem;
 }
 
-abbr, acronym {
+abbr,
+acronym {
   border-bottom: 1px dotted $dove-gray;
   cursor: help;
 }
 
-mark, ins {
+mark,
+ins {
   background: $gallery;
   text-decoration: none;
 }
@@ -168,29 +198,35 @@ big {
   font-size: 125%;
 }
 
-blockquote, q {
-  quotes: "" "";
-}
-
-blockquote {
-  &:before, &:after {
-    content: "";
-  }
+blockquote,
+q {
+  quotes: '\201C' '\201D';
 }
 
 q {
-  &:before, &:after {
-    content: "";
+  &:before,
+  &:after {
+    content: '';
   }
 }
 
 /* Typography for Thai Font */
-html[lang="th"] {
-  h1, h2, h3, h4, h5, h6 {
+html[lang='th'] {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     letter-spacing: 0;
     line-height: 1.65;
   }
-  body, button, input, select, textarea {
+
+  body,
+  button,
+  input,
+  select,
+  textarea {
     line-height: 1.8;
   }
 }
@@ -204,7 +240,8 @@ hr {
   margin-bottom: 1.5em;
 }
 
-ul, ol {
+ul,
+ol {
   margin: 0 0 1.5em;
   padding: 0;
 }
@@ -215,9 +252,11 @@ ul {
 
 ol {
   counter-reset: item;
+
   li {
     display: block;
     position: relative;
+
     &:before {
       content: counter(item);
       counter-increment: item;
@@ -229,7 +268,8 @@ ol {
 }
 
 li > {
-  ul, ol {
+  ul,
+  ol {
     margin-bottom: 0;
     margin-left: 1.5em;
   }
@@ -257,10 +297,13 @@ a {
   transition: color 80ms ease-in, -webkit-box-shadow 130ms ease-in-out;
   transition: color 80ms ease-in, box-shadow 130ms ease-in-out;
   transition: color 80ms ease-in, box-shadow 130ms ease-in-out, -webkit-box-shadow 130ms ease-in-out;
+
   &:focus {
     outline: thin dotted;
   }
-  &:hover, &:focus {
+
+  &:hover,
+  &:focus {
     color: $black;
     -webkit-box-shadow: inset 0 0 0 rgba(0, 0, 0, 0), 0 3px 0 rgba(0, 0, 0, 1);
     box-shadow: inset 0 0 0 rgba(0, 0, 0, 0), 0 3px 0 rgba(0, 0, 0, 1);
@@ -276,17 +319,21 @@ a {
 
 /*! 4 - Alignment
  ========================================================================== */
-
 img {
   height: auto;
+
   /* Make sure images are scaled correctly. */
   width: inherit;
+
   /* Make images fill their parent's space. Solves IE8. */
   max-width: 100%;
+
   /* Adhere to container width. */
 }
 
-embed, iframe, object {
+embed,
+iframe,
+object {
   margin-bottom: 1.5em;
   max-width: 100%;
 }
@@ -300,11 +347,13 @@ embed, iframe, object {
   font-style: italic;
   margin-bottom: 1.5em;
   max-width: 100%;
-  img[class*="wp-image-"] {
+
+  img[class*='wp-image-'] {
     display: block;
     margin-left: auto;
     margin-right: auto;
   }
+
   .wp-caption-text {
     margin: 0.8075em 0;
   }
@@ -321,12 +370,15 @@ embed, iframe, object {
   text-align: center;
   vertical-align: top;
   width: 100%;
+
   a {
     -webkit-box-shadow: none;
     box-shadow: none;
     background: none;
     display: inline-block;
-    &:hover, &:focus {
+
+    &:hover,
+    &:focus {
       -webkit-box-shadow: none;
       box-shadow: none;
       background: none;
@@ -383,84 +435,99 @@ embed, iframe, object {
 .mejs-controls a.mejs-horizontal-volume-slider {
   background: transparent;
   border: 0;
-  &:focus, &:hover {
+
+  &:focus,
+  &:hover {
     background: transparent;
     border: 0;
   }
 }
 
 /* Playlist Color Overrides: Light */
-
 .wp-playlist-light {
   border-color: $gallery;
   color: $mine-shaft-two;
+
   .wp-playlist-current-item {
     .wp-playlist-item-album {
       color: $mine-shaft;
     }
+
     .wp-playlist-item-artist {
       color: $boulder;
     }
   }
+
   .wp-playlist-item {
     border-bottom: 1px dotted $gallery;
     -webkit-transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, color 0.3s ease-in-out;
     transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, color 0.3s ease-in-out;
-    &:hover, &:focus {
+
+    &:hover a,
+    &:focus a {
+      color: $white;
+    }
+
+    &:hover,
+    &:focus {
       border-bottom-color: rgba(0, 0, 0, 0);
       background-color: $boulder;
       color: $white;
     }
   }
+
   a.wp-playlist-caption:hover {
     color: $white;
-  }
-  .wp-playlist-item {
-    &:hover a, &:focus a {
-      color: $white;
-    }
   }
 }
 
 /* Playlist Color Overrides: Dark */
-
 .wp-playlist-dark {
   background: $mine-shaft-two;
   border-color: $mine-shaft;
+
   .mejs-container .mejs-controls {
     background-color: $mine-shaft;
   }
+
   .wp-playlist-caption {
     color: $white;
   }
+
   .wp-playlist-current-item {
     .wp-playlist-item-album {
       color: $gallery;
     }
+
     .wp-playlist-item-artist {
       color: $silver-chalice;
     }
   }
+
   .wp-playlist-playing {
     background-color: $mine-shaft;
   }
+
   .wp-playlist-item {
     border-bottom: 1px dotted $emperor;
     -webkit-transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, color 0.3s ease-in-out;
     transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, color 0.3s ease-in-out;
-    &:hover, &:focus {
+
+    &:hover a,
+    &:focus a {
+      color: $mine-shaft-two;
+    }
+
+    &:hover,
+    &:focus {
       border-bottom-color: rgba(0, 0, 0, 0);
       background-color: $silver-chalice;
       color: $mine-shaft-two;
     }
   }
+
   a.wp-playlist-caption:hover {
     color: $mine-shaft-two;
-  }
-  .wp-playlist-item {
-    &:hover a, &:focus a {
-      color: $mine-shaft-two;
-    }
   }
 }
 
@@ -474,9 +541,11 @@ embed, iframe, object {
   .wp-playlist-item-title {
     font-weight: 700;
   }
+
   .wp-playlist-item-album {
     font-style: normal;
   }
+
   .wp-playlist-item-artist {
     font-size: 10px;
     font-size: 0.625rem;
@@ -489,16 +558,20 @@ embed, iframe, object {
 .wp-playlist-item {
   padding: 0 0.3125em;
   cursor: pointer;
+
   &:last-of-type {
     border-bottom: none;
   }
+
   a {
     padding: 0.3125em 0;
     border-bottom: none;
     -webkit-box-shadow: none;
     box-shadow: none;
     background: transparent;
-    &:focus, &:hover {
+
+    &:focus,
+    &:hover {
       -webkit-box-shadow: none;
       box-shadow: none;
       background: transparent;
@@ -516,19 +589,24 @@ embed, iframe, object {
   th {
     text-align: right;
   }
+
   ol {
     counter-reset: item;
+
     li:before {
       left: auto;
       right: -1.5em;
     }
   }
+
   li > {
-    ul, ol {
+    ul,
+    ol {
       margin-left: 0;
       margin-right: 1.5em;
     }
   }
+
   .mejs-offscreen {
     right: -10000px;
   }

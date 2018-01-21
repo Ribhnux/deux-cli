@@ -1,30 +1,41 @@
 /*! Default WordPress styles
   ========================================================================== */
+/* stylelint-disable color-no-hex */
+$wp-grey: #666;
+$wp-light: #f1f1f1;
+$wp-dark: #333;
+$wp-blue: #21759b;
+/* stylelint-enable */
 
+/* stylelint-disable block-no-empty */
 .entry-content img {
   margin: 0 0 1.5em 0;
 }
 
-.alignleft, img.alignleft {
+.alignleft,
+img.alignleft {
   margin-right: 1.5em;
   display: inline;
   float: left;
 }
 
-.alignright, img.alignright {
+.alignright,
+img.alignright {
   margin-left: 1.5em;
   display: inline;
   float: right;
 }
 
-.aligncenter, img.aligncenter {
+.aligncenter,
+img.aligncenter {
   margin-right: auto;
   margin-left: auto;
   display: block;
   clear: both;
 }
 
-.alignnone, img.alignnone {
+.alignnone,
+img.alignnone {
   /* not sure about this one */
 }
 
@@ -32,11 +43,13 @@
   margin-bottom: 1.5em;
   text-align: center;
   padding-top: 5px;
+
   img {
     border: 0 none;
     padding: 0;
     margin: 0;
   }
+
   p.wp-caption-text {
     line-height: 1.5;
     font-size: 10px;
@@ -57,6 +70,7 @@ blockquote {
     width: 33%;
     float: left;
   }
+
   &.right {
     margin-left: 20px;
     text-align: left;
@@ -67,15 +81,19 @@ blockquote {
 }
 
 .gallery {
-  dt {}
-  dd {}
+  dt {
+  }
+
+  dd {
+  }
+
   dl {
     a {}
     img {}
   }
 
   &-caption {
-    color: #666;
+    color: $wp-grey;
     font-size: 13px;
     font-size: 0.8125rem;
     font-style: italic;
@@ -85,8 +103,11 @@ blockquote {
 }
 
 .size-full {}
+
 .size-large {}
+
 .size-medium {}
+
 .size-thumbnail {}
 
 /* WP Widgets */
@@ -94,11 +115,14 @@ blockquote {
   /* links widget */
   &_links {
     ul {
-      li {}
+      li {
+        &:before {}
+        &:after {}
+      }
       a {}
     }
   }
-  
+
   /* meta widget */
   &_meta {
     ul {
@@ -133,17 +157,6 @@ blockquote {
     }
   }
 
-  /* tag-cloud widget */
-  &_links {
-    ul {
-      li {
-        &:before {}
-        &:after {}
-      }
-      a {}
-    }
-  }
-
   &_tag_cloud {
     a {
       &:before {}
@@ -163,14 +176,17 @@ blockquote {
     tr {
       td {}
     }
+
     caption {}
+
     a {}
+
     #today {}
-    #prev {}
-    #next {}
+
     #next {
       a {}
     }
+
     #prev {
       a {}
     }
@@ -197,21 +213,25 @@ blockquote {
     .level-2 {}
     .level-3 {}
   }
-  
+
   /* recent-comments widget */
   &.recentcomments {}
+
   #recentcomments {
     li {}
     a {}
   }
+
   &_recent_comments {}
-  
+
   /* search widget */
   #searchform {}
+
   &_search {}
 
   /* text widget */
   &_text {}
+
   &textwidget {
     p {}
   }
@@ -229,13 +249,13 @@ blockquote {
   word-wrap: normal !important;
 
   &:focus {
-    background-color: #f1f1f1;
+    background-color: $wp-light;
     -webkit-border-radius: 3px;
     border-radius: 3px;
     -webkit-box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.6);
     box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.6);
     clip: auto !important;
-    color: #21759b;
+    color: $wp-blue;
     display: block;
     font-size: 14px;
     font-size: 0.875rem;
@@ -254,15 +274,21 @@ blockquote {
 /* WordPress Comments */
 .commentlist {
   .reply {
-     a {}
+    a {}
   }
 
   .alt {}
+
   .odd {}
+
   .even {}
+
   .thread-alt {}
+
   .thread-odd {}
+
   .thread-even {}
+
   li {
     ul {
       &.children {
@@ -286,49 +312,64 @@ blockquote {
     cite.fn {
       a.url {}
     }
+
     span.says {}
+
     img.photo {}
+
     img.avatar {}
   }
 
   .comment-meta {
     a {}
+
     .commentmetadata {
-       a {}
+      a {}
     }
-  } 
+  }
 
   .parent {}
+
   .children {}
+
   .pingback {}
+
   .bypostauthor {
     .comment-body {
-      &> .comment-meta {
-        &> .comment-author {
+      & > .comment-meta {
+        & > .comment-author {
           .avatar {
-            border: 1px solid #333;
+            border: 1px solid $wp-dark;
             padding: 2px;
           }
         }
       }
     }
   }
+
   .comment-author {}
+
   .comment-author-admin {}
+
   #cancel-comment-reply {
     a {}
   }
 }
 
 /* category links */
-li.categories {}  
+li.categories {}
+
 li.cat-item {}
+
 li.current-cat {}
+
 li.current-cat-parent {}
+
 ul.children {}
 
 /* blogroll links */
 .linkcat {}
+
 .blogroll {}
 
 /* read-more links */
@@ -336,49 +377,54 @@ ul.children {}
 
 /* body_class() */
 .rtl {}
-.home {}
-.blog {}
-.archive {}
-.date {}
-.search {}
-.paged {}
-.attachment {}
-.error404 {}
-.author {}
-.category {}
-.tag {}
-.page-parent {}
-.search {
-  &-results {}
-  &-no-results {}
-}
-.logged-in {}
 
+.home {}
+
+.blog {}
+
+.archive {}
+
+.date {}
+
+.search {}
+
+.paged {}
+
+.attachment {}
+
+.error404 {}
+
+.author {}
+
+.category {}
+
+.tag {}
+
+.page-parent {}
+
+.logged-in {}
 
 /* post_class() */
 .post-id {}
+
 .post {}
+
 .page {}
-.attachment {}
+
 .sticky {
   position: relative;
 }
+
 .hentry {}
-.category {
-  &-misc {}
-  &-example {}
-}
-.tag {
-  &-news {}
-  &-wordpress {}
-  &-markup {}
-}
 
 /* Page Listings */
 .page_item {}
+
 .current_page {
   &_item {}
+
   &_parent {}
+
   &_ancestor {}
 }
 
@@ -392,20 +438,25 @@ ul.children {}
     &_item {
       ul {}
     }
+
     &_ancestor {
       ul {
         ul {}
       }
+
       .current_page {
         &_item {
           ul {}
         }
+
         &_ancestor {
           ul {}
+
           .current_page {
             &_item {
               ul {}
             }
+
             &_ancestor {
               ul {
                 ul {}
@@ -417,3 +468,4 @@ ul.children {}
     }
   }
 }
+/* stylelint-enable */

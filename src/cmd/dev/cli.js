@@ -62,13 +62,16 @@ class DevCLI extends CLI {
     if (existsSync(configFile)) {
       try {
         defaultConfig = JSON.parse(readFileSync(configFile))
+        if (!defaultConfig.build) {
+          defaultConfig.build = {}
+        }
       } catch (err) {
         this.$logger.exit(err)
       }
     }
 
     // Synchronize theme config.
-    defaultConfig.config = [
+    defaultConfig.build.theme_config = [
       {
         fn: this.sync,
         watch: [
@@ -78,7 +81,7 @@ class DevCLI extends CLI {
     ]
 
     // Build translation.
-    defaultConfig.translation = [
+    defaultConfig.build.translation = [
       {
         fn: this.compilePot,
         watch: [
@@ -88,9 +91,9 @@ class DevCLI extends CLI {
       }
     ]
 
-    for (const key in defaultConfig) {
-      if (Object.prototype.hasOwnProperty.call(defaultConfig, key)) {
-        defaultConfig[key].forEach(item => {
+    for (const key in defaultConfig.build) {
+      if (Object.prototype.hasOwnProperty.call(defaultConfig.build, key)) {
+        defaultConfig.build[key].forEach(item => {
           const suffix = item.filename ? `:${slugify(item.filename)}` : ''
           const taskName = `build:${key}${suffix}`
           let compiler = this.sassCompiler
