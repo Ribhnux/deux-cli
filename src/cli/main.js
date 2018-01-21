@@ -414,7 +414,7 @@ class CLI {
     return {
       wpcs: ['--excludes=woocommerce'],
 
-      themecheck: ['.'],
+      themecheck: [this.currentThemePath(), '--excludes=releases'],
 
       w3Validator: [this.getConfig('devUrl')],
 

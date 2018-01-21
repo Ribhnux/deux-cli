@@ -112,7 +112,7 @@ class TestCLI extends CLI {
         break
 
       case commandList.THEMECHECK:
-        runCli = themecheck(this.$clioptions.themeCheck, stdopts)
+        runCli = themecheck(this.$clioptions.themecheck, stdopts)
         break
 
       case commandList.W3:
