@@ -1,4 +1,5 @@
 const path = require('path')
+const {existsSync} = require('fs')
 const inquirer = require('inquirer')
 const jsonar = require('jsonar')
 const arrandel = require('arrandel')
@@ -399,6 +400,41 @@ class CLI {
       }
     })
     this.setThemeConfig(json, true)
+  }
+
+  /**
+   * Global task for release and test
+   */
+  getTestOptions() {
+    let stylelintrc = '.stylelintrc'
+    if (!existsSync(this.currentThemePath(stylelintrc))) {
+      stylelintrc = this.templateSourcePath(stylelintrc)
+    }
+
+    return {
+      wpcs: ['--excludes=woocommerce'],
+
+      themecheck: ['.'],
+
+      w3Validator: [this.getConfig('devUrl')],
+
+      sass: [
+        '--config',
+        stylelintrc,
+        '--config-basedir',
+        path.dirname(global.bin.path),
+        path.join('assets-src', 'sass', '**'),
+        path.join('includes', 'customizer', 'assets-src', 'sass', '**')
+      ],
+
+      js: [
+        '--no-semicolon',
+        path.join('assets-src', 'js', '**'),
+        '!', path.join('assets-src', 'js', 'node_modules', '**'),
+        path.join('includes', 'customizer', 'assets-src', 'js', '**'),
+        '!', path.join('includes', 'customizer', 'assets-src', 'js', 'node_modules', '**')
+      ]
+    }
   }
 }
 

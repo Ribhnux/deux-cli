@@ -1,45 +1,26 @@
-const path = require('path')
-const {existsSync} = require('fs')
 const Listr = require('listr')
-const execa = require('execa')
 const {commandList} = require('./fixtures')
+const {
+  wpcs,
+  themecheck,
+  w3Validator,
+  stylelint,
+  eslint
+} = require('./task')
 
 const CLI = global.deuxcli.require('main')
 const messages = global.deuxcli.require('messages')
 
-const wpcs = path.join(global.bin.path, 'wpcs')
-const themeCheck = path.join(global.bin.path, 'themecheck')
-const w3Validator = path.join(global.bin.path, 'html5v')
-const stylelint = path.join(global.bin.path, 'stylelint')
-
 class TestCLI extends CLI {
   constructor(subcmd, options) {
     super()
-    this.$clioptions = {}
     this.$subcmd = subcmd
+    this.$clioptions = {}
     this.init(options)
   }
 
   prepare() {
-    this.$clioptions.wpcs = ['--excludes=woocommerce']
-    this.$clioptions.themeCheck = ['.']
-    this.$clioptions.w3 = [this.getConfig('devUrl')]
-
-    let stylelintrc = '.stylelintrc'
-    if (!existsSync(this.currentThemePath('.stylelintrc'))) {
-      stylelintrc = this.templateSourcePath('.stylelintrc')
-    }
-
-    this.$clioptions.sass = [
-      '--config',
-      stylelintrc,
-      '--config-basedir',
-      path.dirname(global.bin.path),
-      ...[
-        path.join('assets-src', 'sass', '**'),
-        path.join('includes', 'customizer', 'assets-src', 'sass', '**')
-      ]
-    ]
+    this.$clioptions = this.getTestOptions()
 
     if (this.$subcmd) {
       this.initSubCommands(this.$subcmd)
@@ -52,59 +33,53 @@ class TestCLI extends CLI {
    * Validate all
    */
   action() {
+    const stdopts = {
+      cwd: this.currentThemePath()
+    }
+
     const task = new Listr([
       {
         title: 'ESLint for Javascript',
-        task: () => new Promise(resolve => {
-          resolve()
+        task: () => new Promise((resolve, reject) => {
+          eslint(this.$clioptions.js, stdopts)
+            .then(() => resolve())
+            .catch(() => reject(new Error(messages.ERROR_INVALID_JS)))
         })
       },
 
       {
         title: 'Stylelint for SASS',
         task: () => new Promise((resolve, reject) => {
-          execa(stylelint, this.$clioptions.sass, {cwd: this.currentThemePath()})
-            .then(() => {
-              resolve()
-            }).catch(() => {
-              reject(new Error(messages.ERROR_INVALID_SASS))
-            })
+          stylelint(this.$clioptions.sass, stdopts)
+            .then(() => resolve())
+            .catch(() => reject(new Error(messages.ERROR_INVALID_SASS)))
         })
       },
 
       {
         title: 'WordPress Coding Standard',
         task: () => new Promise((resolve, reject) => {
-          execa(wpcs, this.$clioptions.wpcs, {cwd: this.currentThemePath()})
-            .then(() => {
-              resolve()
-            }).catch(() => {
-              reject(new Error(messages.ERROR_INVALID_WPCS))
-            })
+          wpcs(this.$clioptions.wpcs, stdopts)
+            .then(() => resolve())
+            .catch(() => reject(new Error(messages.ERROR_INVALID_WPCS)))
         })
       },
 
       {
         title: 'Theme Check and Theme Mentor',
         task: () => new Promise((resolve, reject) => {
-          execa(themeCheck, this.$clioptions.themeCheck, {cwd: this.currentThemePath()})
-            .then(() => {
-              resolve()
-            }).catch(() => {
-              reject(new Error(messages.ERROR_INVALID_THEMECHECK))
-            })
+          themecheck(this.$clioptions.themecheck, stdopts)
+            .then(() => resolve())
+            .catch(() => reject(new Error(messages.ERROR_INVALID_THEMECHECK)))
         })
       },
 
       {
         title: 'W3 HTML5 Markup',
         task: () => new Promise((resolve, reject) => {
-          execa(w3Validator, this.$clioptions.w3, {cwd: this.currentThemePath()})
-            .then(() => {
-              resolve()
-            }).catch(err => {
-              reject(err)
-            })
+          w3Validator(this.$clioptions.w3Validator, stdopts)
+            .then(() => resolve())
+            .catch(() => reject(new Error(messages.ERROR_INVALID_W3)))
         })
       }
     ])
@@ -120,34 +95,39 @@ class TestCLI extends CLI {
    * @param {String} subcmd
    */
   initSubCommands(subcmd) {
+    const stdopts = {stdio: 'inherit', cwd: this.currentThemePath()}
+    let runCli
+
     switch (subcmd) {
+      case commandList.JS:
+        runCli = eslint(this.$clioptions.js, stdopts)
+        break
+
       case commandList.SASS:
-        execa.stdout(stylelint, this.$clioptions.sass, {stdio: 'inherit', cwd: this.currentThemePath()})
-          .then(() => this.$logger.finish(messages.SUCCEED_VALID_CODES))
-          .catch(() => this.$logger.exit(messages.ERROR_FIX_INVALID_CODES))
+        runCli = stylelint(this.$clioptions.sass, stdopts)
         break
 
       case commandList.WPCS:
-        execa.stdout(wpcs, this.$clioptions.wpcs, {stdio: 'inherit', cwd: this.currentThemePath()})
-          .then(() => this.$logger.finish(messages.SUCCEED_VALID_CODES))
-          .catch(() => this.$logger.exit(messages.ERROR_FIX_INVALID_CODES))
+        runCli = wpcs(this.$clioptions.wpcs, stdopts)
         break
 
       case commandList.THEMECHECK:
-        execa.stdout(themeCheck, this.$clioptions.themeCheck, {stdio: 'inherit', cwd: this.currentThemePath()})
-          .then(() => this.$logger.finish(messages.SUCCEED_VALID_CODES))
-          .catch(() => this.$logger.exit(messages.ERROR_FIX_INVALID_CODES))
+        runCli = themecheck(this.$clioptions.themeCheck, stdopts)
         break
 
       case commandList.W3:
-        execa.stdout(w3Validator, this.$clioptions.w3, {stdio: 'inherit', cwd: this.currentThemePath()})
-          .then(() => this.$logger.finish(messages.SUCCEED_VALID_CODES))
-          .catch(() => this.$logger.exit(messages.ERROR_FIX_INVALID_CODES))
+        runCli = w3Validator(this.$clioptions.w3Validator, stdopts)
         break
 
       default:
         this.$logger.exit(new Error(messages.ERROR_INVALID_COMMAND))
         break
+    }
+
+    if (runCli) {
+      runCli
+        .then(() => this.$logger.finish(messages.SUCCEED_VALID_CODES))
+        .catch(() => this.$logger.exit(messages.ERROR_FIX_INVALID_CODES))
     }
   }
 }
