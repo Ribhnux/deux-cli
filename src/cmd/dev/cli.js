@@ -71,7 +71,7 @@ class DevCLI extends CLI {
     }
 
     // Synchronize theme config.
-    defaultConfig.build.theme_config = [
+    defaultConfig.build.themeConfig = [
       {
         fn: this.sync,
         watch: [

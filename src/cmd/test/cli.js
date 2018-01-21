@@ -122,7 +122,6 @@ class TestCLI extends CLI {
   initSubCommands(subcmd) {
     switch (subcmd) {
       case commandList.SASS:
-        // console.log(stylelint, this.$clioptions.sass)
         execa.stdout(stylelint, this.$clioptions.sass, {stdio: 'inherit', cwd: this.currentThemePath()})
           .then(() => this.$logger.finish(messages.SUCCEED_VALID_CODES))
           .catch(() => this.$logger.exit(messages.ERROR_FIX_INVALID_CODES))
