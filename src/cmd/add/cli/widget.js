@@ -5,20 +5,19 @@ const jsonar = require('jsonar')
 const CLI = global.deuxcli.require('main')
 const messages = global.deuxcli.require('messages')
 const validator = global.deuxhelpers.require('util/validator')
-const {exit, finish} = global.deuxhelpers.require('logger')
 
 class AddWidget extends CLI {
-  constructor() {
+  constructor(options) {
     super()
-    this.init()
+    this.init(options)
   }
 
   /**
    * Setup add widget prompts
    */
   prepare() {
-    this.title = 'Register {New Widget}'
-    this.prompts = [
+    this.$title = 'Register {New Widget}'
+    this.$prompts = [
       {
         name: 'widget.name',
         message: 'Widget Name',
@@ -35,7 +34,7 @@ class AddWidget extends CLI {
 
       {
         type: 'confirm',
-        name: 'widget.overwrite',
+        name: 'overwrite',
         message: 'Widget already exists. Continue to overwrite?',
         default: true,
         when: ({widget}) => new Promise(resolve => {
@@ -47,11 +46,11 @@ class AddWidget extends CLI {
 
   /**
    * Compile widget config
-   * @param {*} param0
+   * @param {Object} {widget, overwrite}
    */
-  action({widget}) {
-    if (widget.overwrite === false) {
-      exit(messages.ERROR_WIDGET_ALREADY_EXISTS)
+  action({widget, overwrite}) {
+    if (overwrite === false) {
+      this.$logger.exit(messages.ERROR_WIDGET_ALREADY_EXISTS)
     }
 
     const widgets = this.themeInfo('widgets')
@@ -81,8 +80,8 @@ class AddWidget extends CLI {
         resolve()
       })
     ]).then(
-      finish(messages.SUCCEED_WIDGET_ADDED)
-    ).catch(exit)
+      this.$logger.finish(messages.SUCCEED_WIDGET_ADDED)
+    ).catch(this.$logger.exit)
   }
 }
 

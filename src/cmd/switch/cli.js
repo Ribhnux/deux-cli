@@ -2,7 +2,6 @@ const inquirer = require('inquirer')
 
 const CLI = global.deuxcli.require('main')
 const messages = global.deuxcli.require('messages')
-const {exit, finish} = global.deuxhelpers.require('logger')
 
 class SwitchCLI extends CLI {
   constructor(subcmd) {
@@ -15,8 +14,8 @@ class SwitchCLI extends CLI {
     if (this.subcmd) {
       this.initSubCommands(this.subcmd)
     } else {
-      this.title = 'Switch to {another theme}'
-      this.prompts = [
+      this.$title = 'Switch to {another theme}'
+      this.$prompts = [
         {
           type: 'list',
           name: 'subcmd',
@@ -62,7 +61,7 @@ class SwitchCLI extends CLI {
    */
   initSubCommands(subcmd) {
     if (this.themeDetails('slug') === subcmd) {
-      finish(messages.SUCCEED_ALREADY_IN_CURRENT_PROJECT)
+      this.$logger.finish(messages.SUCCEED_ALREADY_IN_CURRENT_PROJECT)
     } else {
       const theme = this.getThemeBySlug(subcmd)
 
@@ -73,8 +72,8 @@ class SwitchCLI extends CLI {
           resolve()
         })
       ]).then(
-        finish(messages.SUCCEED_THEME_SWITCHED)
-      ).catch(exit)
+        this.$logger.finish(messages.SUCCEED_THEME_SWITCHED)
+      ).catch(this.$logger.exit)
     }
   }
 }

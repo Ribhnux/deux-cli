@@ -5,6 +5,7 @@ const updateNotifier = require('update-notifier')
 const pkg = require('../package.json')
 
 // Register global path
+globalPath('bin', '@/../node_modules/.bin', '')
 globalPath('deuxcli', '@/../src/cli', '')
 globalPath('deuxhelpers', '@/../src/helpers', '')
 globalPath('deuxcmd', '@/../src/cmd', '')
@@ -30,8 +31,9 @@ global.deuxcmd.require('status')
 global.deuxcmd.require('switch')
 global.deuxcmd.require('upgrade')
 global.deuxcmd.require('sync')
-global.deuxcmd.require('validate')
+global.deuxcmd.require('test')
 global.deuxcmd.require('dev')
+global.deuxcmd.require('release')
 program.parse(process.argv)
 
 // Update notify code.

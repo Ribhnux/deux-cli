@@ -13,9 +13,9 @@ module.exports = (err, isRaw) => {
 
   error({
     isRaw,
-    isError: true,
     message,
+    isError: true,
     padding: true,
-    exit: true,
+    exit: true
   })
 }

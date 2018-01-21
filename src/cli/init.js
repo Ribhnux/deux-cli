@@ -7,7 +7,7 @@ const jsonr = require('json-realtime')
 const {dbTypes, dbPath} = require('./fixtures')
 const message = require('./messages')
 
-const {colorlog, versionlog, error, done, exit} = global.deuxhelpers.require('logger')
+const {colorlog, error, done, exit} = global.deuxhelpers.require('logger')
 const validator = global.deuxhelpers.require('util/validator')
 const {isJSON} = global.deuxhelpers.require('util/misc')
 
@@ -38,10 +38,6 @@ class Init {
 
     if (options.api) {
       this.$apiMode = true
-    }
-
-    if (!this.$apiMode) {
-      versionlog()
     }
   }
 
@@ -241,6 +237,13 @@ class Init {
         })
       }
     })
+  }
+
+  /**
+   * Check whether is in api mode or not.
+   */
+  apiMode() {
+    return this.$apiMode
   }
 }
 

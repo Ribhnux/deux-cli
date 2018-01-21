@@ -1,6 +1,5 @@
 const CLI = global.deuxcli.require('main')
 const messages = global.deuxcli.require('messages')
-const {loader, finish, exit, blank} = global.deuxhelpers.require('logger')
 
 class SyncCLI extends CLI {
   constructor() {
@@ -12,8 +11,8 @@ class SyncCLI extends CLI {
    * Setup title and prompts
    */
   prepare() {
-    this.title = '{Synchronize Theme Config}'
-    this.prompts = [
+    this.$title = '{Synchronize Theme Config}'
+    this.$prompts = [
       {
         type: 'confirm',
         name: 'confirm',
@@ -30,10 +29,10 @@ class SyncCLI extends CLI {
    */
   action({confirm}) {
     if (!confirm) {
-      finish(messages.SYNC_NEXT_TIME)
+      this.$logger.finish(messages.SYNC_NEXT_TIME)
     }
 
-    const syncLoader = loader('Hello world')
+    const syncLoader = this.$logger.loader('Synchronizing')
     Promise.all([
       new Promise(resolve => {
         this.sync()
@@ -41,8 +40,7 @@ class SyncCLI extends CLI {
       })
     ]).then(() => {
       syncLoader.succeed(messages.SUCCEED_SYNCRHONIZED)
-      blank()
-    }).catch(exit)
+    }).catch(this.$logger.exit)
   }
 }
 

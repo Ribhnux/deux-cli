@@ -1,5 +1,6 @@
 const chalk = require('chalk')
 const stripAnsi = require('strip-ansi')
+const isObject = require('lodash.isobject')
 const {sep, prefix} = require('./fixtures')
 const blank = require('./blank')
 
@@ -43,13 +44,17 @@ module.exports = options => {
     let finalOutput = `${colored} ${sep} ${message}`
 
     if (isRaw) {
-      if (message.message && Array.isArray(message.message)) {
-        message.message = message.message.map(stripAnsi).join(' ')
+      if (isObject(message)) {
+        finalOutput = message
       } else {
-        message.message = stripAnsi(message.message)
-      }
+        if (message.message && Array.isArray(message.message)) {
+          message.message = message.message.map(stripAnsi).join(' ')
+        } else {
+          message.message = stripAnsi(message.message)
+        }
 
-      finalOutput = JSON.stringify(message)
+        finalOutput = JSON.stringify(message)
+      }
     }
 
     console.log(finalOutput)

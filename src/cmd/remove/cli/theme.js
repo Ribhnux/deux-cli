@@ -2,21 +2,20 @@ const rimraf = require('rimraf')
 
 const CLI = global.deuxcli.require('main')
 const messages = global.deuxcli.require('messages')
-const {exit, finish} = global.deuxhelpers.require('logger')
 const {happyExit, captchaMaker} = global.deuxhelpers.require('util/cli')
 
 class RemoveTheme extends CLI {
-  constructor() {
+  constructor(options) {
     super()
-    this.init()
+    this.init(options)
   }
 
   /**
    * Setup remove widgets prompts
    */
   prepare() {
-    this.title = 'Remove {Theme}'
-    this.prompts = [
+    this.$title = 'Remove {Theme}'
+    this.$prompts = [
       {
         type: 'list',
         name: 'theme',
@@ -57,21 +56,21 @@ class RemoveTheme extends CLI {
    * @param {Object} {theme, confirm}
    */
   action({theme, confirm}) {
-    if (theme.length === 0 || !confirm) {
+    if (theme.length === 0 || (!confirm && !this.$init.apiMode())) {
       happyExit()
     }
 
     try {
       rimraf(this.themePath(theme), err => {
         if (err) {
-          exit(err)
+          this.$logger.exit(err)
         }
 
         this.removeTheme(theme)
-        finish(messages.SUCCEED_REMOVED_THEME)
+        this.$logger.finish(messages.SUCCEED_REMOVED_THEME)
       })
     } catch (err) {
-      exit(err)
+      this.$logger.exit(err)
     }
   }
 }

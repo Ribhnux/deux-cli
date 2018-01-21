@@ -20,22 +20,21 @@ const {
 const CLI = global.deuxcli.require('main')
 const messages = global.deuxcli.require('messages')
 const validator = global.deuxhelpers.require('util/validator')
-const {loader, exit, finish} = global.deuxhelpers.require('logger')
 const {capitalize} = global.deuxhelpers.require('util/misc')
 const compileFile = global.deuxhelpers.require('compiler/single')
 
 class AddAsset extends CLI {
-  constructor() {
+  constructor(options) {
     super()
-    this.init()
+    this.init(options)
   }
 
   /**
    * Setup add asset prompts
    */
   prepare() {
-    this.title = 'Add a {New Asset} dependencies'
-    this.prompts = [
+    this.$title = 'Add a {New Asset} dependencies'
+    this.$prompts = [
       {
         type: 'list',
         name: 'asset.type',
@@ -120,7 +119,7 @@ class AddAsset extends CLI {
           return asset.type === assetTypes.LIB && lib.source === libSource.CDN && lib.search.length > 0
         },
         choices: ({lib}) => new Promise((resolve, reject) => {
-          const searchLoader = loader(`Searching "${lib.search}" from CDN...`)
+          const searchLoader = this.$logger.loader(`Searching "${lib.search}" from CDN...`)
 
           cdnjs.search(lib.search, {fields: {author: true}}).then(result => {
             searchLoader.succeed(`Found ${result.length} item(s)`)
@@ -159,7 +158,7 @@ class AddAsset extends CLI {
           return asset.type === assetTypes.LIB && lib.source === libSource.CDN && lib.name.handle
         },
         choices: ({lib}) => new Promise((resolve, reject) => {
-          const versionLoader = loader(`Get "${lib.name.handle}" versions...`)
+          const versionLoader = this.$logger.loader(`Get "${lib.name.handle}" versions...`)
 
           cdnjs.versions(lib.name.handle).then(result => {
             versionLoader.succeed(`${lib.name.handle} has ${result.length} versions`)
@@ -186,7 +185,7 @@ class AddAsset extends CLI {
           return asset.type === assetTypes.LIB && lib.source === libSource.CDN && lib.name.handle
         },
         choices: ({lib}) => new Promise((resolve, reject) => {
-          const filesLoader = loader(`Fetch "${lib.name.handle}@${lib.version}" files...`)
+          const filesLoader = this.$logger.loader(`Fetch "${lib.name.handle}@${lib.version}" files...`)
 
           cdnjs.files(`${lib.name.handle}@${lib.version}`).then(result => {
             filesLoader.succeed(`Succeed, fetched ${lib.name.handle}@${lib.version} files`)
@@ -318,7 +317,7 @@ class AddAsset extends CLI {
           const apiKey = font.api || this.getConfig('fontApiKey')
 
           if (!apiKey) {
-            exit(messages.ERROR_INVALID_API_KEY)
+            this.$logger.exit(messages.ERROR_INVALID_API_KEY)
           }
 
           const searchOptions = {
@@ -328,7 +327,7 @@ class AddAsset extends CLI {
             }
           }
 
-          const searchLoader = loader(`Searching "${font.search}" from Google Fonts Directory...`)
+          const searchLoader = this.$logger.loader(`Searching "${font.search}" from Google Fonts Directory...`)
 
           weft.apiKey(apiKey)
           weft.search(font.search.toLowerCase(), searchOptions).then(result => {
@@ -363,7 +362,7 @@ class AddAsset extends CLI {
           const apiKey = font.api || this.getConfig('fontApiKey')
 
           if (!apiKey) {
-            exit(messages.ERROR_INVALID_API_KEY)
+            this.$logger.exit(messages.ERROR_INVALID_API_KEY)
           }
 
           const fields = {
@@ -371,7 +370,7 @@ class AddAsset extends CLI {
             variants: true,
             subsets: true
           }
-          const searchLoader = loader('Load list...')
+          const searchLoader = this.$logger.loader('Load list...')
 
           weft.apiKey(apiKey)
           weft.list(fields).then(result => {
@@ -451,55 +450,64 @@ class AddAsset extends CLI {
    */
   action({asset, lib, sass, font}) {
     const themeDetails = this.themeDetails()
-    const themeInfo = this.themeInfo()
+    const theme = this.themeInfo()
 
     let task = new Promise(resolve => resolve())
-    let libname = lib.name.handle
+    let libname
+    let libsemver
 
-    if (lib.source === libSource.URL) {
-      libname = slugify(lib.name)
-      lib.files = [lib.url]
-      delete lib.url
+    if (asset.type === assetTypes.LIB) {
+      libname = lib.name.handle
     }
 
     // Download Assets
     if (asset.type === assetTypes.LIB && (lib.source === libSource.CDN || lib.source === libSource.URL)) {
-      let libsemver = libname
+      if (lib.source === libSource.URL) {
+        libname = slugify(lib.name)
+        lib.files = [lib.url]
+        delete lib.url
+      }
+
+      libsemver = libname
 
       if (lib.version) {
         libsemver += `@${lib.version}`
       }
 
-      const libpath = this.currentThemePath('assets-src', 'libs', libsemver)
-      const downloadLoader = loader('Downloading assets...')
+      const libpath = this.currentThemePath('assets', 'vendors', libname)
+      const downloadLoader = this.$logger.loader('Downloading assets...')
 
       task = new Promise((resolve, reject) => {
-        rimraf(path.join(libpath, '*'), err => {
-          if (err) {
-            throw err
-          }
+        let files = lib.files
 
-          mkdirp(libpath, err => {
-            if (err) {
-              throw err
+        if (lib.source === libSource.CDN) {
+          files = files.map(filepath => {
+            return {
+              url: cdnjs.url(libsemver, filepath),
+              path: path.dirname(filepath)
             }
-
-            let files = lib.files
-
-            if (lib.source === libSource.CDN) {
-              files = cdnjs.url(libsemver, lib.files)
-            }
-
-            Promise.all(files.map(
-              filename => download(filename, libpath)
-            )).then(() => {
-              downloadLoader.succeed(`${lib.files.length} file(s) downloaded.`)
-              resolve()
-            }).catch(err => {
-              rimraf.sync(libpath)
-              reject(err)
-            })
           })
+        }
+
+        rimraf.sync(path.join(libpath, '*'))
+        mkdirp.sync(libpath)
+
+        Promise.all(files.map(
+          file => new Promise(resolve => {
+            const fileUrl = lib.source === libSource.CDN ? file.url : file
+            const filePath = lib.source === libSource.CDN ? path.join(libpath, file.path) : libpath
+
+            mkdirp.sync(filePath)
+            download(fileUrl, filePath).then(() => {
+              resolve()
+            }).catch(this.$logger.exit)
+          })
+        )).then(() => {
+          downloadLoader.succeed(`${lib.files.length} file(s) downloaded.`)
+          resolve()
+        }).catch(err => {
+          rimraf.sync(libpath)
+          reject(err)
         })
       })
     }
@@ -511,6 +519,7 @@ class AddAsset extends CLI {
           if (asset.type === assetTypes.LIB) {
             if (lib.source === libSource.WP) {
               lib.deps = lib.name.deps || []
+              delete lib.name
             }
 
             if (lib.source === libSource.CDN || lib.source === libSource.URL) {
@@ -534,26 +543,37 @@ class AddAsset extends CLI {
                 return fileObj
               })
               delete lib.deps
+
+              compileFile({
+                srcPath: this.templateSourcePath('_partials', 'sass.scss'),
+                dstPath: this.currentThemePath('assets-src', 'sass', 'vendors', `_${libname}.scss`),
+                syntax: {
+                  sass: {
+                    description: libsemver
+                  },
+                  theme: themeDetails
+                }
+              })
             }
 
-            themeInfo.asset.libs[libname] = lib
-            delete themeInfo.asset.libs[libname].name
+            theme.asset.libs[libname] = lib
+            delete theme.asset.libs[libname].name
           }
 
           // Save SASS
           if (asset.type === assetTypes.SASS) {
             if (sass.overwrite === false) {
-              exit(messages.ERROR_SASS_FILE_ALREADY_EXISTS)
+              this.$logger.exit(messages.ERROR_SASS_FILE_ALREADY_EXISTS)
             }
 
             const structName = `${sass.type}s`
 
-            themeInfo.asset.sass[structName] = uniq(themeInfo.asset.sass[structName].concat(sass.name))
-            sass.components = themeInfo.asset.sass.components.map(item => `'components/${item}'`).join(',\n  ')
-            sass.layouts = themeInfo.asset.sass.layouts.map(item => `'layouts/${item}'`).join(',\n  ')
-            sass.pages = themeInfo.asset.sass.pages.map(item => `'pages/${item}'`).join(',\n  ')
-            sass.themes = themeInfo.asset.sass.themes.map(item => `'themes/${item}'`).join(',\n  ')
-            sass.vendors = themeInfo.asset.sass.vendors.map(item => `'vendors/${item}'`).join(',\n  ')
+            theme.asset.sass[structName] = uniq(theme.asset.sass[structName].concat(sass.name))
+            sass.components = theme.asset.sass.components.map(item => `'components/${item}'`).join(',\n  ')
+            sass.layouts = theme.asset.sass.layouts.map(item => `'layouts/${item}'`).join(',\n  ')
+            sass.pages = theme.asset.sass.pages.map(item => `'pages/${item}'`).join(',\n  ')
+            sass.themes = theme.asset.sass.themes.map(item => `'themes/${item}'`).join(',\n  ')
+            sass.vendors = theme.asset.sass.vendors.map(item => `'vendors/${item}'`).join(',\n  ')
 
             compileFile({
               srcPath: this.templateSourcePath('_partials', 'sass.scss'),
@@ -565,8 +585,8 @@ class AddAsset extends CLI {
             })
 
             compileFile({
-              srcPath: this.templateSourcePath('assets-src', 'sass', 'main.scss'),
-              dstPath: this.currentThemePath('assets-src', 'sass', 'main.scss'),
+              srcPath: this.templateSourcePath('assets-src', 'sass', 'theme.scss'),
+              dstPath: this.currentThemePath('assets-src', 'sass', 'theme.scss'),
               syntax: {
                 sass,
                 theme: themeDetails
@@ -578,7 +598,7 @@ class AddAsset extends CLI {
           if (asset.type === assetTypes.FONT) {
             const fontName = slugify(font.selected.family)
 
-            themeInfo.asset.fonts[fontName] = {
+            theme.asset.fonts[fontName] = {
               name: font.selected.family,
               variants: font.variants.map(item => item.mini.toString()),
               subsets: font.subsets
@@ -586,17 +606,17 @@ class AddAsset extends CLI {
           }
 
           resolve()
-        }).catch(exit),
+        }),
 
         new Promise(resolve => {
           this.setThemeConfig({
-            asset: themeInfo.asset
+            asset: theme.asset
           })
           resolve()
         })
       ]).then(
-        finish(messages.SUCCEED_ASSET_ADDED)
-      ).catch(exit)
+        this.$logger.finish(messages.SUCCEED_ASSET_ADDED)
+      ).catch(this.$logger.exit)
     })
   }
 }
