@@ -29,6 +29,8 @@ class AddCLI extends CLI {
           name: 'subcmd',
           message: 'Available Options',
           choices: () => new Promise(resolve => {
+            delete commandList.THEME
+
             const list = Object.keys(commandList).map(key => {
               const value = commandList[key]
 
