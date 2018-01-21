@@ -1,6 +1,10 @@
 # Hidden Files
 .DS_Store
 .gitkeep
+.deuxconfig
+.editorconfig
+.stylelintrc
+.eslintrc
 
 # Folders
 assets-src
