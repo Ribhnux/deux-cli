@@ -1,5 +1,4 @@
 const path = require('path')
-const {createReadStream, createWriteStream} = require('fs')
 const {existsSync} = require('fs')
 const url = require('url')
 const inquirer = require('inquirer')
@@ -11,6 +10,7 @@ const execa = require('execa')
 const wpFileHeader = require('wp-get-file-header')
 const slugify = require('node-slugify')
 const jsonar = require('jsonar')
+const cpFile = require('cp-file')
 const {validTags} = require('./fixtures')
 
 const CLI = global.deuxcli.require('main')
@@ -238,19 +238,6 @@ class NewCLI extends CLI {
                 resolve()
               })
             })
-          },
-
-          {
-            title: 'Create .git directory',
-            task: () => new Promise(resolve => {
-              mkdirp(gitPath, err => {
-                if (err) {
-                  this.$logger.exit(err)
-                }
-
-                resolve()
-              })
-            })
           }
         ])
       },
@@ -292,19 +279,6 @@ class NewCLI extends CLI {
                 if (err) {
                   this.$logger.exit(err)
                 }
-                resolve()
-              })
-            })
-          },
-
-          {
-            title: 'Create git directory',
-            task: () => new Promise(resolve => {
-              mkdirp(gitPath, err => {
-                if (err) {
-                  this.$logger.exit(err)
-                }
-
                 resolve()
               })
             })
@@ -392,6 +366,50 @@ class NewCLI extends CLI {
       },
 
       {
+        title: 'Setup Repository',
+        task: () => {
+          const gitUrlObject = url.parse(git.url)
+          gitUrlObject.auth = `${git.username}:${git.password}`
+
+          const gitUrl = url.format(gitUrlObject)
+          const stdopts = {
+            cwd: this.currentThemePath()
+          }
+
+          return new Listr([
+            {
+              title: 'Init repository url',
+              task: () => execa.stdout('git', ['init', '-q'], stdopts)
+            },
+
+            {
+              title: `Add remote url '${git.url}'`,
+              task: () => execa.stdout('git', ['remote', 'add', 'origin', gitUrl], stdopts)
+            },
+
+            {
+              title: `Download git objects and refs from '${git.url}'`,
+              task: () => execa.stdout('git', ['fetch'], stdopts)
+            },
+
+            {
+              title: 'Clean Untracked files',
+              task: () => execa.stdout('git', ['clean', '-d', '-f', '-f'], stdopts)
+            },
+
+            {
+              title: `Pull master branch (if any) from '${git.url}'`,
+              task: () => new Promise(resolve => {
+                execa.stdout('git', ['pull', 'origin', 'master'], stdopts)
+                .then(() => resolve())
+                .catch(() => resolve())
+              })
+            }
+          ])
+        }
+      },
+
+      {
         title: 'Setup WordPress Theme',
         task: () => new Listr([
           {
@@ -454,57 +472,12 @@ class NewCLI extends CLI {
 
           {
             title: 'Add screenshot',
-            task: () => new Promise((resolve, reject) => {
-              try {
-                createReadStream(this.templateSourcePath('_partials', 'screenshot.png'))
-                  .pipe(createWriteStream(this.currentThemePath('screenshot.png')))
-                resolve()
-              } catch (err) {
-                reject(err)
-              }
-            })
+            task: () => cpFile(
+              this.templateSourcePath('_partials', 'screenshot.png'),
+              this.currentThemePath('screenshot.png')
+            )
           }
         ])
-      },
-
-      {
-        title: 'Setup Repository',
-        task: () => {
-          const gitUrlObject = url.parse(git.url)
-          gitUrlObject.auth = `${git.username}:${git.password}`
-
-          const gitUrl = url.format(gitUrlObject)
-
-          return new Listr([
-            {
-              title: 'Init repository url',
-              task: () => execa.stdout('git', [`--git-dir=${gitPath}`, 'init', '-q'], {
-                cwd: this.currentThemePath()
-              })
-            },
-
-            {
-              title: `Add remote url '${git.url}'`,
-              task: () => execa.stdout('git', [`--git-dir=${gitPath}`, 'remote', 'add', 'origin', gitUrl])
-            },
-
-            {
-              title: `Download git objects and refs from '${git.url}'`,
-              task: () => execa.stdout('git', [`--git-dir=${gitPath}`, 'fetch'])
-            },
-
-            {
-              title: `Pull master branch (if any) from '${git.url}'`,
-              task: () => new Promise(resolve => {
-                execa.stdout('git', [`--git-dir=${gitPath}`, 'pull', 'origin', 'master']).then(() => {
-                  resolve()
-                }).catch(() => {
-                  resolve()
-                })
-              })
-            }
-          ])
-        }
       }
     ], listrOpts)
 
