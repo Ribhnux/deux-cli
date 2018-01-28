@@ -1878,6 +1878,7 @@ p {
 
 .section.installSection p {
   margin-bottom: 1.5rem;
+  font-size: 18px;
 }
 
 .projectTitle {
@@ -1968,6 +1969,10 @@ footer.nav-footer h5 {
   font-size: 0.95rem;
   letter-spacing: 1px;
   margin-bottom: 15px;
+}
+
+.oss {
+  margin-right: 3rem;
 }
 
 section.copyright a {
