@@ -1,0 +1,21 @@
+<svg width="200" height="195" viewBox="0 0 200 195" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<title>Deux Logo</title>
+<g id="Canvas" transform="translate(154 -390)">
+<g id="Group">
+<g id="Subtract">
+<use xlink:href="#path0_fill" transform="translate(-154 390.031)" fill="#007BF3"/>
+</g>
+<g id="Polygon">
+<use xlink:href="#path1_fill" transform="translate(-153.997 390.032)" fill="#004AAD"/>
+</g>
+<g id="Polygon">
+<use xlink:href="#path2_fill" transform="matrix(0.999982 -0.00597851 -0.00599076 -0.999982 -153.425 585.031)" fill="#004AAD"/>
+</g>
+</g>
+</g>
+<defs>
+<path id="path0_fill" d="M 0.00244072 97.6963L 71.6834 0L 71.6834 0.000730796L 200 96.9356L 71.6834 194.623L 71.6834 194.576L 0 99.4642L 54.7626 149.03L 54.7626 149.055L 153.468 97.7947L 54.7626 46.9293L 0.00244072 97.699L 0.00244072 97.6963Z"/>
+<path id="path1_fill" d="M 71.681 0L 54.7601 46.9285L 0 97.6956L 71.681 0Z"/>
+<path id="path2_fill" d="M 71.11 0L 54.4621 45.6203L 0 95.5376L 71.11 0Z"/>
+</defs>
+</svg>
