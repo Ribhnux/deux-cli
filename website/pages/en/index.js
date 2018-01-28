@@ -62,7 +62,7 @@ const ProjectTitle = props => (
 
 const InstallSection = props => (
   <div className="section installSection">
-    <p>To install <code>deux-cli</code> in your computer,<br />Open your terminal, and type command below (with yarn or npm):</p>
+    <p>To install <code>deux-cli</code> on your computer,<br />Open terminal, and type command below (with yarn or npm):</p>
     <code className="bash">yarn global add deux-cli</code><br />
     <code className="bash">npm install deux-cli -g</code>
   </div>
@@ -83,19 +83,20 @@ const WhatIsThisSection = props => (
       <p>Deux-CLI is a tools that will simplify your WordPress Theme development.</p>
       <h3>Features</h3>
       <ul>
-        <li><span>Manages Asset (sass, javascript, libraries, web fonts).</span></li>
-        <li><span>Manages Plugin dependencies in your theme.</span></li>
-        <li><span>Manages native Theme Features, Image Size, and more.</span></li>
-        <li><span>Manages Templates (Page Templates and Partial Templates).</span></li>
-        <li><span>Manages Theme menus and widgets.</span></li>
-        <li><span>Manages Theme customizer.</span></li>
+        <li><span>Manage assets (sass, javascript, 3rd-party libs, web fonts).</span></li>
+        <li><span>Manage plugin dependencies.</span></li>
+        <li><span>Manage native theme Features, Image Size, and more.</span></li>
+        <li><span>Manage templates (Page Templates and Partial Templates).</span></li>
+        <li><span>Manage theme menus and widgets.</span></li>
+        <li><span>Manage theme customizer.</span></li>
       </ul>
 
-      <p>Built with current technologies and bring your WordPress Theme become standards.</p>
+      <p>Built with current technologies that will make your WordPress theme become standard.</p>
       <ul>
-        <li><span>Sassy CSS (SCSS) with styelint and rtlcss.</span></li>
+        <li><span>Gulp, BrowserSync and Roll-up.</span></li>
+        <li><span>Sassy CSS (SCSS) with stylelint and rtlcss.</span></li>
         <li><span>Javascript ES6 (front-end and customizer) with IIFE format.</span></li>
-        <li><span>Auto pot translation.</span></li>
+        <li><span>Auto convert variable translation to POT.</span></li>
         <li><span>WordPress Coding Standard.</span></li>
         <li><span>Theme Check and Theme Mentor.</span></li>
         <li><span>HTML5 Validator.</span></li>
