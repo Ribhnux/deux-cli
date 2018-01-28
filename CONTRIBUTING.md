@@ -75,14 +75,14 @@ After cloning Deux CLI, run `yarn install` to fetch its dependencies.
 
 We recommend running `yarn test` to make sure you don't introduce any regressions as you work on your change. However it can be handy to try your build of Deux CLI in a real project.
 
-Open two terminal, first terminal current directory `duex-cli` directory, second terminal is your WordPress installation directory.
-
-Type `node /path/to/deux-cli/bin/deux --help` to get started.
-
 Init your project by running this command, and follow prompts: 
 
 ```bash
-node /path/to/deux-cli/bin/deux new
+# Move to your cloned repo directory.
+~ cd /path/to/deux-cli/bin/deux
+
+## Get started.
+~ node bin/deux --help
 ```
 
 ### Style Guide
