@@ -1826,8 +1826,14 @@ p {
   line-height: 1.6
 }
 
+.container .wrapper h2,
+.button,
+a {
+  color: #007BF3
+}
+
+pre code,
 .button {
-  color: #007BF3;
   border-color: #007BF3;
 }
 
