@@ -80,7 +80,7 @@ const WhatIsThisSection = props => (
   <div id="what-is-this" className="section whatIsThisSection">
     <div className="features">
       <h2>What is Deux-CLI?</h2>
-      <p>Deux-CLI is a tools that will simplify your WordPress Theme development.</p>
+      <p>Deux-CLI is a tool that will simplify your WordPress Theme development.</p>
       <h3>Features</h3>
       <ul>
         <li><span>Manage assets (sass, javascript, 3rd-party libs, web fonts).</span></li>
@@ -93,7 +93,7 @@ const WhatIsThisSection = props => (
 
       <p>Built with current technologies that will make your WordPress theme become standard.</p>
       <ul>
-        <li><span>Gulp, BrowserSync and Roll-up.</span></li>
+        <li><span>Gulp, BrowserSync, and Roll-up.</span></li>
         <li><span>Sassy CSS (SCSS) with stylelint and rtlcss.</span></li>
         <li><span>Javascript ES6 (front-end and customizer) with IIFE format.</span></li>
         <li><span>Auto convert variable translation to POT.</span></li>
@@ -123,7 +123,7 @@ class HomeSplash extends React.Component {
           <InstallSection />
           <PromoSection>
             <Button href='#what-is-this'>What is this?</Button>
-            <Button href={docUrl('index.html', language)}>Getting Started</Button>
+            <Button href={docUrl('index.html', language)}>Get Started</Button>
           </PromoSection>
         </div>
       </SplashContainer>

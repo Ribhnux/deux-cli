@@ -35,13 +35,13 @@ class Footer extends React.Component {
           </a>
           <div className="oss">
             <h5>Open Source Software</h5>
-            <p>We're open source and need your help to make a perfect tools / software. We'll happy if you fork our repo and submit a PR.</p>
+            <p>We're open source and need your help to make a perfect tools/software. We'll happy if you fork our repo and submit a PR.</p>
           </div>
           <div>
             <h5>Credits</h5>
             <a href="https://ribhnux.tech" target="_blank">Ribhnux Technology</a>
             <a href="https://ribhnux.design" target="_blank">Ribhnux Design</a>
-            <a href="https://5usdtheme" target="_blank">$5 WordPress Theme</a>
+            <a href="https://5usdtheme.com" target="_blank">$5 WordPress Theme</a>
           </div>
           <div>
             <h5>More</h5>
