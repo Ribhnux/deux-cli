@@ -16,6 +16,7 @@ const users = [
 ];
 
 const siteConfig = {
+  cname: 'deux.ribhnux.tech',
   title: 'Deux CLI' /* title for your website */,
   tagline: 'A Simple WordPress Starter Theme Scaffolding Tools',
   url: 'https://deux.ribhnux.tech' /* your website url */,
