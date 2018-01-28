@@ -1,0 +1,28 @@
+{
+  "docs": {
+    "Basic Usage": [
+      "index",
+      "install",
+      "basic-cli",
+      "init"
+    ],
+    "Commands": [
+      "cmd-new",
+      "cmd-import",
+      "cmd-add",
+      "cmd-remove",
+      "cmd-dev",
+      "cmd-test",
+      "cmd-release",
+      "cmd-upgrade",
+      "cmd-switch",
+      "cmd-status",
+      "cmd-sync",
+      "cmd-help"
+    ],
+    "API Mode": ["api"]
+  },
+  "docs-other": {
+    "First Category": ["doc4", "doc5"]
+  }
+}
