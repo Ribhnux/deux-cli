@@ -1832,6 +1832,15 @@ a {
   color: #007BF3
 }
 
+.mainContainer .wrapper h3 {
+  color: #007BF1;
+  font-size: 20px !important;
+}
+
+.mainContainer .wrapper h3 + p {
+  padding-top: 0;
+}
+
 pre code,
 .button {
   border-color: #007BF3;
@@ -1867,6 +1876,12 @@ pre code,
 
 .homeContainer .homeWrapper {
   padding: 1.2em 10px;
+}
+
+.homeSplashFade {
+  height: 100vh;
+  display: flex;
+  align-items: center;
 }
 
 .section p {
