@@ -15,15 +15,31 @@ p {
   line-height: 1.6
 }
 
+p code + em {
+  color: rgba(0,0,0,0.35);
+}
+
+.hljs {
+  padding: 0.5rem 0.5rem 0.5rem 1rem;
+  font-size: 1rem;
+}
+
 .container .wrapper h2,
 .button,
-a {
+a,
+a:focus {
   color: #007BF3
+}
+
+.docsNavContainer {
+  margin: 40px 0;
 }
 
 .mainContainer .wrapper h3 {
   color: #007BF1;
-  font-size: 20px !important;
+  font-size: 24px !important;
+  margin-top: 2rem;
+  margin-bottom: 0.5rem;
 }
 
 .mainContainer .wrapper h3 + p {
@@ -101,7 +117,12 @@ pre code,
   font-size: 1.3rem;
 }
 
+#what-is-this {
+  padding-top: 20px;
+}
+
 .section.whatIsThisSection {
+  min-height: 100vh;
   background: #fff;
   display: flex;
   margin: 0 0 3rem;
