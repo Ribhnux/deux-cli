@@ -1826,19 +1826,73 @@ p {
   line-height: 1.6
 }
 
-.container .wrapper h2,
-.button,
-a {
+p code + em {
+  color: rgba(0,0,0,0.35);
+}
+
+blockquote {
+  padding: 10px 30px 10px 15px;
+  background-color: rgba(0, 123, 243, 0.08);
+  border-left: 5px solid rgba(0, 123, 243, 0.28);
+}
+
+blockquote p {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+hr {
+  margin: 2.5rem auto 1rem;
+  height: 1px;
+  color: #eaeaea;
+  background-color: #eaeaea;
+  border: none;
+}
+
+.hljs {
+  padding: 0.5rem 0.5rem 0.5rem 1rem;
+  font-size: 1rem;
+}
+
+a,
+a:focus,
+nav.toc .toggleNav ul li a:focus,
+.button {
   color: #007BF3
 }
 
+.docsNavContainer {
+  margin: 40px 0;
+}
+
+.mainContainer .wrapper h2,
+.mainContainer .wrapper h3,
+.mainContainer .wrapper h4 {
+  color: #0958ba;
+}
+
 .mainContainer .wrapper h3 {
-  color: #007BF1;
-  font-size: 20px !important;
+  font-size: 24px !important;
+  margin-top: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.mainContainer .wrapper h4 {
+  font-size: 1.2rem;
 }
 
 .mainContainer .wrapper h3 + p {
   padding-top: 0;
+}
+
+.mainContainer .wrapper ul {
+  padding-left: 1.5rem;
+  margin-bottom: 0.5rem;
+  list-style: square;
+}
+.mainContainer .wrapper ul li {
+  margin-bottom: 0;
+  font-size: initial;
 }
 
 pre code,
@@ -1912,7 +1966,12 @@ pre code,
   font-size: 1.3rem;
 }
 
+#what-is-this {
+  padding-top: 20px;
+}
+
 .section.whatIsThisSection {
+  min-height: 100vh;
   background: #fff;
   display: flex;
   margin: 0 0 3rem;
@@ -2029,5 +2088,32 @@ nav.toc .toggleNav ul li a.navItemActive {
   .navigationSlider .slidingNav ul li a:focus {
     color: #070d17;
     background: none;
+  }
+}
+
+
+@media only screen and (max-device-width: 735px) and (min-device-width: 360px) {
+  .navigationSlider .slidingNav ul,
+  .navigationSlider .slidingNav ul li a,
+  .navigationSlider .slidingNav ul li a:hover,
+  .navigationSlider .slidingNav ul li a:focus {
+    color: #070d17;
+    background: white;
+  }
+
+  .docsNavContainer {
+    margin-top: 0;
+  }
+
+  .sitemap {
+    margin-bottom: 0 !important;
+  }
+
+  .sitemap > div {
+    margin-bottom: 40px;
+  }
+
+  .copyright {
+    padding: 5px 20px;
   }
 }
