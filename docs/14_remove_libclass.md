@@ -1,14 +1,14 @@
 ---
-id: cmd-add-helper
-title: Add helper subcommand
-sidebar_label: deux add helper
+id: cmd-remove-libclass
+title: Remove libclass subcommand
+sidebar_label: deux remove libclass
 ---
 
-> This sub-command is part of [`deux add`](cmd-add.html) command.
+> This sub-command is part of [`deux remove`](cmd-remove.html) command.
 
 ## Usage
 ```bash
-deux add helper [options]
+deux remove libclass [options]
 ```
 
 ## Options
@@ -31,8 +31,8 @@ Run in API Mode.
 ## CLI Example
 ```bash
 # Default
-deux add helper
+deux remove libclass
 
 # API Mode
-deux add helper --api --input ''
+deux remove libclass --api --input ''
 ```

@@ -1,14 +1,14 @@
 ---
-id: cmd-add-helper
-title: Add helper subcommand
-sidebar_label: deux add helper
+id: cmd-remove-customizer
+title: Remove customizer subcommand
+sidebar_label: deux remove customizer
 ---
 
-> This sub-command is part of [`deux add`](cmd-add.html) command.
+> This sub-command is part of [`deux remove`](cmd-remove.html) command.
 
 ## Usage
 ```bash
-deux add helper [options]
+deux remove customizer [options]
 ```
 
 ## Options
@@ -31,8 +31,8 @@ Run in API Mode.
 ## CLI Example
 ```bash
 # Default
-deux add helper
+deux remove customizer
 
 # API Mode
-deux add helper --api --input ''
+deux remove customizer --api --input ''
 ```

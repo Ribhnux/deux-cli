@@ -17,11 +17,10 @@
       "cmd-upgrade",
       "cmd-switch",
       "cmd-status",
-      "cmd-sync",
-      "cmd-help"
+      "cmd-sync"
     ]
   },
-  "docs-subcommand": {
+  "docs-add-subcommand": {
     "Add Subcommands": [
       "cmd-add-asset",
       "cmd-add-plugin",
@@ -35,6 +34,22 @@
       "cmd-add-helper",
       "cmd-add-libclass",
       "cmd-add-hooks"
+    ]
+  },
+  "docs-remove-subcommand": {
+    "Remove Subcommands": [
+      "cmd-remove-asset",
+      "cmd-remove-plugin",
+      "cmd-remove-menu",
+      "cmd-remove-widget",
+      "cmd-remove-feature",
+      "cmd-remove-template",
+      "cmd-remove-component",
+      "cmd-remove-customizer",
+      "cmd-remove-imgsize",
+      "cmd-remove-helper",
+      "cmd-remove-libclass",
+      "cmd-remove-hooks"
     ]
   }
 }
