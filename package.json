@@ -108,7 +108,8 @@
     "semicolon": false,
     "ignores": [
       "src/templates/**",
-      "test/wordpress/**"
+      "test/wordpress/**",
+      "website/**"
     ]
   },
   "files": [
