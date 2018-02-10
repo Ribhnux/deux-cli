@@ -1,3 +1,8 @@
+---
+id: cmd-remove-plugin
+title: Remove plugin subcommand
+sidebar_label: deux remove plugin
+---
 
 > This sub-command is part of [`deux remove`](cmd-remove.html) command.
 
