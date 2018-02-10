@@ -30,10 +30,12 @@ Run in API Mode.
   // @type Object
   // @required
   "widget": {
+    // Widget name.
     // @type String
     // @required
     "name": "New Widget",
 
+    // Widget description.
     // @type String
     // @required
     "description": "Example Description"
@@ -43,5 +45,9 @@ Run in API Mode.
 
 ## CLI Example
 ```bash
+# Default
+deux add widget
+
+# API Mode
 deux add widget --api --input '{ "widget": { "name": "New Widget", "description": "Example Description" } }'
 ```

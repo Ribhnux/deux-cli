@@ -30,17 +30,17 @@ Run in API Mode.
   // @type Object
   // @required
   "menu": {
-    // Menu Name.
+    // Menu name.
     // @type String
     // @required
     "name": "Primary",
 
-    // Menu Description.
+    // Menu description.
     // @type String
     // @required
     "description": "Example Description",
 
-    // Use Custom Walker.
+    // Is use custom Menu Walker.
     // @type Boolean
     // @required
     "walker": true
