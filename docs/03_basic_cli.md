@@ -28,12 +28,12 @@ deux 1.0.0 - A Simple WordPress Starter Theme Scaffolding Tools
 
   USAGE
 
-    deux [command] [option]
+    deux [command] [subcmd]
 
   ARGUMENTS
 
-    [command]      See available commands.                                                                 optional
-    [option]       Optional option for each command. type deux [command] --help for more information.      optional
+    [command]      See available commands. optional
+    [subcmd]       Subcommand if available. type deux [command] --help for more information. optional
 
   OPTIONS
 
@@ -44,13 +44,13 @@ deux 1.0.0 - A Simple WordPress Starter Theme Scaffolding Tools
   COMMANDS
 
     new                  Create new theme
-    add [option]         Add theme functionality
-    remove [option]      Remove theme functionality
+    add [subcmd]         Add theme functionality
+    remove [subcmd]      Remove theme functionality
     dev                  Run in development mode
-    test [option]        Validates js, sass, coding standard and markup before releasing theme
+    test [subcmd]        Validates js, sass, coding standard and markup before releasing theme
     release              Release theme.
     upgrade              Upgrade assets from CDN and plugin dependencies
-    switch [theme]       Switch to another theme
+    switch [subcmd]       Switch to another theme
     status               Display current theme status
     sync                 Synchronize your theme config to deux database
     help <command>       Display help for a specific command

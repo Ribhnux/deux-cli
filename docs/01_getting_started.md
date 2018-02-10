@@ -1,6 +1,6 @@
 ---
 id: index
-title: Introduction
+title: Get Started
 sidebar_label: Get Started
 ---
 

@@ -19,10 +19,22 @@
       "cmd-status",
       "cmd-sync",
       "cmd-help"
-    ],
-    "API Mode": ["api"]
+    ]
   },
-  "docs-other": {
-    "First Category": ["doc4", "doc5"]
+  "docs-subcommand": {
+    "Add Subcommands": [
+      "cmd-add-asset",
+      "cmd-add-plugin",
+      "cmd-add-menu",
+      "cmd-add-widget",
+      "cmd-add-feature",
+      "cmd-add-template",
+      "cmd-add-component",
+      "cmd-add-customizer",
+      "cmd-add-imgsize",
+      "cmd-add-helper",
+      "cmd-add-libclass",
+      "cmd-add-hooks"
+    ]
   }
 }

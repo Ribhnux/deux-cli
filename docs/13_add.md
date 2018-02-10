@@ -8,37 +8,39 @@ Add WordPress Theme functionality such as assets, plugins, menus, widgets, and m
 
 ## Usage
 ```bash
-deux add [subcmd]
+deux add [subcmd] [options]
 ```
 
-## CLI Options
+## Subcommands
+- [asset](cmd-add-asset.html)
+- [plugin](cmd-add-plugin.html)
+- [menu](cmd-add-menu.html)
+- [widget](cmd-add-widget.html)
+- [feature](cmd-add-feature.html)
+- [template](cmd-add-template.html)
+- [component](cmd-add-component.html)
+- [customizer](cmd-add-customizer.html)
+- [imgsize](cmd-add-imgsize.html)
+- [helper](cmd-add-helper.html)
+- [libclass](cmd-add-libclass.html)
+- [hooks](cmd-add-hooks.html)
+
+## Options
 
 `--db <path>` *Optional*  
 Custom database path.
 
 `--input <json>` *Optional*  
 Set config in api mode without prompts.
-, 
+
 `--api` *Optional*  
 Run in API Mode.
 
-### Add asset subcommand
-Add theme assets (CSS or Javascript, SASS, and Web Fonts). All assets in your theme can be found under `assets-src` directory and only for development mode, when you are releasing theme, `assets-src` directory will be not included.
-
-We are using [cdnjs.com](https://cdnjs.com/)'s API and [Included Scripts by WordPress](https://developer.wordpress.org/reference/functions/wp_enqueue_script/#default-scripts-included-and-registered-by-wordpress) as source, but you can add your own custom URL as 3rd-Party source.
-
-For SASS architecture, we follows [7-1 Architecture Pattern](http://sass-guidelin.es/#architecture).
-
-**JSON Input**
-```bash
-
-```
-
-**CLI Example**
+### CLI Example
 ```bash
 # Default
-deux add asset
+deux add
 
 # API Mode
-deux add asset --api --input 'JSON_INPUT'
+deux add asset --api --input '{ "asset": { "type": "lib" }, "lib": { "source": "cdn", "name": { "handle": "twitter-bootstrap" }, "version": "4.0.0-beta.2", "files": [ "css/bootstrap.min.css", "js/bootstrap.min.js" ], "deps": "jquery" } }'
 ```
