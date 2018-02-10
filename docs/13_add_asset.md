@@ -21,6 +21,8 @@ There will be 3 different asset types:
 ### 3rd-party Libraries or Vendors
 This asset type is bascially will add or download CSS or Javascript from 3rd-party libraries or vendors. We are using [cdnjs.com](https://cdnjs.com/)'s API and [Included Scripts by WordPress](https://developer.wordpress.org/reference/functions/wp_enqueue_script/#default-scripts-included-and-registered-by-wordpress) as source, but you can add your own custom URL as 3rd-party source.
 
+Source type CDN or URL source will also add sass file under `vendors` directory.
+
 #### JSON Input
 ```javascript
 // JSON Example for asset library from cdnjs.com
@@ -200,3 +202,6 @@ All files in arranged directories should not / can't be modified (add / remove f
 # API Mode
 deux add asset --api --input '{ "asset": { "type": "sass" }, "sass": { "type": "component", "name": "button", "description": "Description." } }'
 ```
+
+### Google Web Font
+Documentation WIP.
