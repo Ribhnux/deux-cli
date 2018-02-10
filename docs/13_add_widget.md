@@ -10,11 +10,22 @@ Add and Register WordPress [Widget](https://developer.wordpress.org/themes/funct
 
 ## Usage
 ```bash
-deux add widget
+deux add widget [options]
 ```
+
+## Options
+`--db <path>` *Optional*  
+Custom database path.
+
+`--input <json>` *Optional*  
+Set config in api mode without prompts.
+
+`--api` *Optional*  
+Run in API Mode.
 
 ## JSON Input
 ```javascript 
+// JSON Example
 {
   // @type Object
   // @required
@@ -32,5 +43,5 @@ deux add widget
 
 ## CLI Example
 ```bash
-deux menu --api --input '{ "widget": { "name": "New Widget", "description": "Example Description" } }'
+deux add widget --api --input '{ "widget": { "name": "New Widget", "description": "Example Description" } }'
 ```

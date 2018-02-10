@@ -12,7 +12,6 @@ deux new [options]
 ```
 
 ## Options
-
 `--db <path>` *Optional*  
 Custom database path.
 

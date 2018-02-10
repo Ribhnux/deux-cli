@@ -8,15 +8,25 @@ sidebar_label: deux add asset
 
 `add asset` sub-command will add or download asset resources for theme. Assets can be found under `assets-src` directory (except webfont) that only exists in development. The `assets-src` directory will be removed, after theme released.
 
-## Usage
-```bash
-deux add asset
-```
-
 There will be 3 different asset types:
 - [3rd-party Libraries or Vendors](#3rd-party-libraries-or-vendors).
 - [SASS File](#sass-file).
 - [Google Web Font](#google-web-font).
+
+## Usage
+```bash
+deux add asset [options]
+```
+
+## Options
+`--db <path>` *Optional*  
+Custom database path.
+
+`--input <json>` *Optional*  
+Set config in api mode without prompts.
+
+`--api` *Optional*  
+Run in API Mode.
 
 ### 3rd-party Libraries or Vendors
 This asset type is bascially will add or download CSS or Javascript from 3rd-party libraries or vendors. We are using [cdnjs.com](https://cdnjs.com/)'s API and [Included Scripts by WordPress](https://developer.wordpress.org/reference/functions/wp_enqueue_script/#default-scripts-included-and-registered-by-wordpress) as source, but you can add your own custom URL as 3rd-party source.

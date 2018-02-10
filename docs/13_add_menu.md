@@ -10,11 +10,22 @@ Add and Register WordPress [Navigation Menu](https://developer.wordpress.org/the
 
 ## Usage
 ```bash
-deux add menu
+deux add menu [options]
 ```
+
+## Options
+`--db <path>` *Optional*  
+Custom database path.
+
+`--input <json>` *Optional*  
+Set config in api mode without prompts.
+
+`--api` *Optional*  
+Run in API Mode.
 
 ## JSON Input
 ```javascript 
+// JSON Example
 {
   // @type Object
   // @required
@@ -39,5 +50,9 @@ deux add menu
 
 ## CLI Example
 ```bash
-deux menu --api --input '{ "menu": { "name": "Primary", "description": "Example Description", "walker": true } }'
+# Default
+deux add menu
+
+# API Mode
+deux add menu --api --input '{ "menu": { "name": "Primary", "description": "Example Description", "walker": true } }'
 ```
