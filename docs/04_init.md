@@ -4,9 +4,10 @@ title: Initialize Config
 sidebar_label: Initialize Config
 ---
 
-`Deux-CLI` is actually a WordPress starter theme, the first thing you do with starter theme is create a WordPress theme.
+`Deux-CLI` is actually a WordPress starter theme, the basic usage of starter theme is create a WordPress theme with existing template.
 
-Let's type `deux new` to create new theme, you'll got error message because `Deux-CLI` hasn't been initialized before:
+Let's type `deux new` to create new theme, you'll got an error message because `Deux-CLI` hasn't been initialized before.
+
 ```bash
 $ deux new
 
@@ -40,7 +41,9 @@ deux > Please create new theme, type: deux new
 Type `deux new` again, to create new theme.
 
 ## Database Path
-All `Deux-CLI` infos and theme config are saved on a `JSON` store and can be found on path below:
+All theme info and config are saved in a `JSON` database store, and database path can be found below:
+
+> You can set a custom database path by adding `--dbpath` option on each commands.
 
 OS X
 ```bash

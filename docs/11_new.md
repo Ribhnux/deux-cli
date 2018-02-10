@@ -4,7 +4,7 @@ title: New Theme
 sidebar_label: deux new
 ---
 
-Create new theme with `Deux-CLI` starter theme.
+Create new theme with `Deux-CLI` starter template.
 
 ## Usage
 ```bash

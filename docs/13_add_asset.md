@@ -21,9 +21,6 @@ There will be 3 different asset types:
 ### 3rd-party Libraries or Vendors
 This asset type is bascially will add or download CSS or Javascript from 3rd-party libraries or vendors. We are using [cdnjs.com](https://cdnjs.com/)'s API and [Included Scripts by WordPress](https://developer.wordpress.org/reference/functions/wp_enqueue_script/#default-scripts-included-and-registered-by-wordpress) as source, but you can add your own custom URL as 3rd-party source.
 
-For SASS architecture, we follows [7-1 Architecture Pattern](http://sass-guidelin.es/#architecture).
-
-
 #### JSON Input
 ```javascript
 // JSON Example for asset library from cdnjs.com
@@ -149,4 +146,57 @@ For SASS architecture, we follows [7-1 Architecture Pattern](http://sass-guideli
 ```bash
 # API Mode
 deux add asset --api --input '{ "asset": { "type": "lib" }, "lib": { "source": "cdn", "name": { "handle": "twitter-bootstrap" }, "version": "4.0.0-beta.2", "files": [ "css/bootstrap.min.css", "js/bootstrap.min.js" ], "deps": "jquery" } }'
+```
+
+### SASS File
+This asset type will add sass file with [7-1 Architecture Pattern](http://sass-guidelin.es/#architecture). The basic directory structure is:
+
+```bash
+assets-src
+|_ sass
+|___ abstracts # all abstracts files are arranged by deux
+|___ base (included) # all base files are arranged by deux
+|___ components
+|___ layouts
+|___ pages
+|___ themes
+|___ vendors
+```
+
+All files in arranged directories should not / can't be modified (add / remove file), but you can edit it's content. So `deux add asset` with type sass will only add `component`, `layout`, `page`, `theme` and `vendor` file.
+
+#### JSON Input
+```javascript
+// JSON Example for sass component.
+{
+  // @type Object
+  // @required
+  "asset": {
+    // @type String
+    // @required
+    "type": "sass"
+  },
+
+  // @type Object
+  // @required
+  "sass": {
+    // Type can be component | layout | page | theme | vendor.
+    // @type String
+    // @required
+    "type": "component",
+
+    // @type String
+    // @required
+    "name": "button",
+
+    // @type String
+    // @required
+    "description": "Description."
+  }
+}
+```
+#### CLI Example
+```bash
+# API Mode
+deux add asset --api --input '{ "asset": { "type": "sass" }, "sass": { "type": "component", "name": "button", "description": "Description." } }'
 ```

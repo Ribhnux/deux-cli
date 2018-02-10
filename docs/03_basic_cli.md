@@ -64,4 +64,4 @@ deux 1.0.0 - A Simple WordPress Starter Theme Scaffolding Tools
     -v, --verbose      Verbose mode - will also output debug messages
 ```
 
-Great, don't be hurry, let's follow this guide little bit, in the next tutorial you'll initializing `Deux-CLI` database.
+Okay, great, don't be hurry, let's follow this tutorial little bit. In the next tutorial you'll initializing `Deux-CLI` database.
