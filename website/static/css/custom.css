@@ -279,3 +279,30 @@ nav.toc .toggleNav ul li a.navItemActive {
     background: none;
   }
 }
+
+
+@media only screen and (max-device-width: 735px) and (min-device-width: 360px) {
+  .navigationSlider .slidingNav ul,
+  .navigationSlider .slidingNav ul li a,
+  .navigationSlider .slidingNav ul li a:hover,
+  .navigationSlider .slidingNav ul li a:focus {
+    color: #070d17;
+    background: white;
+  }
+
+  .docsNavContainer {
+    margin-top: 0;
+  }
+
+  .sitemap {
+    margin-bottom: 0 !important;
+  }
+
+  .sitemap > div {
+    margin-bottom: 40px;
+  }
+
+  .copyright {
+    padding: 5px 20px;
+  }
+}
