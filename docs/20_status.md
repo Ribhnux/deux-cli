@@ -1,8 +1,10 @@
 ---
 id: cmd-status
-title: Current Theme Status
+title: Theme Status
 sidebar_label: deux status
 ---
+
+Print current theme information from name, theme's URL, repository URL, total of templates, features, and more.
 
 ## Usage
 ```bash
@@ -18,6 +20,9 @@ Run in API Mode.
 
 ## CLI Example
 ```bash
+# Default
+deux status
+
 # API Mode
 deux status --api
 ```

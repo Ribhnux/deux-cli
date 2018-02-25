@@ -78,7 +78,7 @@
     "deux upgrade": "deux upgrade",
     "cmd-switch": "Switch Theme",
     "deux switch": "deux switch",
-    "cmd-status": "Current Theme Status",
+    "cmd-status": "Theme Status",
     "deux status": "deux status",
     "cmd-sync": "Synchronize Config",
     "deux sync": "deux sync",
