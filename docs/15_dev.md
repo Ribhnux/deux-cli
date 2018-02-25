@@ -21,7 +21,7 @@ Custom database path.
 Run in API Mode.
 
 `--build` *Optional*  
-Build all assets.
+Build all assets directly without run in development mode.
 
 ## CLI Example
 ```bash
