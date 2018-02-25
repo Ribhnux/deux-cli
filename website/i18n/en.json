@@ -70,7 +70,7 @@
     "deux remove": "deux remove",
     "cmd-dev": "Development Mode",
     "deux dev": "deux dev",
-    "cmd-test": "Check Theme Linter and Standards",
+    "cmd-test": "Test and Validate Theme",
     "deux test": "deux test",
     "cmd-release": "Release Theme",
     "deux release": "deux release",
