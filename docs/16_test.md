@@ -1,8 +1,10 @@
 ---
 id: cmd-test
-title: Check Theme Linter and Standards
+title: Test and Validate Theme
 sidebar_label: deux test
 ---
+
+Theme built with `Deux-CLI` should be easy to read by user or developer, all codes should be applying coding standards and best practices.
 
 ## Usage
 ```bash
