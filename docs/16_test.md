@@ -13,10 +13,10 @@ deux test [subcmd] [options]
 
 ## Subcommands
 #### `js`
-Test and validate ESLint (Javascript Styleguide) source under `assets-src/js` and `inc/customizer/assets-src/js` directory.
+Test and validate ESLint (Javascript Styleguide) source under `assets-src/js` and `includes/customizer/assets-src/js` directory.
 
 #### `sass`
-Test and validate SASS source under `assets-src/sass` and `inc/customizer/assets-src/sass` directory.
+Test and validate SASS source under `assets-src/sass` and `includes/customizer/assets-src/sass` directory.
 
 #### `wpcs`
 Test and validate [WordPress Coding Standards](https://make.wordpress.org/core/handbook/best-practices/coding-standards/php/).
