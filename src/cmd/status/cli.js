@@ -115,7 +115,7 @@ class StatusCLI extends CLI {
       })
 
       this.status.push({
-        label: ``,
+        label: '',
         value: this.sassCount,
         suffix: 'SASS',
         tab: 3
