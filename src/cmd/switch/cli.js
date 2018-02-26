@@ -4,10 +4,11 @@ const CLI = global.deuxcli.require('main')
 const messages = global.deuxcli.require('messages')
 
 class SwitchCLI extends CLI {
-  constructor(subcmd) {
+  constructor(subcmd, options) {
     super()
     this.subcmd = subcmd
-    this.init()
+    this.options = options
+    this.init(options)
   }
 
   prepare() {
