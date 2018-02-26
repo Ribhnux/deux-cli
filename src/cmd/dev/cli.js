@@ -310,15 +310,15 @@ class DevCLI extends CLI {
   compilePot() {
     const themeDetails = this.themeDetails()
     const potFilePath = this.currentThemePath('languages', `${themeDetails.slug}.pot`)
-    const translate = wpPot({
-      domain: themeDetails.slug,
-      package: themeDetails.name,
-      relativeTo: this.currentThemePath()
-    })
 
     const compilePotFile = gulp
-      .src(this.currentThemePath('**', '*.php'))
-      .pipe(translate)
+      .src(this.currentThemePath('*.php'))
+      .pipe(plumber())
+      .pipe(wpPot({
+        domain: themeDetails.slug,
+        package: themeDetails.name,
+        relativeTo: this.currentThemePath()
+      }))
       .pipe(gulp.dest(potFilePath))
 
     const compilePotToMo = gulp.src(potFilePath)
