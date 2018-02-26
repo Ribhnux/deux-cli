@@ -8,23 +8,22 @@ const wpFileHeader = require('wp-get-file-header')
 const CLI = global.deuxcli.require('main')
 const messages = global.deuxcli.require('messages')
 const {templateTypes} = global.deuxcmd.require('add/cli/fixtures')
-const {exit, finish} = global.deuxhelpers.require('logger')
-const {scandir} = global.deuxhelpers.require('util/file')
+const {scandir, dirlist, filelist} = global.deuxhelpers.require('util/file')
 const {capitalize} = global.deuxhelpers.require('util/misc')
-const {happyExit, captchaMaker, separatorMaker} = global.deuxhelpers.require('util/cli')
+const {captchaMaker, separatorMaker} = global.deuxhelpers.require('util/cli')
 
 class RemoveTemplate extends CLI {
-  constructor() {
+  constructor(options) {
     super()
-    this.init()
+    this.init(options)
   }
 
   /**
    * Setup remove template prompts
    */
   prepare() {
-    this.title = 'Remove {Templates}'
-    this.prompts = [{}]
+    this.$title = 'Remove {Templates}'
+    this.$prompts = [{}]
   }
 
   /**
@@ -60,16 +59,29 @@ class RemoveTemplate extends CLI {
 
         // Partial templates.
         new Promise((resolve, reject) => {
-          const partialTemplates = scandir(this.currentThemePath('partial-templates'))
+          let partialTemplates = []
+
+          dirlist(this.currentThemePath('partial-templates'))
+            .map(
+              dir => filelist(this.currentThemePath('partial-templates', dir)).map(file => {
+                return {file, dir}
+              })
+            )
+            .forEach(item => {
+              partialTemplates = partialTemplates.concat(item)
+            })
+
           Promise.all(partialTemplates.map(
-            file => new Promise((resolve, reject) => {
-              wpFileHeader(this.currentThemePath('partial-templates', file)).then(info => {
+            item => new Promise((resolve, reject) => {
+              wpFileHeader(this.currentThemePath('partial-templates', item.dir, item.file))
+              .then(info => {
                 if (info.partialTemplateName) {
                   resolve({
-                    name: info.partialTemplateName,
+                    name: `${item.dir}: ${info.partialTemplateName}`,
                     value: {
                       type: templateTypes.PARTIAL,
-                      file
+                      file: item.file,
+                      dir: item.dir
                     }
                   })
                 } else {
@@ -121,7 +133,7 @@ class RemoveTemplate extends CLI {
         })
       ]).then(templates => {
         if (templates.length === 0) {
-          happyExit()
+          this.$logger.happyExit()
         }
 
         const [
@@ -130,7 +142,7 @@ class RemoveTemplate extends CLI {
           wooTemplates
         ] = templates
 
-        this.prompts = [
+        this.$prompts = [
           {
             type: 'checkbox',
             name: 'templates',
@@ -146,7 +158,7 @@ class RemoveTemplate extends CLI {
                 list = list.concat(separatorMaker('Partial Templates').concat(partialTemplates))
               }
 
-              if (wooTemplates.length > 0) {
+              if (wooTemplates && wooTemplates.length > 0) {
                 list = list.concat(separatorMaker('WooCommerce Templates').concat(wooTemplates))
               }
 
@@ -168,7 +180,7 @@ class RemoveTemplate extends CLI {
         ]
 
         resolve()
-      }).catch(exit)
+      }).catch(this.$logger.exit)
     })
   }
 
@@ -178,8 +190,8 @@ class RemoveTemplate extends CLI {
    * @param {Object} {templates, confirm}
    */
   action({templates, confirm}) {
-    if (templates.length === 0 || !confirm) {
-      happyExit()
+    if (templates.length === 0 || (!confirm && !this.$init.apiMode())) {
+      this.$logger.happyExit()
     }
 
     Promise.all(templates.map(
@@ -190,7 +202,7 @@ class RemoveTemplate extends CLI {
             break
 
           case templateTypes.PARTIAL:
-            rimraf.sync(this.currentThemePath('partial-templates', item.file))
+            rimraf.sync(this.currentThemePath('partial-templates', item.dir, item.file))
             break
 
           case templateTypes.WOOCOMMERCE:
@@ -202,8 +214,8 @@ class RemoveTemplate extends CLI {
         resolve()
       })
     )).then(() => {
-      finish(messages.SUCCEED_REMOVED_TEMPLATE)
-    }).catch(exit)
+      this.$logger.finish(messages.SUCCEED_REMOVED_TEMPLATE)
+    }).catch(this.$logger.exit)
   }
 }
 

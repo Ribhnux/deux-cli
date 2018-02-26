@@ -1,7 +1,7 @@
 <?php
 /**
  * Template Name: {{template.name}}
- * Post Type: {{template.posttype}}
+ * Template Post Type: {{template.posttype}}
  *
  * {{template.description}}
  *

@@ -4,31 +4,33 @@ const CLI = global.deuxcli.require('main')
 const {commandList} = global.deuxcli.require('fixtures')
 const messages = global.deuxcli.require('messages')
 const {capitalize} = global.deuxhelpers.require('util/misc')
-const exit = global.deuxhelpers.require('logger/exit')
 
 delete commandList.THEME
 
 class AddCLI extends CLI {
-  constructor(subcmd) {
+  constructor(subcmd, options) {
     super()
-    this.subcmd = subcmd
-    this.init()
+    this.$subcmd = subcmd
+    this.$options = options
+    this.init(options)
   }
 
   /**
    * Get add subcommand list, set directly if subcommand is set
    */
   prepare() {
-    if (this.subcmd) {
-      this.initSubCommands(this.subcmd)
+    if (this.$subcmd) {
+      this.initSubCommands(this.$subcmd)
     } else {
-      this.title = 'What you want to {add} to your theme?'
-      this.prompts = [
+      this.$title = 'What you want to {add} to your theme?'
+      this.$prompts = [
         {
           type: 'list',
           name: 'subcmd',
           message: 'Available Options',
           choices: () => new Promise(resolve => {
+            delete commandList.THEME
+
             const list = Object.keys(commandList).map(key => {
               const value = commandList[key]
 
@@ -62,7 +64,9 @@ class AddCLI extends CLI {
    * @param {Object} args
    */
   action({subcmd}) {
-    this.initSubCommands(subcmd)
+    if (!this.$init.apiMode()) {
+      this.initSubCommands(subcmd)
+    }
   }
 
   /**
@@ -78,13 +82,13 @@ class AddCLI extends CLI {
         availableCommand.push(commandList[key])
         if (subcmd === commandList[key]) {
           const SubCommands = global.deuxcmd.require(`add/cli/${commandList[key]}`)
-          return new SubCommands()
+          return new SubCommands(this.$options)
         }
       }
     }
 
     if (!availableCommand.includes(subcmd)) {
-      exit(new Error(messages.ERROR_INVALID_COMMAND))
+      this.$logger.exit(messages.ERROR_INVALID_COMMAND)
     }
   }
 }

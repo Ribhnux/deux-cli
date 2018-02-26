@@ -4,32 +4,29 @@ const inquirer = require('inquirer')
 const chalk = require('chalk')
 const faker = require('faker')
 const slugify = require('node-slugify')
+const mkdirp = require('mkdirp')
 const {templateTypes, templateLabels, postTypes} = require('./fixtures')
 
 const CLI = global.deuxcli.require('main')
 const messages = global.deuxcli.require('messages')
-const {exit, finish} = global.deuxhelpers.require('logger')
 const validator = global.deuxhelpers.require('util/validator')
 const compileFiles = global.deuxhelpers.require('compiler/bulk')
-const {scandir} = global.deuxhelpers.require('util/file')
+const {scandir, dirlist} = global.deuxhelpers.require('util/file')
 const {capitalize} = global.deuxhelpers.require('util/misc')
 const {separatorMaker} = global.deuxhelpers.require('util/cli')
 
-const slugifyName = (prefix, name) => {
-  let slug = slugify(prefix)
-
-  if (name.length > 0) {
-    slug += '-' + slugify(name)
-  }
-
-  return slug
-}
-
 class AddTemplate extends CLI {
-  constructor() {
+  constructor(options) {
     super()
     this.woocommerce = undefined
-    this.init()
+    this.init(options)
+  }
+
+  /**
+   * Helpers
+   */
+  tplDir(template) {
+    return template.dir === '$newdir' ? template.newdir : template.dir
   }
 
   /**
@@ -37,8 +34,8 @@ class AddTemplate extends CLI {
    */
   prepare() {
     this.woocommerce = this.themeInfo('features').woocommerce
-    this.title = 'Add {New Template}'
-    this.prompts = [
+    this.$title = 'Add {New Template}'
+    this.$prompts = [
       {
         type: 'list',
         name: 'template.type',
@@ -68,9 +65,40 @@ class AddTemplate extends CLI {
       },
 
       {
+        type: 'list',
+        name: 'template.dir',
+        message: 'Template Directory',
+        when: ({template}) => template.type === templateTypes.PARTIAL,
+        choices: () => new Promise(resolve => {
+          const _dirlist = dirlist(this.currentThemePath('partial-templates'))
+          let list = []
+
+          if (_dirlist.length > 0) {
+            list.push(new inquirer.Separator())
+            list = list.concat(dirlist)
+            list.push(new inquirer.Separator())
+          }
+
+          list.push({
+            name: 'New Directory',
+            value: '$newdir'
+          })
+
+          resolve(list)
+        })
+      },
+
+      {
+        name: 'template.newdir',
+        message: 'Directory Name',
+        when: ({template}) => template.type === templateTypes.PARTIAL && template.dir === '$newdir',
+        validate: value => validator(value, {minimum: 3, slug: true, var: `"${value}"`})
+      },
+
+      {
         name: 'template.name',
         message: 'Template Name',
-        when: ({template}) => template.type === templateTypes.PAGE,
+        when: ({template}) => template.type !== templateTypes.WOOCOMMERCE,
         validate: value => validator(value, {minimum: 3, var: `"${value}"`})
       },
 
@@ -105,19 +133,6 @@ class AddTemplate extends CLI {
         },
         validate: value => validator(value, {minimum: 3, var: `"${value}"`}),
         filter: value => value.split(',').map(item => slugify(item.trim().toLowerCase())).join(', ')
-      },
-
-      {
-        name: 'template.prefix',
-        message: 'Template Prefix',
-        when: ({template}) => template.type === templateTypes.PARTIAL,
-        validate: value => validator(value, {minimum: 3, slug: true, var: `"${value}"`})
-      },
-
-      {
-        name: 'template.name',
-        message: 'Template Name [optional]',
-        when: ({template}) => template.type === templateTypes.PARTIAL
       },
 
       {
@@ -188,20 +203,21 @@ class AddTemplate extends CLI {
 
       {
         type: 'confirm',
-        name: 'template.overwrite',
+        name: 'overwrite',
         message: 'Template already exists. Continue to overwrite?',
         default: true,
         when: ({template}) => new Promise(resolve => {
-          let slug = slugify(template.name)
+          if (template.type === templateTypes.WOOCOMMERCE) {
+            return resolve(false)
+          }
+
+          const slug = slugify(template.name)
           let filepath
 
           if (template.type === templateTypes.PAGE) {
             filepath = this.currentThemePath('page-templates', `${slug}.php`)
           } else if (template.type === templateTypes.PARTIAL) {
-            slug = slugifyName(template.prefix, template.name)
-            filepath = this.currentThemePath('partial-templates', `${slug}.php`)
-          } else {
-            return resolve(false)
+            filepath = this.currentThemePath('partial-templates', this.tplDir(template), `${slug}.php`)
           }
 
           return resolve(existsSync(filepath))
@@ -212,51 +228,57 @@ class AddTemplate extends CLI {
 
   /**
    * Compile template file and config
-   * @param {Object} {template}
+   * @param {Object} {template, overwrite}
    */
-  action({template}) {
-    if (template.overwrite === false) {
-      exit(messages.ERROR_TEMPLATE_ALREADY_EXISTS)
+  action({template, overwrite}) {
+    if (overwrite === false) {
+      this.$logger.exit(messages.ERROR_TEMPLATE_ALREADY_EXISTS)
     }
 
     const themeDetails = this.themeDetails()
-    let files
     let srcDir = this.templateSourcePath('_partials')
+    let files
     let dstDir
     let rename
     let successMsg
 
-    if (template.type === templateTypes.PARTIAL) {
-      template.slug = slugifyName(template.prefix, template.name)
-      if (template.name.length === 0) {
-        template.name = template.prefix
-      }
-      files = ['partial-template.php']
-      dstDir = this.currentThemePath('partial-templates')
-      rename = {
-        'partial-template.php': `${template.slug}.php`
-      }
-      successMsg = messages.SUCCEED_PARTIAL_TEMPLATE_ADDED
-    }
+    template.slug = slugify(template.name)
 
-    if (template.type === templateTypes.PAGE) {
-      template.slug = slugify(template.name)
-      files = ['page-template.php']
-      dstDir = this.currentThemePath('page-templates')
-      rename = {
-        'page-template.php': `${template.slug}.php`
-      }
-      successMsg = messages.SUCCEED_PAGE_TEMPLATE_ADDED
-    }
+    switch (template.type) {
+      case templateTypes.PARTIAL:
+        dstDir = this.currentThemePath('partial-templates', this.tplDir(template))
+        files = ['partial-template.php']
+        successMsg = messages.SUCCEED_PARTIAL_TEMPLATE_ADDED
+        rename = {
+          'partial-template.php': `${template.slug}.php`
+        }
+        break
 
-    if (template.type === templateTypes.WOOCOMMERCE) {
-      srcDir = this.templateSourcePath('_partials', 'woocommerce')
-      dstDir = this.currentThemePath('woocommerce')
-      files = template.woocommerce.map(item => path.join(...item))
-      successMsg = messages.SUCCEED_WOOCOMMERCE_TEMPLATE_ADDED
+      case templateTypes.PAGE:
+        dstDir = this.currentThemePath('page-templates')
+        files = ['page-template.php']
+        successMsg = messages.SUCCEED_PAGE_TEMPLATE_ADDED
+        rename = {
+          'page-template.php': `${template.slug}.php`
+        }
+        break
+
+      case templateTypes.WOOCOMMERCE:
+        srcDir = this.templateSourcePath('_partials', 'woocommerce')
+        dstDir = this.currentThemePath('woocommerce')
+        files = template.woocommerce.map(item => path.join(...item))
+        successMsg = messages.SUCCEED_WOOCOMMERCE_TEMPLATE_ADDED
+        break
+
+      default: break
     }
 
     Promise.all([
+      new Promise(resolve => {
+        mkdirp.sync(dstDir)
+        resolve()
+      }),
+
       new Promise(resolve => {
         compileFiles({
           includes: files,
@@ -272,8 +294,8 @@ class AddTemplate extends CLI {
         resolve()
       })
     ]).then(
-      finish(successMsg)
-    ).catch(exit)
+      this.$logger.finish(successMsg)
+    ).catch(this.$logger.exit)
   }
 }
 

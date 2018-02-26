@@ -4,14 +4,13 @@ const wpFileHeader = require('wp-get-file-header')
 
 const CLI = global.deuxcli.require('main')
 const messages = global.deuxcli.require('messages')
-const {exit, finish} = global.deuxhelpers.require('logger')
-const {happyExit, captchaMaker, separatorMaker} = global.deuxhelpers.require('util/cli')
+const {captchaMaker, separatorMaker} = global.deuxhelpers.require('util/cli')
 
 class RemoveHelper extends CLI {
-  constructor() {
+  constructor(options) {
     super()
     this.themeHelpers = undefined
-    this.init()
+    this.init(options)
   }
 
   /**
@@ -21,11 +20,11 @@ class RemoveHelper extends CLI {
     this.themeHelpers = this.themeInfo('helpers')
 
     if (this.themeHelpers.length === 0) {
-      happyExit()
+      this.$logger.happyExit()
     }
 
-    this.title = 'Remove {Helpers}'
-    this.prompts = [
+    this.$title = 'Remove {Helpers}'
+    this.$prompts = [
       {
         type: 'checkbox',
         name: 'helpers',
@@ -85,8 +84,8 @@ class RemoveHelper extends CLI {
    * @param {Object} {helpers, confirm}
    */
   action({helpers, confirm}) {
-    if (helpers.length === 0 || !confirm) {
-      happyExit()
+    if (helpers.length === 0 || (!confirm && !this.$init.apiMode())) {
+      this.$logger.happyExit()
     }
 
     Promise.all(helpers.map(
@@ -98,19 +97,13 @@ class RemoveHelper extends CLI {
         resolve(item)
       })
     )).then(helpers => {
-      Promise.all([
-        new Promise(resolve => {
-          this.themeHelpers = this.themeHelpers.filter(item => !helpers.includes(item))
-          this.setThemeConfig({
-            helpers: this.themeHelpers
-          })
-
-          resolve()
-        })
-      ]).then(
-        finish(messages.SUCCEED_REMOVED_HELPER)
-      ).catch(exit)
-    }).catch(exit)
+      this.themeHelpers = this.themeHelpers.filter(item => !helpers.includes(item))
+      this.setThemeConfig({
+        helpers: this.themeHelpers
+      })
+    }).then(() => {
+      this.$logger.finish(messages.SUCCEED_REMOVED_HELPER)
+    }).catch(this.$logger.exit)
   }
 }
 

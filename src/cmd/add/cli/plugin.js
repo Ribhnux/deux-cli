@@ -7,26 +7,24 @@ const rimraf = require('rimraf')
 const {pluginSrcTypes} = require('./fixtures')
 
 const entities = new Entities()
-
 const CLI = global.deuxcli.require('main')
 const messages = global.deuxcli.require('messages')
 const validator = global.deuxhelpers.require('util/validator')
-const {loader, exit, finish} = global.deuxhelpers.require('logger')
 const {capitalize} = global.deuxhelpers.require('util/misc')
 const compileFile = global.deuxhelpers.require('compiler/single')
 
 class AddPlugin extends CLI {
-  constructor() {
+  constructor(options) {
     super()
-    this.init()
+    this.init(options)
   }
 
   /**
    * Setup add plugin prompts
    */
   prepare() {
-    this.title = 'Add {New Plugin} Dependencies'
-    this.prompts = [
+    this.$title = 'Add {New Plugin} Dependencies'
+    this.$prompts = [
       {
         type: 'list',
         name: 'plugin.srctype',
@@ -56,7 +54,7 @@ class AddPlugin extends CLI {
         message: 'Select Plugin',
         when: ({plugin}) => plugin.srctype === pluginSrcTypes.WP,
         choices: ({plugin}) => new Promise((resolve, reject) => {
-          const searchLoader = loader(`Searching "${plugin.search}" from WordPress.org`)
+          const searchLoader = this.$logger.loader(`Searching "${plugin.search}" from WordPress.org`)
 
           searchPlugin(plugin.search).then(result => {
             searchLoader.succeed(`Found ${result.total} item(s)`)
@@ -199,7 +197,7 @@ class AddPlugin extends CLI {
 
       {
         type: 'confirm',
-        name: 'plugin.overwrite',
+        name: 'overwrite',
         message: 'Plugin already exists. Continue to overwrite?',
         default: true,
         when: ({plugin}) => new Promise(resolve => {
@@ -215,9 +213,9 @@ class AddPlugin extends CLI {
    *
    * @param {Object} {plugin}
    */
-  action({plugin}) {
-    if (plugin.overwrite === false) {
-      exit(messages.ERROR_PLUGIN_ALREADY_EXISTS)
+  action({plugin, overwrite}) {
+    if (overwrite === false) {
+      this.$logger.exit(messages.ERROR_PLUGIN_ALREADY_EXISTS)
     }
 
     const plugins = this.themeInfo('plugins')
@@ -272,8 +270,8 @@ class AddPlugin extends CLI {
         resolve()
       })
     ]).then(
-      finish(messages.SUCCEED_PLUGIN_ADDED)
-    ).catch(exit)
+      this.$logger.finish(messages.SUCCEED_PLUGIN_ADDED)
+    ).catch(this.$logger.exit)
   }
 }
 

@@ -1,47 +1,98 @@
 const path = require('path')
+const {existsSync} = require('fs')
 const inquirer = require('inquirer')
 const jsonar = require('jsonar')
 const arrandel = require('arrandel')
 const {dbTypes} = require('./fixtures')
 const Init = require('./init')
+const message = require('./messages')
 
-const {colorlog, exit} = global.deuxhelpers.require('logger')
+const logger = global.deuxhelpers.require('logger')
 const {dirlist, filelist} = global.deuxhelpers.require('util/file')
+const {isJSON} = global.deuxhelpers.require('util/misc')
 
 class CLI {
   constructor() {
-    this.db = {}
-    this.title = 'Untitled CLI'
-    this.prompts = []
+    this.$db = {}
+    this.$title = 'Untitled CLI'
+    this.$prompts = []
+    this.$logger = {}
+    this.$init = undefined
+    this.$input = undefined
   }
 
   /**
    * Initializing cli
    */
-  init(skip = false, options) {
-    const init = new Init(skip, options)
-    init.check().then(db => {
-      this.db = db
+  init(options = {}, skip = false) {
+    if (options.input) {
+      const json = isJSON(options.input)
+      if (json) {
+        options.api = true
+        this.$input = json
+      } else {
+        logger.exit(message.ERROR_INVALID_INPUT, true)
+      }
+    }
+
+    this.$init = new Init(skip, Object.assign({}, {
+      db: options.db,
+      api: options.api || this.$input
+    }))
+
+    this.$init.check().then(db => {
+      this.$logger.versionlog = logger.versionlog
+      this.$logger.title = msg => {
+        if (!this.$init.apiMode()) {
+          logger.colorlog(msg)
+        }
+      }
+
+      this.$logger.exit = err => {
+        logger.exit(err, this.$init.apiMode())
+      }
+
+      this.$logger.finish = msg => {
+        logger.finish(msg, this.$init.apiMode())
+      }
+
+      this.$logger.happyExit = (msg = message.DONE_NO_REMOVE) => {
+        logger.finish(msg, this.$init.apiMode())
+      }
+
+      this.$logger.loader = (msg, color = 'cyan') => {
+        return logger.loader(msg, color, this.$init.apiMode())
+      }
+
+      this.$db = db
       this.prepare()
 
       const action = () => {
-        if (this.prompts.length > 0) {
-          colorlog(this.title)
-          inquirer.prompt(this.prompts).then(answers => {
-            this.action(answers)
-          }).catch(exit)
-        }
+        if (this.$init.apiMode()) {
+          this.action(this.$input)
+        } else {
+          if (this.$prompts.length > 0) {
+            if (!this.$init.apiMode()) {
+              this.$logger.versionlog()
+            }
 
-        if (!this.subcmd && this.prompts.length === 0) {
-          colorlog(this.title)
-          this.action({})
+            this.$logger.title(this.$title)
+            inquirer.prompt(this.$prompts).then(answers => {
+              this.action(answers)
+            }).catch(this.$logger.exit)
+          }
+
+          if (!this.$subcmd && this.$prompts.length === 0) {
+            this.$logger.title(this.$title)
+            this.action({})
+          }
         }
       }
 
       if (this.beforeAction) {
         this.beforeAction().then(() => {
           action()
-        })
+        }).catch(this.$logger.exit)
       } else {
         action()
       }
@@ -68,7 +119,7 @@ class CLI {
    * @param {String} key
    */
   getConfig(key = '') {
-    const config = this.db[dbTypes.CONFIG]
+    const config = this.$db[dbTypes.CONFIG]
 
     if (key === '') {
       return config
@@ -87,7 +138,7 @@ class CLI {
    * @param {String} themeName
    */
   getThemes(themeName = '') {
-    const themes = Object.assign({}, this.db[dbTypes.THEMES])
+    const themes = Object.assign({}, this.$db[dbTypes.THEMES])
 
     if (themeName === '') {
       return themes
@@ -106,9 +157,9 @@ class CLI {
    */
   removeTheme(themeName = '') {
     if (themeName !== '' && this.getThemes(themeName)) {
-      delete this.db[dbTypes.THEMES][themeName]
-      if (this.db[dbTypes.CURRENT] && this.db[dbTypes.CURRENT].slug === themeName) {
-        this.db[dbTypes.CURRENT] = {}
+      delete this.$db[dbTypes.THEMES][themeName]
+      if (this.$db[dbTypes.CURRENT] && this.$db[dbTypes.CURRENT].slug === themeName) {
+        this.$db[dbTypes.CURRENT] = {}
       }
     }
   }
@@ -162,6 +213,7 @@ class CLI {
     delete config.asset.sass
     delete config.details
     delete config.releases
+    delete config.repo
 
     if (sync === false) {
       const phpconfig = jsonar.arrify(config, {
@@ -241,14 +293,14 @@ class CLI {
    * @param {Object} info
    */
   addTheme(slug, info) {
-    this.db[dbTypes.THEMES][slug] = info
+    this.$db[dbTypes.THEMES][slug] = info
   }
 
   /**
    * Get current active theme in project
    */
   getCurrentTheme() {
-    return this.db[dbTypes.THEMES][this.db[dbTypes.CURRENT].slug]
+    return this.$db[dbTypes.THEMES][this.$db[dbTypes.CURRENT].slug]
   }
 
   /**
@@ -257,7 +309,7 @@ class CLI {
    * @param {String} slug
    */
   getThemeBySlug(slug = '') {
-    const themes = this.db[dbTypes.THEMES]
+    const themes = this.$db[dbTypes.THEMES]
 
     if (!(slug in themes)) {
       return undefined
@@ -272,7 +324,7 @@ class CLI {
    * @param {Object} object
    */
   setCurrentTheme({name, slug, version}) {
-    this.db[dbTypes.CURRENT] = {name, slug, version}
+    this.$db[dbTypes.CURRENT] = {name, slug, version}
   }
 
   /**
@@ -348,6 +400,41 @@ class CLI {
       }
     })
     this.setThemeConfig(json, true)
+  }
+
+  /**
+   * Global task for release and test
+   */
+  getTestOptions() {
+    let stylelintrc = '.stylelintrc'
+    if (!existsSync(this.currentThemePath(stylelintrc))) {
+      stylelintrc = this.templateSourcePath(stylelintrc)
+    }
+
+    return {
+      wpcs: ['--excludes=woocommerce'],
+
+      themecheck: [this.currentThemePath(), '--excludes=releases'],
+
+      w3Validator: [this.getConfig('devUrl')],
+
+      sass: [
+        '--config',
+        stylelintrc,
+        '--config-basedir',
+        path.dirname(global.bin.path),
+        path.join('assets-src', 'sass', '**'),
+        path.join('includes', 'customizer', 'assets-src', 'sass', '**')
+      ],
+
+      js: [
+        '--no-semicolon',
+        path.join('assets-src', 'js', '**'),
+        '!', path.join('assets-src', 'js', 'node_modules', '**'),
+        path.join('includes', 'customizer', 'assets-src', 'js', '**'),
+        '!', path.join('includes', 'customizer', 'assets-src', 'js', 'node_modules', '**')
+      ]
+    }
   }
 }
 

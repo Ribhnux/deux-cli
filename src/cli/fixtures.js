@@ -9,7 +9,6 @@ exports.dbTypes = {
 exports.dbPath = path.join(process.env.APPDATA || (process.platform === 'darwin' ? path.join(process.env.HOME, 'Library', 'Preferences') : process.env.HOME), '.deuxproject')
 
 exports.commandList = {
-  THEME: 'theme',
   ASSET: 'asset',
   PLUGIN: 'plugin',
   MENU: 'menu',
@@ -21,5 +20,6 @@ exports.commandList = {
   IMGSIZE: 'imgsize',
   HELPER: 'helper',
   LIBCLASS: 'libclass',
-  HOOKS: 'hooks'
+  HOOKS: 'hooks',
+  THEME: 'theme'
 }

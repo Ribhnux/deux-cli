@@ -2,14 +2,13 @@ const rimraf = require('rimraf')
 
 const CLI = global.deuxcli.require('main')
 const messages = global.deuxcli.require('messages')
-const {exit, finish} = global.deuxhelpers.require('logger')
-const {happyExit, captchaMaker, separatorMaker} = global.deuxhelpers.require('util/cli')
+const {captchaMaker, separatorMaker} = global.deuxhelpers.require('util/cli')
 
 class RemovePlugin extends CLI {
-  constructor() {
+  constructor(options) {
     super()
     this.themePlugins = undefined
-    this.init()
+    this.init(options)
   }
 
   /**
@@ -19,11 +18,11 @@ class RemovePlugin extends CLI {
     this.themePlugins = this.themeInfo('plugins')
 
     if (Object.keys(this.themePlugins).length === 0) {
-      happyExit()
+      this.$logger.happyExit()
     }
 
-    this.title = 'Remove {Plugins}'
-    this.prompts = [
+    this.$title = 'Remove {Plugins}'
+    this.$prompts = [
       {
         type: 'checkbox',
         name: 'plugins',
@@ -68,8 +67,8 @@ class RemovePlugin extends CLI {
    * @param {Object} {plugins, confirm}
    */
   action({plugins, confirm}) {
-    if (plugins.length === 0 || !confirm) {
-      happyExit()
+    if (plugins.length === 0 || (!confirm && !this.$init.apiMode())) {
+      this.$logger.happyExit()
     }
 
     Promise.all(plugins.map(
@@ -81,17 +80,12 @@ class RemovePlugin extends CLI {
         resolve()
       })
     )).then(() => {
-      Promise.all([
-        new Promise(resolve => {
-          this.setThemeConfig({
-            plugins: this.themePlugins
-          })
-          resolve()
-        })
-      ]).then(
-        finish(messages.SUCCEED_REMOVED_PLUGIN)
-      ).catch(exit)
-    }).catch(exit)
+      this.setThemeConfig({
+        plugins: this.themePlugins
+      })
+    }).then(() => {
+      this.$logger.finish(messages.SUCCEED_REMOVED_PLUGIN)
+    }).catch(this.$logger.exit)
   }
 }
 
