@@ -217,6 +217,8 @@ class DevCLI extends CLI {
       // Compile Default Style
       const defaultStyle = gulp.src(path.join(options.srcPath, inputFile))
         .pipe(plumber())
+        .pipe(replacer(/\/\*rtl(.[^/]*)\*\//g, '/*!rtl$1*/'))
+        .pipe(replacer(/\/\*!rtl(.[^/]*)\*\/;/g, ';/*!rtl:after$1*/'))
         .pipe(sass({outputStyle: 'compressed'}))
         .pipe(autoPrefixr({
           browsers: ['last 2 versions', 'Firefox < 20'],
@@ -230,6 +232,8 @@ class DevCLI extends CLI {
       if (options.rtl === true) {
         // Compile RTL Style
         RTLStyle = defaultStyle.pipe(clone())
+          .pipe(replacer(/\/\*!rtl(.[^/]*)\*\//g, '/*rtl$1*/'))
+          .pipe(replacer(/;\/\*rtl:after(.[^/]*)\*\//g, '/*rtl$1*/;'))
           .pipe(rtlcss())
           .pipe(cssbeautify({indent: '  ', autosemicolon: true}))
           .pipe(replacer(/}\/\*!/g, '}\n\n/*!'))
@@ -242,7 +246,7 @@ class DevCLI extends CLI {
           .pipe(cleanCSS({compatibility: 'ie8'}))
           .pipe(stripComments({preserve: false}))
           .pipe(gulpif(options.sourcemap === true, sourceMaps.init()))
-          .pipe(rename({suffix: '.min'}))
+          .pipe(rename({basename: 'theme', suffix: '.min-rtl'}))
           .pipe(gulpif(options.sourcemap === true, sourceMaps.write('./')))
           .pipe(gulp.dest(options.dstPath))
       }
