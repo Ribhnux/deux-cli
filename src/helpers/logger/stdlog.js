@@ -53,11 +53,11 @@ module.exports = options => {
           message.message = stripAnsi(message.message)
         }
 
-        finalOutput = JSON.stringify(message)
+        finalOutput = message
       }
     }
 
-    console.log(finalOutput)
+    console.log(JSON.stringify(finalOutput))
   }
 
   if (padBtm && message !== '' && !isRaw) {
