@@ -43,9 +43,10 @@ class SwitchCLI extends CLI {
           type: 'list',
           name: 'subcmd',
           message: 'Select theme',
-          choices: () => new Promise(async resolve => {
-            const list = await this.availableThemes
-            resolve([new inquirer.Separator()].concat(list))
+          choices: () => new Promise(resolve => {
+            this.availableThemes.then(list => {
+              resolve([new inquirer.Separator()].concat(list))
+            })
           })
         },
 
