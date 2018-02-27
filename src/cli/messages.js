@@ -70,6 +70,7 @@ exports.SUCCEED_REMOVED_CUSTOMIZER = `${okayRandomizer()}, you've just removed s
 exports.SUCCEED_BUILD_ASSET = 'Asset files were compiled.'
 exports.SUCCEED_VALID_THEME = 'Your theme is valid and ready to release.'
 exports.SUCCEED_UPDATED = 'Your assets or plugins are updated.'
+exports.SUCCEED_NO_UPDATED = 'You are not selecting any upgradable assets / plugins.'
 exports.SUCCEED_ALL_UPDATED = 'All of your assets or plugins are up to date.'
 exports.SUCCEED_VALID_CODES = 'Your codes are valid.'
 exports.SUCCEED_RELEASE = 'Congrats, you\'ve released new version.'
