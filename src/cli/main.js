@@ -42,9 +42,9 @@ class CLI {
 
     this.$init.check().then(db => {
       this.$logger.versionlog = logger.versionlog
-      this.$logger.title = msg => {
+      this.$logger.title = (msg, padding = true) => {
         if (!this.$init.apiMode()) {
-          logger.colorlog(msg)
+          logger.colorlog(msg, padding)
         }
       }
 
@@ -83,7 +83,11 @@ class CLI {
           }
 
           if (!this.$subcmd && this.$prompts.length === 0) {
-            this.$logger.title(this.$title)
+            if (!this.$init.apiMode()) {
+              this.$logger.versionlog()
+            }
+
+            this.$logger.title(`\n${this.$title}`, false)
             this.action({})
           }
         }
@@ -411,13 +415,18 @@ class CLI {
       stylelintrc = this.templateSourcePath(stylelintrc)
     }
 
-    return {
+    let eslintrc
+
+    if (existsSync(this.themePath('.eslintrc'))) {
+      eslintrc = this.currentTheme('.eslintrc')
+    } else {
+      eslintrc = this.templateSourcePath('.eslintrc')
+    }
+
+    const options = {
       wpcs: ['--excludes=woocommerce'],
-
       themecheck: [this.currentThemePath(), '--excludes=releases'],
-
       w3Validator: [this.getConfig('devUrl')],
-
       sass: [
         '--config',
         stylelintrc,
@@ -426,15 +435,25 @@ class CLI {
         path.join('assets-src', 'sass', '**'),
         path.join('includes', 'customizer', 'assets-src', 'sass', '**')
       ],
-
       js: [
         '--no-semicolon',
         path.join('assets-src', 'js', '**'),
         '!', path.join('assets-src', 'js', 'node_modules', '**'),
         path.join('includes', 'customizer', 'assets-src', 'js', '**'),
-        '!', path.join('includes', 'customizer', 'assets-src', 'js', 'node_modules', '**')
+        '!', path.join('includes', 'customizer', 'assets-src', 'js', 'node_modules', '**'),
+        '--extend',
+        eslintrc
       ]
     }
+
+    if (this.$init.apiMode()) {
+      options.js.push('--reporter')
+      options.js.push('json')
+      options.sass.push('--formatter')
+      options.sass.push('json')
+    }
+
+    return options
   }
 }
 

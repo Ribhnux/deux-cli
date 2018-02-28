@@ -14,18 +14,91 @@ const messages = global.deuxcli.require('messages')
 class TestCLI extends CLI {
   constructor(subcmd, options) {
     super()
-    this.$subcmd = subcmd
+    this.subcmd = subcmd
     this.$clioptions = {}
+    this.task = {}
     this.init(options)
   }
 
   prepare() {
-    this.$clioptions = this.getTestOptions()
+    const stdopts = {cwd: this.currentThemePath()}
 
-    if (this.$subcmd) {
-      this.initSubCommands(this.$subcmd)
-    } else {
-      this.$title = 'Theme {Unit Test, Coding Standard} and {Validation}'
+    if (!this.$init.apiMode()) {
+      stdopts.stdio = 'inherit'
+    }
+
+    this.$clioptions = this.getTestOptions()
+    this.$title = 'Theme {Unit Test, Coding Standard} and {Validation}'
+
+    this.task[commandList.JS] = {
+      title: 'Javascript ESLint',
+      task: () => new Promise((resolve, reject) => {
+        eslint(this.$clioptions.js, stdopts)
+          .then(data => resolve(JSON.parse(data)))
+          .catch(err => reject(this.$init.apiMode() ? JSON.parse(err.stdout) : new Error(messages.ERROR_INVALID_JS)))
+      })
+    }
+
+    this.task[commandList.SASS] = {
+      title: 'SASS Stylelint',
+      task: () => new Promise((resolve, reject) => {
+        stylelint(this.$clioptions.sass, stdopts)
+          .then(data => resolve(JSON.parse(data)))
+          .catch(err => reject(this.$init.apiMode() ? JSON.parse(err.stdout) : new Error(messages.ERROR_INVALID_SASS)))
+      })
+    }
+
+    this.task[commandList.WPCS] = {
+      title: 'WordPress Coding Standard',
+      task: () => new Promise((resolve, reject) => {
+        wpcs(this.$clioptions.wpcs, stdopts)
+          .then(() => resolve())
+          .catch(() => reject(new Error(messages.ERROR_INVALID_WPCS)))
+      })
+    }
+
+    this.task[commandList.THEMECHECK] = {
+      title: 'Theme Check and Theme Mentor',
+      task: () => new Promise((resolve, reject) => {
+        themecheck(this.$clioptions.themecheck, stdopts)
+          .then(() => resolve())
+          .catch(() => reject(new Error(messages.ERROR_INVALID_THEMECHECK)))
+      })
+    }
+
+    this.task[commandList.W3] = {
+      title: 'W3 HTML5 Markup',
+      task: () => new Promise((resolve, reject) => {
+        w3Validator(this.$clioptions.w3Validator, stdopts)
+          .then(() => resolve())
+          .catch(() => reject(new Error(messages.ERROR_INVALID_W3)))
+      })
+    }
+
+    if (this.subcmd) {
+      switch (this.subcmd) {
+        case commandList.JS:
+          this.$title = this.task[commandList.JS].title
+          break
+
+        case commandList.SASS:
+          this.$title = this.task[commandList.SASS].title
+          break
+
+        case commandList.WPCS:
+          this.$title = this.task[commandList.WPCS].title
+          break
+
+        case commandList.THEMECHECK:
+          this.$title = this.task[commandList.THEMECHECK].title
+          break
+
+        case commandList.W3:
+          this.$title = this.task[commandList.W3].title
+          break
+
+        default: break
+      }
     }
   }
 
@@ -33,90 +106,49 @@ class TestCLI extends CLI {
    * Validate all
    */
   action() {
-    const stdopts = {
-      cwd: this.currentThemePath()
+    if (this.subcmd) {
+      this.initSubCommands()
+    } else {
+      const task = new Listr([
+        this.task[commandList.JS],
+        this.task[commandList.SASS],
+        this.task[commandList.WPCS],
+        this.task[commandList.THEMECHECK],
+        this.task[commandList.W3]
+      ])
+
+      task.run().then(() => {
+        this.$logger.finish(messages.SUCCEED_VALID_THEME)
+      }).catch(this.$logger.exit)
     }
-
-    const task = new Listr([
-      {
-        title: 'ESLint for Javascript',
-        task: () => new Promise((resolve, reject) => {
-          eslint(this.$clioptions.js, stdopts)
-            .then(() => resolve())
-            .catch(() => reject(new Error(messages.ERROR_INVALID_JS)))
-        })
-      },
-
-      {
-        title: 'Stylelint for SASS',
-        task: () => new Promise((resolve, reject) => {
-          stylelint(this.$clioptions.sass, stdopts)
-            .then(() => resolve())
-            .catch(() => reject(new Error(messages.ERROR_INVALID_SASS)))
-        })
-      },
-
-      {
-        title: 'WordPress Coding Standard',
-        task: () => new Promise((resolve, reject) => {
-          wpcs(this.$clioptions.wpcs, stdopts)
-            .then(() => resolve())
-            .catch(() => reject(new Error(messages.ERROR_INVALID_WPCS)))
-        })
-      },
-
-      {
-        title: 'Theme Check and Theme Mentor',
-        task: () => new Promise((resolve, reject) => {
-          themecheck(this.$clioptions.themecheck, stdopts)
-            .then(() => resolve())
-            .catch(() => reject(new Error(messages.ERROR_INVALID_THEMECHECK)))
-        })
-      },
-
-      {
-        title: 'W3 HTML5 Markup',
-        task: () => new Promise((resolve, reject) => {
-          w3Validator(this.$clioptions.w3Validator, stdopts)
-            .then(() => resolve())
-            .catch(() => reject(new Error(messages.ERROR_INVALID_W3)))
-        })
-      }
-    ])
-
-    task.run().then(() => {
-      this.$logger.finish(messages.SUCCEED_VALID_THEME)
-    }).catch(this.$logger.exit)
   }
 
   /**
    * The real action is here
-   *
-   * @param {String} subcmd
    */
-  initSubCommands(subcmd) {
-    const stdopts = {stdio: 'inherit', cwd: this.currentThemePath()}
-    let runCli
+  initSubCommands() {
+    let cli
+    const loader = this.$logger.loader('')
 
-    switch (subcmd) {
+    switch (this.subcmd) {
       case commandList.JS:
-        runCli = eslint(this.$clioptions.js, stdopts)
+        cli = this.task[commandList.JS].task()
         break
 
       case commandList.SASS:
-        runCli = stylelint(this.$clioptions.sass, stdopts)
+        cli = this.task[commandList.SASS].task()
         break
 
       case commandList.WPCS:
-        runCli = wpcs(this.$clioptions.wpcs, stdopts)
+        cli = this.task[commandList.WPCS].task()
         break
 
       case commandList.THEMECHECK:
-        runCli = themecheck(this.$clioptions.themecheck, stdopts)
+        cli = this.task[commandList.THEMECHECK].task()
         break
 
       case commandList.W3:
-        runCli = w3Validator(this.$clioptions.w3Validator, stdopts)
+        cli = this.task[commandList.W3].task()
         break
 
       default:
@@ -124,10 +156,30 @@ class TestCLI extends CLI {
         break
     }
 
-    if (runCli) {
-      runCli
-        .then(() => this.$logger.finish(messages.SUCCEED_VALID_CODES))
-        .catch(() => this.$logger.exit(messages.ERROR_FIX_INVALID_CODES))
+    const finalLogger = (isErr, data) => {
+      let finalMessage
+      if (this.$init.apiMode()) {
+        finalMessage = {
+          message: messages.SUCCEED_VALID_CODES,
+          data
+        }
+      } else {
+        finalMessage = messages.SUCCEED_VALID_CODES
+      }
+
+      loader.stop()
+
+      if (isErr) {
+        this.$logger.exit(finalMessage)
+      } else {
+        this.$logger.finish(finalMessage)
+      }
+    }
+
+    if (cli) {
+      cli
+        .then(data => finalLogger(false, data))
+        .catch(data => finalLogger(true, data))
     }
   }
 }
