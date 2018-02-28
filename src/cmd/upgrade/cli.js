@@ -31,7 +31,7 @@ class UpgradeCLI extends CLI {
   prepare() {
     this.plugins = this.themeInfo('plugins')
     this.assets = this.themeInfo('asset')
-    this.$title = this.options.list ? 'Upgradable {Assets / Plugins} list' : 'Upgrade {Assets / Plugins}'
+    this.$title = this.options.list ? 'Upgradable list' : 'Upgrade {Assets / Plugins}'
     this.$prompts = [{}]
   }
 
@@ -265,7 +265,7 @@ class UpgradeCLI extends CLI {
         const _assets = this.assetList.map(item => {
           return `${chalk.bold.cyan(item.slug)} ${chalk.gray(item.version)} > ${chalk.green(item.latestVersion)}`
         })
-        colorlog('Assets', false)
+        colorlog('{Assets}', false)
         colorlog(`${_assets.join('\n')}\n`, false)
       }
 
@@ -273,7 +273,7 @@ class UpgradeCLI extends CLI {
         const _plugins = this.pluginList.map(item => {
           return `${chalk.bold.cyan(item.slug)} ${chalk.gray(item.version)} > ${chalk.green(item.latestVersion)}`
         })
-        colorlog('Plugins', false)
+        colorlog('{Plugins}', false)
         colorlog(`${_plugins.join('\n')}\n`, false)
       }
     } else {
