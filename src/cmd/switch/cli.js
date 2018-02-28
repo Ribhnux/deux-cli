@@ -75,7 +75,7 @@ class SwitchCLI extends CLI {
           return `${chalk.bold.cyan(item.name)} ${chalk.gray(`v${item.version}`)}\n${item.description}`
         }).join('\n\n')
 
-        colorlog(`${prettyList}\n`, false)
+        colorlog(`\n${prettyList}\n`, false)
       })
     } else {
       this.initSubCommands(prompts.subcmd)
