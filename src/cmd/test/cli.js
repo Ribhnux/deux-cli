@@ -179,7 +179,7 @@ class TestCLI extends CLI {
     if (cli) {
       cli
         .then(data => finalLogger(false, data))
-        .catch(data => finalLogger(true, data))
+        .catch(err => finalLogger(true, err))
     }
   }
 }
