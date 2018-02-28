@@ -4,8 +4,10 @@ module.exports = (succeedMsg, isRaw) => {
   let message = succeedMsg
 
   if (isRaw) {
-    message = {
-      message: succeedMsg
+    if (typeof succeedMsg === 'string') {
+      message = {
+        message: succeedMsg
+      }
     }
   }
 

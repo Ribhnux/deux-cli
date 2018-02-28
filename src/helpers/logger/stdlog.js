@@ -55,9 +55,11 @@ module.exports = options => {
 
         finalOutput = message
       }
+
+      finalOutput = JSON.stringify(finalOutput)
     }
 
-    console.log(JSON.stringify(finalOutput))
+    console.log(finalOutput)
   }
 
   if (padBtm && message !== '' && !isRaw) {
