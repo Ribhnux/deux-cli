@@ -263,17 +263,17 @@ class UpgradeCLI extends CLI {
 
       if (this.assetList.length > 0) {
         const _assets = this.assetList.map(item => {
-          return `${chalk.bold.white(item.slug)} ${chalk.gray(item.version)} > ${chalk.green(item.latestVersion)}`
+          return `${chalk.bold.cyan(item.slug)} ${chalk.gray(item.version)} > ${chalk.green(item.latestVersion)}`
         })
-        colorlog('{Assets}', false)
+        colorlog('Assets', false)
         colorlog(`${_assets.join('\n')}\n`, false)
       }
 
       if (this.pluginList.length > 0) {
         const _plugins = this.pluginList.map(item => {
-          return `${chalk.bold.white(item.slug)} ${chalk.gray(item.version)} > ${chalk.green(item.latestVersion)}`
+          return `${chalk.bold.cyan(item.slug)} ${chalk.gray(item.version)} > ${chalk.green(item.latestVersion)}`
         })
-        colorlog('{Plugins}', false)
+        colorlog('Plugins', false)
         colorlog(`${_plugins.join('\n')}\n`, false)
       }
     } else {
