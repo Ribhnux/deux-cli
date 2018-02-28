@@ -246,7 +246,7 @@ class DevCLI extends CLI {
           .pipe(cleanCSS({compatibility: 'ie8'}))
           .pipe(stripComments({preserve: false}))
           .pipe(gulpif(options.sourcemap === true, sourceMaps.init()))
-          .pipe(rename({basename: 'theme', suffix: '.min-rtl'}))
+          .pipe(rename({basename: path.parse(inputFile).name, suffix: '.min-rtl'}))
           .pipe(gulpif(options.sourcemap === true, sourceMaps.write('./')))
           .pipe(gulp.dest(options.dstPath))
       }
