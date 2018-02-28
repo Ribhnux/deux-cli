@@ -149,7 +149,7 @@ class UpgradeCLI extends CLI {
         this.$prompts = this.options.list ? [] : [
           {
             type: 'checkbox',
-            name: 'upgrade.items',
+            name: 'items',
             message: 'Choose which assets / plugins to update',
             when: () => pluginList.length > 0 || assetList.length > 0,
             choices: () => new Promise(resolve => {
@@ -187,11 +187,11 @@ class UpgradeCLI extends CLI {
             type: 'checkbox',
             name: 'assets',
             message: 'Choose which files to update',
-            when: ({upgrade}) => {
+            when: ({items}) => {
               let assetItems = 0
 
-              if (upgrade && upgrade.items) {
-                upgrade.items.forEach(item => {
+              if (items) {
+                items.forEach(item => {
                   if (item.type === itemTypes.ASSET) {
                     assetItems++
                   }
@@ -200,10 +200,10 @@ class UpgradeCLI extends CLI {
 
               return assetItems > 0
             },
-            choices: ({upgrade}) => new Promise(resolve => {
+            choices: ({items}) => new Promise(resolve => {
               let list = []
 
-              upgrade.items.filter(item => item.type === itemTypes.ASSET).reduce((promise, item) => {
+              items.filter(item => item.type === itemTypes.ASSET).reduce((promise, item) => {
                 return promise.then(() => {
                   const assetSemver = `${item.slug}@${item.latestVersion}`
 
@@ -277,17 +277,17 @@ class UpgradeCLI extends CLI {
         colorlog(`${_plugins.join('\n')}\n`, false)
       }
     } else {
-      const {upgrade, assets} = prompts
+      const {items, assets} = prompts
 
-      if (!upgrade) {
+      if (!items) {
         this.$logger.finish(messages.SUCCEED_ALL_UPDATED)
       }
 
-      if (!upgrade.items || upgrade.items.length === 0) {
+      if (!items || items.length === 0) {
         this.$logger.finish(messages.SUCCEED_NO_UPDATED)
       }
 
-      Promise.all(upgrade.items.map(item => {
+      Promise.all(items.map(item => {
         return new Promise((resolve, reject) => {
           try {
             if (item.type === itemTypes.PLUGIN) {
