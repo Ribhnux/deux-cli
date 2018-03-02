@@ -424,7 +424,7 @@ class CLI {
     }
 
     const options = {
-      wpcs: ['--excludes=woocommerce'],
+      wpcs: [this.currentThemePath(), '--excludes=woocommerce'],
       themecheck: [this.currentThemePath(), '--excludes=releases'],
       w3Validator: [this.getConfig('devUrl')],
       sass: [
@@ -447,6 +447,9 @@ class CLI {
     }
 
     if (this.$init.apiMode()) {
+      options.wpcs.push('--json')
+      options.themecheck.push('--json')
+      options.w3Validator.push('--json')
       options.js.push('--reporter')
       options.js.push('json')
       options.sass.push('--formatter')

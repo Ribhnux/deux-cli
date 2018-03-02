@@ -25,6 +25,7 @@ class TestCLI extends CLI {
 
     if (!this.$init.apiMode()) {
       stdopts.stdio = 'inherit'
+      stdopts.maxBuffer = 10 * (1024 * 1024)
     }
 
     this.$clioptions = this.getTestOptions()
@@ -52,8 +53,8 @@ class TestCLI extends CLI {
       title: 'WordPress Coding Standard',
       task: () => new Promise((resolve, reject) => {
         wpcs(this.$clioptions.wpcs, stdopts)
-          .then(() => resolve())
-          .catch(() => reject(new Error(messages.ERROR_INVALID_WPCS)))
+          .then(data => resolve(JSON.parse(data)))
+          .catch(err => reject(this.$init.apiMode() ? err.stdout : new Error(messages.ERROR_INVALID_WPCS)))
       })
     }
 
@@ -61,8 +62,8 @@ class TestCLI extends CLI {
       title: 'Theme Check and Theme Mentor',
       task: () => new Promise((resolve, reject) => {
         themecheck(this.$clioptions.themecheck, stdopts)
-          .then(() => resolve())
-          .catch(() => reject(new Error(messages.ERROR_INVALID_THEMECHECK)))
+          .then(data => resolve(JSON.parse(data)))
+          .catch(err => reject(this.$init.apiMode() ? JSON.parse(err.stdout) : new Error(messages.ERROR_INVALID_THEMECHECK)))
       })
     }
 
@@ -70,8 +71,8 @@ class TestCLI extends CLI {
       title: 'W3 HTML5 Markup',
       task: () => new Promise((resolve, reject) => {
         w3Validator(this.$clioptions.w3Validator, stdopts)
-          .then(() => resolve())
-          .catch(() => reject(new Error(messages.ERROR_INVALID_W3)))
+          .then(data => resolve(JSON.parse(data)))
+          .catch(err => reject(this.$init.apiMode() ? JSON.parse(err.stdout) : new Error(messages.ERROR_INVALID_W3)))
       })
     }
 
