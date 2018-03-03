@@ -1,4 +1,5 @@
 const Listr = require('listr')
+const isJSON = require('is-json')
 const {commandList} = require('./fixtures')
 const {
   wpcs,
@@ -20,6 +21,31 @@ class TestCLI extends CLI {
     this.init(options)
   }
 
+  /**
+   * Get message after subcommands cli run.
+   *
+   * @param {String} data
+   * @param {String} defaultMsg
+   */
+  getMessage(data, defaultMsg) {
+    let msg = ''
+
+    if (this.$init.apiMode()) {
+      if (isJSON(data.stdout)) {
+        msg = JSON.parse(data.stdout)
+      } else {
+        msg = new Error(messages.ERROR_INVALID_API)
+      }
+    } else {
+      msg  = new Error(defaultMsg)
+    }
+
+    return msg
+  }
+
+  /**
+   * Make preparation before validating.
+   */
   prepare() {
     const stdopts = {cwd: this.currentThemePath()}
 
@@ -35,8 +61,8 @@ class TestCLI extends CLI {
       title: 'Javascript ESLint',
       task: () => new Promise((resolve, reject) => {
         eslint(this.$clioptions.js, stdopts)
-          .then(data => resolve(JSON.parse(data)))
-          .catch(err => reject(this.$init.apiMode() ? JSON.parse(err.stdout) : new Error(messages.ERROR_INVALID_JS)))
+          .then(data => resolve(this.getMessage(data)))
+          .catch(err => reject(this.getMessage(err, messages.ERROR_INVALID_JS)))
       })
     }
 
@@ -44,8 +70,8 @@ class TestCLI extends CLI {
       title: 'SASS Stylelint',
       task: () => new Promise((resolve, reject) => {
         stylelint(this.$clioptions.sass, stdopts)
-          .then(data => resolve(JSON.parse(data)))
-          .catch(err => reject(this.$init.apiMode() ? JSON.parse(err.stdout) : new Error(messages.ERROR_INVALID_SASS)))
+          .then(data => resolve(this.getMessage(data)))
+          .catch(err => reject(this.getMessage(err, messages.ERROR_INVALID_SASS)))
       })
     }
 
@@ -53,8 +79,8 @@ class TestCLI extends CLI {
       title: 'WordPress Coding Standard',
       task: () => new Promise((resolve, reject) => {
         wpcs(this.$clioptions.wpcs, stdopts)
-          .then(data => resolve(JSON.parse(data)))
-          .catch(err => reject(this.$init.apiMode() ? err.stdout : new Error(messages.ERROR_INVALID_WPCS)))
+          .then(data => resolve(this.getMessage(data)))
+          .catch(err => reject(this.getMessage(err, messages.ERROR_INVALID_WPCS)))
       })
     }
 
@@ -62,8 +88,8 @@ class TestCLI extends CLI {
       title: 'Theme Check and Theme Mentor',
       task: () => new Promise((resolve, reject) => {
         themecheck(this.$clioptions.themecheck, stdopts)
-          .then(data => resolve(JSON.parse(data)))
-          .catch(err => reject(this.$init.apiMode() ? JSON.parse(err.stdout) : new Error(messages.ERROR_INVALID_THEMECHECK)))
+          .then(data => resolve(this.getMessage(data)))
+          .catch(err => reject(this.getMessage(err, messages.ERROR_INVALID_THEMECHECK)))
       })
     }
 
@@ -71,8 +97,8 @@ class TestCLI extends CLI {
       title: 'W3 HTML5 Markup',
       task: () => new Promise((resolve, reject) => {
         w3Validator(this.$clioptions.w3Validator, stdopts)
-          .then(data => resolve(JSON.parse(data)))
-          .catch(err => reject(this.$init.apiMode() ? JSON.parse(err.stdout) : new Error(messages.ERROR_INVALID_W3)))
+          .then(data => resolve(this.getMessage(data)))
+          .catch(err => reject(this.getMessage(err, messages.ERROR_INVALID_W3)))
       })
     }
 
@@ -110,6 +136,10 @@ class TestCLI extends CLI {
     if (this.subcmd) {
       this.initSubCommands()
     } else {
+      if (this.$init.apiMode()) {
+        this.$logger.happyExit(messages.ERROR_API_MODE_AVAILABILITY)
+      }
+
       const task = new Listr([
         this.task[commandList.JS],
         this.task[commandList.SASS],
@@ -129,7 +159,10 @@ class TestCLI extends CLI {
    */
   initSubCommands() {
     let cli
-    const loader = this.$logger.loader('')
+
+    if ([commandList.JS, commandList.SASS].includes(this.subcmd)) {
+      this.loader = this.$logger.loader('')
+    }
 
     switch (this.subcmd) {
       case commandList.JS:
@@ -159,16 +192,26 @@ class TestCLI extends CLI {
 
     const finalLogger = (isErr, data) => {
       let finalMessage
-      if (this.$init.apiMode()) {
-        finalMessage = {
-          message: messages.SUCCEED_VALID_CODES,
-          data
-        }
+
+      if ([commandList.JS, commandList.SASS].includes(this.subcmd)) {
+        this.loader.stop()
+      }
+
+      if (isErr) {
+        finalMessage = messages.ERROR_FIX_INVALID_CODES
       } else {
         finalMessage = messages.SUCCEED_VALID_CODES
       }
 
-      loader.stop()
+      if (this.$init.apiMode()) {
+        finalMessage = {
+          message: finalMessage
+        }
+
+        if (Object.keys(data).length > 0) {
+          finalMessage.data = data
+        }
+      }
 
       if (isErr) {
         this.$logger.exit(finalMessage)
