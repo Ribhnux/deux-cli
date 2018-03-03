@@ -114,4 +114,5 @@ exports.ERROR_INVALID_SASS = `Invalid SASS, type: ${chalk.bold.cyan('deux test s
 exports.ERROR_INVALID_JS = `Invalid Javascript, type: ${chalk.bold.cyan('deux test js')} to see the details`
 exports.ERROR_INVALID_API = 'Unknown Error, Please disable API Mode.'
 exports.ERROR_FIX_INVALID_CODES = 'You have invalid codes. Please fix all invalid codes before release your theme.'
+exports.ERROR_API_MODE_AVAILABILITY = 'API Mode only available in subcommands.'
 exports.CANCEL_RELEASE = 'Worry not. You can release when theme is ready.'
