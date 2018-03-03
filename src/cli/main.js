@@ -407,6 +407,28 @@ class CLI {
   }
 
   /**
+   * Get message after subcommands cli run.
+   *
+   * @param {String} data
+   * @param {String} defaultMsg
+   */
+  getMessage(data, defaultMsg) {
+    let msg = ''
+
+    if (this.$init.apiMode()) {
+      if (isJSON(data.stdout)) {
+        msg = JSON.parse(data.stdout)
+      } else {
+        msg = new Error(message.ERROR_INVALID_API)
+      }
+    } else {
+      msg = new Error(defaultMsg)
+    }
+
+    return msg
+  }
+
+  /**
    * Global task for release and test
    */
   getTestOptions() {

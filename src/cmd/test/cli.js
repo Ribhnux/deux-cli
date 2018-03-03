@@ -1,5 +1,4 @@
 const Listr = require('listr')
-const isJSON = require('is-json')
 const {commandList} = require('./fixtures')
 const {
   wpcs,
@@ -22,35 +21,16 @@ class TestCLI extends CLI {
   }
 
   /**
-   * Get message after subcommands cli run.
-   *
-   * @param {String} data
-   * @param {String} defaultMsg
-   */
-  getMessage(data, defaultMsg) {
-    let msg = ''
-
-    if (this.$init.apiMode()) {
-      if (isJSON(data.stdout)) {
-        msg = JSON.parse(data.stdout)
-      } else {
-        msg = new Error(messages.ERROR_INVALID_API)
-      }
-    } else {
-      msg = new Error(defaultMsg)
-    }
-
-    return msg
-  }
-
-  /**
    * Make preparation before validating.
    */
   prepare() {
     const stdopts = {cwd: this.currentThemePath()}
 
     if (!this.$init.apiMode()) {
-      stdopts.stdio = 'inherit'
+      if (this.subcmd) {
+        stdopts.stdio = 'inherit'
+      }
+
       stdopts.maxBuffer = 10 * (1024 * 1024)
     }
 

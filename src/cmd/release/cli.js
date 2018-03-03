@@ -141,7 +141,7 @@ class ReleaseCLI extends CLI {
   }
 
   action({release, confirm}) {
-    if (!confirm && !this.$init.apiMode()) {
+    if (!confirm) {
       this.$logger.happyExit(messages.CANCEL_RELEASE)
     }
 
@@ -232,13 +232,15 @@ class ReleaseCLI extends CLI {
         task: () => {
           const testOptions = this.getTestOptions()
 
+          stdopts.maxBuffer = 10 * (1024 * 1024)
+
           return new Listr([
             {
               title: 'ESLint for Javascript',
               task: () => new Promise((resolve, reject) => {
                 eslint(testOptions.js, stdopts)
-                  .then(() => resolve())
-                  .catch(() => reject(new Error(messages.ERROR_INVALID_JS)))
+                  .then(data => resolve(this.getMessage(data)))
+                  .catch(err => reject(this.getMessage(err, messages.ERROR_INVALID_JS)))
               })
             },
 
@@ -246,8 +248,8 @@ class ReleaseCLI extends CLI {
               title: 'Stylelint for SASS',
               task: () => new Promise((resolve, reject) => {
                 stylelint(testOptions.sass, stdopts)
-                  .then(() => resolve())
-                  .catch(() => reject(new Error(messages.ERROR_INVALID_SASS)))
+                  .then(data => resolve(this.getMessage(data)))
+                  .catch(err => reject(this.getMessage(err, messages.ERROR_INVALID_SASS)))
               })
             },
 
@@ -255,8 +257,8 @@ class ReleaseCLI extends CLI {
               title: 'WordPress Coding Standard',
               task: () => new Promise((resolve, reject) => {
                 wpcs(testOptions.wpcs, stdopts)
-                  .then(() => resolve())
-                  .catch(() => reject(new Error(messages.ERROR_INVALID_WPCS)))
+                  .then(data => resolve(this.getMessage(data)))
+                  .catch(err => reject(this.getMessage(err, messages.ERROR_INVALID_WPCS)))
               })
             },
 
@@ -264,8 +266,8 @@ class ReleaseCLI extends CLI {
               title: 'Theme Check and Theme Mentor',
               task: () => new Promise((resolve, reject) => {
                 themecheck(testOptions.themecheck, stdopts)
-                  .then(() => resolve())
-                  .catch(() => reject(new Error(messages.ERROR_INVALID_THEMECHECK)))
+                  .then(data => resolve(this.getMessage(data)))
+                  .catch(err => reject(this.getMessage(err, messages.ERROR_INVALID_THEMECHECK)))
               })
             },
 
@@ -273,8 +275,8 @@ class ReleaseCLI extends CLI {
               title: 'W3 HTML5 Markup',
               task: () => new Promise((resolve, reject) => {
                 w3Validator(testOptions.w3Validator, stdopts)
-                  .then(() => resolve())
-                  .catch(() => reject(new Error(messages.ERROR_INVALID_W3)))
+                  .then(data => resolve(this.getMessage(data)))
+                  .catch(err => reject(this.getMessage(err, messages.ERROR_INVALID_W3)))
               })
             }
           ])
