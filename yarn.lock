@@ -3666,9 +3666,9 @@ html-tags@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/html-tags/-/html-tags-2.0.0.tgz#10b30a386085f43cede353cc8fa7cb0deeea668b"
 
-html5-validator@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/html5-validator/-/html5-validator-1.1.0.tgz#3295acac1c3a6ed5d25ea3af3c2e7e286e1a935b"
+html5-validator@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/html5-validator/-/html5-validator-1.2.0.tgz#86a1b701a14cb87fde1798e68c93384b15e6d141"
   dependencies:
     axios "^0.16.2"
     caporal "^0.7.0"
@@ -7682,9 +7682,9 @@ wp-pot@^1.4.0:
     path-sort "^0.1.0"
     php-parser "^2.1.0"
 
-wp-theme-check@^1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/wp-theme-check/-/wp-theme-check-1.4.0.tgz#e90589103c575450ed05cbd265aef59bb96913ae"
+wp-theme-check@^1.4.2:
+  version "1.4.2"
+  resolved "https://registry.yarnpkg.com/wp-theme-check/-/wp-theme-check-1.4.2.tgz#c425f6bbe39d706ccc51175f911ffa2c4dbd0583"
   dependencies:
     caporal "^0.7.0"
     chalk "^2.0.1"
