@@ -37,7 +37,7 @@ class TestCLI extends CLI {
         msg = new Error(messages.ERROR_INVALID_API)
       }
     } else {
-      msg  = new Error(defaultMsg)
+      msg = new Error(defaultMsg)
     }
 
     return msg
