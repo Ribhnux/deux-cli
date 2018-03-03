@@ -112,5 +112,6 @@ exports.ERROR_INVALID_WPCS = `Invalid WordPress Coding Standard, type: ${chalk.b
 exports.ERROR_INVALID_W3 = `Invalid HTML5 Markup, type: ${chalk.bold.cyan('deux test w3')} to see the details`
 exports.ERROR_INVALID_SASS = `Invalid SASS, type: ${chalk.bold.cyan('deux test sass')} to see the details`
 exports.ERROR_INVALID_JS = `Invalid Javascript, type: ${chalk.bold.cyan('deux test js')} to see the details`
-exports.ERROR_FIX_INVALID_CODES = 'Please fix invalid codes.'
+exports.ERROR_INVALID_API = 'Unknown Error, Please disable API Mode.'
+exports.ERROR_FIX_INVALID_CODES = 'You have invalid codes. Please fix all invalid codes before release your theme.'
 exports.CANCEL_RELEASE = 'Worry not. You can release when theme is ready.'
