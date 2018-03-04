@@ -56,7 +56,7 @@ class TestCLI extends CLI {
     }
 
     this.task[commandList.WPCS] = {
-      title: 'WordPress Coding Standard',
+      title: 'WordPress Coding Standards',
       task: () => new Promise((resolve, reject) => {
         wpcs(this.$clioptions.wpcs, stdopts)
           .then(data => resolve(this.getMessage(data)))

@@ -254,7 +254,7 @@ class ReleaseCLI extends CLI {
             },
 
             {
-              title: 'WordPress Coding Standard',
+              title: 'WordPress Coding Standards',
               task: () => new Promise((resolve, reject) => {
                 wpcs(testOptions.wpcs, stdopts)
                   .then(data => resolve(this.getMessage(data)))
