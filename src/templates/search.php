@@ -30,7 +30,7 @@ get_header();
 				while ( have_posts() ) :
 					the_post();
 					// Load partial-templates for search page.
-					get_template_part( 'partial-templates/content', 'search' );
+					get_template_part( 'partial-templates/post/content', 'search' );
 				endwhile; // end of the loops.
 				?>
 
@@ -38,7 +38,7 @@ get_header();
 
 				<?php
 					// Load partial-templates for empty content.
-					get_template_part( 'partial-templates/content', 'none' );
+					get_template_part( 'partial-templates/post/content', 'none' );
 				?>
 
 			<?php endif; ?>

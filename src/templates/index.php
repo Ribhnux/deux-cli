@@ -26,7 +26,7 @@ get_header();
 					the_post();
 
 					// Load partial-templates for page.
-					get_template_part( 'partial-templates/content', get_post_format() );
+					get_template_part( 'partial-templates/post/content', get_post_format() );
 
 					// Load the comment template when comments are open and at leas has 1 comment.
 					if ( comments_open() || get_comments_number() ) :
@@ -38,7 +38,7 @@ get_header();
 			else :
 
 				// Load partial-templates for empty content.
-				get_template_part( 'partial-templates/content', 'none' );
+				get_template_part( 'partial-templates/post/content', 'none' );
 
 			endif;
 			?>

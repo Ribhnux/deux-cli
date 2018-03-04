@@ -69,7 +69,7 @@ $author_desc = $current_author->user_description;
 			else :
 
 				// Load partial-templates for empty content.
-				get_template_part( 'partial-templates/content', 'none' );
+				get_template_part( 'partial-templates/post/content', 'none' );
 
 			endif;
 			?>

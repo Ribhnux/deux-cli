@@ -27,7 +27,7 @@
 <?php
 while ( have_posts() ) :
 	the_post();
-	get_template_part( 'partial-templates/content', 'blank' );
+	get_template_part( 'partial-templates/post/content', 'blank' );
 endwhile; // end of the loop.
 ?>
 

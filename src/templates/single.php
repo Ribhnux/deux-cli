@@ -19,7 +19,7 @@ get_header();
 				the_post();
 
 				// Load partial-templates for single page.
-				get_template_part( 'partial-templates/content', 'single' );
+				get_template_part( 'partial-templates/post/content', 'single' );
 
 				// Load the comment template when comments are open and at leas has 1 comment.
 				if ( comments_open() || get_comments_number() ) :

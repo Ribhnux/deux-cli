@@ -12,7 +12,7 @@ get_header();
 <div id="content-wrapper" class="site__wrapper--page">
 	<div id="content" class="content__wrapper" tabindex="-1">
 		<main id="main" class="site__main">
-			<?php get_template_part( 'partial-templates/content', 'not-found' ); ?>
+			<?php get_template_part( 'partial-templates/post/content', 'not-found' ); ?>
 		</main><!-- #main -->
 	</div><!-- #content -->
 

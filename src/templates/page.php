@@ -22,7 +22,7 @@ get_header();
 				the_post();
 
 				// Load partial-templates for page.
-				get_template_part( 'partial-templates/content', 'page' );
+				get_template_part( 'partial-templates/post/content', 'page' );
 
 				// Load the comment template when comments are open and at leas has 1 comment.
 				if ( comments_open() || get_comments_number() ) :

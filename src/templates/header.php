@@ -44,6 +44,6 @@
 				</div>
 				<?php
 					// Display navigation bar.
-					get_template_part( 'partial-templates/header', 'navbar' );
+					get_template_part( 'partial-templates/header/navbar' );
 				?>
 			</header>

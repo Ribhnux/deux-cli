@@ -18,11 +18,11 @@ get_header();
 				while ( have_posts() ) :
 					the_post();
 					// Load partial-templates for archive.
-					get_template_part( 'partial-templates/content', get_post_format() );
+					get_template_part( 'partial-templates/post/content', get_post_format() );
 				endwhile;
 			else :
 					// Load partial-templates for empty content.
-					get_template_part( 'partial-templates/content', 'none' );
+					get_template_part( 'partial-templates/post/content', 'none' );
 
 			endif;
 			?>
