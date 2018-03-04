@@ -14,15 +14,15 @@
 get_header();
 ?>
 
-<div id="content-wrapper" class="site__wrapper--page">
-	<div id="content" class="content__wrapper" tabindex="-1">
-		<main id="main" class="site__main">
+<div class="siteWrapper-page">
+	<div id="content-wrapper" class="contentWrapper" tabindex="-1">
+		<main id="main" class="siteMain">
 			<?php
 			while ( have_posts() ) :
 				the_post();
 
 				// Load partial-templates for page.
-				get_template_part( 'partial-templates/content', 'page' );
+				get_template_part( 'partial-templates/post/content', 'page' );
 
 				// Load the comment template when comments are open and at leas has 1 comment.
 				if ( comments_open() || get_comments_number() ) :

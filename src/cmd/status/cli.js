@@ -4,7 +4,7 @@ const execa = require('execa')
 const slugify = require('node-slugify')
 
 const CLI = global.deuxcli.require('main')
-const {finish, colorlog} = global.deuxhelpers.require('logger')
+const {colorlog} = global.deuxhelpers.require('logger')
 const {dirlist, filelist} = global.deuxhelpers.require('util/file')
 const {featureTypes, featureLabels} = global.deuxcmd.require('add/cli/fixtures')
 
@@ -115,7 +115,7 @@ class StatusCLI extends CLI {
       })
 
       this.status.push({
-        label: ``,
+        label: '',
         value: this.sassCount,
         suffix: 'SASS',
         tab: 3
@@ -175,7 +175,7 @@ class StatusCLI extends CLI {
       })
 
       if (this.$init.apiMode()) {
-        finish(this.status, true)
+        this.$logger.finish(this.status)
       }
 
       colorlog(status.join('\n'), false)

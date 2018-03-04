@@ -5,9 +5,18 @@ module.exports = (err, isRaw) => {
   let message = errMsg
 
   if (isRaw) {
-    message = {
-      error: true,
-      message: errMsg
+    if (typeof err === 'string') {
+      message = {
+        error: true,
+        message: errMsg
+      }
+    }
+
+    if (typeof err === 'object') {
+      message = Object.assign({
+        error: true,
+        message
+      }, err)
     }
   }
 

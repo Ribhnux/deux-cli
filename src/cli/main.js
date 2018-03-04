@@ -42,9 +42,9 @@ class CLI {
 
     this.$init.check().then(db => {
       this.$logger.versionlog = logger.versionlog
-      this.$logger.title = msg => {
+      this.$logger.title = (msg, padding = true) => {
         if (!this.$init.apiMode()) {
-          logger.colorlog(msg)
+          logger.colorlog(msg, padding)
         }
       }
 
@@ -83,7 +83,11 @@ class CLI {
           }
 
           if (!this.$subcmd && this.$prompts.length === 0) {
-            this.$logger.title(this.$title)
+            if (!this.$init.apiMode()) {
+              this.$logger.versionlog()
+            }
+
+            this.$logger.title(`\n${this.$title}`, false)
             this.action({})
           }
         }
@@ -403,6 +407,28 @@ class CLI {
   }
 
   /**
+   * Get message after subcommands cli run.
+   *
+   * @param {String} data
+   * @param {String} defaultMsg
+   */
+  getMessage(data, defaultMsg) {
+    let msg = ''
+
+    if (this.$init.apiMode()) {
+      if (isJSON(data.stdout)) {
+        msg = JSON.parse(data.stdout)
+      } else {
+        msg = new Error(message.ERROR_INVALID_API)
+      }
+    } else {
+      msg = new Error(defaultMsg)
+    }
+
+    return msg
+  }
+
+  /**
    * Global task for release and test
    */
   getTestOptions() {
@@ -411,13 +437,18 @@ class CLI {
       stylelintrc = this.templateSourcePath(stylelintrc)
     }
 
-    return {
-      wpcs: ['--excludes=woocommerce'],
+    let eslintrc
 
-      themecheck: [this.currentThemePath(), '--excludes=releases'],
+    if (existsSync(this.themePath('.eslintrc'))) {
+      eslintrc = this.currentTheme('.eslintrc')
+    } else {
+      eslintrc = this.templateSourcePath('.eslintrc')
+    }
 
+    const options = {
+      wpcs: [this.currentThemePath(), '--excludes=woocommerce', '--skip-warning'],
+      themecheck: [this.currentThemePath(), '--skip-warning', '--excludes=releases,.stylelintrc,.editorconfig,.eslintrc,.deuxconfig'],
       w3Validator: [this.getConfig('devUrl')],
-
       sass: [
         '--config',
         stylelintrc,
@@ -426,15 +457,28 @@ class CLI {
         path.join('assets-src', 'sass', '**'),
         path.join('includes', 'customizer', 'assets-src', 'sass', '**')
       ],
-
       js: [
         '--no-semicolon',
         path.join('assets-src', 'js', '**'),
         '!', path.join('assets-src', 'js', 'node_modules', '**'),
         path.join('includes', 'customizer', 'assets-src', 'js', '**'),
-        '!', path.join('includes', 'customizer', 'assets-src', 'js', 'node_modules', '**')
+        '!', path.join('includes', 'customizer', 'assets-src', 'js', 'node_modules', '**'),
+        '--extend',
+        eslintrc
       ]
     }
+
+    if (this.$init.apiMode()) {
+      options.wpcs.push('--json')
+      options.themecheck.push('--json')
+      options.w3Validator.push('--json')
+      options.js.push('--reporter')
+      options.js.push('json')
+      options.sass.push('--formatter')
+      options.sass.push('json')
+    }
+
+    return options
   }
 }
 

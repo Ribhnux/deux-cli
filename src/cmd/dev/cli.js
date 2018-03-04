@@ -217,6 +217,8 @@ class DevCLI extends CLI {
       // Compile Default Style
       const defaultStyle = gulp.src(path.join(options.srcPath, inputFile))
         .pipe(plumber())
+        .pipe(replacer(/\/\*rtl(.[^/]*)\*\//g, '/*!rtl$1*/'))
+        .pipe(replacer(/\/\*!rtl(.[^/]*)\*\/;/g, ';/*!rtl:after$1*/'))
         .pipe(sass({outputStyle: 'compressed'}))
         .pipe(autoPrefixr({
           browsers: ['last 2 versions', 'Firefox < 20'],
@@ -230,6 +232,8 @@ class DevCLI extends CLI {
       if (options.rtl === true) {
         // Compile RTL Style
         RTLStyle = defaultStyle.pipe(clone())
+          .pipe(replacer(/\/\*!rtl(.[^/]*)\*\//g, '/*rtl$1*/'))
+          .pipe(replacer(/;\/\*rtl:after(.[^/]*)\*\//g, '/*rtl$1*/;'))
           .pipe(rtlcss())
           .pipe(cssbeautify({indent: '  ', autosemicolon: true}))
           .pipe(replacer(/}\/\*!/g, '}\n\n/*!'))
@@ -242,7 +246,7 @@ class DevCLI extends CLI {
           .pipe(cleanCSS({compatibility: 'ie8'}))
           .pipe(stripComments({preserve: false}))
           .pipe(gulpif(options.sourcemap === true, sourceMaps.init()))
-          .pipe(rename({suffix: '.min'}))
+          .pipe(rename({basename: path.parse(inputFile).name, suffix: '.min-rtl'}))
           .pipe(gulpif(options.sourcemap === true, sourceMaps.write('./')))
           .pipe(gulp.dest(options.dstPath))
       }
@@ -310,15 +314,15 @@ class DevCLI extends CLI {
   compilePot() {
     const themeDetails = this.themeDetails()
     const potFilePath = this.currentThemePath('languages', `${themeDetails.slug}.pot`)
-    const translate = wpPot({
-      domain: themeDetails.slug,
-      package: themeDetails.name,
-      relativeTo: this.currentThemePath()
-    })
 
     const compilePotFile = gulp
-      .src(this.currentThemePath('**', '*.php'))
-      .pipe(translate)
+      .src(this.currentThemePath('*.php'))
+      .pipe(plumber())
+      .pipe(wpPot({
+        domain: themeDetails.slug,
+        package: themeDetails.name,
+        relativeTo: this.currentThemePath()
+      }))
       .pipe(gulp.dest(potFilePath))
 
     const compilePotToMo = gulp.src(potFilePath)
