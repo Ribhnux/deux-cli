@@ -2416,7 +2416,7 @@ test('`deux remove customizer` (Control Type): control file should be removed.',
 
 const devBuildAsset = new Promise(async resolve => {
   await removeCustomizerControlType.then(() => {
-    runCli(['dev', '--build'], {}).then(() => {
+    runCli(['dev', '--build']).then(() => {
       resolve()
     }).catch(err => {
       console.log(err)
