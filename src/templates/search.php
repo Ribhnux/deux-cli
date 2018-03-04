@@ -9,10 +9,10 @@
 get_header();
 ?>
 
-<div id="content-wrapper" class="site__wrapper--search">
-	<div id="content" class="content__wrapper" tabindex="-1">
-		<main id="main" class="site__main">
-			<header id="page-header" class="page__header--author">
+<div class="siteWrapper-search">
+	<div id="content-wrapper" class="contentWrapper" tabindex="-1">
+		<main id="main" class="siteMain">
+			<header id="page-header" class="pageHeader-author">
 				<h1 class="page-title">
 				<?php
 					printf(
@@ -30,7 +30,7 @@ get_header();
 				while ( have_posts() ) :
 					the_post();
 					// Load partial-templates for search page.
-					get_template_part( 'partial-templates/content', 'search' );
+					get_template_part( 'partial-templates/post/content', 'search' );
 				endwhile; // end of the loops.
 				?>
 
@@ -38,7 +38,7 @@ get_header();
 
 				<?php
 					// Load partial-templates for empty content.
-					get_template_part( 'partial-templates/content', 'none' );
+					get_template_part( 'partial-templates/post/content', 'none' );
 				?>
 
 			<?php endif; ?>

@@ -75,7 +75,7 @@ class AddTemplate extends CLI {
 
           if (_dirlist.length > 0) {
             list.push(new inquirer.Separator())
-            list = list.concat(dirlist)
+            list = list.concat(_dirlist)
             list.push(new inquirer.Separator())
           }
 

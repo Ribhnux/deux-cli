@@ -13,6 +13,6 @@
 get_header();
 while ( have_posts() ) :
 	the_post();
-	get_template_part( 'partial-templates/content', 'empty' );
+	get_template_part( 'partial-templates/post/content', 'empty' );
 endwhile;
 get_footer();

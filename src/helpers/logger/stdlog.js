@@ -53,8 +53,10 @@ module.exports = options => {
           message.message = stripAnsi(message.message)
         }
 
-        finalOutput = JSON.stringify(message)
+        finalOutput = message
       }
+
+      finalOutput = JSON.stringify(finalOutput)
     }
 
     console.log(finalOutput)

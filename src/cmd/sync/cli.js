@@ -2,9 +2,10 @@ const CLI = global.deuxcli.require('main')
 const messages = global.deuxcli.require('messages')
 
 class SyncCLI extends CLI {
-  constructor() {
+  constructor(options) {
     super()
-    this.init()
+    this.options = options
+    this.init(options)
   }
 
   /**
