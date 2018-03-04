@@ -10,9 +10,9 @@
 get_header();
 ?>
 
-<div id="content-wrapper" class="site__wrapper--archive">
-	<div id="content" class="content__wrapper" tabindex="-1">
-		<main id="main" class="site__main">
+<div class="siteWrapper-archive">
+	<div id="content-wrapper" class="contentWrapper" tabindex="-1">
+		<main id="main" class="siteMain">
 			<?php
 			if ( have_posts() ) :
 				while ( have_posts() ) :

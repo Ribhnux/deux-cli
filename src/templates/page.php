@@ -14,9 +14,9 @@
 get_header();
 ?>
 
-<div id="content-wrapper" class="site__wrapper--page">
-	<div id="content" class="content__wrapper" tabindex="-1">
-		<main id="main" class="site__main">
+<div class="siteWrapper-page">
+	<div id="content-wrapper" class="contentWrapper" tabindex="-1">
+		<main id="main" class="siteMain">
 			<?php
 			while ( have_posts() ) :
 				the_post();
