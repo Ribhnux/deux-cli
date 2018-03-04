@@ -446,7 +446,7 @@ class CLI {
     }
 
     const options = {
-      wpcs: [this.currentThemePath(), '--excludes=woocommerce'],
+      wpcs: [this.currentThemePath(), '--excludes=woocommerce', '--skip-warning'],
       themecheck: [this.currentThemePath(), '--skip-warning', '--excludes=releases,.stylelintrc,.editorconfig,.eslintrc,.deuxconfig'],
       w3Validator: [this.getConfig('devUrl')],
       sass: [
