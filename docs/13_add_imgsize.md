@@ -4,7 +4,7 @@ title: Add imgsize subcommand
 sidebar_label: deux add imgsize
 ---
 
-> This sub-command is part of [`deux add`](cmd-add.html) command.
+> This subcommand is part of [`deux add`](cmd-add.html) command.
 
 ## Usage
 ```bash

@@ -4,9 +4,9 @@ title: Add asset subcommand
 sidebar_label: deux add asset
 ---
 
-> This sub-command is part of [`deux add`](cmd-add.html) command.
+> This subcommand is part of [`deux add`](cmd-add.html) command.
 
-`add asset` sub-command will add or download asset resources for theme. Assets can be found under `assets-src` directory (except webfont) that only exists in development. The `assets-src` directory will be removed, after theme released.
+`add asset` subcommand will add or download asset resources for theme. Assets can be found under `assets-src` directory (except webfont) that only exists in development. The `assets-src` directory will be removed, after theme released.
 
 There will be 3 different asset types:
 - [3rd-party Libraries or Vendors](#3rd-party-libraries-or-vendors).

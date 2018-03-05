@@ -4,7 +4,7 @@ title: Add template subcommand
 sidebar_label: deux add template
 ---
 
-> This sub-command is part of [`deux add`](cmd-add.html) command.
+> This subcommand is part of [`deux add`](cmd-add.html) command.
 
 Add [Post/Page Template](https://developer.wordpress.org/themes/template-files-section/page-template-files/) and Partial Template.
 

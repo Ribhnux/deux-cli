@@ -4,7 +4,7 @@ title: Remove hooks subcommand
 sidebar_label: deux remove hooks
 ---
 
-> This sub-command is part of [`deux remove`](cmd-remove.html) command.
+> This subcommand is part of [`deux remove`](cmd-remove.html) command.
 
 ## Usage
 ```bash

@@ -4,7 +4,7 @@ title: Add hooks subcommand
 sidebar_label: deux add hooks
 ---
 
-> This sub-command is part of [`deux add`](cmd-add.html) command.
+> This subcommand is part of [`deux add`](cmd-add.html) command.
 
 ## Usage
 ```bash

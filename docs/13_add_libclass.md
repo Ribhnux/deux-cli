@@ -4,7 +4,7 @@ title: Add libclass subcommand
 sidebar_label: deux add libclass
 ---
 
-> This sub-command is part of [`deux add`](cmd-add.html) command.
+> This subcommand is part of [`deux add`](cmd-add.html) command.
 
 ## Usage
 ```bash

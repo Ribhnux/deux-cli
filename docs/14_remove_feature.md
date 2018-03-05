@@ -4,7 +4,7 @@ title: Remove feature subcommand
 sidebar_label: deux remove feature
 ---
 
-> This sub-command is part of [`deux remove`](cmd-remove.html) command.
+> This subcommand is part of [`deux remove`](cmd-remove.html) command.
 
 ## Usage
 ```bash
