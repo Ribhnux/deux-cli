@@ -53,7 +53,7 @@ class AddHooks extends CLI {
       },
 
       {
-        name: 'hooks.tag',
+        name: 'hooks.fn',
         message: ({hooks}) => `${capitalize(hooks.type)} function`,
         default: ({hooks}) => {
           return hooks.type === hookTypes.ACTION ? 'wp_head' : 'the_content'
