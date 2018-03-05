@@ -6,6 +6,12 @@ sidebar_label: deux add component
 
 > This subcommand is part of [`deux add`](cmd-add.html) command.
 
+Add a component template. The difference between component and partial template is, we can pass arguments to it.
+
+It's basically is a function. For an example button, button can have a parameter that can change it's class from primary to secondary.
+
+Template file will be created under `components` directory.
+
 ## Usage
 ```bash
 deux add component [options]
@@ -25,6 +31,19 @@ Run in API Mode.
 ```javascript 
 // JSON Example
 {
+  // @type Object
+  // @required
+  "component": {
+    // Component Name.
+    // @type String
+    // @required
+    "name": "Button",
+
+    // Component Description.
+    // @type String
+    // @required
+    "description": "Example Description"
+  }
 }
 ```
 
@@ -34,5 +53,5 @@ Run in API Mode.
 deux add component
 
 # API Mode
-deux add component --api --input ''
+deux add component --api --input '{ "component": { "name": "Button", "description": "Example Description" } }'
 ```
