@@ -40,7 +40,7 @@ Run in API Mode.
     // @required
     "description": "Example Description",
 
-    // Is use custom Menu Walker.
+    // // If set as true, a new file `includes/libraries/class-primary-menu-nav-walker.php` will be added
     // @type Boolean
     // @required
     "walker": true
