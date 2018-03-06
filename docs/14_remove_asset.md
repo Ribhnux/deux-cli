@@ -6,6 +6,8 @@ sidebar_label: deux remove asset
 
 > This subcommand is part of [`deux remove`](cmd-remove.html) command.
 
+Remove asset config and files.
+
 ## Usage
 ```bash
 deux remove asset [options]
@@ -25,6 +27,27 @@ Run in API Mode.
 ```javascript 
 // JSON Example
 {
+  // @type Array
+  // @required
+  "assets": [
+    {
+      // Available types: `lib`, `sass`, and `font`
+      // @type String
+      // @required
+      "type": "lib",
+
+      // Sass Type, required if type is `sass`.
+      // Available type: `components`, `layouts`, `pages`, `themes`, and `vendors`
+      // @type String
+      // @optional
+      "sassType": "component"
+
+      // Slug, filename or identifier.
+      // @type String
+      // @rquired
+      "value": "twitter-bootstrap"
+    }
+  ]
 }
 ```
 
@@ -34,5 +57,5 @@ Run in API Mode.
 deux remove asset
 
 # API Mode
-deux remove asset --api --input ''
+deux remove asset --api --input '{ "assets": [ { "type": "lib", "value": "twitter-bootstrap" } ] }'
 ```
