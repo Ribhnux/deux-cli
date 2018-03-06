@@ -664,7 +664,7 @@ test('`deux add libclass`: file should be exists.', async t => {
 const removeLibClass = new Promise(async resolve => {
   await addLibClass.then(() => {
     runCli(['remove', 'libclass'], {
-      libraries: ['class-example']
+      lib: ['class-example']
     }).then(() => {
       resolve()
     })

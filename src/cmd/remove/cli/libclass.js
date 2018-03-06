@@ -27,7 +27,7 @@ class RemoveLibClass extends CLI {
     this.$prompts = [
       {
         type: 'checkbox',
-        name: 'libraries',
+        name: 'lib',
         message: 'Select libraries you want to remove',
         choices: () => new Promise((resolve, reject) => {
           Promise.all(this.themeLibraries.map(
@@ -65,25 +65,25 @@ class RemoveLibClass extends CLI {
       },
 
       Object.assign(captchaMaker(), {
-        when: ({libraries}) => libraries.length > 0
+        when: ({lib}) => lib.length > 0
       }),
 
       {
         type: 'confirm',
         name: 'confirm',
-        when: ({libraries, captcha}) => libraries.length > 0 && captcha,
+        when: ({lib, captcha}) => lib.length > 0 && captcha,
         default: false,
         message: () => 'Removing libraries from config can\'t be undone. Do you want to continue?'
       }
     ]
   }
 
-  action({libraries, confirm}) {
-    if (libraries.length === 0 || (!confirm && !this.$init.apiMode())) {
+  action({lib, confirm}) {
+    if (lib.length === 0 || (!confirm && !this.$init.apiMode())) {
       this.$logger.happyExit()
     }
 
-    Promise.all(libraries.map(
+    Promise.all(lib.map(
       item => new Promise(resolve => {
         const libPath = this.currentThemePath('includes', 'libraries', `${item}.php`)
         if (existsSync(libPath)) {
