@@ -14,6 +14,7 @@ const rollup = require('rollup-stream')
 const source = require('vinyl-source-stream')
 const buffer = require('vinyl-buffer')
 const babel = require('rollup-plugin-babel')
+const rollupCleanup = require('rollup-plugin-cleanup')
 const autoPrefixr = require('gulp-autoprefixer')
 const uglify = require('gulp-uglify')
 const wpPot = require('gulp-wp-pot')
@@ -284,12 +285,15 @@ class DevCLI extends CLI {
         input: path.join(options.srcPath, inputFile),
         sourcemap: false,
         format: 'iife',
-        plugins: babel({
-          presets: [
-            [require.resolve('babel-preset-env'), {modules: false}]
-          ],
-          babelrc: false
-        })
+        plugins: [
+          babel({
+            presets: [
+              [require.resolve('babel-preset-env'), {modules: false}]
+            ],
+            babelrc: false
+          }),
+          rollupCleanup()
+        ]
       }))
       // Beautify
       .pipe(source(inputFile, options.srcPath))

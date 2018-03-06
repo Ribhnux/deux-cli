@@ -4,7 +4,7 @@ title: Add widget subcommand
 sidebar_label: deux add widget
 ---
 
-> This sub-command is part of [`deux add`](cmd-add.html) command.
+> This subcommand is part of [`deux add`](cmd-add.html) command.
 
 Add and Register WordPress [Widget](https://developer.wordpress.org/themes/functionality/widgets/).
 

@@ -4,7 +4,7 @@ title: Remove imgsize subcommand
 sidebar_label: deux remove imgsize
 ---
 
-> This sub-command is part of [`deux remove`](cmd-remove.html) command.
+> This subcommand is part of [`deux remove`](cmd-remove.html) command.
 
 ## Usage
 ```bash

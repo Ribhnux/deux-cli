@@ -4,7 +4,7 @@ title: Add menu subcommand
 sidebar_label: deux add menu
 ---
 
-> This sub-command is part of [`deux add`](cmd-add.html) command.
+> This subcommand is part of [`deux add`](cmd-add.html) command.
 
 Add and Register WordPress [Navigation Menu](https://developer.wordpress.org/themes/functionality/navigation-menus/). If menu use custom walker, there will `class-menuname-nav-walker.php` created in `libraries` directory.
 

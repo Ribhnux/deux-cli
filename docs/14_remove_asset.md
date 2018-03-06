@@ -4,7 +4,7 @@ title: Remove widget subcommand
 sidebar_label: deux remove asset
 ---
 
-> This sub-command is part of [`deux remove`](cmd-remove.html) command.
+> This subcommand is part of [`deux remove`](cmd-remove.html) command.
 
 ## Usage
 ```bash

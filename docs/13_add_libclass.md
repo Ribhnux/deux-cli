@@ -4,7 +4,9 @@ title: Add libclass subcommand
 sidebar_label: deux add libclass
 ---
 
-> This sub-command is part of [`deux add`](cmd-add.html) command.
+> This subcommand is part of [`deux add`](cmd-add.html) command.
+
+Add custom PHP Class. All libraries are partial and structured under `includes/libraries` directory.
 
 ## Usage
 ```bash
@@ -25,6 +27,17 @@ Run in API Mode.
 ```javascript 
 // JSON Example
 {
+  // @type Object
+  // @required
+  "lib": {
+    // @type String
+    // @required
+    "name": "Example Class",
+
+    // @type String
+    // @required
+    "description": "Example Description"
+  }
 }
 ```
 
@@ -34,5 +47,5 @@ Run in API Mode.
 deux add libclass
 
 # API Mode
-deux add libclass --api --input ''
+deux add libclass --api --input ' { "lib": { "name": "Example Class", "description": "Example Description" } } '
 ```

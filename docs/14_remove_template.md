@@ -4,7 +4,7 @@ title: Remove template subcommand
 sidebar_label: deux remove template
 ---
 
-> This sub-command is part of [`deux remove`](cmd-remove.html) command.
+> This subcommand is part of [`deux remove`](cmd-remove.html) command.
 
 ## Usage
 ```bash
