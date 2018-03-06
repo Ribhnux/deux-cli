@@ -58,7 +58,7 @@ class RemoveAsset extends CLI {
               list.push({
                 name: `${value} ${version}`,
                 value: {
-                  key: assetTypes.LIB,
+                  type: assetTypes.LIB,
                   slug: value
                 }
               })
@@ -67,14 +67,14 @@ class RemoveAsset extends CLI {
 
           let sass = []
 
-          for (const type in this.themeAsset.sass) {
-            if (Object.prototype.hasOwnProperty.call(this.themeAsset.sass, type)) {
-              this.themeAsset.sass[type].forEach(value => {
+          for (const assetType in this.themeAsset.sass) {
+            if (Object.prototype.hasOwnProperty.call(this.themeAsset.sass, assetType)) {
+              this.themeAsset.sass[assetType].forEach(value => {
                 sass.push({
-                  name: capitalize(`${value} ${type.substr(0, type.length - 1)}`),
+                  name: capitalize(`${value} ${assetType.substr(0, assetType.length - 1)}`),
                   value: {
-                    key: assetTypes.SASS,
-                    type,
+                    type: assetTypes.SASS,
+                    assetType,
                     value
                   }
                 })
@@ -94,7 +94,7 @@ class RemoveAsset extends CLI {
               fonts.push({
                 name: this.themeAsset.fonts[value].name,
                 value: {
-                  key: assetTypes.FONT,
+                  type: assetTypes.FONT,
                   value
                 }
               })
@@ -138,7 +138,7 @@ class RemoveAsset extends CLI {
 
     Promise.all(assets.map(
       item => new Promise(resolve => {
-        switch (item.key) {
+        switch (item.type) {
           case assetTypes.LIB:
             rimraf.sync(this.currentThemePath('assets', 'vendors', item.slug))
             rimraf.sync(this.currentThemePath('assets-src', 'sass', 'vendors', `_${item.slug}.scss`))
@@ -146,11 +146,11 @@ class RemoveAsset extends CLI {
             break
 
           case assetTypes.SASS:
-            this.themeAsset.sass[item.type].forEach(_item => {
-              rimraf.sync(this.currentThemePath('assets-src', 'sass', item.type, `_${_item}.scss`))
+            this.themeAsset.sass[item.sassType].forEach(_item => {
+              rimraf.sync(this.currentThemePath('assets-src', 'sass', item.sassType, `_${_item}.scss`))
             })
 
-            this.themeAsset.sass[item.type] = this.themeAsset.sass[item.type].filter(
+            this.themeAsset.sass[item.sassType] = this.themeAsset.sass[item.sassType].filter(
               _item => _item !== item.value
             )
 

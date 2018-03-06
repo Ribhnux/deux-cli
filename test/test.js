@@ -1879,7 +1879,7 @@ const removeAssetCDN = new Promise(async resolve => {
     runCli(['remove', 'asset'], {
       assets: [
         {
-          key: 'lib',
+          type: 'lib',
           slug: 'twitter-bootstrap'
         }
       ]
@@ -1913,7 +1913,7 @@ const removeAssetjQuery = new Promise(async resolve => {
     runCli(['remove', 'asset'], {
       assets: [
         {
-          key: 'lib',
+          type: 'lib',
           slug: 'jquery'
         }
       ]
@@ -1940,7 +1940,7 @@ const removeAssetjQueryMasonry = new Promise(async resolve => {
     runCli(['remove', 'asset'], {
       assets: [
         {
-          key: 'lib',
+          type: 'lib',
           slug: 'jquery-masonry'
         }
       ]
@@ -1967,7 +1967,7 @@ const removeAssetHintCSS = new Promise(async resolve => {
     runCli(['remove', 'asset'], {
       assets: [
         {
-          key: 'lib',
+          type: 'lib',
           slug: 'hint-css'
         }
       ]
@@ -2001,8 +2001,8 @@ const removeSASSComponent = new Promise(async resolve => {
     runCli(['remove', 'asset'], {
       assets: [
         {
-          key: 'sass',
-          type: 'components',
+          type: 'sass',
+          sassType: 'components',
           value: 'button'
         }
       ]
@@ -2029,8 +2029,8 @@ const removeSASSLayout = new Promise(async resolve => {
     runCli(['remove', 'asset'], {
       assets: [
         {
-          key: 'sass',
-          type: 'layouts',
+          type: 'sass',
+          sassType: 'layouts',
           value: 'grid'
         }
       ]
@@ -2057,7 +2057,7 @@ const removeAssetWebFont = new Promise(async resolve => {
     runCli(['remove', 'asset'], {
       assets: [
         {
-          key: 'font',
+          type: 'font',
           value: 'montserrat'
         }
       ]
