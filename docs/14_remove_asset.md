@@ -27,7 +27,7 @@ Run in API Mode.
 ```javascript 
 // JSON Example
 {
-  // @type Array
+  // @type Array of Object
   // @required
   "assets": [
     {
