@@ -4,7 +4,9 @@ title: Add helper subcommand
 sidebar_label: deux add helper
 ---
 
-> This sub-command is part of [`deux add`](cmd-add.html) command.
+> This subcommand is part of [`deux add`](cmd-add.html) command.
+
+Add custom PHP function. All helpers are partial and structured under `includes/helpers` directory.
 
 ## Usage
 ```bash
@@ -25,6 +27,19 @@ Run in API Mode.
 ```javascript 
 // JSON Example
 {
+  // @type Object
+  // @required
+  "helper": {
+    // Function Name.
+    // @type String
+    // @required
+    "name": "Example Helper",
+
+    // Function Description.
+    // @type String
+    // @required
+    "description": "Example Description"
+  }
 }
 ```
 
@@ -34,5 +49,5 @@ Run in API Mode.
 deux add helper
 
 # API Mode
-deux add helper --api --input ''
+deux add helper --api --input ' { "helper": { "name": "Example Helper", "description": "Example Description" } }'
 ```

@@ -4,7 +4,9 @@ title: Add imgsize subcommand
 sidebar_label: deux add imgsize
 ---
 
-> This sub-command is part of [`deux add`](cmd-add.html) command.
+> This subcommand is part of [`deux add`](cmd-add.html) command.
+
+Add and register [Custom Image Size](https://developer.wordpress.org/reference/functions/add_image_size/).
 
 ## Usage
 ```bash
@@ -25,6 +27,47 @@ Run in API Mode.
 ```javascript 
 // JSON Example
 {
+  "imgsize": {
+    // Size Name.
+    // @type String
+    // @required
+    "name": "Example Size",
+
+    // Size Width.
+    // @type Number
+    // @required
+    "width": 250,
+
+    // Size Height.
+    // @type Number
+    // @required
+    "height": 250,
+
+    // Is current size use crop feature?
+    // @type Boolean
+    // @required
+    "crop": true,
+
+    // Whether use custom position or not?
+    // @type Boolean
+    // @optional
+    "custompos": true,
+
+    // If `custompos` is true, pos should be set.
+    // @type Object
+    // @optional
+    "pos": {
+      // Possible `x` position: `left`, `center`, `right`.
+      // @type String
+      // @required
+      "x": "center",
+
+      // Possible `x` position: `top`, `center`, `bottom`.
+      // @type String
+      // @required
+      "y": "center"
+    }
+  }
 }
 ```
 
@@ -34,5 +77,5 @@ Run in API Mode.
 deux add imgsize
 
 # API Mode
-deux add imgsize --api --input ''
+deux add imgsize --api --input ' { "imgsize": { "name": "Example Size", "width": 250, "height": 250, "crop": true, "custompos": true, "pos": { "x": "center", "y": "center" } } }'
 ```

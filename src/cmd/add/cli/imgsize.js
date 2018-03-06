@@ -50,7 +50,7 @@ class AddImageSize extends CLI {
 
       {
         type: 'confirm',
-        name: 'imgsize.customcrop',
+        name: 'imgsize.custompos',
         message: 'Set custom crop position?',
         when: ({imgsize}) => imgsize.crop,
         default: false
@@ -60,7 +60,7 @@ class AddImageSize extends CLI {
         type: 'list',
         name: 'imgsize.pos',
         message: 'Image position',
-        when: ({imgsize}) => imgsize.crop && imgsize.customcrop,
+        when: ({imgsize}) => imgsize.crop && imgsize.custompos,
         choices: [
           new inquirer.Separator(),
 
@@ -161,7 +161,7 @@ class AddImageSize extends CLI {
     }
 
     const slug = slugify(imgsize.name)
-    const crop = imgsize.crop && imgsize.customcrop ? imgsize.pos : imgsize.crop
+    const crop = imgsize.crop && imgsize.custompos ? imgsize.pos : imgsize.crop
     const imageSize = this.themeInfo('imgsize')
 
     Promise.all([

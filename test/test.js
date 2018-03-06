@@ -508,7 +508,7 @@ const addImgSize = new Promise(async resolve => {
         width: 250,
         height: 250,
         crop: true,
-        customcrop: true,
+        custompos: true,
         pos: {
           x: 'center',
           y: 'center'
@@ -699,7 +699,7 @@ const addFilter = new Promise(async resolve => {
         type: 'filter',
         name: 'Example Content',
         description: 'Example Description',
-        tag: 'the_content',
+        fn: 'the_content',
         priority: 10
       }
     }).then(() => {
@@ -761,7 +761,7 @@ const addAction = new Promise(async resolve => {
         type: 'action',
         name: 'Example Action',
         description: 'Example Description',
-        tag: 'init',
+        fn: 'init',
         priority: 10
       }
     }).then(() => {
@@ -2416,7 +2416,7 @@ test('`deux remove customizer` (Control Type): control file should be removed.',
 
 const devBuildAsset = new Promise(async resolve => {
   await removeCustomizerControlType.then(() => {
-    runCli(['dev', '--build'], {}).then(() => {
+    runCli(['dev', '--build']).then(() => {
       resolve()
     }).catch(err => {
       console.log(err)

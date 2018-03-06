@@ -74,7 +74,7 @@
     "deux test": "deux test",
     "cmd-release": "Release Theme",
     "deux release": "deux release",
-    "cmd-upgrade": "Upgrade Asset and Plugin Dependencies",
+    "cmd-upgrade": "Upgrade Dependencies",
     "deux upgrade": "deux upgrade",
     "cmd-switch": "Switch Theme",
     "deux switch": "deux switch",
