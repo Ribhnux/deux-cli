@@ -27,7 +27,7 @@ Run in API Mode.
 ```javascript 
 // JSON Example
 {
-  // Plugin slug list.
+  // List of plugin slugs.
   // @type Array
   // @required
   "plugins": [
