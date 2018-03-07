@@ -7,6 +7,7 @@
         </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1>Add feature subcommand</h1></header><article><div><span><blockquote>
 <p>This subcommand is part of <a href="cmd-add.html"><code>deux add</code></a> command.</p>
 </blockquote>
+<p>Add <a href="https://codex.wordpress.org/Theme_Features">WordPress Theme Features</a>. All theme features are basically <code>add_theme_support</code> function.</p>
 <h2><a class="anchor" aria-hidden="true" name="usage"></a><a href="#usage" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Usage</h2>
 <pre><code class="hljs css bash">deux add feature [options]
 </code></pre>
@@ -20,6 +21,206 @@ Run in API Mode.</p>
 <h2><a class="anchor" aria-hidden="true" name="json-input"></a><a href="#json-input" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>JSON Input</h2>
 <pre><code class="hljs css javascript"><span class="hljs-comment">// JSON Example</span>
 {
+  <span class="hljs-comment">// @type Object</span>
+  <span class="hljs-comment">// @required</span>
+  <span class="hljs-string">"feature"</span>: {
+    <span class="hljs-comment">// Feature type,</span>
+    <span class="hljs-comment">// available types: `html5`, `post-formats`, `post-thumbnails`, `custom-background`, `custom-header`, `custom-logo`, and `woocommerce`</span>
+    <span class="hljs-comment">// @type String</span>
+    <span class="hljs-comment">// @required</span>
+    <span class="hljs-string">"type"</span>: <span class="hljs-string">"html5"</span>,
+
+    <span class="hljs-comment">// Post type, only needed when feature type is `post-thumbnails`</span>
+    <span class="hljs-comment">// @type Boolean</span>
+    <span class="hljs-comment">// @optional</span>
+    <span class="hljs-string">"posttype"</span>: <span class="hljs-literal">false</span>,
+
+    <span class="hljs-comment">// Feature options. See options below.</span>
+    <span class="hljs-comment">// @type Object|Array</span>
+    <span class="hljs-comment">// @required</span>
+    <span class="hljs-string">"options"</span>: [],
+
+    <span class="hljs-comment">// Is in advanced mode or not. Only available when type is `custom-background` or `custom-header`</span>
+    <span class="hljs-comment">// @type Boolean</span>
+    <span class="hljs-comment">// @optional</span>
+    <span class="hljs-string">"advanced"</span>: <span class="hljs-literal">true</span>
+  }
+}
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" name="example-options-for-html5"></a><a href="#example-options-for-html5" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Example options for <code>html5</code></h3>
+<pre><code class="hljs css javascript"><span class="hljs-comment">// @type Array</span>
+[
+  <span class="hljs-string">"comment-list"</span>,
+  <span class="hljs-string">"comment-form"</span>,
+  <span class="hljs-string">"search-form"</span>,
+  <span class="hljs-string">"gallery"</span>,
+  <span class="hljs-string">"caption"</span>
+]
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" name="example-options-for-post-formats"></a><a href="#example-options-for-post-formats" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Example options for <code>post-formats</code></h3>
+<pre><code class="hljs css javascript"><span class="hljs-comment">// @type Array</span>
+[
+  <span class="hljs-string">"aside"</span>
+  <span class="hljs-string">"gallery"</span>
+  <span class="hljs-string">"link"</span>
+  <span class="hljs-string">"image"</span>
+  <span class="hljs-string">"quote"</span>
+  <span class="hljs-string">"status"</span>
+  <span class="hljs-string">"video"</span>
+  <span class="hljs-string">"audio"</span>
+  <span class="hljs-string">"chat"</span>
+]
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" name="example-options-for-post-thumbnails"></a><a href="#example-options-for-post-thumbnails" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Example options for <code>post-thumbnails</code></h3>
+<p>Developer can add anything, unless <code>options</code> is not empty.</p>
+<pre><code class="hljs css javascript"><span class="hljs-comment">// @type Array</span>
+[
+  <span class="hljs-string">"post"</span>,
+  <span class="hljs-string">"book"</span>,
+  <span class="hljs-string">"my-cpt"</span>
+]
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" name="example-options-for-custom-background"></a><a href="#example-options-for-custom-background" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Example options for <code>custom-background</code>.</h3>
+<pre><code class="hljs css javascript"><span class="hljs-comment">// @type Object</span>
+<span class="hljs-string">"options"</span>: {
+  <span class="hljs-comment">// Image URL.</span>
+  <span class="hljs-comment">// @type String</span>
+  <span class="hljs-comment">// @required</span>
+  <span class="hljs-string">"imageUrl"</span>: <span class="hljs-string">"http://imageurl.com/image.jpg"</span>,
+
+  <span class="hljs-comment">// Background Color.</span>
+  <span class="hljs-comment">// @type String</span>
+  <span class="hljs-comment">// @required</span>
+  <span class="hljs-string">"color"</span>: <span class="hljs-string">"#fff"</span>,
+
+  <span class="hljs-comment">// Background Presets.</span>
+  <span class="hljs-comment">// Available presets:  `default`, `fill`, `fit`, `repeat`, and `custom`</span>
+  <span class="hljs-comment">// @type String</span>
+  <span class="hljs-comment">// @required</span>
+  <span class="hljs-string">"preset"</span>: <span class="hljs-string">"custom"</span>,
+
+  <span class="hljs-comment">// Custom position, required if `preset` is `custom`</span>
+  <span class="hljs-comment">// @type Object</span>
+  <span class="hljs-comment">// @optional</span>
+  <span class="hljs-string">"position"</span>: {
+    <span class="hljs-comment">// Available position: `left`, `center`, and `right`</span>
+    <span class="hljs-comment">// @type String</span>
+    <span class="hljs-comment">// @required</span>
+    <span class="hljs-string">"x"</span>: <span class="hljs-string">"center"</span>,
+
+    <span class="hljs-comment">// Available position: `top`, `center`, and `bottom`</span>
+    <span class="hljs-comment">// @type String</span>
+    <span class="hljs-comment">// @required</span>
+    <span class="hljs-string">"y"</span>: <span class="hljs-string">"center"</span>
+  },
+
+  <span class="hljs-comment">// Image size type, required if `preset` is `custom`</span>
+  <span class="hljs-comment">// Available size: `cover`, `contain`, and `auto`</span>
+  <span class="hljs-comment">// @type String</span>
+  <span class="hljs-comment">// @optional</span>
+  <span class="hljs-string">"imageSize"</span>: <span class="hljs-string">"contain"</span>,
+
+  <span class="hljs-comment">// Whether repeat background image or not, required if `preset` is `custom`</span>
+  <span class="hljs-comment">// @type Boolean</span>
+  <span class="hljs-comment">// @optional</span>
+  <span class="hljs-string">"repeat"</span>: <span class="hljs-literal">true</span>,
+
+  <span class="hljs-comment">// Background attachment, required if `preset` is `custom`.</span>
+  <span class="hljs-comment">// Available attachment: `scroll` or `fixed`</span>
+  <span class="hljs-comment">// @type String</span>
+  <span class="hljs-comment">// @optional</span>
+  <span class="hljs-string">"attachment"</span>: <span class="hljs-string">"fixed"</span>,
+
+  <span class="hljs-comment">// Whether add custom output in `wp_head` or not, required if `preset` is `custom`.</span>
+  <span class="hljs-comment">// If set as true, a new file `includes/helpers/custom-background.php` will be added</span>
+  <span class="hljs-comment">// @type Boolean</span>
+  <span class="hljs-comment">// @optional</span>
+  <span class="hljs-string">"wpHeadCallback"</span>: <span class="hljs-literal">true</span>
+}
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" name="example-options-for-custom-header"></a><a href="#example-options-for-custom-header" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Example options for <code>custom-header</code>.</h3>
+<pre><code class="hljs css javascript"><span class="hljs-comment">// @type Object</span>
+<span class="hljs-string">"options"</span>: {
+  <span class="hljs-comment">// Image URL.</span>
+  <span class="hljs-comment">// @type String</span>
+  <span class="hljs-comment">// @required</span>
+  <span class="hljs-string">"imageUrl"</span>: <span class="hljs-string">"http://imageurl.com/image.jpg"</span>,
+
+  <span class="hljs-comment">// Image width.</span>
+  <span class="hljs-comment">// @type Number</span>
+  <span class="hljs-comment">// @required</span>
+  <span class="hljs-string">"width"</span>: <span class="hljs-number">2000</span>,
+
+  <span class="hljs-comment">// Image height.</span>
+  <span class="hljs-comment">// @type Number</span>
+  <span class="hljs-comment">// @required</span>
+  <span class="hljs-string">"height"</span>: <span class="hljs-number">1200</span>,
+
+  <span class="hljs-comment">// Whether header is flexible width or not.</span>
+  <span class="hljs-comment">// @type Boolean</span>
+  <span class="hljs-comment">// @required</span>
+  <span class="hljs-string">"flexWidth"</span>: <span class="hljs-literal">true</span>,
+
+  <span class="hljs-comment">// Whether header is flexible height or not.</span>
+  <span class="hljs-comment">// @type Boolean</span>
+  <span class="hljs-comment">// @required</span>
+  <span class="hljs-string">"flexHeight"</span>: <span class="hljs-literal">true</span>,
+
+  <span class="hljs-comment">// Whether header is randomizable or not.</span>
+  <span class="hljs-comment">// @type Boolean</span>
+  <span class="hljs-comment">// @required</span>
+  <span class="hljs-string">"random"</span>: <span class="hljs-literal">true</span>,
+
+  <span class="hljs-comment">// Whether header has text or not.</span>
+  <span class="hljs-comment">// @type Boolean</span>
+  <span class="hljs-comment">// @required</span>
+  <span class="hljs-string">"headerText"</span>: <span class="hljs-literal">true</span>,
+
+  <span class="hljs-comment">// Header text color, required if `headerText` is `true`</span>
+  <span class="hljs-comment">// @type String</span>
+  <span class="hljs-comment">// @optional</span>
+  <span class="hljs-string">"textColor"</span>: <span class="hljs-string">'#fff'</span>,
+
+  <span class="hljs-comment">// Whether header can upload video or not.</span>
+  <span class="hljs-comment">// @type Boolean</span>
+  <span class="hljs-comment">// @required</span>
+  <span class="hljs-string">"video"</span>: <span class="hljs-literal">true</span>,
+
+  <span class="hljs-comment">// Whether video always active or has custom condition, required if `video` is `true`.</span>
+  <span class="hljs-comment">// If set as true, a new file `includes/helpers/ustom-header-video.php` will be added</span>
+  <span class="hljs-comment">// @type Boolean</span>
+  <span class="hljs-comment">// @optional</span>
+  <span class="hljs-string">"videoAlwaysActive"</span>: <span class="hljs-literal">false</span>,
+
+  <span class="hljs-comment">// Whether add custom output in `wp_head` or not, required if `preset` is `custom`.</span>
+  <span class="hljs-comment">// If set as true, a new file `includes/helpers/custom-header.php` will be added</span>
+  <span class="hljs-comment">// @type Boolean</span>
+  <span class="hljs-comment">// @optional</span>
+  <span class="hljs-string">"wpHeadCallback"</span>: <span class="hljs-literal">true</span>
+}
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" name="example-options-for-custom-logo"></a><a href="#example-options-for-custom-logo" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Example options for <code>custom-logo</code>.</h3>
+<pre><code class="hljs css javascript"><span class="hljs-comment">// @type Object</span>
+{
+  <span class="hljs-comment">// Image width.</span>
+  <span class="hljs-comment">// @type Number</span>
+  <span class="hljs-comment">// @required</span>
+  <span class="hljs-string">"width"</span>: <span class="hljs-number">2000</span>,
+
+  <span class="hljs-comment">// Image height.</span>
+  <span class="hljs-comment">// @type Number</span>
+  <span class="hljs-comment">// @required</span>
+  <span class="hljs-string">"height"</span>: <span class="hljs-number">1200</span>,
+
+  <span class="hljs-comment">// Whether logo is flexible width or not.</span>
+  <span class="hljs-comment">// @type Boolean</span>
+  <span class="hljs-comment">// @required</span>
+  <span class="hljs-string">"flexWidth"</span>: <span class="hljs-literal">true</span>,
+
+  <span class="hljs-comment">// Whether logo is flexible height or not.</span>
+  <span class="hljs-comment">// @type Boolean</span>
+  <span class="hljs-comment">// @required</span>
+  <span class="hljs-string">"flexHeight"</span>: <span class="hljs-literal">true</span>
 }
 </code></pre>
 <h2><a class="anchor" aria-hidden="true" name="cli-example"></a><a href="#cli-example" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>CLI Example</h2>
@@ -27,6 +228,6 @@ Run in API Mode.</p>
 deux add feature
 
 <span class="hljs-comment"># API Mode</span>
-deux add feature --api --input <span class="hljs-string">''</span>
+deux add feature --api --input <span class="hljs-string">'{ "feature": { "type": "html5", "options": [ "comment-list", "comment-form", "search-form", "gallery", "caption" ] } }'</span>
 </code></pre>
 </span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="cmd-add-widget.html">← Add widget subcommand</a><a class="docs-next button" href="cmd-add-template.html">Add template subcommand →</a></div></div></div></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/" class="nav-home"><img src="/img/deux-logo.svg" alt="Deux CLI" width="66" height="58"/></a><div class="oss"><h5>Open Source Software</h5><p>We&#x27;re open source and need your help to make a perfect tools/software. We&#x27;ll happy if you fork our repo and submit a PR.</p></div><div><h5>Credits</h5><a href="https://ribhnux.tech" target="_blank">Ribhnux Technology</a><a href="https://ribhnux.design" target="_blank">Ribhnux Design</a><a href="https://5usdtheme.com" target="_blank">$5 WordPress Theme</a></div><div><h5>More</h5><a href="/blog">Blog</a><a href="https://github.com/Ribhnux/deux-cli">GitHub</a><br/><a class="github-button" href="https://github.com/Ribhnux/deux-cli" data-icon="octicon-star" data-count-href="/Ribhnux/deux-cli/stargazers" data-show-count="true" data-count-aria-label="# stargazers on GitHub" aria-label="Star this project on GitHub">Star</a></div></section><section class="copyright">Copyright © 2018 <a href="https://ribhnux.tech">Ribhnux Technology</a>. Built with <a href="https://docusaurus.io" target="_blank">Docusaurus</a> by Facebook.</section></footer></div></body></html>

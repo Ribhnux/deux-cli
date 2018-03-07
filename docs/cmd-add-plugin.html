@@ -7,6 +7,7 @@
         </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1>Add plugin subcommand</h1></header><article><div><span><blockquote>
 <p>This subcommand is part of <a href="cmd-add.html"><code>deux add</code></a> command.</p>
 </blockquote>
+<p>Add plugin dependencies via <a href="http://tgmpluginactivation.com/">TGM Plugin Activation</a>.</p>
 <h2><a class="anchor" aria-hidden="true" name="usage"></a><a href="#usage" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Usage</h2>
 <pre><code class="hljs css bash">deux add plugin [options]
 </code></pre>
@@ -18,8 +19,120 @@ Set config in api mode without prompts.</p>
 <p><code>--api</code> <em>Optional</em>  <br>
 Run in API Mode.</p>
 <h2><a class="anchor" aria-hidden="true" name="json-input"></a><a href="#json-input" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>JSON Input</h2>
-<pre><code class="hljs css javascript"><span class="hljs-comment">// JSON Example</span>
-{
+<h3><a class="anchor" aria-hidden="true" name="add-plugin-from-wordpressorg-repository"></a><a href="#add-plugin-from-wordpressorg-repository" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Add Plugin from WordPress.org Repository</h3>
+<pre><code class="hljs css javascript">{
+  <span class="hljs-comment">// @type Object</span>
+  <span class="hljs-comment">// @required</span>
+  <span class="hljs-string">"plugin"</span>: {
+    <span class="hljs-comment">// @type String</span>
+    <span class="hljs-comment">// @required</span>
+    <span class="hljs-string">"srctype"</span>: <span class="hljs-string">"wp"</span>,
+
+    <span class="hljs-comment">// Plugin data.</span>
+    <span class="hljs-comment">// @required</span>
+    <span class="hljs-string">"item"</span>: {
+      <span class="hljs-comment">// Plugin Name.</span>
+      <span class="hljs-comment">// @type String</span>
+      <span class="hljs-comment">// @required</span>
+      <span class="hljs-string">"name"</span>: <span class="hljs-string">"WooCommerce"</span>,
+
+      <span class="hljs-comment">// Plugin Slug.</span>
+      <span class="hljs-comment">// @type String</span>
+      <span class="hljs-comment">// @required</span>
+      <span class="hljs-string">"slug"</span>: <span class="hljs-string">"woocommerce"</span>,
+
+      <span class="hljs-comment">// Plugin Description.</span>
+      <span class="hljs-comment">// @type String</span>
+      <span class="hljs-comment">// @required</span>
+      <span class="hljs-string">"description"</span>: <span class="hljs-string">"Description"</span>,
+
+      <span class="hljs-comment">// Plugin version that will be added.</span>
+      <span class="hljs-comment">// @type String</span>
+      <span class="hljs-comment">// @required</span>
+      <span class="hljs-string">"version"</span>: <span class="hljs-string">"3.2.5"</span>,
+    }
+
+    <span class="hljs-comment">// Whether plugin is required in theme or not.</span>
+    <span class="hljs-comment">// @type Boolean</span>
+    <span class="hljs-comment">// @required</span>
+    <span class="hljs-string">"required"</span>: <span class="hljs-literal">true</span>,
+
+    <span class="hljs-comment">// Whether plugin is force when activation or not.</span>
+    <span class="hljs-comment">// @type Boolean</span>
+    <span class="hljs-comment">// @required</span>
+    <span class="hljs-string">"force_activation"</span>: <span class="hljs-literal">false</span>,
+
+    <span class="hljs-comment">// Whether plugin is force when deactivation or not.</span>
+    <span class="hljs-comment">// @type Boolean</span>
+    <span class="hljs-comment">// @required</span>
+    <span class="hljs-string">"force_deactivation"</span>: <span class="hljs-literal">false</span>,
+
+    <span class="hljs-comment">// Whether plugin need custom init or not.</span>
+    <span class="hljs-comment">// @type Boolean</span>
+    <span class="hljs-comment">// @required</span>
+    <span class="hljs-string">"init"</span>: <span class="hljs-literal">true</span>
+  }
+}
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" name="add-plugin-from-private-host"></a><a href="#add-plugin-from-private-host" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Add Plugin from Private Host</h3>
+<pre><code class="hljs css javascript">{
+  <span class="hljs-comment">// @type Object</span>
+  <span class="hljs-comment">// @required</span>
+  <span class="hljs-string">"plugin"</span>: {
+    <span class="hljs-comment">// @type String</span>
+    <span class="hljs-comment">// @required</span>
+    <span class="hljs-string">"srctype"</span>: <span class="hljs-string">"private"</span>,
+
+    <span class="hljs-comment">// Plugin Name.</span>
+    <span class="hljs-comment">// @type String</span>
+    <span class="hljs-comment">// @required</span>
+    <span class="hljs-string">"name"</span>: <span class="hljs-string">"Test"</span>,
+
+    <span class="hljs-comment">// Plugin description</span>
+    <span class="hljs-comment">// @type String</span>
+    <span class="hljs-comment">// @required</span>
+    <span class="hljs-string">"description"</span>: <span class="hljs-string">'Description About Anything'</span>,
+
+    <span class="hljs-comment">// Plugin Source.</span>
+    <span class="hljs-comment">// @type String</span>
+    <span class="hljs-comment">// @required</span>
+    <span class="hljs-string">"source"</span>: <span class="hljs-string">"https://downloads.mydomain.com/my-plugin.1.0.0.zip"</span>,
+
+    <span class="hljs-comment">// Plugin Slug.</span>
+    <span class="hljs-comment">// @type String</span>
+    <span class="hljs-comment">// @required</span>
+    <span class="hljs-string">"slug"</span>: <span class="hljs-string">"test"</span>,
+
+    <span class="hljs-comment">// Plugin Version.</span>
+    <span class="hljs-comment">// @type String</span>
+    <span class="hljs-comment">// @required</span>
+    <span class="hljs-string">"version"</span>: <span class="hljs-string">"1.0.0"</span>,
+
+    <span class="hljs-comment">// Plugin Links or documentation URL.</span>
+    <span class="hljs-comment">// @type String</span>
+    <span class="hljs-comment">// @required</span>
+    <span class="hljs-string">"external_url"</span>: <span class="hljs-string">'https://baba.com'</span>,
+
+    <span class="hljs-comment">// Whether plugin is required in theme or not.</span>
+    <span class="hljs-comment">// @type Boolean</span>
+    <span class="hljs-comment">// @required</span>
+    <span class="hljs-string">"required"</span>: <span class="hljs-literal">true</span>,
+
+    <span class="hljs-comment">// Whether plugin is force when activation or not.</span>
+    <span class="hljs-comment">// @type Boolean</span>
+    <span class="hljs-comment">// @required</span>
+    <span class="hljs-string">"force_activation"</span>: <span class="hljs-literal">false</span>,
+
+    <span class="hljs-comment">// Whether plugin is force when deactivation or not.</span>
+    <span class="hljs-comment">// @type Boolean</span>
+    <span class="hljs-comment">// @required</span>
+    <span class="hljs-string">"force_deactivation"</span>: <span class="hljs-literal">false</span>,
+
+    <span class="hljs-comment">// Whether plugin need custom init or not.</span>
+    <span class="hljs-comment">// @type Boolean</span>
+    <span class="hljs-comment">// @required</span>
+    <span class="hljs-string">"init"</span>: <span class="hljs-literal">true</span>
+  }
 }
 </code></pre>
 <h2><a class="anchor" aria-hidden="true" name="cli-example"></a><a href="#cli-example" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>CLI Example</h2>
