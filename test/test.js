@@ -664,7 +664,7 @@ test('`deux add libclass`: file should be exists.', async t => {
 const removeLibClass = new Promise(async resolve => {
   await addLibClass.then(() => {
     runCli(['remove', 'libclass'], {
-      libraries: ['class-example']
+      lib: ['class-example']
     }).then(() => {
       resolve()
     })
@@ -1880,7 +1880,7 @@ const removeAssetCDN = new Promise(async resolve => {
       assets: [
         {
           type: 'lib',
-          slug: 'twitter-bootstrap'
+          value: 'twitter-bootstrap'
         }
       ]
     }).then(() => {
@@ -1914,7 +1914,7 @@ const removeAssetjQuery = new Promise(async resolve => {
       assets: [
         {
           type: 'lib',
-          slug: 'jquery'
+          value: 'jquery'
         }
       ]
     }).then(() => {
@@ -1941,7 +1941,7 @@ const removeAssetjQueryMasonry = new Promise(async resolve => {
       assets: [
         {
           type: 'lib',
-          slug: 'jquery-masonry'
+          value: 'jquery-masonry'
         }
       ]
     }).then(() => {
@@ -1968,7 +1968,7 @@ const removeAssetHintCSS = new Promise(async resolve => {
       assets: [
         {
           type: 'lib',
-          slug: 'hint-css'
+          value: 'hint-css'
         }
       ]
     }).then(() => {

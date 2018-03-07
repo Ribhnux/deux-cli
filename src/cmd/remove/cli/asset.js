@@ -59,7 +59,7 @@ class RemoveAsset extends CLI {
                 name: `${value} ${version}`,
                 value: {
                   type: assetTypes.LIB,
-                  slug: value
+                  value
                 }
               })
             }
@@ -140,9 +140,9 @@ class RemoveAsset extends CLI {
       item => new Promise(resolve => {
         switch (item.type) {
           case assetTypes.LIB:
-            rimraf.sync(this.currentThemePath('assets', 'vendors', item.slug))
-            rimraf.sync(this.currentThemePath('assets-src', 'sass', 'vendors', `_${item.slug}.scss`))
-            delete this.themeAsset.libs[item.slug]
+            rimraf.sync(this.currentThemePath('assets', 'vendors', item.value))
+            rimraf.sync(this.currentThemePath('assets-src', 'sass', 'vendors', `_${item.value}.scss`))
+            delete this.themeAsset.libs[item.value]
             break
 
           case assetTypes.SASS:
