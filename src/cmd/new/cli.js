@@ -17,27 +17,13 @@ const CLI = global.deuxcli.require('main')
 const ApiRenderer = global.deuxcli.require('api-renderer')
 const messages = global.deuxcli.require('messages')
 const validator = global.deuxhelpers.require('util/validator')
-const {capitalize} = global.deuxhelpers.require('util/misc')
+const {capitalize, getGitAuth} = global.deuxhelpers.require('util/misc')
 const compileFiles = global.deuxhelpers.require('compiler/bulk')
 
 class NewCLI extends CLI {
   constructor(options = {}) {
     super()
     this.init(options, true)
-  }
-
-  /**
-   * Get git credentials.
-   * @param {String} url
-   */
-  getGitAuth(gitUrl) {
-    const giturl = url.parse(gitUrl)
-    const gitauth = giturl.auth ? giturl.auth.split(':') : ''
-
-    return {
-      username: gitauth[0],
-      password: gitauth[1]
-    }
   }
 
   /**
@@ -160,7 +146,7 @@ class NewCLI extends CLI {
         name: 'git.username',
         message: 'Git Username',
         default: ({git}) => new Promise(resolve => {
-          const {username} = this.getGitAuth(git.url)
+          const {username} = getGitAuth(git.url)
           resolve(username)
         }),
         validate: value => validator(value, {min: 3, var: 'Username'})
@@ -172,7 +158,7 @@ class NewCLI extends CLI {
         message: 'Git Password',
         when: ({git}) => git.username,
         default: ({git}) => new Promise(resolve => {
-          const {password} = this.getGitAuth(git.url)
+          const {password} = getGitAuth(git.url)
           resolve(password)
         }),
         validate: value => validator(value, {min: 2, var: 'Password'})
