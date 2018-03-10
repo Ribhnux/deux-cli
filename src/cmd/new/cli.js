@@ -149,7 +149,7 @@ class NewCLI extends CLI {
           const {username} = getGitAuth(git.url)
           resolve(username)
         }),
-        validate: value => validator(value, {min: 3, var: 'Username'})
+        validate: value => validator(value, {minimum: 3, var: 'Username'})
       },
 
       {
@@ -161,7 +161,7 @@ class NewCLI extends CLI {
           const {password} = getGitAuth(git.url)
           resolve(password)
         }),
-        validate: value => validator(value, {min: 2, var: 'Password'})
+        validate: value => validator(value, {minimum: 2, var: 'Password'})
       },
 
       {
