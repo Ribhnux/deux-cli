@@ -3,7 +3,6 @@ const program = require('caporal')
 const {commandList} = global.deuxcli.require('fixtures')
 const availableCmd = Object.keys(commandList)
   .map(item => commandList[item])
-  .filter(item => item !== commandList.THEME)
 
 program
   .command('remove', 'Remove theme functionality')
