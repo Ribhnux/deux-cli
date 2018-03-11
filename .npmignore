@@ -13,10 +13,19 @@ pids
 *.pid.lock
 
 # Directories
-test/
-website/
-docs/
-node_modules/
+/test
+/website
+/docs
+/node_modules
+
+# Files
+/.editorconfig
+/.eslintignore
+/.gitignore
+/.npmignore
+/.travis.yml
+/.appveyor.yml
+/CNAME
 
 # Yarn stuff
 .yarn-integrity

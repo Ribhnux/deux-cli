@@ -414,12 +414,33 @@ class NewCLI extends CLI {
                 trailingComma: true
               })
 
+              const excludes = [
+                '_partials'
+              ]
+
+              if (theme.parent) {
+                [
+                  '404.php',
+                  'archive.php',
+                  'author.php',
+                  'comments.php',
+                  'footer.php',
+                  'header.php',
+                  'index.php',
+                  'page.php',
+                  'search.php',
+                  'searchform.php',
+                  'sidebar.php',
+                  'single.php'
+                ].forEach(file => {
+                  excludes.push(file)
+                })
+              }
+
               compileFiles({
                 srcDir: global.deuxtpl.path,
                 dstDir: themePath,
-                excludes: [
-                  '_partials'
-                ],
+                excludes,
                 rename: {
                   'config.php': `${theme.slug}-config.php`
                 },
