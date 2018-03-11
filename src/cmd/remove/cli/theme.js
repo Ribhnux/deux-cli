@@ -14,27 +14,29 @@ class RemoveTheme extends CLI {
    * Setup remove widgets prompts
    */
   prepare() {
+    const themelist = []
+    const themes = this.getThemes()
+
+    for (const slug in themes) {
+      if (Object.prototype.hasOwnProperty.call(themes, slug)) {
+        themelist.push({
+          name: this.getThemes(slug).details.name,
+          value: slug
+        })
+      }
+    }
+
+    if (themelist.length === 0) {
+      this.$logger.happyExit()
+    }
+
     this.$title = 'Remove {Theme}'
     this.$prompts = [
       {
         type: 'list',
         name: 'theme',
         message: 'Select theme you want to remove',
-        choices: () => new Promise(resolve => {
-          const list = []
-          const themes = this.getThemes()
-
-          for (const slug in themes) {
-            if (Object.prototype.hasOwnProperty.call(themes, slug)) {
-              list.push({
-                name: this.getThemes(slug).details.name,
-                value: slug
-              })
-            }
-          }
-
-          resolve(list)
-        })
+        choices: () => themelist
       },
 
       Object.assign(captchaMaker(), {
@@ -57,7 +59,7 @@ class RemoveTheme extends CLI {
    */
   action({theme, confirm}) {
     if (theme.length === 0 || (!confirm && !this.$init.apiMode())) {
-      happyExit()
+      this.$logger.happyExit()
     }
 
     try {

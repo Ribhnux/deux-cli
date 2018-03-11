@@ -156,19 +156,6 @@ class CLI {
   }
 
   /**
-   * Remove theme from database
-   * @param {String} themeName
-   */
-  removeTheme(themeName = '') {
-    if (themeName !== '' && this.getThemes(themeName)) {
-      delete this.$db[dbTypes.THEMES][themeName]
-      if (this.$db[dbTypes.CURRENT] && this.$db[dbTypes.CURRENT].slug === themeName) {
-        this.$db[dbTypes.CURRENT] = {}
-      }
-    }
-  }
-
-  /**
    * Alias of getCurrentTheme
    *
    * @param {String} key
@@ -298,6 +285,23 @@ class CLI {
    */
   addTheme(slug, info) {
     this.$db[dbTypes.THEMES][slug] = info
+  }
+
+  /**
+   * Remove theme from database
+   * @param {String} slug
+   */
+  removeTheme(slug = '') {
+    if (slug !== '' && this.getThemes(slug)) {
+      const themes = this.$db[dbTypes.THEMES]
+
+      delete themes[slug]
+      this.$db[dbTypes.THEMES] = themes
+
+      if (this.$db[dbTypes.CURRENT] && this.$db[dbTypes.CURRENT].slug === slug) {
+        this.$db[dbTypes.CURRENT] = {}
+      }
+    }
   }
 
   /**
