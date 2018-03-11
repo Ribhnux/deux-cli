@@ -25,6 +25,7 @@ program
 // Subcommands.
 global.deuxcmd.require('init')
 global.deuxcmd.require('new')
+global.deuxcmd.require('import')
 global.deuxcmd.require('add')
 global.deuxcmd.require('remove')
 global.deuxcmd.require('dev')

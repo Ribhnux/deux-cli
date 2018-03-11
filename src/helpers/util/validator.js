@@ -108,7 +108,7 @@ module.exports = (value, options) => {
     let urlStr = 'url'
 
     if (options.git) {
-      urlStr = 'git'
+      urlStr = 'git repository URL'
     }
 
     rules.value.url = {

@@ -17,27 +17,13 @@ const CLI = global.deuxcli.require('main')
 const ApiRenderer = global.deuxcli.require('api-renderer')
 const messages = global.deuxcli.require('messages')
 const validator = global.deuxhelpers.require('util/validator')
-const {capitalize} = global.deuxhelpers.require('util/misc')
+const {capitalize, getGitAuth} = global.deuxhelpers.require('util/misc')
 const compileFiles = global.deuxhelpers.require('compiler/bulk')
 
 class NewCLI extends CLI {
   constructor(options = {}) {
     super()
     this.init(options, true)
-  }
-
-  /**
-   * Get git credentials.
-   * @param {String} url
-   */
-  getGitAuth(gitUrl) {
-    const giturl = url.parse(gitUrl)
-    const gitauth = giturl.auth ? giturl.auth.split(':') : ''
-
-    return {
-      username: gitauth[0],
-      password: gitauth[1]
-    }
   }
 
   /**
@@ -160,10 +146,10 @@ class NewCLI extends CLI {
         name: 'git.username',
         message: 'Git Username',
         default: ({git}) => new Promise(resolve => {
-          const {username} = this.getGitAuth(git.url)
+          const {username} = getGitAuth(git.url)
           resolve(username)
         }),
-        validate: value => validator(value, {min: 3, var: 'Username'})
+        validate: value => validator(value, {minimum: 3, var: 'Username'})
       },
 
       {
@@ -172,10 +158,10 @@ class NewCLI extends CLI {
         message: 'Git Password',
         when: ({git}) => git.username,
         default: ({git}) => new Promise(resolve => {
-          const {password} = this.getGitAuth(git.url)
+          const {password} = getGitAuth(git.url)
           resolve(password)
         }),
-        validate: value => validator(value, {min: 2, var: 'Password'})
+        validate: value => validator(value, {minimum: 2, var: 'Password'})
       },
 
       {
@@ -299,7 +285,23 @@ class NewCLI extends CLI {
           const themeDetails = Object.assign({}, theme)
 
           const info = {
-            details: themeDetails,
+            $details: themeDetails,
+            $releases: [
+              {
+                version: theme.version,
+                date: Date.now(),
+                changes: [
+                  'Initial Release'
+                ]
+              }
+            ],
+            $repo: {
+              credentials: {
+                username: git.username,
+                password: git.password
+              },
+              trylogin: false
+            },
             optimize: true,
             asset: {
               libs: {},
@@ -332,22 +334,6 @@ class NewCLI extends CLI {
               control_types: {},
               controls: {}
               /* eslint-enable camelcase */
-            },
-            releases: [
-              {
-                version: theme.version,
-                date: Date.now(),
-                changes: [
-                  'Initial Release'
-                ]
-              }
-            ],
-            repo: {
-              credentials: {
-                username: git.username,
-                password: git.password
-              },
-              trylogin: false
             }
           }
 
@@ -416,11 +402,11 @@ class NewCLI extends CLI {
             title: 'Compiles theme',
             task: () => new Promise((resolve, reject) => {
               const themeInfo = this.themeInfo()
-              const releases = themeInfo.releases
+              const releases = themeInfo.$releases
 
-              delete themeInfo.details
-              delete themeInfo.releases
-              delete themeInfo.repo
+              delete themeInfo.$details
+              delete themeInfo.$releases
+              delete themeInfo.$repo
 
               const config = jsonar.arrify(themeInfo, {
                 prettify: true,
@@ -485,9 +471,12 @@ class NewCLI extends CLI {
 
     task.run()
       .then(() => {
-        const repo = this.themeInfo('repo')
-        repo.trylogin = true
-        this.setThemeConfig({repo})
+        const $repo = this.themeInfo('$repo')
+        $repo.trylogin = true
+
+        this.setThemeConfig({
+          $repo
+        })
       })
       .then(() => {
         this.$logger.finish(messages.SUCCEED_CREATE_NEW_THEME)
