@@ -24,10 +24,10 @@ $author_url = $current_author->user_url;
 $author_desc = $current_author->user_description;
 ?>
 
-<div id="content-wrapper" class="site__wrapper--author">
-	<div id="content" class="content__wrapper" tabindex="-1">
-		<main id="main" class="site__main">
-			<header id="page-header" class="page__header--author">
+<div class="siteWrapper-author">
+	<div id="content-wrapper" class="contentWrapper" tabindex="-1">
+		<main id="main" class="siteMain">
+			<header id="page-header" class="pageHeader-author">
 				<h1><?php esc_html_e( 'About:', '{{theme.slug}}' ); ?><?php echo esc_html( $author_nickname ); ?></h1>
 
 				<?php if ( ! empty( $author_id ) ) : ?>
@@ -69,7 +69,7 @@ $author_desc = $current_author->user_description;
 			else :
 
 				// Load partial-templates for empty content.
-				get_template_part( 'partial-templates/content', 'none' );
+				get_template_part( 'partial-templates/post/content', 'none' );
 
 			endif;
 			?>

@@ -7,22 +7,21 @@ const uniq = require('lodash.uniq')
 const CLI = global.deuxcli.require('main')
 const messages = global.deuxcli.require('messages')
 const validator = global.deuxhelpers.require('util/validator')
-const {exit, finish} = global.deuxhelpers.require('logger')
 const compileFile = global.deuxhelpers.require('compiler/single')
 const {capitalize} = global.deuxhelpers.require('util/misc')
 
 class AddMenu extends CLI {
-  constructor() {
+  constructor(options) {
     super()
-    this.init()
+    this.init(options)
   }
 
   /**
    * Setup add menu prompts
    */
   prepare() {
-    this.title = 'Register {New Menu}'
-    this.prompts = [
+    this.$title = 'Register {New Menu}'
+    this.$prompts = [
       {
         name: 'menu.name',
         message: 'Menu Name',
@@ -46,7 +45,7 @@ class AddMenu extends CLI {
 
       {
         type: 'confirm',
-        name: 'menu.overwrite',
+        name: 'overwrite',
         message: 'Menu already exists. Continue to overwrite?',
         default: true,
         when: ({menu}) => new Promise(resolve => {
@@ -59,11 +58,11 @@ class AddMenu extends CLI {
   /**
    * Compile menu config
    *
-   * @param {Object} {menu}
+   * @param {Object} {menu, overwrite}
    */
-  action({menu}) {
-    if (menu.overwrite === false) {
-      exit(messages.ERROR_MENU_ALREADY_EXISTS)
+  action({menu, overwrite}) {
+    if (overwrite === false) {
+      this.$logger.exit(messages.ERROR_MENU_ALREADY_EXISTS)
     }
 
     menu.location = slugify(menu.name)
@@ -103,7 +102,7 @@ class AddMenu extends CLI {
 
         menus[menu.location] = {
           walker: menu.walker,
-          name: menu.name,
+          name: jsonar.literal(`__( '${menu.name}', '${themeDetails.slug}' )`),
           description: jsonar.literal(`__( '${menu.description}', '${themeDetails.slug}' )`)
         }
 
@@ -119,8 +118,8 @@ class AddMenu extends CLI {
         resolve()
       })
     ]).then(
-      finish(messages.SUCCEED_MENU_ADDED)
-    ).catch(exit)
+      this.$logger.finish(messages.SUCCEED_MENU_ADDED)
+    ).catch(this.$logger.exit)
   }
 }
 

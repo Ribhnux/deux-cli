@@ -1,13 +1,12 @@
 const CLI = global.deuxcli.require('main')
 const messages = global.deuxcli.require('messages')
-const {exit, finish} = global.deuxhelpers.require('logger')
-const {happyExit, captchaMaker, separatorMaker} = global.deuxhelpers.require('util/cli')
+const {captchaMaker, separatorMaker} = global.deuxhelpers.require('util/cli')
 
 class RemoveImageSize extends CLI {
-  constructor() {
+  constructor(options) {
     super()
     this.themeImageSize = undefined
-    this.init()
+    this.init(options)
   }
 
   /**
@@ -17,11 +16,11 @@ class RemoveImageSize extends CLI {
     this.themeImageSize = this.themeInfo('imgsize')
 
     if (Object.keys(this.themeImageSize).length === 0) {
-      happyExit()
+      this.$logger.happyExit()
     }
 
-    this.title = 'Remove {Image Sizes}'
-    this.prompts = [
+    this.$title = 'Remove {Image Sizes}'
+    this.$prompts = [
       {
         type: 'checkbox',
         name: 'imgsize',
@@ -66,8 +65,8 @@ class RemoveImageSize extends CLI {
    * @param {Object} {imgsize, confirm}
    */
   action({imgsize, confirm}) {
-    if (imgsize.length === 0 || !confirm) {
-      happyExit()
+    if (imgsize.length === 0 || (!confirm && !this.$init.apiMode())) {
+      this.$logger.happyExit()
     }
 
     Promise.all(imgsize.map(
@@ -76,17 +75,12 @@ class RemoveImageSize extends CLI {
         resolve()
       })
     )).then(() => {
-      Promise.all([
-        new Promise(resolve => {
-          this.setThemeConfig({
-            imgsize: this.themeImageSize
-          })
-          resolve()
-        })
-      ]).then(
-        finish(messages.SUCCEED_REMOVED_IMGSIZE)
-      ).catch(exit)
-    }).catch(exit)
+      this.setThemeConfig({
+        imgsize: this.themeImageSize
+      })
+    }).then(() => {
+      this.$logger.finish(messages.SUCCEED_REMOVED_IMGSIZE)
+    }).catch(this.$logger.exit)
   }
 }
 

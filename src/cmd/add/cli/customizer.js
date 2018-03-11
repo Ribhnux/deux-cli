@@ -1,10 +1,10 @@
+const path = require('path')
 const slugify = require('node-slugify')
 const jsonar = require('jsonar')
 const inquirer = require('inquirer')
 const faker = require('faker')
 const getFileHeader = require('wp-get-file-header')
 const getL10n = require('wp-get-l10n')
-const mkdirp = require('mkdirp')
 const {
   customizerControlTypes,
   customizerControlLabels,
@@ -17,21 +17,21 @@ const {
 const CLI = global.deuxcli.require('main')
 const message = global.deuxcli.require('messages')
 const validator = global.deuxhelpers.require('util/validator')
-const {exit, finish} = global.deuxhelpers.require('logger')
-const compileFiles = global.deuxhelpers.require('compiler/bulk')
+const compileFile = global.deuxhelpers.require('compiler/single')
+const {filelist} = global.deuxhelpers.require('util/file')
 const {capitalize} = global.deuxhelpers.require('util/misc')
 
 class AddCustomizer extends CLI {
-  constructor() {
+  constructor(options) {
     super()
     this.customizer = undefined
-    this.init()
+    this.init(options)
   }
 
   prepare() {
     this.customizer = this.themeInfo('customizer')
-    this.title = 'Add {Theme Customizer}'
-    this.prompts = [
+    this.$title = 'Add {Theme Customizer}'
+    this.$prompts = [
       {
         name: 'customizer.setting.name',
         message: 'Setting Name',
@@ -52,12 +52,12 @@ class AddCustomizer extends CLI {
         default: 1,
         choices: [
           {
-            name: 'Post Message',
+            name: 'Post Message (Realtime)',
             value: 'postMessage'
           },
 
           {
-            name: 'Manual Refresh',
+            name: 'Auto Refresh',
             value: 'refresh'
           }
         ]
@@ -97,7 +97,7 @@ class AddCustomizer extends CLI {
           if (definedControls.length > 0) {
             Promise.all(definedControls.map(
               value => new Promise((resolve, reject) => {
-                const controlPath = this.currentThemePath('includes', 'customizers', 'controls', value, `class-wp-customize-${value}-control.php`)
+                const controlPath = this.currentThemePath('includes', 'customizer', 'controls', `class-wp-customize-${value}-control.php`)
                 getFileHeader(controlPath).then(info => {
                   if (info.controlName) {
                     resolve({
@@ -117,7 +117,7 @@ class AddCustomizer extends CLI {
 
               newControl()
               resolve(list)
-            }).catch(exit)
+            }).catch(this.$logger.exit)
           } else {
             newControl()
             resolve(list)
@@ -553,27 +553,80 @@ class AddCustomizer extends CLI {
 
     Promise.all([
       new Promise(resolve => {
-        if (customControl) {
-          const customControlPath = this.currentThemePath('includes', 'customizers', 'controls', customControl.slug)
-
-          mkdirp.sync(customControlPath)
-
-          compileFiles({
-            srcDir: this.templateSourcePath('_partials', 'custom-control'),
-            dstDir: customControlPath,
-            rename: {
-              'control.php': `${customControl.filename}.php`
-            },
-            syntax: {
-              theme: themeDetails,
-              control: customControl
-            }
-          })
-
-          resolve()
-        } else {
-          resolve()
+        if (!customControl) {
+          return resolve()
         }
+
+        compileFile({
+          srcPath: this.templateSourcePath('_partials', 'control.php'),
+          dstPath: this.currentThemePath('includes', 'customizer', 'controls', `${customControl.filename}.php`),
+          syntax: {
+            theme: themeDetails,
+            control: customControl
+          }
+        })
+
+        resolve()
+      }),
+
+      new Promise(resolve => {
+        if (!customControl) {
+          return resolve()
+        }
+
+        compileFile({
+          srcPath: this.templateSourcePath('_partials', 'sass.scss'),
+          dstPath: this.currentThemePath('includes', 'customizer', 'assets-src', 'sass', 'controls', `_${customControl.slug}.scss`),
+          syntax: {
+            sass: {
+              description: customControl.description
+            }
+          }
+        })
+
+        resolve()
+      }),
+
+      new Promise(resolve => {
+        const scssPath = ['includes', 'customizer', 'assets-src', 'sass']
+
+        const sassControls = Object.keys(this.customizer.control_types)
+          .map(item => `'controls/${item}'`)
+          .join(',\n  ')
+
+        const sassBase = filelist(this.currentThemePath(...scssPath.concat('base')))
+          .filter(item => path.extname(item) === '.scss')
+          .map(item => `'base/${item.replace('_', '')}'`)
+          .join(',\n  ')
+
+        compileFile({
+          srcPath: this.templateSourcePath(...scssPath.concat('customizer.scss')),
+          dstPath: this.currentThemePath(...scssPath.concat('customizer.scss')),
+          syntax: {
+            sass: {
+              base: sassBase,
+              controls: sassControls
+            }
+          }
+        })
+        resolve()
+      }),
+
+      new Promise(resolve => {
+        if (!customControl) {
+          return resolve()
+        }
+
+        compileFile({
+          srcPath: this.templateSourcePath('_partials', 'script.js'),
+          dstPath: this.currentThemePath('includes', 'customizer', 'assets-src', 'js', 'controls', `${customControl.slug}.js`),
+          syntax: {
+            js: {
+              description: 'Your codes'
+            }
+          }
+        })
+        resolve()
       }),
 
       new Promise(resolve => {
@@ -583,8 +636,8 @@ class AddCustomizer extends CLI {
         resolve()
       })
     ]).then(
-      finish(message.SUCCEED_CUSTOMIZER_ADDED)
-    ).catch(exit)
+      this.$logger.finish(message.SUCCEED_CUSTOMIZER_ADDED)
+    ).catch(this.$logger.exit)
   }
 }
 

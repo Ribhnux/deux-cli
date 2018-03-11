@@ -12,7 +12,7 @@ const bulkCompiler = ({srcDir, dstDir, includes = [], excludes = [], rename = {}
   if (tree === 0) {
     excludes.forEach(item => {
       const dirname = path.dirname(item)
-      if (dirname !== '.' && !_excludes.includes(dirname)) {
+      if (dirname !== '.' && _excludes.includes(dirname)) {
         _excludes.push(dirname)
       }
     })

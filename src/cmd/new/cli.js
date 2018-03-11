@@ -1,6 +1,6 @@
 const path = require('path')
-const {createReadStream, createWriteStream} = require('fs')
 const {existsSync} = require('fs')
+const url = require('url')
 const inquirer = require('inquirer')
 const faker = require('faker')
 const Listr = require('listr')
@@ -10,24 +10,28 @@ const execa = require('execa')
 const wpFileHeader = require('wp-get-file-header')
 const slugify = require('node-slugify')
 const jsonar = require('jsonar')
+const cpFile = require('cp-file')
 const {validTags} = require('./fixtures')
 
 const CLI = global.deuxcli.require('main')
+const ApiRenderer = global.deuxcli.require('api-renderer')
 const messages = global.deuxcli.require('messages')
 const validator = global.deuxhelpers.require('util/validator')
-const {colorlog, exit, finish} = global.deuxhelpers.require('logger')
-const {capitalize} = global.deuxhelpers.require('util/misc')
+const {capitalize, getGitAuth} = global.deuxhelpers.require('util/misc')
 const compileFiles = global.deuxhelpers.require('compiler/bulk')
 
 class NewCLI extends CLI {
-  constructor() {
+  constructor(options = {}) {
     super()
-    this.init(true)
+    this.init(options, true)
   }
 
+  /**
+   * Prompts
+   */
   prepare() {
-    this.title = 'Create {New Theme}'
-    this.prompts = [
+    this.$title = 'Create {New Theme}'
+    this.$prompts = [
       {
         name: 'theme.name',
         message: 'Theme Name',
@@ -46,7 +50,10 @@ class NewCLI extends CLI {
         type: 'list',
         name: 'theme.parent',
         message: 'Parent Theme',
-        when: ({isChild}) => isChild,
+        when: ({isChild}) => {
+          const themes = this.themeListPath(true)
+          return isChild && themes.length > 0
+        },
         choices: answers => new Promise((resolve, reject) => {
           const themes = this.themeListPath(true)
 
@@ -129,10 +136,32 @@ class NewCLI extends CLI {
       },
 
       {
-        name: 'theme.repoUrl',
+        name: 'git.url',
         message: 'Repository',
         default: 'https://github.com/example/my-theme.git',
-        validate: value => validator(value, {url: 2, git: true, var: `"${value}"`})
+        validate: value => validator(value, {url: true, git: true, var: `"${value}"`})
+      },
+
+      {
+        name: 'git.username',
+        message: 'Git Username',
+        default: ({git}) => new Promise(resolve => {
+          const {username} = getGitAuth(git.url)
+          resolve(username)
+        }),
+        validate: value => validator(value, {minimum: 3, var: 'Username'})
+      },
+
+      {
+        type: 'password',
+        name: 'git.password',
+        message: 'Git Password',
+        when: ({git}) => git.username,
+        default: ({git}) => new Promise(resolve => {
+          const {password} = getGitAuth(git.url)
+          resolve(password)
+        }),
+        validate: value => validator(value, {minimum: 2, var: 'Password'})
       },
 
       {
@@ -149,68 +178,102 @@ class NewCLI extends CLI {
       {
         type: 'confirm',
         name: 'confirm',
-        message: 'Are you sure?'
+        message: 'Are you sure want to create new theme with this config?'
       }
     ]
   }
 
-  action({theme, overwrite, confirm}) {
-    if (!confirm) {
-      exit(messages.ERROR_THEME_CREATION_CANCELED)
+  action({theme, git, overwrite, confirm}) {
+    if (!this.$init.apiMode() && !confirm) {
+      this.$logger.exit(messages.ERROR_THEME_CREATION_CANCELED)
     }
 
     const themeNameLower = theme.name.toLowerCase()
-    theme.slug = slugify(themeNameLower)
+    const themeSlug = slugify(themeNameLower)
+    const themePath = this.themePath(themeSlug)
+    const gitPath = path.join(themePath, '.git')
+    const listrOpts = {}
+
+    theme.slug = themeSlug
     theme.slugfn = slugify(themeNameLower, {replacement: '_'})
     theme.created = {
       year: new Date().getFullYear()
     }
 
-    const themePath = this.themePath(theme.slug)
-    const gitPath = path.join(themePath, '.git')
-
-    colorlog(`Initializing {${theme.name}}`)
+    if (this.$init.apiMode()) {
+      listrOpts.renderer = ApiRenderer
+    }
 
     const task = new Listr([
       {
         title: 'Make theme directory',
         enabled: () => overwrite === false || overwrite === undefined,
-        task: () => new Promise(resolve => {
-          if (existsSync(themePath)) {
-            exit(messages.ERROR_THEME_ALREADY_EXISTS)
+        task: () => new Listr([
+          {
+            title: 'Create theme directory',
+            task: () => new Promise(resolve => {
+              if (existsSync(themePath)) {
+                this.$logger.exit(messages.ERROR_THEME_ALREADY_EXISTS)
+              }
+
+              mkdirp(themePath, err => {
+                if (err) {
+                  this.$logger.exit(err)
+                }
+
+                resolve()
+              })
+            })
           }
-
-          mkdirp(themePath, err => {
-            if (err) {
-              exit(err)
-            }
-
-            resolve()
-          })
-        })
+        ])
       },
 
       {
         title: 'Overwrite theme directory',
         enabled: () => overwrite,
-        task: () => new Promise(resolve => {
-          rimraf(path.join(themePath, '*'), err => {
-            if (err) {
-              exit(err)
-            }
+        task: () => new Listr([
+          {
+            title: 'Remove all contents',
+            task: () => new Promise(resolve => {
+              rimraf(path.join(themePath, '*'), err => {
+                if (err) {
+                  this.$logger.exit(err)
+                }
 
-            rimraf(path.join(themePath, '.git'), err => {
-              if (err) {
-                exit(err)
-              }
-              resolve()
+                resolve()
+              })
             })
-          })
-        })
+          },
+
+          {
+            title: 'Create theme directory',
+            task: () => new Promise(resolve => {
+              mkdirp(themePath, err => {
+                if (err) {
+                  this.$logger.exit(err)
+                }
+
+                resolve()
+              })
+            })
+          },
+
+          {
+            title: 'Remove .git directory',
+            task: () => new Promise(resolve => {
+              rimraf(gitPath, err => {
+                if (err) {
+                  this.$logger.exit(err)
+                }
+                resolve()
+              })
+            })
+          }
+        ])
       },
 
       {
-        title: 'Init Config',
+        title: 'Setup Config',
         task: () => new Promise((resolve, reject) => {
           const phpRegx = /\.php$/g
           const notHiddenFile = item => item && item !== '.gitkeep'
@@ -220,11 +283,25 @@ class NewCLI extends CLI {
             .filter(notHiddenFile)
 
           const themeDetails = Object.assign({}, theme)
-          delete themeDetails.repoUrl
 
           const info = {
-            details: themeDetails,
-            develop: false,
+            $details: themeDetails,
+            $releases: [
+              {
+                version: theme.version,
+                date: Date.now(),
+                changes: [
+                  'Initial Release'
+                ]
+              }
+            ],
+            $repo: {
+              credentials: {
+                username: git.username,
+                password: git.password
+              },
+              trylogin: false
+            },
             optimize: true,
             asset: {
               libs: {},
@@ -256,23 +333,14 @@ class NewCLI extends CLI {
               settings: {},
               control_types: {},
               controls: {}
-              /* eslint-enable */
-            },
-            releases: [
-              {
-                version: theme.version,
-                date: Date.now(),
-                changes: [
-                  'Initial Release'
-                ]
-              }
-            ]
+              /* eslint-enable camelcase */
+            }
           }
 
           try {
             this.addTheme(theme.slug, info)
 
-            if (!this.db.name) {
+            if (!this.$db.name) {
               this.setCurrentTheme(theme)
             }
 
@@ -284,16 +352,61 @@ class NewCLI extends CLI {
       },
 
       {
-        title: 'Init WordPress Theme',
+        title: 'Setup Repository',
+        task: () => {
+          const gitUrlObject = url.parse(git.url)
+          gitUrlObject.auth = `${git.username}:${git.password}`
+
+          const gitUrl = url.format(gitUrlObject)
+          const stdopts = {
+            cwd: this.currentThemePath()
+          }
+
+          return new Listr([
+            {
+              title: 'Init repository url',
+              task: () => execa.stdout('git', ['init', '-q'], stdopts)
+            },
+
+            {
+              title: `Add remote url '${git.url}'`,
+              task: () => execa.stdout('git', ['remote', 'add', 'origin', gitUrl], stdopts)
+            },
+
+            {
+              title: `Download git objects and refs from '${git.url}'`,
+              task: () => execa.stdout('git', ['fetch'], stdopts)
+            },
+
+            {
+              title: 'Clean Untracked files',
+              task: () => execa.stdout('git', ['clean', '-d', '-f', '-f'], stdopts)
+            },
+
+            {
+              title: `Pull master branch (if any) from '${git.url}'`,
+              task: () => new Promise(resolve => {
+                execa.stdout('git', ['pull', 'origin', 'master'], stdopts)
+                .then(() => resolve())
+                .catch(() => resolve())
+              })
+            }
+          ])
+        }
+      },
+
+      {
+        title: 'Setup WordPress Theme',
         task: () => new Listr([
           {
             title: 'Compiles theme',
             task: () => new Promise((resolve, reject) => {
               const themeInfo = this.themeInfo()
-              const releases = themeInfo.releases
+              const releases = themeInfo.$releases
 
-              delete themeInfo.details
-              delete themeInfo.releases
+              delete themeInfo.$details
+              delete themeInfo.$releases
+              delete themeInfo.$repo
 
               const config = jsonar.arrify(themeInfo, {
                 prettify: true,
@@ -329,7 +442,7 @@ class NewCLI extends CLI {
                 }),
 
                 new Promise((resolve, reject) => {
-                  mkdirp(this.currentThemePath('includes', 'customizers', 'assets-src', 'js', 'node_modules'), err => {
+                  mkdirp(this.currentThemePath('includes', 'customizer', 'assets-src', 'js', 'node_modules'), err => {
                     if (err) {
                       reject(err)
                     }
@@ -345,67 +458,40 @@ class NewCLI extends CLI {
 
           {
             title: 'Add screenshot',
-            task: () => new Promise((resolve, reject) => {
-              try {
-                createReadStream(this.templateSourcePath('_partials', 'screenshot.png'))
-                  .pipe(createWriteStream(this.currentThemePath('screenshot.png')))
-                resolve()
-              } catch (err) {
-                reject(err)
-              }
-            })
-          }
-        ])
-      },
-
-      {
-        title: 'Init Repository',
-        task: () => new Listr([
-          {
-            title: 'Init repository url',
-            task: () => new Promise((resolve, reject) => {
-              mkdirp(gitPath, err => {
-                if (err) {
-                  reject(err)
-                }
-                execa.stdout('git', [`--git-dir=${gitPath}`, `--work-tree=${gitPath}`, 'init', '-q']).then(resolve).catch(reject)
-              })
-            })
-          },
-
-          {
-            title: `Add remote url \`${theme.repoUrl}\``,
-            task: () => execa.stdout('git', [`--git-dir=${gitPath}`, 'remote', 'add', 'origin', theme.repoUrl])
-          },
-
-          {
-            title: `Validate remote url \`${theme.repoUrl}\``,
-            task: () => execa.stdout('git', [`--git-dir=${gitPath}`, 'pull', 'origin', 'master'])
-          },
-
-          {
-            title: `Download git objects and refs from \`${theme.repoUrl}\``,
-            task: () => execa.stdout('git', [`--git-dir=${gitPath}`, 'fetch'])
+            task: () => cpFile(
+              this.templateSourcePath('_partials', 'screenshot.png'),
+              this.currentThemePath('screenshot.png')
+            )
           }
         ])
       }
-    ])
+    ], listrOpts)
+
+    this.$logger.title(`Initializing {${theme.name}}`)
 
     task.run()
-    .then(() => {
-      finish(messages.SUCCEED_CREATE_NEW_THEME)
-    })
-    .catch(err => {
-      setTimeout(() => {
-        rimraf(themePath, _err => {
-          if (_err) {
-            exit(_err)
-          }
+      .then(() => {
+        const $repo = this.themeInfo('$repo')
+        $repo.trylogin = true
 
-          exit(err)
+        this.setThemeConfig({
+          $repo
         })
-      }, 1500)
-    })
+      })
+      .then(() => {
+        this.$logger.finish(messages.SUCCEED_CREATE_NEW_THEME)
+      })
+      .catch(err => {
+        setTimeout(() => {
+          rimraf(themePath, _err => {
+            if (_err) {
+              this.$logger.exit(_err)
+            }
+
+            this.$logger.exit(err)
+          })
+        }, 1500)
+      })
   }
 }
 

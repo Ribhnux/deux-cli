@@ -2,17 +2,16 @@ const rimraf = require('rimraf')
 
 const CLI = global.deuxcli.require('main')
 const messages = global.deuxcli.require('messages')
-const {exit, finish} = global.deuxhelpers.require('logger')
 const {assetTypes} = global.deuxcmd.require('add/cli/asset/fixtures')
 const {capitalize} = global.deuxhelpers.require('util/misc')
 const compileFile = global.deuxhelpers.require('compiler/single')
-const {happyExit, captchaMaker, separatorMaker} = global.deuxhelpers.require('util/cli')
+const {captchaMaker, separatorMaker} = global.deuxhelpers.require('util/cli')
 
 class RemoveAsset extends CLI {
-  constructor() {
+  constructor(options) {
     super()
     this.themeAsset = undefined
-    this.init()
+    this.init(options)
   }
 
   /**
@@ -32,11 +31,11 @@ class RemoveAsset extends CLI {
     }
 
     if (assetLength === 0) {
-      happyExit()
+      this.$logger.happyExit()
     }
 
-    this.title = 'Remove {Assets}'
-    this.prompts = [
+    this.$title = 'Remove {Assets}'
+    this.$prompts = [
       {
         type: 'checkbox',
         name: 'assets',
@@ -51,18 +50,15 @@ class RemoveAsset extends CLI {
           for (const value in this.themeAsset.libs) {
             if (Object.prototype.hasOwnProperty.call(this.themeAsset.libs, value)) {
               let version = ''
-              let semver = value
 
               if (this.themeAsset.libs[value].version) {
-                semver += `@${this.themeAsset.libs[value].version}`
                 version = `v${this.themeAsset.libs[value].version}`
               }
 
               list.push({
                 name: `${value} ${version}`,
                 value: {
-                  key: assetTypes.LIB,
-                  semver,
+                  type: assetTypes.LIB,
                   value
                 }
               })
@@ -71,14 +67,14 @@ class RemoveAsset extends CLI {
 
           let sass = []
 
-          for (const type in this.themeAsset.sass) {
-            if (Object.prototype.hasOwnProperty.call(this.themeAsset.sass, type)) {
-              this.themeAsset.sass[type].forEach(value => {
+          for (const assetType in this.themeAsset.sass) {
+            if (Object.prototype.hasOwnProperty.call(this.themeAsset.sass, assetType)) {
+              this.themeAsset.sass[assetType].forEach(value => {
                 sass.push({
-                  name: capitalize(`${value} ${type.substr(0, type.length - 1)}`),
+                  name: capitalize(`${value} ${assetType.substr(0, assetType.length - 1)}`),
                   value: {
-                    key: assetTypes.SASS,
-                    type,
+                    type: assetTypes.SASS,
+                    assetType,
                     value
                   }
                 })
@@ -98,7 +94,7 @@ class RemoveAsset extends CLI {
               fonts.push({
                 name: this.themeAsset.fonts[value].name,
                 value: {
-                  key: assetTypes.FONT,
+                  type: assetTypes.FONT,
                   value
                 }
               })
@@ -134,32 +130,33 @@ class RemoveAsset extends CLI {
    * @param {Object} {assets, confirm}
    */
   action({assets, confirm}) {
-    if (assets.length === 0 || !confirm) {
-      happyExit()
+    if (assets.length === 0 || (!confirm && !this.$init.apiMode())) {
+      this.$logger.happyExit()
     }
 
     const themeDetails = this.themeDetails()
 
     Promise.all(assets.map(
       item => new Promise(resolve => {
-        switch (item.key) {
+        switch (item.type) {
           case assetTypes.LIB:
-            rimraf.sync(this.currentThemePath('assets-src', 'libs', item.semver))
+            rimraf.sync(this.currentThemePath('assets', 'vendors', item.value))
+            rimraf.sync(this.currentThemePath('assets-src', 'sass', 'vendors', `_${item.value}.scss`))
             delete this.themeAsset.libs[item.value]
             break
 
           case assetTypes.SASS:
-            this.themeAsset.sass[item.type].forEach(_item => {
-              rimraf.sync(this.currentThemePath('assets-src', 'sass', item.type, `_${_item}.scss`))
+            this.themeAsset.sass[item.sassType].forEach(_item => {
+              rimraf.sync(this.currentThemePath('assets-src', 'sass', item.sassType, `_${_item}.scss`))
             })
 
-            this.themeAsset.sass[item.type] = this.themeAsset.sass[item.type].filter(
+            this.themeAsset.sass[item.sassType] = this.themeAsset.sass[item.sassType].filter(
               _item => _item !== item.value
             )
 
             compileFile({
-              srcPath: this.templateSourcePath('assets-src', 'sass', 'main.scss'),
-              dstPath: this.currentThemePath('assets-src', 'sass', 'main.scss'),
+              srcPath: this.templateSourcePath('assets-src', 'sass', 'theme.scss'),
+              dstPath: this.currentThemePath('assets-src', 'sass', 'theme.scss'),
               syntax: {
                 sass: {
                   components: this.themeAsset.sass.components.map(item => `'components/${item}'`).join(',\n  '),
@@ -183,17 +180,13 @@ class RemoveAsset extends CLI {
         resolve()
       })
     )).then(() => {
-      Promise.all([
-        new Promise(resolve => {
-          this.setThemeConfig({
-            asset: this.themeAsset
-          })
-          resolve()
-        })
-      ]).then(
-        finish(messages.SUCCEED_REMOVED_ASSET)
-      ).catch(exit)
-    }).catch(exit)
+      this.setThemeConfig({
+        asset: this.themeAsset
+      })
+      return true
+    }).then(() => {
+      this.$logger.finish(messages.SUCCEED_REMOVED_ASSET)
+    }).catch(this.$logger.exit)
   }
 }
 

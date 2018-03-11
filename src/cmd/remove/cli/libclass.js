@@ -4,14 +4,13 @@ const wpFileHeader = require('wp-get-file-header')
 
 const CLI = global.deuxcli.require('main')
 const messages = global.deuxcli.require('messages')
-const {exit, finish} = global.deuxhelpers.require('logger')
-const {happyExit, captchaMaker, separatorMaker} = global.deuxhelpers.require('util/cli')
+const {captchaMaker, separatorMaker} = global.deuxhelpers.require('util/cli')
 
 class RemoveLibClass extends CLI {
-  constructor() {
+  constructor(options) {
     super()
     this.themeLibraries = undefined
-    this.init()
+    this.init(options)
   }
 
   /**
@@ -21,14 +20,14 @@ class RemoveLibClass extends CLI {
     this.themeLibraries = this.themeInfo('libraries')
 
     if (this.themeLibraries.length === 0) {
-      happyExit()
+      this.$logger.happyExit()
     }
 
-    this.title = 'Remove {Libraries}'
-    this.prompts = [
+    this.$title = 'Remove {Libraries}'
+    this.$prompts = [
       {
         type: 'checkbox',
-        name: 'libraries',
+        name: 'lib',
         message: 'Select libraries you want to remove',
         choices: () => new Promise((resolve, reject) => {
           Promise.all(this.themeLibraries.map(
@@ -66,25 +65,25 @@ class RemoveLibClass extends CLI {
       },
 
       Object.assign(captchaMaker(), {
-        when: ({libraries}) => libraries.length > 0
+        when: ({lib}) => lib.length > 0
       }),
 
       {
         type: 'confirm',
         name: 'confirm',
-        when: ({libraries, captcha}) => libraries.length > 0 && captcha,
+        when: ({lib, captcha}) => lib.length > 0 && captcha,
         default: false,
         message: () => 'Removing libraries from config can\'t be undone. Do you want to continue?'
       }
     ]
   }
 
-  action({libraries, confirm}) {
-    if (libraries.length === 0 || !confirm) {
-      happyExit()
+  action({lib, confirm}) {
+    if (lib.length === 0 || (!confirm && !this.$init.apiMode())) {
+      this.$logger.happyExit()
     }
 
-    Promise.all(libraries.map(
+    Promise.all(lib.map(
       item => new Promise(resolve => {
         const libPath = this.currentThemePath('includes', 'libraries', `${item}.php`)
         if (existsSync(libPath)) {
@@ -93,22 +92,13 @@ class RemoveLibClass extends CLI {
         resolve(item)
       })
     )).then(libraries => {
-      Promise.all([
-        new Promise(resolve => {
-          this.themeLibraries = this.themeLibraries.filter(item => !libraries.includes(item))
-          resolve()
-        }),
-
-        new Promise(resolve => {
-          this.setThemeConfig({
-            libraries: this.themeLibraries
-          })
-          resolve()
-        })
-      ]).then(
-        finish(messages.SUCCEED_REMOVED_LIBCLASS)
-      ).catch(exit)
-    }).catch(exit)
+      this.themeLibraries = this.themeLibraries.filter(item => !libraries.includes(item))
+      this.setThemeConfig({
+        libraries: this.themeLibraries
+      })
+    }).then(() => {
+      this.$logger.finish(messages.SUCCEED_REMOVED_LIBCLASS)
+    }).catch(this.$logger.exit)
   }
 }
 

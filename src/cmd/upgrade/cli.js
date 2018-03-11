@@ -11,18 +11,18 @@ const {itemTypes} = require('./fixtures')
 
 const CLI = global.deuxcli.require('main')
 const messages = global.deuxcli.require('messages')
-const {loader, exit, done, finish} = global.deuxhelpers.require('logger')
+const {colorlog} = global.deuxhelpers.require('logger')
 const {separatorMaker} = global.deuxhelpers.require('util/cli')
 const {libSource} = global.deuxcmd.require('add/cli/asset/fixtures')
 const {pluginSrcTypes} = global.deuxcmd.require('add/cli/fixtures')
 
 class UpgradeCLI extends CLI {
-  constructor() {
+  constructor(options) {
     super()
     this.plugins = null
     this.assets = null
-    this.loader = null
-    this.init()
+    this.options = options
+    this.init(options)
   }
 
   /**
@@ -31,8 +31,8 @@ class UpgradeCLI extends CLI {
   prepare() {
     this.plugins = this.themeInfo('plugins')
     this.assets = this.themeInfo('asset')
-    this.title = 'Upgrade {Assets / Plugins}'
-    this.prompts = [{}]
+    this.$title = this.options.list ? 'Upgradable list' : 'Upgrade {Assets / Plugins}'
+    this.$prompts = [{}]
   }
 
   /**
@@ -40,7 +40,7 @@ class UpgradeCLI extends CLI {
    */
   beforeAction() {
     return new Promise(resolve => {
-      this.loader = loader('Check new version of assets / plugins')
+      this.loader = this.$logger.loader('Check new version of assets / plugins')
 
       /**
        * Find upgradable plugins from WordPpress.org
@@ -142,12 +142,14 @@ class UpgradeCLI extends CLI {
         })
       ]).then(upgradeList => {
         const [pluginList, assetList] = upgradeList
-
+        this.pluginList = pluginList
+        this.assetList = assetList
         this.loader.stop()
-        this.prompts = [
+
+        this.$prompts = this.options.list ? [] : [
           {
             type: 'checkbox',
-            name: 'upgrade.items',
+            name: 'items',
             message: 'Choose which assets / plugins to update',
             when: () => pluginList.length > 0 || assetList.length > 0,
             choices: () => new Promise(resolve => {
@@ -185,11 +187,11 @@ class UpgradeCLI extends CLI {
             type: 'checkbox',
             name: 'assets',
             message: 'Choose which files to update',
-            when: ({upgrade}) => {
+            when: ({items}) => {
               let assetItems = 0
 
-              if (upgrade && upgrade.items) {
-                upgrade.items.forEach(item => {
+              if (items) {
+                items.forEach(item => {
                   if (item.type === itemTypes.ASSET) {
                     assetItems++
                   }
@@ -198,10 +200,10 @@ class UpgradeCLI extends CLI {
 
               return assetItems > 0
             },
-            choices: ({upgrade}) => new Promise(resolve => {
+            choices: ({items}) => new Promise(resolve => {
               let list = []
 
-              upgrade.items.filter(item => item.type === itemTypes.ASSET).reduce((promise, item) => {
+              items.filter(item => item.type === itemTypes.ASSET).reduce((promise, item) => {
                 return promise.then(() => {
                   const assetSemver = `${item.slug}@${item.latestVersion}`
 
@@ -229,15 +231,16 @@ class UpgradeCLI extends CLI {
                       resolve()
                     }).catch(reject)
                   })
-                }).catch(exit)
+                }).catch(this.$logger.exit)
               }, Promise.resolve()).then(() => {
                 resolve(list)
-              }).catch(exit)
+              }).catch(this.$logger.exit)
             })
           }
         ]
+
         resolve()
-      }).catch(exit)
+      }).catch(this.$logger.exit)
     })
   }
 
@@ -245,98 +248,129 @@ class UpgradeCLI extends CLI {
    * Upgrade assets and plugins
    * @param {Object} {upgradeItems}
    */
-  action({upgrade, assets}) {
-    if (!upgrade) {
-      done({
-        message: messages.SUCCEED_ALL_UPDATED,
-        paddingBottom: true,
-        exit: true
-      })
-    }
+  action(prompts) {
+    if (this.options.list) {
+      if (this.$init.apiMode()) {
+        this.$logger.finish({
+          plugins: this.pluginList,
+          assets: this.assetList
+        })
+      }
 
-    Promise.all(upgrade.items.map(item => {
-      return new Promise((resolve, reject) => {
-        try {
-          if (item.type === itemTypes.PLUGIN) {
-            this.plugins[item.slug].version = item.latestVersion
-            this.setThemeConfig({
-              plugins: this.plugins
-            })
-            resolve()
-          } else if (item.type === itemTypes.ASSET) {
-            // Assets upgrade script.
-            const newFiles = []
-            assets.filter(asset => asset.slug === item.slug).forEach(asset => {
-              let existingFileObj
+      if (this.pluginList.length === 0 && this.assetList.length === 0) {
+        this.$logger.finish(messages.SUCCEED_NO_UPDATED)
+      }
 
-              this.assets.libs[item.slug].files.forEach(file => {
-                if (file.path === asset.file) {
-                  existingFileObj = file
+      if (this.assetList.length > 0) {
+        const _assets = this.assetList.map(item => {
+          return `${chalk.bold.cyan(item.slug)} ${chalk.gray(item.version)} > ${chalk.green(item.latestVersion)}`
+        })
+        colorlog('{Assets}', false)
+        colorlog(`${_assets.join('\n')}\n`, false)
+      }
+
+      if (this.pluginList.length > 0) {
+        const _plugins = this.pluginList.map(item => {
+          return `${chalk.bold.cyan(item.slug)} ${chalk.gray(item.version)} > ${chalk.green(item.latestVersion)}`
+        })
+        colorlog('{Plugins}', false)
+        colorlog(`${_plugins.join('\n')}\n`, false)
+      }
+    } else {
+      const {items, assets} = prompts
+
+      if (!items) {
+        this.$logger.finish(messages.SUCCEED_ALL_UPDATED)
+      }
+
+      if (!items || items.length === 0) {
+        this.$logger.finish(messages.SUCCEED_NO_UPDATED)
+      }
+
+      Promise.all(items.map(item => {
+        return new Promise((resolve, reject) => {
+          try {
+            if (item.type === itemTypes.PLUGIN) {
+              this.plugins[item.slug].version = item.latestVersion
+              this.setThemeConfig({
+                plugins: this.plugins
+              })
+              resolve()
+            } else if (item.type === itemTypes.ASSET) {
+              // Assets upgrade script.
+              const newFiles = []
+              assets.filter(asset => asset.slug === item.slug).forEach(asset => {
+                let existingFileObj
+
+                this.assets.libs[item.slug].files.forEach(file => {
+                  if (file.path === asset.file) {
+                    existingFileObj = file
+                  }
+                })
+
+                /* eslint-disable camelcase */
+                const ext = path.extname(asset.file)
+                let fileObj = {
+                  ext: ext.replace('.', ''),
+                  path: asset.file,
+                  is_active: true,
+                  deps: []
                 }
+                /* eslint-enable */
+
+                if (existingFileObj) {
+                  fileObj = Object.assign(fileObj, existingFileObj)
+                }
+
+                newFiles.push(fileObj)
               })
 
-              /* eslint-disable camelcase */
-              const ext = path.extname(asset.file)
-              let fileObj = {
-                ext: ext.replace('.', ''),
-                path: asset.file,
-                is_active: true,
-                deps: []
-              }
-              /* eslint-enable */
+              const libsemver = `${item.slug}@${item.version}`
+              rimraf.sync(this.currentThemePath('assets-src', 'libs', libsemver))
 
-              if (existingFileObj) {
-                fileObj = Object.assign(fileObj, existingFileObj)
-              }
+              const newLibsemver = `${item.slug}@${item.latestVersion}`
+              const libpath = this.currentThemePath('assets-src', 'libs', newLibsemver)
+              const assetUrls = cdnjs.url(newLibsemver, newFiles.map(i => i.path))
 
-              newFiles.push(fileObj)
-            })
-
-            const libsemver = `${item.slug}@${item.version}`
-            rimraf.sync(this.currentThemePath('assets-src', 'libs', libsemver))
-
-            const newLibsemver = `${item.slug}@${item.latestVersion}`
-            const libpath = this.currentThemePath('assets-src', 'libs', newLibsemver)
-            const assetUrls = cdnjs.url(newLibsemver, newFiles.map(i => i.path))
-
-            mkdirp(newLibsemver, err => {
-              if (err) {
-                reject(err)
-              }
-
-              this.loader.frame()
-              this.loader.text = 'Downloading assets...'
-              this.loader.start()
-
-              const assetDownloader = () => new Promise(resolve => {
-                Promise.all(assetUrls.map(
-                  filename => download(filename, libpath)
-                )).then(() => {
-                  this.loader.succeed(`${item.slug} file(s) downloaded.`)
-                  resolve()
-                }).catch(err => {
-                  rimraf.sync(libpath)
+              mkdirp(newLibsemver, err => {
+                if (err) {
                   reject(err)
-                })
-              })
+                }
 
-              assetDownloader().then(() => {
-                this.assets.libs[item.slug].version = item.latestVersion
-                this.assets.libs[item.slug].files = newFiles
-                this.setThemeConfig({
-                  asset: this.asset
+                this.loader.frame()
+                this.loader.text = 'Downloading assets...'
+                this.loader.start()
+
+                const assetDownloader = () => new Promise(resolve => {
+                  Promise.all(assetUrls.map(
+                    filename => download(filename, libpath)
+                  )).then(() => {
+                    this.loader.succeed(`${item.slug} file(s) downloaded.`)
+                    resolve()
+                  }).catch(err => {
+                    rimraf.sync(libpath)
+                    reject(err)
+                  })
                 })
-                resolve()
-              }).catch(reject)
-            })
+
+                assetDownloader().then(() => {
+                  this.assets.libs[item.slug].version = item.latestVersion
+                  this.assets.libs[item.slug].files = newFiles
+                  this.setThemeConfig({
+                    asset: this.asset
+                  })
+                  resolve()
+                }).catch(reject)
+              })
+            }
+          } catch (err) {
+            reject(err)
           }
-        } catch (err) {
-          reject(err)
-        }
-      })
-    })).then(() => {
-      finish(messages.SUCCEED_UPDATED)
-    }).catch(exit)
+        })
+      })).then(() => {
+        this.$logger.finish(messages.SUCCEED_UPDATED)
+      }).catch(this.$logger.exit)
+    }
   }
 }
 

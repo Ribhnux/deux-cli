@@ -5,22 +5,21 @@ const uniq = require('lodash.uniq')
 const CLI = global.deuxcli.require('main')
 const messages = global.deuxcli.require('messages')
 const validator = global.deuxhelpers.require('util/validator')
-const {exit, finish} = global.deuxhelpers.require('logger')
 const compileFile = global.deuxhelpers.require('compiler/single')
 const {capitalize} = global.deuxhelpers.require('util/misc')
 
 class AddLibClass extends CLI {
-  constructor() {
+  constructor(options) {
     super()
-    this.init()
+    this.init(options)
   }
 
   /**
    * Setup add libclass prompts
    */
   prepare() {
-    this.title = 'Add {PHP Library}'
-    this.prompts = [
+    this.$title = 'Add {PHP Library}'
+    this.$prompts = [
       {
         name: 'lib.name',
         message: 'Library name',
@@ -37,7 +36,7 @@ class AddLibClass extends CLI {
 
       {
         type: 'confirm',
-        name: 'lib.overwrite',
+        name: 'overwrite',
         message: 'PHP library already exists. Continue to overwrite?',
         default: true,
         when: ({lib}) => new Promise(resolve => {
@@ -50,11 +49,11 @@ class AddLibClass extends CLI {
   /**
    * Compile php library file and config
    *
-   * @param {Object} {lib}
+   * @param {Object} {lib, overwrite}
    */
-  action({lib}) {
-    if (lib.overwrite === false) {
-      exit(messages.ERROR_LIBCLASS_ALREADY_EXISTS)
+  action({lib, overwrite}) {
+    if (overwrite === false) {
+      this.$logger.exit(messages.ERROR_LIBCLASS_ALREADY_EXISTS)
     }
 
     const slug = slugify(lib.name)
@@ -84,8 +83,8 @@ class AddLibClass extends CLI {
         resolve()
       })
     ]).then(
-      finish(messages.SUCCEED_LIBCLASS_ADDED)
-    ).catch(exit)
+      this.$logger.finish(messages.SUCCEED_LIBCLASS_ADDED)
+    ).catch(this.$logger.exit)
   }
 }
 

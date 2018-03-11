@@ -86,7 +86,7 @@ module.exports = (value, options) => {
     }
 
     if (options.array) {
-      lengthRule.tokenizer = value => value
+      lengthRule.tokenizer = value => Array.isArray(value) ? value : value.split(',')
       tooShort = 'are less selected'
       tokenSuffix = 'is selected'
       minimumIs = 'at least'
@@ -108,7 +108,7 @@ module.exports = (value, options) => {
     let urlStr = 'url'
 
     if (options.git) {
-      urlStr = 'git'
+      urlStr = 'git repository URL'
     }
 
     rules.value.url = {
@@ -126,9 +126,9 @@ module.exports = (value, options) => {
   }
 
   if (options.slug) {
-    let slugMessage = 'is slug, only contains lowercase alphabet, number, and -'
+    let slugMessage = 'should be a slug, only contains lowercase alphabet, number, and -'
     if (options.slugPattern !== allowedSlugs) {
-      slugMessage = `is slug, only contains ${options.slugPattern}`
+      slugMessage = `should be a slug, only contains ${options.slugPattern}`
     }
 
     rules.value.format = {

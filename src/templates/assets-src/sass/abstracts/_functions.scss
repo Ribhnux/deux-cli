@@ -36,3 +36,20 @@
 @function font($path, $base: $base-url) {
   @return asset($base, 'fonts/', $path);
 }
+
+/**
+ * Convert LTR to RTL
+ *
+ * @param {Mixed} $default - default value
+ * @param {Mixed} $rtl - rtl version
+ * @return {Mixed}
+ */
+@function rtl($default, $rtl, $custom_rule: '') {
+  $rule: 'rtl:';
+
+  @if (rule != '') {
+    $rule: 'rtl:' + $custom_rule;
+  }
+
+  @return $default #{'/*' + $rule + $rtl +'*/'};
+}

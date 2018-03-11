@@ -5,21 +5,20 @@ const uniq = require('lodash.uniq')
 const CLI = global.deuxcli.require('main')
 const messages = global.deuxcli.require('messages')
 const validator = global.deuxhelpers.require('util/validator')
-const {exit, finish} = global.deuxhelpers.require('logger')
 const compileFile = global.deuxhelpers.require('compiler/single')
 
 class AddHelper extends CLI {
-  constructor() {
+  constructor(options) {
     super()
-    this.init()
+    this.init(options)
   }
 
   /**
    * Setup add helpers prompts
    */
   prepare() {
-    this.title = 'Add {Helper} (PHP Function)'
-    this.prompts = [
+    this.$title = 'Add {Helper} (PHP Function)'
+    this.$prompts = [
       {
         name: 'helper.name',
         message: 'Helper Name',
@@ -36,7 +35,7 @@ class AddHelper extends CLI {
 
       {
         type: 'confirm',
-        name: 'helper.overwrite',
+        name: 'overwrite',
         message: 'Helper already exists. Continue to overwrite?',
         default: true,
         when: ({helper}) => new Promise(resolve => {
@@ -50,11 +49,11 @@ class AddHelper extends CLI {
   /**
    * Compile helpers file and config
    *
-   * @param {Object} {helper}
+   * @param {Object} {helper, overwrite}
    */
-  action({helper}) {
-    if (helper.overwrite === false) {
-      exit(messages.ERROR_HELPER_ALREADY_EXISTS)
+  action({helper, overwrite}) {
+    if (overwrite === false) {
+      this.$logger.exit(messages.ERROR_HELPER_ALREADY_EXISTS)
     }
 
     helper.slugfn = slugify(helper.name, {replacement: '_'})
@@ -80,8 +79,8 @@ class AddHelper extends CLI {
         resolve()
       })
     ]).then(
-      finish(messages.SUCCEED_HELPER_ADDED)
-    ).catch(exit)
+      this.$logger.finish(messages.SUCCEED_HELPER_ADDED)
+    ).catch(this.$logger.exit)
   }
 }
 
