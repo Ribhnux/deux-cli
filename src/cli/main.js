@@ -19,6 +19,38 @@ class CLI {
     this.$logger = {}
     this.$init = undefined
     this.$input = undefined
+    this.$emptyRules = {
+      asset: {
+        libs: {},
+        sass: {
+          components: [],
+          layouts: [],
+          pages: [],
+          themes: [],
+          vendors: []
+        },
+        fonts: {}
+      },
+      plugins: {},
+      components: [],
+      imgsize: {},
+      filters: [],
+      actions: [],
+      libraries: [],
+      helpers: [],
+      menus: {},
+      widgets: {},
+      features: {},
+      customizer: {
+        /* eslint-disable camelcase */
+        panels: {},
+        sections: {},
+        settings: {},
+        control_types: {},
+        controls: {}
+        /* eslint-enable */
+      }
+    }
   }
 
   /**
@@ -374,38 +406,7 @@ class CLI {
     const configPath = this.currentThemeConfigPath()
     const phpArray = arrandel(configPath)
     const json = jsonar.parse(phpArray[`${slugfn}_config`], {
-      emptyRules: {
-        asset: {
-          libs: {},
-          sass: {
-            components: [],
-            layouts: [],
-            pages: [],
-            themes: [],
-            vendors: []
-          },
-          fonts: {}
-        },
-        plugins: {},
-        components: [],
-        imgsize: {},
-        filters: [],
-        actions: [],
-        libraries: [],
-        helpers: [],
-        menus: {},
-        widgets: {},
-        features: {},
-        customizer: {
-          /* eslint-disable camelcase */
-          panels: {},
-          sections: {},
-          settings: {},
-          control_types: {},
-          controls: {}
-          /* eslint-enable */
-        }
-      }
+      emptyRules: this.$emptyRules
     })
     this.setThemeConfig(json, true)
   }
