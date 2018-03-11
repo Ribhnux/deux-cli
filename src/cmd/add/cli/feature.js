@@ -463,12 +463,12 @@ class AddFeature extends CLI {
     const initHelper = (checker, options, key, helper) => {
       const callbackPath = this.currentThemePath('includes', 'helpers', `${helper.file}.php`)
       if (checker) {
-        options[key] = `${theme.details.slugfn}_${helper.slugfn}`
+        options[key] = `${theme.$details.slugfn}_${helper.slugfn}`
         compileFile({
           srcPath: this.templateSourcePath('_partials', 'helper.php'),
           dstPath: callbackPath,
           syntax: {
-            theme: theme.details,
+            theme: theme.$details,
             helper
           }
         })

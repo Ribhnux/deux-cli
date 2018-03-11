@@ -82,7 +82,7 @@ class ReleaseCLI extends CLI {
    * Prepare before prompt.
    */
   prepare() {
-    const {version: oldVersion} = lastArray(this.themeInfo('releases'))
+    const {version: oldVersion} = lastArray(this.themeInfo('$releases'))
     this.$title = `Release new version of {${this.themeDetails('name')}}`
     this.$prompts = [
       {
@@ -148,12 +148,12 @@ class ReleaseCLI extends CLI {
     const newVersion = release.version || release.customVersion
     const stdopts = {cwd: this.currentThemePath()}
     const gitFailCallback = () => {
-      const repo = this.themeInfo('repo')
-      repo.trylogin = false
-      this.setThemeConfig({repo})
+      const $repo = this.themeInfo('$repo')
+      $repo.trylogin = false
+      this.setThemeConfig({$repo})
     }
 
-    const releases = this.themeInfo('releases')
+    const releases = this.themeInfo('$releases')
     const themeDetails = this.themeDetails()
 
     const task = new Listr([
@@ -299,7 +299,7 @@ class ReleaseCLI extends CLI {
 
               this.setThemeConfig({
                 releases,
-                details: themeDetails
+                $details: themeDetails
               }, true)
 
               resolve()
@@ -329,6 +329,14 @@ class ReleaseCLI extends CLI {
                 dstPath: this.currentThemePath('CHANGELOG.md'),
                 syntax: {
                   theme: themeDetails,
+                  releases
+                }
+              })
+
+              compileFile({
+                srcPath: this.templateSourcePath('releases.json'),
+                dstPath: this.currentThemePath('releases.json'),
+                syntax: {
                   releases
                 }
               })

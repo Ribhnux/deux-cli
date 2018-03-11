@@ -89,22 +89,36 @@ class StatusCLI extends CLI {
           .map(dir => {
             return filelist(this.currentThemePath('partial-templates', dir)).map(file => file).length
           }).reduce((a, b) => a + b),
-        suffix: 'Parital Templates',
+        suffix: 'Partial Templates',
         tab: 3
       })
 
       this.status.push({
         label: 'Components',
         value: this.theme.components.length,
-        suffix: 'Installed',
+        suffix: 'Templates',
         tab: 2
       })
 
       this.status.push({
         label: 'Plugins',
         value: Object.keys(this.theme.plugins).length,
-        suffix: 'Dependencies',
+        suffix: 'Installed',
         tab: 2
+      })
+
+      this.status.push({
+        label: 'Functions',
+        value: Object.keys(this.theme.widgets).length,
+        suffix: 'Widgets',
+        tab: 2
+      })
+
+      this.status.push({
+        label: '',
+        value: Object.keys(this.theme.menus).length,
+        suffix: 'Menus',
+        tab: 3
       })
 
       this.status.push({

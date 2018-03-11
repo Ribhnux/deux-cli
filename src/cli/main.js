@@ -19,6 +19,38 @@ class CLI {
     this.$logger = {}
     this.$init = undefined
     this.$input = undefined
+    this.$emptyRules = {
+      asset: {
+        libs: {},
+        sass: {
+          components: [],
+          layouts: [],
+          pages: [],
+          themes: [],
+          vendors: []
+        },
+        fonts: {}
+      },
+      plugins: {},
+      components: [],
+      imgsize: {},
+      filters: [],
+      actions: [],
+      libraries: [],
+      helpers: [],
+      menus: {},
+      widgets: {},
+      features: {},
+      customizer: {
+        /* eslint-disable camelcase */
+        panels: {},
+        sections: {},
+        settings: {},
+        control_types: {},
+        controls: {}
+        /* eslint-enable */
+      }
+    }
   }
 
   /**
@@ -156,19 +188,6 @@ class CLI {
   }
 
   /**
-   * Remove theme from database
-   * @param {String} themeName
-   */
-  removeTheme(themeName = '') {
-    if (themeName !== '' && this.getThemes(themeName)) {
-      delete this.$db[dbTypes.THEMES][themeName]
-      if (this.$db[dbTypes.CURRENT] && this.$db[dbTypes.CURRENT].slug === themeName) {
-        this.$db[dbTypes.CURRENT] = {}
-      }
-    }
-  }
-
-  /**
    * Alias of getCurrentTheme
    *
    * @param {String} key
@@ -192,10 +211,10 @@ class CLI {
     const currentTheme = this.getCurrentTheme()
 
     if (key !== '') {
-      return currentTheme.details[key]
+      return currentTheme.$details[key]
     }
 
-    return currentTheme.details
+    return currentTheme.$details
   }
 
   /**
@@ -214,10 +233,10 @@ class CLI {
     const themeDetails = this.themeDetails()
     const config = Object.assign({}, themeInfo)
 
+    delete config.$details
     delete config.asset.sass
-    delete config.details
-    delete config.releases
-    delete config.repo
+    delete config.$releases
+    delete config.$repo
 
     if (sync === false) {
       const phpconfig = jsonar.arrify(config, {
@@ -301,6 +320,23 @@ class CLI {
   }
 
   /**
+   * Remove theme from database
+   * @param {String} slug
+   */
+  removeTheme(slug = '') {
+    if (slug !== '' && this.getThemes(slug)) {
+      const themes = this.$db[dbTypes.THEMES]
+
+      delete themes[slug]
+      this.$db[dbTypes.THEMES] = themes
+
+      if (this.$db[dbTypes.CURRENT] && this.$db[dbTypes.CURRENT].slug === slug) {
+        this.$db[dbTypes.CURRENT] = {}
+      }
+    }
+  }
+
+  /**
    * Get current active theme in project
    */
   getCurrentTheme() {
@@ -326,9 +362,16 @@ class CLI {
    * Set active theme in project
    *
    * @param {Object} object
+   * @param {Boolean} initial Check if current is empty or initial.
    */
-  setCurrentTheme({name, slug, version}) {
-    this.$db[dbTypes.CURRENT] = {name, slug, version}
+  setCurrentTheme({name, slug, version}, initial = false) {
+    if (initial) {
+      if (!this.$db[dbTypes.CURRENT].slug) {
+        this.$db[dbTypes.CURRENT] = {name, slug, version}
+      }
+    } else {
+      this.$db[dbTypes.CURRENT] = {name, slug, version}
+    }
   }
 
   /**
@@ -370,38 +413,7 @@ class CLI {
     const configPath = this.currentThemeConfigPath()
     const phpArray = arrandel(configPath)
     const json = jsonar.parse(phpArray[`${slugfn}_config`], {
-      emptyRules: {
-        asset: {
-          libs: {},
-          sass: {
-            components: [],
-            layouts: [],
-            pages: [],
-            themes: [],
-            vendors: []
-          },
-          fonts: {}
-        },
-        plugins: {},
-        components: [],
-        imgsize: {},
-        filters: [],
-        actions: [],
-        libraries: [],
-        helpers: [],
-        menus: {},
-        widgets: {},
-        features: {},
-        customizer: {
-          /* eslint-disable camelcase */
-          panels: {},
-          sections: {},
-          settings: {},
-          control_types: {},
-          controls: {}
-          /* eslint-enable */
-        }
-      }
+      emptyRules: this.$emptyRules
     })
     this.setThemeConfig(json, true)
   }
