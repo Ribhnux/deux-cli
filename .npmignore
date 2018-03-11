@@ -13,10 +13,10 @@ pids
 *.pid.lock
 
 # Directories
-test/
-website/
-docs/
-node_modules/
+/test
+/website
+/docs
+/node_modules
 
 # Yarn stuff
 .yarn-integrity
