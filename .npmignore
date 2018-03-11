@@ -1,0 +1,22 @@
+# Logs
+logs
+.DS_Store
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Directories
+test/
+website/
+docs/
+node_modules/
+
+# Yarn stuff
+.yarn-integrity

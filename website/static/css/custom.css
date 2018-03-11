@@ -163,13 +163,15 @@ pre code,
   min-height: 100vh;
   background: #fff;
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   margin: 0 0 3rem;
+  padding: 0 0 3rem;
   box-shadow: 0 0 20px 8px rgba(0,0,0,0.05);
 }
 
 .features {
-  padding: 3rem 5rem;
-  flex-basis: 45%;
+  flex-basis: 50%;
 }
 
 .features ul {
@@ -210,9 +212,14 @@ pre code,
   text-align: center;
 }
 
+.features-inner {
+  padding: 2rem;
+}
+
 .showcaseTerminal {
-  flex: 1;
+  flex-basis: 50%;
   background: #000;
+  margin-bottom: 3rem !important;
 }
 
 .productShowcaseSection h2 {
@@ -280,6 +287,10 @@ nav.toc .toggleNav ul li a.navItemActive {
   }
 }
 
+.navigationSlider .slidingNav ul {
+  background: #ffff;
+  color: #070d17;
+}
 
 @media only screen and (max-device-width: 735px) and (min-device-width: 360px) {
   .navigationSlider .slidingNav ul,
@@ -304,5 +315,39 @@ nav.toc .toggleNav ul li a.navItemActive {
 
   .copyright {
     padding: 5px 20px;
+  }
+}
+
+.navPusher {
+  padding-top: 4rem !important;
+}
+
+@media only screen and (min-width:320px) and (max-width: 425px) {
+  .navPusher {
+    padding-top: 8.5rem !important;
+  }
+
+  .sideNavVisible .navPusher {
+    padding-top: 6.1rem !important;
+  }
+
+  .features,
+  .showcaseTerminal {
+    flex-basis: 100%;
+  }
+
+  .homeWrapper img {
+    margin-bottom: 1rem;
+  }
+}
+
+@media only screen and (min-width: 426px) and (max-width: 768px) {
+  .navPusher {
+    padding-top: 4rem !important;
+  }
+
+  .features,
+  .showcaseTerminal {
+    flex-basis: 100%;
   }
 }
