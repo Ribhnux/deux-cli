@@ -176,7 +176,7 @@ class NewCLI extends CLI {
 
           {
             title: 'Copy files recursively',
-            enabled: () => this.sourceType === sourceTypes.DIR && path.dirname(this.source) !== this.themePath(),
+            enabled: () => this.sourceType === sourceTypes.DIR,
             task: () => new Promise((resolve, reject) => {
               ncp(this.source, this.themePath(this.tmpdir), err => {
                 if (err) {
