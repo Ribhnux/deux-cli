@@ -18,7 +18,7 @@ exports.isJSON = str => {
   }
 }
 
-exports.getGitAuth = (gitUrl) => {
+exports.getGitAuth = gitUrl => {
   const giturl = require('url').parse(gitUrl)
   const gitauth = giturl.auth ? giturl.auth.split(':') : ''
 
