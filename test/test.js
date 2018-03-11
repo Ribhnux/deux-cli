@@ -145,8 +145,8 @@ test('`deux new`: Config should be valid.', async t => {
     t.true(existsSync(_config.path))
 
     delete _config.themeConfig.asset.sass
-    delete _config.themeConfig.releases
-    delete _config.themeConfig.repo
+    delete _config.themeConfig.$releases
+    delete _config.themeConfig.$repo
     t.deepEqual(config, _config.themeConfig)
 
     delete config.$details

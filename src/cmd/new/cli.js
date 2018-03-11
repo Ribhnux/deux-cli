@@ -286,6 +286,22 @@ class NewCLI extends CLI {
 
           const info = {
             $details: themeDetails,
+            $releases: [
+              {
+                version: theme.version,
+                date: Date.now(),
+                changes: [
+                  'Initial Release'
+                ]
+              }
+            ],
+            $repo: {
+              credentials: {
+                username: git.username,
+                password: git.password
+              },
+              trylogin: false
+            },
             optimize: true,
             asset: {
               libs: {},
@@ -318,22 +334,6 @@ class NewCLI extends CLI {
               control_types: {},
               controls: {}
               /* eslint-enable camelcase */
-            },
-            releases: [
-              {
-                version: theme.version,
-                date: Date.now(),
-                changes: [
-                  'Initial Release'
-                ]
-              }
-            ],
-            repo: {
-              credentials: {
-                username: git.username,
-                password: git.password
-              },
-              trylogin: false
             }
           }
 
@@ -402,11 +402,11 @@ class NewCLI extends CLI {
             title: 'Compiles theme',
             task: () => new Promise((resolve, reject) => {
               const themeInfo = this.themeInfo()
-              const releases = themeInfo.releases
+              const releases = themeInfo.$releases
 
               delete themeInfo.$details
-              delete themeInfo.releases
-              delete themeInfo.repo
+              delete themeInfo.$releases
+              delete themeInfo.$repo
 
               const config = jsonar.arrify(themeInfo, {
                 prettify: true,
@@ -471,7 +471,7 @@ class NewCLI extends CLI {
 
     task.run()
       .then(() => {
-        const repo = this.themeInfo('repo')
+        const repo = this.themeInfo('$repo')
         repo.trylogin = true
         this.setThemeConfig({repo})
       })

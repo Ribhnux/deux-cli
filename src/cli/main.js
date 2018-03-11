@@ -203,8 +203,8 @@ class CLI {
 
     delete config.$details
     delete config.asset.sass
-    delete config.releases
-    delete config.repo
+    delete config.$releases
+    delete config.$repo
 
     if (sync === false) {
       const phpconfig = jsonar.arrify(config, {
