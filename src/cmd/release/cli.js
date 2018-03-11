@@ -333,6 +333,14 @@ class ReleaseCLI extends CLI {
                 }
               })
 
+              compileFile({
+                srcPath: this.templateSourcePath('releases.json'),
+                dstPath: this.currentThemePath('releases.json'),
+                syntax: {
+                  releases
+                }
+              })
+
               resolve()
             })
           }
