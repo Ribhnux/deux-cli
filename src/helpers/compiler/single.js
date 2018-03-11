@@ -17,6 +17,10 @@ handlebars.registerHelper('time', time => {
   return moment(new Date(time)).format('YYYY/MM/DD')
 })
 
+handlebars.registerHelper('json', string => {
+  return JSON.stringify(string, null, 2)
+})
+
 module.exports = ({srcPath, dstPath, syntax}) => {
   const input = readFileSync(srcPath, 'ascii')
   const compiler = handlebars.compile(input)
