@@ -76,40 +76,49 @@ const PromoSection = props => (
   </div>
 );
 
-const WhatIsThisSection = props => (
+const FeatureSection = props => (
   <div id="what-is-this">
     <div className="section whatIsThisSection">
       <div className="features">
-        <h2>What is Deux-CLI?</h2>
-        <p>Deux-CLI is a tool that will simplify your WordPress Theme development.</p>
-        <h3>Features</h3>
-        <ul>
-          <li><span>Manage assets (sass, javascript, 3rd-party libs, web fonts).</span></li>
-          <li><span>Manage plugin dependencies.</span></li>
-          <li><span>Manage native theme Features, Image Size, and more.</span></li>
-          <li><span>Manage templates (Page Templates and Partial Templates).</span></li>
-          <li><span>Manage theme menus and widgets.</span></li>
-          <li><span>Manage theme customizer.</span></li>
-        </ul>
+        <div className="features-inner">
+          <h2>What is Deux-CLI?</h2>
+          <p>Deux-CLI is a tool that will simplify your WordPress Theme development.</p>
+          <h3>Features</h3>
+          <ul>
+            <li><span>Manage assets (sass, javascript, 3rd-party libs, web fonts).</span></li>
+            <li><span>Manage plugin dependencies.</span></li>
+            <li><span>Manage native theme Features, Image Size, and more.</span></li>
+            <li><span>Manage templates (Page Templates and Partial Templates).</span></li>
+            <li><span>Manage theme menus and widgets.</span></li>
+            <li><span>Manage theme customizer.</span></li>
+          </ul>
 
-        <p>Built with current technologies that will make your WordPress theme become standard.</p>
-        <ul>
-          <li><span>Gulp, BrowserSync, and Roll-up.</span></li>
-          <li><span>Sassy CSS (SCSS) with stylelint and rtlcss.</span></li>
-          <li><span>Javascript ES6 (front-end and customizer) with IIFE format.</span></li>
-          <li><span>Auto convert variable translation to POT.</span></li>
-          <li><span>WordPress Coding Standard.</span></li>
-          <li><span>Theme Check and Theme Mentor.</span></li>
-          <li><span>HTML5 Validator.</span></li>
-        </ul>
-
-        <br />
-        <Button className="large" href={docUrl('index.html')}>Learn More</Button>
+          <p>Built with current technologies that will make your WordPress theme become standard.</p>
+          <ul>
+            <li><span>Gulp, BrowserSync, and Roll-up.</span></li>
+            <li><span>Sassy CSS (SCSS) with stylelint and rtlcss.</span></li>
+            <li><span>Javascript ES6 (front-end and customizer) with IIFE format.</span></li>
+            <li><span>Auto convert variable translation to POT.</span></li>
+            <li><span>WordPress Coding Standard.</span></li>
+            <li><span>Theme Check and Theme Mentor.</span></li>
+            <li><span>HTML5 Validator.</span></li>
+          </ul>
+        </div>
       </div>
 
-      <div className="showcaseTerminal">
-        Bababa
+      <div className="showcaseTerminal swiper-container">
+        <div className="swiper-wrapper">
+          <div className="swiper-slide">
+            <script src="https://asciinema.org/a/jT8X7f7oowEUt0X0fJ58kHwx3.js" id="asciicast-jT8X7f7oowEUt0X0fJ58kHwx3" async></script>
+          </div>
+          <div className="swiper-slide">
+          <script src="https://asciinema.org/a/FWw8s7K3NVwmkffSMZ9s5aFTT.js" id="asciicast-FWw8s7K3NVwmkffSMZ9s5aFTT" async></script>
+          </div>
+        </div>
+        <div className="swiper-pagination"></div>
       </div>
+
+      <Button className="large" href={docUrl('index.html')}>Learn More</Button>
     </div>
   </div>
 )
@@ -180,7 +189,7 @@ class Index extends React.Component {
       <div>
         <HomeSplash language={language} />
         <div className="mainContainer">
-          <WhatIsThisSection />
+          <FeatureSection ref="FeatureSection" />
           <Showcase language={language} />
         </div>
       </div>
