@@ -60,9 +60,7 @@ Run in API Mode.
     // @type String
     // @optional
     "password": "myPassword"
-  },
-
-  "overwrite": true
+  }
 }
 ```
 
@@ -84,9 +82,7 @@ Run in API Mode.
     // @type String
     // @required
     "password": "myPassword"
-  },
-
-  "overwrite": true
+  }
 }
 ```
 
