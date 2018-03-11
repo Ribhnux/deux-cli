@@ -148,9 +148,9 @@ class ReleaseCLI extends CLI {
     const newVersion = release.version || release.customVersion
     const stdopts = {cwd: this.currentThemePath()}
     const gitFailCallback = () => {
-      const repo = this.themeInfo('$repo')
-      repo.trylogin = false
-      this.setThemeConfig({repo})
+      const $repo = this.themeInfo('$repo')
+      $repo.trylogin = false
+      this.setThemeConfig({$repo})
     }
 
     const releases = this.themeInfo('$releases')
