@@ -8,7 +8,7 @@
 
 foreach ( ${{theme.slugfn}}_config['plugins'] as $slug => $plugin ) {
 	if ( $plugin['init'] ) {
-		require {{#if theme.parent}}get_template_directory(){{else}}get_stylesheet_directory(){{/if}} . '/includes/plugins/' . $slug . '.php';
+		require {{#if theme.parent}}get_stylesheet_directory(){{else}}get_template_directory(){{/if}} . '/includes/plugins/' . $slug . '.php';
 	}
 }
 
