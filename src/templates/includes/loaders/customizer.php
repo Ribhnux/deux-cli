@@ -9,7 +9,7 @@
 // Register custom control types.
 if ( isset( ${{theme.slugfn}}_config['customizer']['control_types'] ) ) {
 	foreach ( ${{theme.slugfn}}_config['customizer']['control_types'] as $name => $control ) {
-		$customizer_control_path = get_template_directory() . '/includes/customizer/controls/class-wp-customize-' . $name . '-control.php';
+		$customizer_control_path = {{#if theme.parent}}get_template_directory(){{else}}get_stylesheet_directory(){{/if}} . '/includes/customizer/controls/class-wp-customize-' . $name . '-control.php';
 
 		if ( file_exists( $customizer_control_path ) ) {
 			require $customizer_control_path;
@@ -108,7 +108,7 @@ if ( ! function_exists( '{{theme.slugfn}}_preview_init' ) ) :
 
 		$script_path = get_theme_file_path( $js_dir . $customizer_preview );
 		if ( file_exists( $script_path ) ) {
-			wp_enqueue_script( '{{theme.slug}}-customize-preview', get_theme_file_uri( $js_dir . $customizer_preview ), array( 'customize-preview' ), $theme_info->get( 'Version' ), true );
+			wp_enqueue_script( '{{theme.slug}}-customize-preview', {{#if theme.parent}}get_theme_file_uri( $js_dir . $customizer_preview ){{else}}get_stylesheet_directory_uri() . $js_dir . $customizer_preview{{/if}}, array( 'customize-preview' ), $theme_info->get( 'Version' ), true );
 		}
 	}
 endif;
@@ -136,13 +136,13 @@ if ( ! function_exists( '{{theme.slugfn}}_customizer_control_scripts' ) ) :
 		// Load customizer styles.
 		$style_path = get_theme_file_path( $css_dir . $customizer_css );
 		if ( file_exists( $style_path ) ) {
-			wp_enqueue_style( '{{theme.slug}}-customizer', get_theme_file_uri( $css_dir . $customizer_css ), array(), $theme_version );
+			wp_enqueue_style( '{{theme.slug}}-customizer', {{#if theme.parent}}get_theme_file_uri( $css_dir . $customizer_css ){{else}}get_stylesheet_directory_uri() . $css_dir . $customizer_css{{/if}}, array(), $theme_version );
 		}
 
 		// Load customizer script.
 		$script_path = get_theme_file_path( $js_dir . $customizer_js );
 		if ( file_exists( $script_path ) ) {
-			wp_enqueue_script( '{{theme.slug}}-customizer-control', get_theme_file_uri( $js_dir . $customizer_js ), array( 'jquery' ), $theme_version, true );
+			wp_enqueue_script( '{{theme.slug}}-customizer-control', {{#if theme.parent}}get_theme_file_uri( $js_dir . $customizer_js ){{else}}get_stylesheet_directory_uri() . $js_dir . $customizer_js{{/if}}, array( 'jquery' ), $theme_version, true );
 		}
 	}
 endif;
