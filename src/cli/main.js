@@ -362,9 +362,16 @@ class CLI {
    * Set active theme in project
    *
    * @param {Object} object
+   * @param {Boolean} initial Check if current is empty or initial.
    */
-  setCurrentTheme({name, slug, version}) {
-    this.$db[dbTypes.CURRENT] = {name, slug, version}
+  setCurrentTheme({name, slug, version}, initial = false) {
+    if (initial) {
+      if (!this.$db[dbTypes.CURRENT].slug) {
+        this.$db[dbTypes.CURRENT] = {name, slug, version}
+      }
+    } else {
+      this.$db[dbTypes.CURRENT] = {name, slug, version}
+    }
   }
 
   /**
