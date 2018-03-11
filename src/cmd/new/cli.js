@@ -471,9 +471,12 @@ class NewCLI extends CLI {
 
     task.run()
       .then(() => {
-        const repo = this.themeInfo('$repo')
-        repo.trylogin = true
-        this.setThemeConfig({repo})
+        const $repo = this.themeInfo('$repo')
+        $repo.trylogin = true
+
+        this.setThemeConfig({
+          $repo
+        })
       })
       .then(() => {
         this.$logger.finish(messages.SUCCEED_CREATE_NEW_THEME)
