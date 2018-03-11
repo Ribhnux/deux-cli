@@ -192,7 +192,7 @@ class StatusCLI extends CLI {
         this.$logger.finish(this.status)
       }
 
-      colorlog(status.join('\n'), false)
+      colorlog(`\n${status.join('\n')}`, false)
       colorlog(`type ${chalk.bold.cyan('deux switch')} to change with another project.`)
     }).catch(this.$logger.exit)
   }
