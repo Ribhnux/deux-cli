@@ -20,7 +20,7 @@ class RemoveTheme extends CLI {
     for (const slug in themes) {
       if (Object.prototype.hasOwnProperty.call(themes, slug)) {
         themelist.push({
-          name: this.getThemes(slug).details.name,
+          name: this.getThemes(slug).$details.name,
           value: slug
         })
       }

@@ -94,7 +94,7 @@ test('`deux new`: Add new theme should be succeed.', async t => {
 test('`deux new`: Config should be valid.', async t => {
   /* eslint-disable camelcase */
   const config = {
-    details: {
+    $details: {
       name: 'Deux Theme',
       uri: 'https://github.com/RibhnuxDesign/ramen-theme',
       author: 'Ribhnux Design',
@@ -149,7 +149,7 @@ test('`deux new`: Config should be valid.', async t => {
     delete _config.themeConfig.repo
     t.deepEqual(config, _config.themeConfig)
 
-    delete config.details
+    delete config.$details
     t.deepEqual(config, _config.phpConfig)
   })
 })

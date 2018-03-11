@@ -299,7 +299,7 @@ class ReleaseCLI extends CLI {
 
               this.setThemeConfig({
                 releases,
-                details: themeDetails
+                $details: themeDetails
               }, true)
 
               resolve()

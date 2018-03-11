@@ -179,10 +179,10 @@ class CLI {
     const currentTheme = this.getCurrentTheme()
 
     if (key !== '') {
-      return currentTheme.details[key]
+      return currentTheme.$details[key]
     }
 
-    return currentTheme.details
+    return currentTheme.$details
   }
 
   /**
@@ -201,8 +201,8 @@ class CLI {
     const themeDetails = this.themeDetails()
     const config = Object.assign({}, themeInfo)
 
+    delete config.$details
     delete config.asset.sass
-    delete config.details
     delete config.releases
     delete config.repo
 

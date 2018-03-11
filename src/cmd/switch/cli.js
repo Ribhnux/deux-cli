@@ -24,7 +24,7 @@ class SwitchCLI extends CLI {
 
         for (const value in themes) {
           if (Object.prototype.hasOwnProperty.call(themes, value)) {
-            const {name, description, version} = this.getThemes(value).details
+            const {name, description, version} = this.getThemes(value).$details
             list.push({
               name,
               description,
@@ -95,7 +95,7 @@ class SwitchCLI extends CLI {
 
       Promise.all([
         new Promise(resolve => {
-          const {name, slug, version} = theme.details
+          const {name, slug, version} = theme.$details
           this.setCurrentTheme({name, slug, version})
           resolve()
         })

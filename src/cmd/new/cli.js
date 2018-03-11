@@ -285,7 +285,7 @@ class NewCLI extends CLI {
           const themeDetails = Object.assign({}, theme)
 
           const info = {
-            details: themeDetails,
+            $details: themeDetails,
             optimize: true,
             asset: {
               libs: {},
@@ -404,7 +404,7 @@ class NewCLI extends CLI {
               const themeInfo = this.themeInfo()
               const releases = themeInfo.releases
 
-              delete themeInfo.details
+              delete themeInfo.$details
               delete themeInfo.releases
               delete themeInfo.repo
 
