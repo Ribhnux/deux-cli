@@ -114,9 +114,5 @@
       "test/wordpress/**",
       "website/**"
     ]
-  },
-  "files": [
-    "bin",
-    "src"
-  ]
+  }
 }
