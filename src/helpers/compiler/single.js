@@ -17,8 +17,28 @@ handlebars.registerHelper('time', time => {
   return moment(new Date(time)).format('YYYY/MM/DD')
 })
 
-handlebars.registerHelper('json', string => {
-  return JSON.stringify(string, null, 2)
+handlebars.registerHelper('json', str => {
+  return JSON.stringify(str, null, 2)
+})
+
+handlebars.registerHelper('themepath', (theme, ...filepath) => {
+  filepath.pop()
+
+  if (theme.parent) {
+    return `get_stylesheet_directory() . ${filepath.join('')}`
+  }
+
+  return `get_parent_theme_file_path( ${filepath.join('')} )`
+})
+
+handlebars.registerHelper('themeuri', (theme, ...uri) => {
+  uri.pop()
+
+  if (theme.parent) {
+    return `get_stylesheet_directory_uri() . ${uri.join('')}`
+  }
+
+  return `get_theme_file_uri( ${uri.join('')} )`
 })
 
 module.exports = ({srcPath, dstPath, syntax}) => {

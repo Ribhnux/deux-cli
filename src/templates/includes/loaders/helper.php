@@ -7,7 +7,7 @@
  */
 
 foreach ( ${{theme.slugfn}}_config['helpers'] as $helper ) {
-	$helper_path = {{#if theme.parent}}get_stylesheet_directory(){{else}}get_template_directory(){{/if}} . '/includes/helpers/' . $helper . '.php';
+	$helper_path = {{{ themepath theme "'/includes/helpers/' . $helper . '.php'" }}};
 	if ( file_exists( $helper_path ) ) {
 		require $helper_path;
 	}
