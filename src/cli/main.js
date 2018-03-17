@@ -480,6 +480,11 @@ class CLI {
       ]
     }
 
+    if (this.themeDetails('parent')) {
+      options.themecheck.push('--exclude-rules')
+      options.themecheck.push('Basic_Checks,CommentPaginationCheck,GravatarCheck,WidgetsCheck')
+    }
+
     if (this.$init.apiMode()) {
       options.wpcs.push('--json')
       options.themecheck.push('--json')
