@@ -79,7 +79,7 @@ class AddMenu extends CLI {
       name: `${niceName} Nav Walker`,
       file: `class-${slugify(menu.location)}-menu-nav-walker`,
       description: `${niceName} Menu Navigation Walker Class`,
-      className: `${className}_Nav_Walker`
+      className: `${className}_Menu_Nav_Walker`
     }
 
     Promise.all([
