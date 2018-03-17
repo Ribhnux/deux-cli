@@ -97,6 +97,7 @@ class CLI {
       }
 
       this.$db = db
+      this.toggleSync(false)
       this.prepare()
 
       const action = () => {
@@ -224,19 +225,32 @@ class CLI {
    * @param {Boolean} sync Used to save synchronize mode
    */
   setThemeConfig(newConfig = {}, sync = false) {
-    const extend = require('extend')
     const jsonar = require('jsonar')
+    const deepcopy = require('deepcopy')
 
     const compileFile = global.deuxhelpers.require('compiler/single')
-    const themeInfo = extend(this.getCurrentTheme(), newConfig)
-    const themeDetails = this.themeDetails()
-    const config = Object.assign({}, themeInfo)
+
+    const deepCopyConfig = (oldObj, newObj) => {
+      for (const key in oldObj) {
+        if (Object.prototype.hasOwnProperty.call(newObj, key)) {
+          if (typeof newObj[key] === 'object' && !Array.isArray(newObj[key])) {
+            deepCopyConfig(oldObj[key], newObj[key])
+          } else {
+            oldObj[key] = newObj[key]
+          }
+        }
+      }
+    }
+
+    deepCopyConfig(this.getCurrentTheme(), newConfig)
+    const config = deepcopy(this.getCurrentTheme())
 
     if (sync === false) {
       delete config.$details
       delete config.asset.sass
       delete config.$releases
       delete config.$repo
+      delete config.$allowSync
 
       const phpconfig = jsonar.arrify(config, {
         prettify: true,
@@ -248,10 +262,12 @@ class CLI {
         srcPath: this.templateSourcePath('config.php'),
         dstPath: this.currentThemeConfigPath(),
         syntax: {
-          theme: themeDetails,
+          theme: this.themeDetails(),
           config: phpconfig
         }
       })
+
+      this.toggleSync(true)
     }
   }
 
@@ -266,24 +282,24 @@ class CLI {
       emptyRules: this.$emptyRules
     })
 
-    const sync = (oldVal, newVal) => {
-      const val = Object.assign({}, oldVal)
-      for (const key in newVal) {
-        if (Object.prototype.hasOwnProperty.call(newVal, key)) {
-          const value = newVal[key]
-          if (typeof newVal[key] === 'object' && !Array.isArray(value)) {
-            val[key] = sync(val[key], newVal[key])
-          } else {
-            val[key] = newVal[key]
-          }
-        }
-      }
+    this.setThemeConfig(json, true)
+    this.toggleSync(true)
+  }
 
-      return val
-    }
+  /**
+   * Allow or disallow sync process.
+   */
+  toggleSync(toggle = false) {
+    const config = this.getCurrentTheme()
+    config.$allowSync = toggle
+  }
 
-    const config = sync(this.getCurrentTheme(), json)
-    this.setThemeConfig(config, true)
+  /**
+   * Check whether it's allowed to sync or not.
+   */
+  isSyncAllowed() {
+    const config = this.getCurrentTheme()
+    return config.$allowSync
   }
 
   /**

@@ -24,6 +24,7 @@ const cssbeautify = require('gulp-cssbeautify')
 const stripComments = require('gulp-strip-css-comments')
 const gulpif = require('gulp-if')
 const slugify = require('node-slugify')
+const watch = require('gulp-watch')
 let defaultConfig = require('./config')
 
 const CLI = global.deuxcli.require('main')
@@ -41,6 +42,7 @@ class DevCLI extends CLI {
    * Setup gulp task
    */
   prepare() {
+    this.toggleSync(true)
     this.$title = this.$options.build === true ? 'Build {asset files}' : 'Start {Development} Mode'
 
     // Source Path
@@ -70,16 +72,6 @@ class DevCLI extends CLI {
         this.$logger.exit(err)
       }
     }
-
-    // Synchronize theme config.
-    defaultConfig.build.themeConfig = [
-      {
-        fn: this.sync,
-        watch: [
-          `${this.themeDetails('slug')}-config.php`
-        ]
-      }
-    ]
 
     // Build translation.
     defaultConfig.build.translation = [
@@ -155,7 +147,9 @@ class DevCLI extends CLI {
     // Files watcher
     gulp.task('watch:files', () => {
       this.$buildTask.filter(item => item.watchPath.length > 0).forEach(item => {
-        gulp.watch(item.watchPath, [item.taskName])
+        watch(item.watchPath, () => {
+          gulp.start(item.taskName)
+        })
       })
     })
   }
