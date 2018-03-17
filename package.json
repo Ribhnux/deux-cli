@@ -51,6 +51,7 @@
     "gulp-sourcemaps": "^2.6.4",
     "gulp-strip-css-comments": "^1.2.0",
     "gulp-uglify": "^3.0.0",
+    "gulp-watch": "^5.0.0",
     "gulp-wp-pot": "^2.2.0",
     "handlebars": "^4.0.11",
     "html-entities": "^1.2.1",
