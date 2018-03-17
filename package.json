@@ -38,7 +38,7 @@
     "global-path": "^1.1.0",
     "gulp": "^3.9.1",
     "gulp-autoprefixer": "^4.1.0",
-    "gulp-clean-css": "^3.9.2",
+    "gulp-clean-css": "^3.9.3",
     "gulp-clone": "^2.0.1",
     "gulp-cssbeautify": "^1.0.0",
     "gulp-gettext": "^0.3.0",
@@ -87,7 +87,7 @@
     "wp-get-l10n": "^1.0.0",
     "wp-plugin-info": "^1.0.0",
     "wp-plugin-search": "^1.1.1",
-    "wp-theme-check": "^1.4.2",
+    "wp-theme-check": "^1.5.0",
     "wpcs": "^1.7.3",
     "xo": "^0.18.2",
     "zip-dir": "^1.0.2"
