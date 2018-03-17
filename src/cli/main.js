@@ -228,17 +228,16 @@ class CLI {
     const jsonar = require('jsonar')
 
     const compileFile = global.deuxhelpers.require('compiler/single')
-
     const themeInfo = extend(this.getCurrentTheme(), newConfig)
     const themeDetails = this.themeDetails()
     const config = Object.assign({}, themeInfo)
 
-    delete config.$details
-    delete config.asset.sass
-    delete config.$releases
-    delete config.$repo
-
     if (sync === false) {
+      delete config.$details
+      delete config.asset.sass
+      delete config.$releases
+      delete config.$repo
+
       const phpconfig = jsonar.arrify(config, {
         prettify: true,
         quote: jsonar.quoteTypes.SINGLE,
@@ -254,6 +253,37 @@ class CLI {
         }
       })
     }
+  }
+
+  /**
+   * Synchronize from php config to database.
+   */
+  sync() {
+    const themeDetails = this.themeDetails()
+    const slugfn = themeDetails.slugfn
+    const phpArray = arrandel(this.currentThemeConfigPath())
+    const json = jsonar.parse(phpArray[`${slugfn}_config`], {
+      emptyRules: this.$emptyRules
+    })
+
+    const sync = (oldVal, newVal) => {
+      const val = Object.assign({}, oldVal)
+      for (const key in newVal) {
+        if (Object.prototype.hasOwnProperty.call(newVal, key)) {
+          const value = newVal[key]
+          if (typeof newVal[key] === 'object' && !Array.isArray(value)) {
+            val[key] = sync(val[key], newVal[key])
+          } else {
+            val[key] = newVal[key]
+          }
+        }
+      }
+
+      return val
+    }
+
+    const config = sync(this.getCurrentTheme(), json)
+    this.setThemeConfig(config, true)
   }
 
   /**
@@ -402,20 +432,6 @@ class CLI {
     }
 
     return filelist(path.join(...list))
-  }
-
-  /**
-   * Synchronize from php config to database.
-   */
-  sync() {
-    const themeDetails = this.themeDetails()
-    const slugfn = themeDetails.slugfn
-    const configPath = this.currentThemeConfigPath()
-    const phpArray = arrandel(configPath)
-    const json = jsonar.parse(phpArray[`${slugfn}_config`], {
-      emptyRules: this.$emptyRules
-    })
-    this.setThemeConfig(json, true)
   }
 
   /**

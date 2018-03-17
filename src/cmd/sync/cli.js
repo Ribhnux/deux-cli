@@ -40,7 +40,8 @@ class SyncCLI extends CLI {
         resolve()
       })
     ]).then(() => {
-      syncLoader.succeed(messages.SUCCEED_SYNCRHONIZED)
+      syncLoader.stop()
+      this.$logger.finish(messages.SUCCEED_SYNCRHONIZED)
     }).catch(this.$logger.exit)
   }
 }
