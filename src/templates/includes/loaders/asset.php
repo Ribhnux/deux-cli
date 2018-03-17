@@ -66,7 +66,7 @@ if ( ! function_exists( '{{theme.slugfn}}_enqueue_dependencies' ) ) :
 	function {{theme.slugfn}}_load_dependencies() {
 		global ${{theme.slugfn}}_config;
 
-		$assets_path = get_template_directory_uri() . '/assets/vendors/';
+		$assets_path = {{{ themeuri theme "'/assets/vendors/'" }}};
 
 		// Load Fonts from google.
 		wp_enqueue_style( '{{theme.slug}}-fonts', {{theme.slugfn}}_font_url(), array(), null );
@@ -124,7 +124,7 @@ if ( ! function_exists( '{{theme.slugfn}}_enqueue_scripts' ) ) :
 		// Load theme styles.
 		$style_path = get_theme_file_path( $css_dir . $theme_css );
 		if ( file_exists( $style_path ) ) {
-			wp_enqueue_style( '{{theme.slug}}-style', {{#if theme.parent}}get_stylesheet_directory_uri() . $css_dir . $theme_css{{else}}get_theme_file_uri( $css_dir . $theme_css ){{/if}}, array(), $theme_version );
+			wp_enqueue_style( '{{theme.slug}}-style', {{{ themeuri theme '$css_dir . $theme_css' }}}, array(), $theme_version );
 
 			// RTL Stylesheets.
 			if ( is_rtl() ) {
@@ -135,7 +135,7 @@ if ( ! function_exists( '{{theme.slugfn}}_enqueue_scripts' ) ) :
 		// Load theme script.
 		$script_path = get_theme_file_path( $js_dir . $theme_js );
 		if ( file_exists( $script_path ) ) {
-			wp_enqueue_script( '{{theme.slug}}-script', {{#if theme.parent}}get_stylesheet_directory_uri() . $js_dir . $theme_js{{else}}get_theme_file_uri( $js_dir . $theme_js ){{/if}}, array(), $theme_version, true );
+			wp_enqueue_script( '{{theme.slug}}-script', {{{ themeuri theme '$js_dir . $theme_js' }}}, array(), $theme_version, true );
 		}
 
 		// Enable nested comments reply.
