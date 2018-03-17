@@ -24,8 +24,10 @@ pids
 /.gitignore
 /.npmignore
 /.travis.yml
-/.appveyor.yml
+/appveyor.yml
 /CNAME
+/CODE_OF_CONDUCT.md
+/CONTRIBUTING.md
 
 # Yarn stuff
 .yarn-integrity
