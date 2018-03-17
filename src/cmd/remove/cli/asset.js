@@ -74,7 +74,7 @@ class RemoveAsset extends CLI {
                   name: capitalize(`${value} ${assetType.substr(0, assetType.length - 1)}`),
                   value: {
                     type: assetTypes.SASS,
-                    assetType,
+                    sassType: assetType,
                     value
                   }
                 })
@@ -158,14 +158,14 @@ class RemoveAsset extends CLI {
               srcPath: this.templateSourcePath('assets-src', 'sass', 'theme.scss'),
               dstPath: this.currentThemePath('assets-src', 'sass', 'theme.scss'),
               syntax: {
+                theme: themeDetails,
                 sass: {
                   components: this.themeAsset.sass.components.map(item => `'components/${item}'`).join(',\n  '),
                   layouts: this.themeAsset.sass.layouts.map(item => `'layouts/${item}'`).join(',\n  '),
                   pages: this.themeAsset.sass.pages.map(item => `'pages/${item}'`).join(',\n  '),
                   themes: this.themeAsset.sass.themes.map(item => `'themes/${item}'`).join(',\n  '),
                   vendors: this.themeAsset.sass.vendors.map(item => `'vendors/${item}'`).join(',\n  ')
-                },
-                theme: themeDetails
+                }
               }
             })
             break
