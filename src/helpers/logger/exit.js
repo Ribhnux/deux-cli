@@ -1,7 +1,17 @@
 const error = require('./error')
 
 module.exports = (err, isRaw) => {
-  const errMsg = err.message || err
+  let errMsg = err.message || err
+
+  if (err.stack) {
+    const errorList = err.stack.split(/at/).map(item => item.trim())
+
+    if (errorList.length > 1) {
+      errorList.shift()
+      errMsg = `${errMsg} \`[${errorList[0]}]\``
+    }
+  }
+
   let message = errMsg
 
   if (isRaw) {
