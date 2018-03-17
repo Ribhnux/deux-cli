@@ -364,6 +364,21 @@ class NewCLI extends CLI {
           }
           info.$releases = require(this.themePath([this.themeSlug, 'releases.json']))
 
+          const getSassFiles = structName => {
+            return filelist(this.themePath([this.themeSlug, 'assets-src', 'sass', `${structName}s`]))
+              .filter(file => {
+                return path.parse(file).ext === '.sass'
+              })
+          }
+
+          info.asset.sass = {
+            components: getSassFiles('component'),
+            layouts: getSassFiles('layout'),
+            pages: getSassFiles('page'),
+            themes: getSassFiles('theme'),
+            vendors: getSassFiles('vendor')
+          }
+
           this.addTheme(this.themeSlug, info)
           this.setCurrentTheme(this.themeDetails, true)
           resolve()
