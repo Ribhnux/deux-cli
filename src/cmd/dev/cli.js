@@ -42,7 +42,6 @@ class DevCLI extends CLI {
    * Setup gulp task
    */
   prepare() {
-    this.toggleSync(true)
     this.$title = this.$options.build === true ? 'Build {asset files}' : 'Start {Development} Mode'
 
     // Source Path

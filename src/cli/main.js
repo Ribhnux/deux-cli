@@ -97,7 +97,6 @@ class CLI {
       }
 
       this.$db = db
-      this.toggleSync(false)
       this.prepare()
 
       const action = () => {
@@ -225,33 +224,21 @@ class CLI {
    * @param {Boolean} sync Used to save synchronize mode
    */
   setThemeConfig(newConfig = {}, sync = false) {
+    const extend = require('extend')
     const jsonar = require('jsonar')
-    const deepcopy = require('deepcopy')
 
     const compileFile = global.deuxhelpers.require('compiler/single')
 
-    const deepCopyConfig = (oldObj, newObj) => {
-      for (const key in oldObj) {
-        if (Object.prototype.hasOwnProperty.call(newObj, key)) {
-          if (typeof newObj[key] === 'object' && !Array.isArray(newObj[key])) {
-            deepCopyConfig(oldObj[key], newObj[key])
-          } else {
-            oldObj[key] = newObj[key]
-          }
-        }
-      }
-    }
+    const themeInfo = extend(this.getCurrentTheme(), newConfig)
+    const themeDetails = this.themeDetails()
+    const config = Object.assign({}, themeInfo)
 
-    deepCopyConfig(this.getCurrentTheme(), newConfig)
-    const config = deepcopy(this.getCurrentTheme())
+    delete config.$details
+    delete config.asset.sass
+    delete config.$releases
+    delete config.$repo
 
     if (sync === false) {
-      delete config.$details
-      delete config.asset.sass
-      delete config.$releases
-      delete config.$repo
-      delete config.$allowSync
-
       const phpconfig = jsonar.arrify(config, {
         prettify: true,
         quote: jsonar.quoteTypes.SINGLE,
@@ -262,12 +249,10 @@ class CLI {
         srcPath: this.templateSourcePath('config.php'),
         dstPath: this.currentThemeConfigPath(),
         syntax: {
-          theme: this.themeDetails(),
+          theme: themeDetails,
           config: phpconfig
         }
       })
-
-      this.toggleSync(true)
     }
   }
 
@@ -283,23 +268,6 @@ class CLI {
     })
 
     this.setThemeConfig(json, true)
-    this.toggleSync(true)
-  }
-
-  /**
-   * Allow or disallow sync process.
-   */
-  toggleSync(toggle = false) {
-    const config = this.getCurrentTheme()
-    config.$allowSync = toggle
-  }
-
-  /**
-   * Check whether it's allowed to sync or not.
-   */
-  isSyncAllowed() {
-    const config = this.getCurrentTheme()
-    return config.$allowSync
   }
 
   /**

@@ -363,7 +363,6 @@ class NewCLI extends CLI {
             trylogin: true
           }
           info.$releases = require(this.themePath([this.themeSlug, 'releases.json']))
-          info.$allowSync = true
 
           const getSassFiles = structName => {
             return filelist(this.themePath([this.themeSlug, 'assets-src', 'sass', `${structName}s`]))

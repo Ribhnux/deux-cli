@@ -407,7 +407,6 @@ class NewCLI extends CLI {
               delete themeInfo.$details
               delete themeInfo.$releases
               delete themeInfo.$repo
-              delete themeInfo.$allowSync
 
               const config = jsonar.arrify(themeInfo, {
                 prettify: true,
